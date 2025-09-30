@@ -1,0 +1,17 @@
+type Query {
+  login(input: login!): CommonResponse!
+  getTopic(input: getTopicInput!): CommonResponse!
+  info(input: info!): CommonResponse!
+  semesters: CommonResponse!
+  getCouncil(input: getCouncilInput!): CommonResponse!
+}
+
+type Mutation {
+  createMessage(input: String!): String!
+}
+
+
+schema {
+  query: Query
+  mutation: Mutation
+}

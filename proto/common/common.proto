@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package common;
+
+option go_package = "github.com/common";
+
+import "google/protobuf/struct.proto";
+
+// Service định nghĩa các phương thức CRUD linh hoạt
+service CommonService {
+  rpc Procedure(ProcedureRequest) returns (ProcedureResponse);
+  rpc Create(GenericRequest) returns (GenericResponse);
+  rpc GetById(GetByIdRequest) returns (GenericResponse);
+  rpc Query(QueryRequest) returns (QueryResponse);
+  rpc Update(UpdateRequest) returns (GenericResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc DeleteMany(DeleteManyRequest) returns (DeleteManyResponse);
+}
+
+message ProcedureRequest {
+  string procedureQuery = 1;
+}
+
+message ProcedureResponse {
+  bool success = 1;
+  string message = 2;
+  google.protobuf.Struct data = 3;
+}
+
+// Yêu cầu chung khi tạo entity
+message GenericRequest {
+  string tableName = 1;
+  google.protobuf.Struct data = 2;
+}
+
+message GetByIdRequest {
+  string tableName = 1;
+  string id = 2;
+}
+
+message UpdateRequest {
+  string tableName = 1;
+  string id = 2;
+  google.protobuf.Struct data = 3;
+}
+
+// Phản hồi chung khi trả về 1 entity
+message GenericResponse {
+  bool success = 1;
+  string message = 2;
+  google.protobuf.Struct data = 3;
+}
+
+
+// Truy vấn linh hoạt: thay thế GetList & Search
+message QueryRequest {
+  string query = 1;
+  string queryCount = 2;
+}
+
+message QueryResponse {
+  bool success = 1;
+  string message = 2;
+  google.protobuf.Struct data = 3;
+  int64 total_items = 4;
+  int64 execution_time_ms = 5;
+}
+
+
+message DeleteRequest {
+  string tableName = 1;
+  string id = 2;
+}
+
+message DeleteResponse {
+  bool success = 1;
+  string message = 2;
+  int32 deleted_count = 3;
+}
+
+message DeleteManyRequest {
+  string table = 1;
+  repeated string ids = 2;
+}
+
+message DeleteManyResponse {
+  bool success = 1;
+  string message = 2;
+  int32 deleted_count = 3;
+  repeated string failed_ids = 4;
+}

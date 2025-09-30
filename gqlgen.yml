@@ -1,0 +1,123 @@
+# Vị trí tất cả các tệp schema. Hỗ trợ glob, ví dụ src/**/*.graphqls
+schema:
+  - src/graph/schema/*.graphqls
+
+# Đâu là nơi mã máy chủ được tạo ra?
+exec:
+  package: generated
+  layout: follow-schema
+  dir: src/graph/generated
+  filename_template: "{name}.generated.go"
+
+  # Tùy chọn: Số lượng goroutines tối đa trong độ đồng thời để sử dụng cho mỗi resolver con (mặc định: không giới hạn)
+  # worker_limit: 1000
+
+# Đâu là nơi các mô hình được tạo ra?
+model:
+  filename: src/graph/model/models_gen.go
+  package: model
+
+  # Tùy chọn: Truyền vào đường dẫn đến một mẫu gotpl mới để sử dụng khi tạo mô hình
+  # model_template: [đường/dẫn/đến/mẫu.gotpl]
+
+# Đâu là nơi cài đặt resolver nên đi?
+resolver:
+  package: resolver
+  layout: follow-schema # Tách file theo schema
+
+  # Chỉ cho layout theo-schema:
+  dir: src/graph/resolver
+  filename_template: "{name}.resolvers.go"
+
+  # Tùy chọn: Bật để không tạo bình luận mẫu phía trên resolvers
+  # omit_template_comment: false
+  # Tùy chọn: Truyền vào đường dẫn đến một mẫu gotpl mới để sử dụng khi tạo resolver
+  # resolver_template: [đường/dẫn/đến/mẫu/resolver.gotpl]
+  # Tùy chọn: Bật để tránh ghi đè các resolver đã tồn tại khi tạo mới
+  # preserve_resolver: false
+
+# Tùy chọn: Bật để sử dụng thẻ `gqlgen:"fieldName"` trong các mô hình của bạn
+# struct_tag: json
+
+# Tùy chọn: Bật để sử dụng []Thing thay vì []*Thing
+# omit_slice_element_pointers: false
+
+# Tùy chọn: Bật để bỏ qua các phương thức Is<Name>() đối với interface và unions
+# omit_interface_checks: true
+
+# Tùy chọn: Bật để bỏ qua việc tạo nội dung struct ComplexityRoot và hàm Complexity
+# omit_complexity: false
+
+# Tùy chọn: Bật để không tạo bất kỳ bình luận thông báo tệp nào trong các tệp được tạo
+# omit_gqlgen_file_notice: false
+
+# Tùy chọn: Bật để loại bỏ phiên bản gqlgen trong thông báo tệp được tạo. Không có tác dụng nếu `omit_gqlgen_file_notice` là true.
+# omit_gqlgen_version_in_file_notice: false
+
+# Tùy chọn: Bật để loại bỏ các mô hình gốc như Query và Mutation khỏi tệp mô hình được tạo.
+# omit_root_models: false
+
+# Tùy chọn: Bật để loại bỏ các trường resolver khỏi tệp mô hình được tạo.
+# omit_resolver_fields: false
+
+# Tùy chọn: Tắt để các trường kiểu struct không sử dụng con trỏ
+# struct_fields_always_pointers: true
+
+# Tùy chọn: Tắt để resolvers trả về giá trị thay vì con trỏ cho structs
+# resolvers_always_return_pointers: true
+
+# Tùy chọn: Bật để trả về con trỏ thay vì giá trị trong unmarshalInput
+# return_pointers_in_unmarshalinput: false
+
+# Tùy chọn: Gói các trường đầu vào nullable với Omittable
+# nullable_input_omittable: true
+
+# Tùy chọn: Thiết lập để tăng tốc độ tạo mã bằng cách không thực hiện bước xác thực cuối cùng.
+# skip_validation: true
+
+# Tùy chọn: Thiết lập để bỏ qua việc chạy `go mod tidy` khi tạo mã máy chủ
+# skip_mod_tidy: true
+
+# Tùy chọn: Thiết lập các thẻ xây dựng mà sẽ được sử dụng để tải các gói
+# go_build_tags:
+#  - private
+#  - enterprise
+
+# gqlgen sẽ tìm kiếm bất kỳ tên loại nào trong schema trong các gói Go này
+# nếu chúng khớp, nó sẽ sử dụng chúng, nếu không sẽ tạo ra chúng.
+autobind:
+  - "thaily/src/graph/model"
+
+# Phần này khai báo ánh xạ loại giữa hệ thống GraphQL và Go
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  UUID:
+    model:
+      - github.com/99designs/gqlgen/graphql.UUID
+  Timestamp:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
+      - time.Time
+  JSON:
+    model:
+      - github.com/99designs/gqlgen/graphql.Map
+      - map[string]interface{}
+  Any:
+    model:
+      - github.com/99designs/gqlgen/graphql.Any
+      - interface{}
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+  Int64:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int64
+  # Category:
+  #   fields:
+  #     product:
+  #       resolver: true

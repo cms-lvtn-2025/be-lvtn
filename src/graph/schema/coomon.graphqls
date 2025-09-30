@@ -1,0 +1,43 @@
+scalar Timestamp
+scalar JSON
+scalar Any
+
+enum enumRole {
+  student,
+  teacher
+}
+
+enum enumStatus {
+  pending_approval,
+  approved,
+  in_progress,
+  end_progress,
+  completed,
+  failed,
+  rejected
+}
+
+input login {
+  token: String!
+  semester: String!
+  role: enumRole!
+}
+
+input getTopicInput {
+  semester: String!
+  status: enumStatus
+}
+
+input getCouncilInput {
+  semester: String!
+}
+
+input info {
+  semester: String!
+}
+
+type CommonResponse {
+  success: Boolean!
+  message: String!
+  data: JSON
+}
