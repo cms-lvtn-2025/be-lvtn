@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package file;
+
+option go_package = "./file";
+
+import "google/protobuf/timestamp.proto";
+
+enum FileStatus {
+  FILE_PENDING = 0;
+  APPROVED = 1;
+  REJECTED = 2;
+}
+
+enum TableType {
+  TOPIC = 0;
+  MIDTERM = 1;
+  FINAL = 2;
+  ORDER = 3;
+}
+
+// ============= File =============
+message File {
+  string id = 1;
+  string title = 2;
+  string file = 3;
+  FileStatus status = 4;
+  TableType table = 5;
+  string option = 6;
+  string table_id = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  string created_by = 10;
+  string updated_by = 11;
+}
+
+message CreateFileRequest {
+  string title = 1;
+  string file = 2;
+  FileStatus status = 3;
+  TableType table = 4;
+  string option = 5;
+  string table_id = 6;
+}
+
+message CreateFileResponse {
+  File file = 1;
+}
+
+message GetFileRequest {
+  string id = 1;
+}
+
+message GetFileResponse {
+  File file = 1;
+}
+
+message UpdateFileRequest {
+  string id = 1;
+  string title = 2;
+  string file = 3;
+  FileStatus status = 4;
+  TableType table = 5;
+  string option = 6;
+  string table_id = 7;
+}
+
+message UpdateFileResponse {
+  File file = 1;
+}
+
+message DeleteFileRequest {
+  string id = 1;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+}
+
+message ListFilesRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  FileStatus status = 3;
+  TableType table = 4;
+  string table_id = 5;
+}
+
+message ListFilesResponse {
+  repeated File files = 1;
+  int32 total = 2;
+}
+
+// ============= Service =============
+service FileService {
+  rpc CreateFile(CreateFileRequest) returns (CreateFileResponse);
+  rpc GetFile(GetFileRequest) returns (GetFileResponse);
+  rpc UpdateFile(UpdateFileRequest) returns (UpdateFileResponse);
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse);
+}

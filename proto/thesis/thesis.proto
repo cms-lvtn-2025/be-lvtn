@@ -1,0 +1,344 @@
+syntax = "proto3";
+
+package thesis;
+
+option go_package = "./thesis";
+
+import "google/protobuf/timestamp.proto";
+
+// ============= Enums =============
+enum MidtermStatus {
+  NOT_SUBMITTED = 0;
+  SUBMITTED = 1;
+  GRADED = 2;
+}
+
+enum FinalStatus {
+  PENDING = 0;
+  PASSED = 1;
+  FAILED = 2;
+  COMPLETED = 3;
+}
+
+enum TopicStatus {
+  TOPIC_PENDING = 0;
+  APPROVED = 1;
+  IN_PROGRESS = 2;
+  TOPIC_COMPLETED = 3;
+  REJECTED = 4;
+}
+
+// ============= Midterm =============
+message Midterm {
+  string id = 1;
+  string title = 2;
+  int32 grade = 3;
+  MidtermStatus status = 4;
+  string feedback = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  string created_by = 8;
+  string updated_by = 9;
+}
+
+message CreateMidtermRequest {
+  string title = 1;
+  int32 grade = 2;
+  MidtermStatus status = 3;
+  string feedback = 4;
+}
+
+message CreateMidtermResponse {
+  Midterm midterm = 1;
+}
+
+message GetMidtermRequest {
+  string id = 1;
+}
+
+message GetMidtermResponse {
+  Midterm midterm = 1;
+}
+
+message UpdateMidtermRequest {
+  string id = 1;
+  string title = 2;
+  int32 grade = 3;
+  MidtermStatus status = 4;
+  string feedback = 5;
+}
+
+message UpdateMidtermResponse {
+  Midterm midterm = 1;
+}
+
+message DeleteMidtermRequest {
+  string id = 1;
+}
+
+message DeleteMidtermResponse {
+  bool success = 1;
+}
+
+message ListMidtermsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListMidtermsResponse {
+  repeated Midterm midterms = 1;
+  int32 total = 2;
+}
+
+// ============= Final =============
+message Final {
+  string id = 1;
+  string title = 2;
+  int32 supervisor_grade = 3;
+  int32 reviewer_grade = 4;
+  int32 defense_grade = 5;
+  int32 final_grade = 6;
+  FinalStatus status = 7;
+  string notes = 8;
+  google.protobuf.Timestamp completion_date = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  string created_by = 12;
+  string updated_by = 13;
+}
+
+message CreateFinalRequest {
+  string title = 1;
+  int32 supervisor_grade = 2;
+  int32 reviewer_grade = 3;
+  int32 defense_grade = 4;
+  int32 final_grade = 5;
+  FinalStatus status = 6;
+  string notes = 7;
+  google.protobuf.Timestamp completion_date = 8;
+}
+
+message CreateFinalResponse {
+  Final final = 1;
+}
+
+message GetFinalRequest {
+  string id = 1;
+}
+
+message GetFinalResponse {
+  Final final = 1;
+}
+
+message UpdateFinalRequest {
+  string id = 1;
+  string title = 2;
+  int32 supervisor_grade = 3;
+  int32 reviewer_grade = 4;
+  int32 defense_grade = 5;
+  int32 final_grade = 6;
+  FinalStatus status = 7;
+  string notes = 8;
+  google.protobuf.Timestamp completion_date = 9;
+}
+
+message UpdateFinalResponse {
+  Final final = 1;
+}
+
+message DeleteFinalRequest {
+  string id = 1;
+}
+
+message DeleteFinalResponse {
+  bool success = 1;
+}
+
+message ListFinalsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  FinalStatus status = 3;
+}
+
+message ListFinalsResponse {
+  repeated Final finals = 1;
+  int32 total = 2;
+}
+
+// ============= Enrollment =============
+message Enrollment {
+  string id = 1;
+  string title = 2;
+  string student_code = 3;
+  string midterm_code = 4;
+  string final_code = 5;
+  string grade_code = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+  string created_by = 9;
+  string updated_by = 10;
+}
+
+message CreateEnrollmentRequest {
+  string title = 1;
+  string student_code = 2;
+  string midterm_code = 3;
+  string final_code = 4;
+  string grade_code = 5;
+}
+
+message CreateEnrollmentResponse {
+  Enrollment enrollment = 1;
+}
+
+message GetEnrollmentRequest {
+  string id = 1;
+}
+
+message GetEnrollmentResponse {
+  Enrollment enrollment = 1;
+}
+
+message UpdateEnrollmentRequest {
+  string id = 1;
+  string title = 2;
+  string student_code = 3;
+  string midterm_code = 4;
+  string final_code = 5;
+  string grade_code = 6;
+}
+
+message UpdateEnrollmentResponse {
+  Enrollment enrollment = 1;
+}
+
+message DeleteEnrollmentRequest {
+  string id = 1;
+}
+
+message DeleteEnrollmentResponse {
+  bool success = 1;
+}
+
+message ListEnrollmentsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string student_code = 3;
+}
+
+message ListEnrollmentsResponse {
+  repeated Enrollment enrollments = 1;
+  int32 total = 2;
+}
+
+// ============= Topic =============
+message Topic {
+  string id = 1;
+  string title = 2;
+  string major_code = 3;
+  string enrollment_code = 4;
+  string semester_code = 5;
+  string teacher_supervisor_code = 6;
+  string grade_defences_code = 7;
+  TopicStatus status = 8;
+  google.protobuf.Timestamp time_start = 9;
+  google.protobuf.Timestamp time_end = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  string created_by = 13;
+  string updated_by = 14;
+}
+
+message CreateTopicRequest {
+  string title = 1;
+  string major_code = 2;
+  string enrollment_code = 3;
+  string semester_code = 4;
+  string teacher_supervisor_code = 5;
+  string grade_defences_code = 6;
+  TopicStatus status = 7;
+  google.protobuf.Timestamp time_start = 8;
+  google.protobuf.Timestamp time_end = 9;
+}
+
+message CreateTopicResponse {
+  Topic topic = 1;
+}
+
+message GetTopicRequest {
+  string id = 1;
+}
+
+message GetTopicResponse {
+  Topic topic = 1;
+}
+
+message UpdateTopicRequest {
+  string id = 1;
+  string title = 2;
+  string major_code = 3;
+  string enrollment_code = 4;
+  string semester_code = 5;
+  string teacher_supervisor_code = 6;
+  string grade_defences_code = 7;
+  TopicStatus status = 8;
+  google.protobuf.Timestamp time_start = 9;
+  google.protobuf.Timestamp time_end = 10;
+}
+
+message UpdateTopicResponse {
+  Topic topic = 1;
+}
+
+message DeleteTopicRequest {
+  string id = 1;
+}
+
+message DeleteTopicResponse {
+  bool success = 1;
+}
+
+message ListTopicsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string major_code = 3;
+  string semester_code = 4;
+  string teacher_supervisor_code = 5;
+  TopicStatus status = 6;
+}
+
+message ListTopicsResponse {
+  repeated Topic topics = 1;
+  int32 total = 2;
+}
+
+// ============= Service =============
+service ThesisService {
+  // Midterm
+  rpc CreateMidterm(CreateMidtermRequest) returns (CreateMidtermResponse);
+  rpc GetMidterm(GetMidtermRequest) returns (GetMidtermResponse);
+  rpc UpdateMidterm(UpdateMidtermRequest) returns (UpdateMidtermResponse);
+  rpc DeleteMidterm(DeleteMidtermRequest) returns (DeleteMidtermResponse);
+  rpc ListMidterms(ListMidtermsRequest) returns (ListMidtermsResponse);
+
+  // Final
+  rpc CreateFinal(CreateFinalRequest) returns (CreateFinalResponse);
+  rpc GetFinal(GetFinalRequest) returns (GetFinalResponse);
+  rpc UpdateFinal(UpdateFinalRequest) returns (UpdateFinalResponse);
+  rpc DeleteFinal(DeleteFinalRequest) returns (DeleteFinalResponse);
+  rpc ListFinals(ListFinalsRequest) returns (ListFinalsResponse);
+
+  // Enrollment
+  rpc CreateEnrollment(CreateEnrollmentRequest) returns (CreateEnrollmentResponse);
+  rpc GetEnrollment(GetEnrollmentRequest) returns (GetEnrollmentResponse);
+  rpc UpdateEnrollment(UpdateEnrollmentRequest) returns (UpdateEnrollmentResponse);
+  rpc DeleteEnrollment(DeleteEnrollmentRequest) returns (DeleteEnrollmentResponse);
+  rpc ListEnrollments(ListEnrollmentsRequest) returns (ListEnrollmentsResponse);
+
+  // Topic
+  rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse);
+  rpc GetTopic(GetTopicRequest) returns (GetTopicResponse);
+  rpc UpdateTopic(UpdateTopicRequest) returns (UpdateTopicResponse);
+  rpc DeleteTopic(DeleteTopicRequest) returns (DeleteTopicResponse);
+  rpc ListTopics(ListTopicsRequest) returns (ListTopicsResponse);
+}

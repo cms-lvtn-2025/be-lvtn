@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: thesis_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: thesis_management
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - thesis_network
+
+  academic:
+    build:
+      context: .
+      dockerfile: docker/academic.Dockerfile
+    container_name: academic_service
+    ports:
+      - "50051:50051"
+    environment:
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - thesis_network
+
+  council:
+    build:
+      context: .
+      dockerfile: docker/council.Dockerfile
+    container_name: council_service
+    ports:
+      - "50052:50052"
+    environment:
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - thesis_network
+
+  file:
+    build:
+      context: .
+      dockerfile: docker/file.Dockerfile
+    container_name: file_service
+    ports:
+      - "50053:50053"
+    environment:
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - thesis_network
+
+  role:
+    build:
+      context: .
+      dockerfile: docker/role.Dockerfile
+    container_name: role_service
+    ports:
+      - "50054:50054"
+    environment:
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - thesis_network
+
+  thesis:
+    build:
+      context: .
+      dockerfile: docker/thesis.Dockerfile
+    container_name: thesis_service
+    ports:
+      - "50055:50055"
+    environment:
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - thesis_network
+
+  user:
+    build:
+      context: .
+      dockerfile: docker/user.Dockerfile
+    container_name: user_service
+    ports:
+      - "50056:50056"
+    environment:
+      - DB_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - thesis_network
+
+networks:
+  thesis_network:
+    driver: bridge
+
+volumes:
+  mysql_data:

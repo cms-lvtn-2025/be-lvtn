@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./user";
+
+import "google/protobuf/timestamp.proto";
+
+enum Gender {
+  MALE = 0;
+  FEMALE = 1;
+  OTHER = 2;
+}
+
+// ============= Student =============
+message Student {
+  string id = 1;
+  string email = 2;
+  string phone = 3;
+  string username = 4;
+  Gender gender = 5;
+  string major_code = 6;
+  string class_code = 7;
+  string semester_code = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+  string created_by = 11;
+  string updated_by = 12;
+}
+
+message CreateStudentRequest {
+  string email = 1;
+  string phone = 2;
+  string username = 3;
+  Gender gender = 4;
+  string major_code = 5;
+  string class_code = 6;
+  string semester_code = 7;
+}
+
+message CreateStudentResponse {
+  Student student = 1;
+}
+
+message GetStudentRequest {
+  string id = 1;
+}
+
+message GetStudentResponse {
+  Student student = 1;
+}
+
+message UpdateStudentRequest {
+  string id = 1;
+  string email = 2;
+  string phone = 3;
+  string username = 4;
+  Gender gender = 5;
+  string major_code = 6;
+  string class_code = 7;
+  string semester_code = 8;
+}
+
+message UpdateStudentResponse {
+  Student student = 1;
+}
+
+message DeleteStudentRequest {
+  string id = 1;
+}
+
+message DeleteStudentResponse {
+  bool success = 1;
+}
+
+message ListStudentsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string major_code = 3;
+  string class_code = 4;
+  string semester_code = 5;
+}
+
+message ListStudentsResponse {
+  repeated Student students = 1;
+  int32 total = 2;
+}
+
+// ============= Teacher =============
+message Teacher {
+  string id = 1;
+  string email = 2;
+  string username = 3;
+  Gender gender = 4;
+  string major_code = 5;
+  string semester_code = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+  string created_by = 9;
+  string updated_by = 10;
+}
+
+message CreateTeacherRequest {
+  string email = 1;
+  string username = 2;
+  Gender gender = 3;
+  string major_code = 4;
+  string semester_code = 5;
+}
+
+message CreateTeacherResponse {
+  Teacher teacher = 1;
+}
+
+message GetTeacherRequest {
+  string id = 1;
+}
+
+message GetTeacherResponse {
+  Teacher teacher = 1;
+}
+
+message UpdateTeacherRequest {
+  string id = 1;
+  string email = 2;
+  string username = 3;
+  Gender gender = 4;
+  string major_code = 5;
+  string semester_code = 6;
+}
+
+message UpdateTeacherResponse {
+  Teacher teacher = 1;
+}
+
+message DeleteTeacherRequest {
+  string id = 1;
+}
+
+message DeleteTeacherResponse {
+  bool success = 1;
+}
+
+message ListTeachersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string major_code = 3;
+  string semester_code = 4;
+}
+
+message ListTeachersResponse {
+  repeated Teacher teachers = 1;
+  int32 total = 2;
+}
+
+// ============= Service =============
+service UserService {
+  // Student
+  rpc CreateStudent(CreateStudentRequest) returns (CreateStudentResponse);
+  rpc GetStudent(GetStudentRequest) returns (GetStudentResponse);
+  rpc UpdateStudent(UpdateStudentRequest) returns (UpdateStudentResponse);
+  rpc DeleteStudent(DeleteStudentRequest) returns (DeleteStudentResponse);
+  rpc ListStudents(ListStudentsRequest) returns (ListStudentsResponse);
+
+  // Teacher
+  rpc CreateTeacher(CreateTeacherRequest) returns (CreateTeacherResponse);
+  rpc GetTeacher(GetTeacherRequest) returns (GetTeacherResponse);
+  rpc UpdateTeacher(UpdateTeacherRequest) returns (UpdateTeacherResponse);
+  rpc DeleteTeacher(DeleteTeacherRequest) returns (DeleteTeacherResponse);
+  rpc ListTeachers(ListTeachersRequest) returns (ListTeachersResponse);
+}
