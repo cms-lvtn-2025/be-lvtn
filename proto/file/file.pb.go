@@ -12,6 +12,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
+	common "thaily/proto/common"
 	unsafe "unsafe"
 )
 
@@ -256,6 +257,7 @@ type CreateFileRequest struct {
 	Table         TableType              `protobuf:"varint,4,opt,name=table,proto3,enum=file.TableType" json:"table,omitempty"`
 	Option        string                 `protobuf:"bytes,5,opt,name=option,proto3" json:"option,omitempty"`
 	TableId       string                 `protobuf:"bytes,6,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,7,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -328,6 +330,13 @@ func (x *CreateFileRequest) GetOption() string {
 func (x *CreateFileRequest) GetTableId() string {
 	if x != nil {
 		return x.TableId
+	}
+	return ""
+}
+
+func (x *CreateFileRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -468,11 +477,12 @@ type UpdateFileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	File          string                 `protobuf:"bytes,3,opt,name=file,proto3" json:"file,omitempty"`
-	Status        FileStatus             `protobuf:"varint,4,opt,name=status,proto3,enum=file.FileStatus" json:"status,omitempty"`
-	Table         TableType              `protobuf:"varint,5,opt,name=table,proto3,enum=file.TableType" json:"table,omitempty"`
-	Option        string                 `protobuf:"bytes,6,opt,name=option,proto3" json:"option,omitempty"`
-	TableId       string                 `protobuf:"bytes,7,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
+	File          *string                `protobuf:"bytes,3,opt,name=file,proto3,oneof" json:"file,omitempty"`
+	Status        *FileStatus            `protobuf:"varint,4,opt,name=status,proto3,enum=file.FileStatus,oneof" json:"status,omitempty"`
+	Table         *TableType             `protobuf:"varint,5,opt,name=table,proto3,enum=file.TableType,oneof" json:"table,omitempty"`
+	Option        *string                `protobuf:"bytes,6,opt,name=option,proto3,oneof" json:"option,omitempty"`
+	TableId       *string                `protobuf:"bytes,7,opt,name=table_id,json=tableId,proto3,oneof" json:"table_id,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,8,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -522,36 +532,43 @@ func (x *UpdateFileRequest) GetTitle() string {
 }
 
 func (x *UpdateFileRequest) GetFile() string {
-	if x != nil {
-		return x.File
+	if x != nil && x.File != nil {
+		return *x.File
 	}
 	return ""
 }
 
 func (x *UpdateFileRequest) GetStatus() FileStatus {
-	if x != nil {
-		return x.Status
+	if x != nil && x.Status != nil {
+		return *x.Status
 	}
 	return FileStatus_FILE_PENDING
 }
 
 func (x *UpdateFileRequest) GetTable() TableType {
-	if x != nil {
-		return x.Table
+	if x != nil && x.Table != nil {
+		return *x.Table
 	}
 	return TableType_TOPIC
 }
 
 func (x *UpdateFileRequest) GetOption() string {
-	if x != nil {
-		return x.Option
+	if x != nil && x.Option != nil {
+		return *x.Option
 	}
 	return ""
 }
 
 func (x *UpdateFileRequest) GetTableId() string {
+	if x != nil && x.TableId != nil {
+		return *x.TableId
+	}
+	return ""
+}
+
+func (x *UpdateFileRequest) GetUpdatedBy() string {
 	if x != nil {
-		return x.TableId
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -690,11 +707,7 @@ func (x *DeleteFileResponse) GetSuccess() bool {
 
 type ListFilesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	Status        FileStatus             `protobuf:"varint,3,opt,name=status,proto3,enum=file.FileStatus" json:"status,omitempty"`
-	Table         TableType              `protobuf:"varint,4,opt,name=table,proto3,enum=file.TableType" json:"table,omitempty"`
-	TableId       string                 `protobuf:"bytes,5,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -729,45 +742,19 @@ func (*ListFilesRequest) Descriptor() ([]byte, []int) {
 	return file_proto_file_file_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ListFilesRequest) GetPage() int32 {
+func (x *ListFilesRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListFilesRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListFilesRequest) GetStatus() FileStatus {
-	if x != nil {
-		return x.Status
-	}
-	return FileStatus_FILE_PENDING
-}
-
-func (x *ListFilesRequest) GetTable() TableType {
-	if x != nil {
-		return x.Table
-	}
-	return TableType_TOPIC
-}
-
-func (x *ListFilesRequest) GetTableId() string {
-	if x != nil {
-		return x.TableId
-	}
-	return ""
+	return nil
 }
 
 type ListFilesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Files         []*File                `protobuf:"bytes,1,rep,name=files,proto3" json:"files,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -816,11 +803,25 @@ func (x *ListFilesResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListFilesResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListFilesResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 var File_proto_file_file_proto protoreflect.FileDescriptor
 
 const file_proto_file_file_proto_rawDesc = "" +
 	"\n" +
-	"\x15proto/file/file.proto\x12\x04file\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf8\x02\n" +
+	"\x15proto/file/file.proto\x12\x04file\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\xf8\x02\n" +
 	"\x04File\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
@@ -837,14 +838,16 @@ const file_proto_file_file_proto_rawDesc = "" +
 	"created_by\x18\n" +
 	" \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\v \x01(\tR\tupdatedBy\"\xc1\x01\n" +
+	"updated_by\x18\v \x01(\tR\tupdatedBy\"\xe0\x01\n" +
 	"\x11CreateFileRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x12\n" +
 	"\x04file\x18\x02 \x01(\tR\x04file\x12(\n" +
 	"\x06status\x18\x03 \x01(\x0e2\x10.file.FileStatusR\x06status\x12%\n" +
 	"\x05table\x18\x04 \x01(\x0e2\x0f.file.TableTypeR\x05table\x12\x16\n" +
 	"\x06option\x18\x05 \x01(\tR\x06option\x12\x19\n" +
-	"\btable_id\x18\x06 \x01(\tR\atableId\"4\n" +
+	"\btable_id\x18\x06 \x01(\tR\atableId\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\a \x01(\tR\tcreatedBy\"4\n" +
 	"\x12CreateFileResponse\x12\x1e\n" +
 	"\x04file\x18\x01 \x01(\v2\n" +
 	".file.FileR\x04file\" \n" +
@@ -852,32 +855,37 @@ const file_proto_file_file_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x0fGetFileResponse\x12\x1e\n" +
 	"\x04file\x18\x01 \x01(\v2\n" +
-	".file.FileR\x04file\"\xd1\x01\n" +
+	".file.FileR\x04file\"\xbf\x02\n" +
 	"\x11UpdateFileRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
-	"\x04file\x18\x03 \x01(\tR\x04file\x12(\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x10.file.FileStatusR\x06status\x12%\n" +
-	"\x05table\x18\x05 \x01(\x0e2\x0f.file.TableTypeR\x05table\x12\x16\n" +
-	"\x06option\x18\x06 \x01(\tR\x06option\x12\x19\n" +
-	"\btable_id\x18\a \x01(\tR\atableId\"4\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x17\n" +
+	"\x04file\x18\x03 \x01(\tH\x00R\x04file\x88\x01\x01\x12-\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x10.file.FileStatusH\x01R\x06status\x88\x01\x01\x12*\n" +
+	"\x05table\x18\x05 \x01(\x0e2\x0f.file.TableTypeH\x02R\x05table\x88\x01\x01\x12\x1b\n" +
+	"\x06option\x18\x06 \x01(\tH\x03R\x06option\x88\x01\x01\x12\x1e\n" +
+	"\btable_id\x18\a \x01(\tH\x04R\atableId\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\b \x01(\tR\tupdatedByB\a\n" +
+	"\x05_fileB\t\n" +
+	"\a_statusB\b\n" +
+	"\x06_tableB\t\n" +
+	"\a_optionB\v\n" +
+	"\t_table_id\"4\n" +
 	"\x12UpdateFileResponse\x12\x1e\n" +
 	"\x04file\x18\x01 \x01(\v2\n" +
 	".file.FileR\x04file\"#\n" +
 	"\x11DeleteFileRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\".\n" +
 	"\x12DeleteFileResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xaf\x01\n" +
-	"\x10ListFilesRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12(\n" +
-	"\x06status\x18\x03 \x01(\x0e2\x10.file.FileStatusR\x06status\x12%\n" +
-	"\x05table\x18\x04 \x01(\x0e2\x0f.file.TableTypeR\x05table\x12\x19\n" +
-	"\btable_id\x18\x05 \x01(\tR\atableId\"K\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"A\n" +
+	"\x10ListFilesRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"|\n" +
 	"\x11ListFilesResponse\x12 \n" +
 	"\x05files\x18\x01 \x03(\v2\n" +
 	".file.FileR\x05files\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total*:\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize*:\n" +
 	"\n" +
 	"FileStatus\x12\x10\n" +
 	"\fFILE_PENDING\x10\x00\x12\f\n" +
@@ -927,6 +935,7 @@ var file_proto_file_file_proto_goTypes = []any{
 	(*ListFilesRequest)(nil),      // 11: file.ListFilesRequest
 	(*ListFilesResponse)(nil),     // 12: file.ListFilesResponse
 	(*timestamppb.Timestamp)(nil), // 13: google.protobuf.Timestamp
+	(*common.SearchRequest)(nil),  // 14: common.SearchRequest
 }
 var file_proto_file_file_proto_depIdxs = []int32{
 	0,  // 0: file.File.status:type_name -> file.FileStatus
@@ -940,24 +949,23 @@ var file_proto_file_file_proto_depIdxs = []int32{
 	0,  // 8: file.UpdateFileRequest.status:type_name -> file.FileStatus
 	1,  // 9: file.UpdateFileRequest.table:type_name -> file.TableType
 	2,  // 10: file.UpdateFileResponse.file:type_name -> file.File
-	0,  // 11: file.ListFilesRequest.status:type_name -> file.FileStatus
-	1,  // 12: file.ListFilesRequest.table:type_name -> file.TableType
-	2,  // 13: file.ListFilesResponse.files:type_name -> file.File
-	3,  // 14: file.FileService.CreateFile:input_type -> file.CreateFileRequest
-	5,  // 15: file.FileService.GetFile:input_type -> file.GetFileRequest
-	7,  // 16: file.FileService.UpdateFile:input_type -> file.UpdateFileRequest
-	9,  // 17: file.FileService.DeleteFile:input_type -> file.DeleteFileRequest
-	11, // 18: file.FileService.ListFiles:input_type -> file.ListFilesRequest
-	4,  // 19: file.FileService.CreateFile:output_type -> file.CreateFileResponse
-	6,  // 20: file.FileService.GetFile:output_type -> file.GetFileResponse
-	8,  // 21: file.FileService.UpdateFile:output_type -> file.UpdateFileResponse
-	10, // 22: file.FileService.DeleteFile:output_type -> file.DeleteFileResponse
-	12, // 23: file.FileService.ListFiles:output_type -> file.ListFilesResponse
-	19, // [19:24] is the sub-list for method output_type
-	14, // [14:19] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	14, // 11: file.ListFilesRequest.search:type_name -> common.SearchRequest
+	2,  // 12: file.ListFilesResponse.files:type_name -> file.File
+	3,  // 13: file.FileService.CreateFile:input_type -> file.CreateFileRequest
+	5,  // 14: file.FileService.GetFile:input_type -> file.GetFileRequest
+	7,  // 15: file.FileService.UpdateFile:input_type -> file.UpdateFileRequest
+	9,  // 16: file.FileService.DeleteFile:input_type -> file.DeleteFileRequest
+	11, // 17: file.FileService.ListFiles:input_type -> file.ListFilesRequest
+	4,  // 18: file.FileService.CreateFile:output_type -> file.CreateFileResponse
+	6,  // 19: file.FileService.GetFile:output_type -> file.GetFileResponse
+	8,  // 20: file.FileService.UpdateFile:output_type -> file.UpdateFileResponse
+	10, // 21: file.FileService.DeleteFile:output_type -> file.DeleteFileResponse
+	12, // 22: file.FileService.ListFiles:output_type -> file.ListFilesResponse
+	18, // [18:23] is the sub-list for method output_type
+	13, // [13:18] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_proto_file_file_proto_init() }
@@ -965,6 +973,7 @@ func file_proto_file_file_proto_init() {
 	if File_proto_file_file_proto != nil {
 		return
 	}
+	file_proto_file_file_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

@@ -12,6 +12,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
+	common "thaily/proto/common"
 	unsafe "unsafe"
 )
 
@@ -181,6 +182,7 @@ type CreateCouncilRequest struct {
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	MajorCode     string                 `protobuf:"bytes,2,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
 	SemesterCode  string                 `protobuf:"bytes,3,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,4,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -232,6 +234,13 @@ func (x *CreateCouncilRequest) GetMajorCode() string {
 func (x *CreateCouncilRequest) GetSemesterCode() string {
 	if x != nil {
 		return x.SemesterCode
+	}
+	return ""
+}
+
+func (x *CreateCouncilRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -372,8 +381,9 @@ type UpdateCouncilRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	MajorCode     string                 `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	MajorCode     *string                `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3,oneof" json:"major_code,omitempty"`
+	SemesterCode  *string                `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,5,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -423,15 +433,22 @@ func (x *UpdateCouncilRequest) GetTitle() string {
 }
 
 func (x *UpdateCouncilRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
+	if x != nil && x.MajorCode != nil {
+		return *x.MajorCode
 	}
 	return ""
 }
 
 func (x *UpdateCouncilRequest) GetSemesterCode() string {
+	if x != nil && x.SemesterCode != nil {
+		return *x.SemesterCode
+	}
+	return ""
+}
+
+func (x *UpdateCouncilRequest) GetUpdatedBy() string {
 	if x != nil {
-		return x.SemesterCode
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -570,10 +587,7 @@ func (x *DeleteCouncilResponse) GetSuccess() bool {
 
 type ListCouncilsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	MajorCode     string                 `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -608,38 +622,19 @@ func (*ListCouncilsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_council_council_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ListCouncilsRequest) GetPage() int32 {
+func (x *ListCouncilsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListCouncilsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListCouncilsRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
-	}
-	return ""
-}
-
-func (x *ListCouncilsRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
-	}
-	return ""
+	return nil
 }
 
 type ListCouncilsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Councils      []*Council             `protobuf:"bytes,1,rep,name=councils,proto3" json:"councils,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -688,6 +683,20 @@ func (x *ListCouncilsResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListCouncilsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListCouncilsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 // ============= Defence =============
 type Defence struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -696,6 +705,10 @@ type Defence struct {
 	CouncilCode   string                 `protobuf:"bytes,3,opt,name=council_code,json=councilCode,proto3" json:"council_code,omitempty"`
 	TeacherCode   string                 `protobuf:"bytes,4,opt,name=teacher_code,json=teacherCode,proto3" json:"teacher_code,omitempty"`
 	Position      DefencePosition        `protobuf:"varint,5,opt,name=position,proto3,enum=council.DefencePosition" json:"position,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,9,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -765,12 +778,41 @@ func (x *Defence) GetPosition() DefencePosition {
 	return DefencePosition_PRESIDENT
 }
 
+func (x *Defence) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Defence) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Defence) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *Defence) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
+}
+
 type CreateDefenceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	CouncilCode   string                 `protobuf:"bytes,2,opt,name=council_code,json=councilCode,proto3" json:"council_code,omitempty"`
 	TeacherCode   string                 `protobuf:"bytes,3,opt,name=teacher_code,json=teacherCode,proto3" json:"teacher_code,omitempty"`
 	Position      DefencePosition        `protobuf:"varint,4,opt,name=position,proto3,enum=council.DefencePosition" json:"position,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -831,6 +873,13 @@ func (x *CreateDefenceRequest) GetPosition() DefencePosition {
 		return x.Position
 	}
 	return DefencePosition_PRESIDENT
+}
+
+func (x *CreateDefenceRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
 }
 
 type CreateDefenceResponse struct {
@@ -969,9 +1018,10 @@ type UpdateDefenceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	CouncilCode   string                 `protobuf:"bytes,3,opt,name=council_code,json=councilCode,proto3" json:"council_code,omitempty"`
-	TeacherCode   string                 `protobuf:"bytes,4,opt,name=teacher_code,json=teacherCode,proto3" json:"teacher_code,omitempty"`
-	Position      DefencePosition        `protobuf:"varint,5,opt,name=position,proto3,enum=council.DefencePosition" json:"position,omitempty"`
+	CouncilCode   *string                `protobuf:"bytes,3,opt,name=council_code,json=councilCode,proto3,oneof" json:"council_code,omitempty"`
+	TeacherCode   *string                `protobuf:"bytes,4,opt,name=teacher_code,json=teacherCode,proto3,oneof" json:"teacher_code,omitempty"`
+	Position      *DefencePosition       `protobuf:"varint,5,opt,name=position,proto3,enum=council.DefencePosition,oneof" json:"position,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,6,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1021,24 +1071,31 @@ func (x *UpdateDefenceRequest) GetTitle() string {
 }
 
 func (x *UpdateDefenceRequest) GetCouncilCode() string {
-	if x != nil {
-		return x.CouncilCode
+	if x != nil && x.CouncilCode != nil {
+		return *x.CouncilCode
 	}
 	return ""
 }
 
 func (x *UpdateDefenceRequest) GetTeacherCode() string {
-	if x != nil {
-		return x.TeacherCode
+	if x != nil && x.TeacherCode != nil {
+		return *x.TeacherCode
 	}
 	return ""
 }
 
 func (x *UpdateDefenceRequest) GetPosition() DefencePosition {
-	if x != nil {
-		return x.Position
+	if x != nil && x.Position != nil {
+		return *x.Position
 	}
 	return DefencePosition_PRESIDENT
+}
+
+func (x *UpdateDefenceRequest) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
 }
 
 type UpdateDefenceResponse struct {
@@ -1175,10 +1232,7 @@ func (x *DeleteDefenceResponse) GetSuccess() bool {
 
 type ListDefencesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	CouncilCode   string                 `protobuf:"bytes,3,opt,name=council_code,json=councilCode,proto3" json:"council_code,omitempty"`
-	TeacherCode   string                 `protobuf:"bytes,4,opt,name=teacher_code,json=teacherCode,proto3" json:"teacher_code,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1213,38 +1267,19 @@ func (*ListDefencesRequest) Descriptor() ([]byte, []int) {
 	return file_proto_council_council_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *ListDefencesRequest) GetPage() int32 {
+func (x *ListDefencesRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListDefencesRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListDefencesRequest) GetCouncilCode() string {
-	if x != nil {
-		return x.CouncilCode
-	}
-	return ""
-}
-
-func (x *ListDefencesRequest) GetTeacherCode() string {
-	if x != nil {
-		return x.TeacherCode
-	}
-	return ""
+	return nil
 }
 
 type ListDefencesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Defences      []*Defence             `protobuf:"bytes,1,rep,name=defences,proto3" json:"defences,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1293,6 +1328,20 @@ func (x *ListDefencesResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListDefencesResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListDefencesResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 // ============= Grade_defences =============
 type GradeDefences struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1301,6 +1350,8 @@ type GradeDefences struct {
 	Secretary     int32                  `protobuf:"varint,3,opt,name=secretary,proto3" json:"secretary,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1370,10 +1421,25 @@ func (x *GradeDefences) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *GradeDefences) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *GradeDefences) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
+}
+
 type CreateGradeDefencesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Council       int32                  `protobuf:"varint,1,opt,name=council,proto3" json:"council,omitempty"`
 	Secretary     int32                  `protobuf:"varint,2,opt,name=secretary,proto3" json:"secretary,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,3,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1420,6 +1486,13 @@ func (x *CreateGradeDefencesRequest) GetSecretary() int32 {
 		return x.Secretary
 	}
 	return 0
+}
+
+func (x *CreateGradeDefencesRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
 }
 
 type CreateGradeDefencesResponse struct {
@@ -1557,8 +1630,9 @@ func (x *GetGradeDefencesResponse) GetGradeDefences() *GradeDefences {
 type UpdateGradeDefencesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Council       int32                  `protobuf:"varint,2,opt,name=council,proto3" json:"council,omitempty"`
-	Secretary     int32                  `protobuf:"varint,3,opt,name=secretary,proto3" json:"secretary,omitempty"`
+	Council       *int32                 `protobuf:"varint,2,opt,name=council,proto3,oneof" json:"council,omitempty"`
+	Secretary     *int32                 `protobuf:"varint,3,opt,name=secretary,proto3,oneof" json:"secretary,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,4,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1601,17 +1675,24 @@ func (x *UpdateGradeDefencesRequest) GetId() string {
 }
 
 func (x *UpdateGradeDefencesRequest) GetCouncil() int32 {
-	if x != nil {
-		return x.Council
+	if x != nil && x.Council != nil {
+		return *x.Council
 	}
 	return 0
 }
 
 func (x *UpdateGradeDefencesRequest) GetSecretary() int32 {
-	if x != nil {
-		return x.Secretary
+	if x != nil && x.Secretary != nil {
+		return *x.Secretary
 	}
 	return 0
+}
+
+func (x *UpdateGradeDefencesRequest) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
 }
 
 type UpdateGradeDefencesResponse struct {
@@ -1748,8 +1829,7 @@ func (x *DeleteGradeDefencesResponse) GetSuccess() bool {
 
 type ListGradeDefencesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1784,24 +1864,19 @@ func (*ListGradeDefencesRequest) Descriptor() ([]byte, []int) {
 	return file_proto_council_council_proto_rawDescGZIP(), []int{31}
 }
 
-func (x *ListGradeDefencesRequest) GetPage() int32 {
+func (x *ListGradeDefencesRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListGradeDefencesRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
+	return nil
 }
 
 type ListGradeDefencesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	GradeDefences []*GradeDefences       `protobuf:"bytes,1,rep,name=grade_defences,json=gradeDefences,proto3" json:"grade_defences,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1850,6 +1925,20 @@ func (x *ListGradeDefencesResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListGradeDefencesResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListGradeDefencesResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 // ============= CouncilsSchedule =============
 type CouncilsSchedule struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1860,7 +1949,9 @@ type CouncilsSchedule struct {
 	TimeEnd       *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=time_end,json=timeEnd,proto3" json:"time_end,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	Status        bool                   `protobuf:"varint,8,opt,name=status,proto3" json:"status,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,9,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Status        bool                   `protobuf:"varint,10,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1944,6 +2035,20 @@ func (x *CouncilsSchedule) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *CouncilsSchedule) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *CouncilsSchedule) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
+}
+
 func (x *CouncilsSchedule) GetStatus() bool {
 	if x != nil {
 		return x.Status
@@ -1957,7 +2062,8 @@ type CreateCouncilsScheduleRequest struct {
 	TopicCode     string                 `protobuf:"bytes,2,opt,name=topic_code,json=topicCode,proto3" json:"topic_code,omitempty"`
 	TimeStart     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=time_start,json=timeStart,proto3" json:"time_start,omitempty"`
 	TimeEnd       *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=time_end,json=timeEnd,proto3" json:"time_end,omitempty"`
-	Status        bool                   `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	Status        bool                   `protobuf:"varint,6,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2018,6 +2124,13 @@ func (x *CreateCouncilsScheduleRequest) GetTimeEnd() *timestamppb.Timestamp {
 		return x.TimeEnd
 	}
 	return nil
+}
+
+func (x *CreateCouncilsScheduleRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
 }
 
 func (x *CreateCouncilsScheduleRequest) GetStatus() bool {
@@ -2162,11 +2275,12 @@ func (x *GetCouncilsScheduleResponse) GetCouncilsSchedule() *CouncilsSchedule {
 type UpdateCouncilsScheduleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	CouncilsCode  string                 `protobuf:"bytes,2,opt,name=councils_code,json=councilsCode,proto3" json:"councils_code,omitempty"`
-	TopicCode     string                 `protobuf:"bytes,3,opt,name=topic_code,json=topicCode,proto3" json:"topic_code,omitempty"`
-	TimeStart     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=time_start,json=timeStart,proto3" json:"time_start,omitempty"`
-	TimeEnd       *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=time_end,json=timeEnd,proto3" json:"time_end,omitempty"`
-	Status        bool                   `protobuf:"varint,6,opt,name=status,proto3" json:"status,omitempty"`
+	CouncilsCode  *string                `protobuf:"bytes,2,opt,name=councils_code,json=councilsCode,proto3,oneof" json:"councils_code,omitempty"`
+	TopicCode     *string                `protobuf:"bytes,3,opt,name=topic_code,json=topicCode,proto3,oneof" json:"topic_code,omitempty"`
+	TimeStart     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=time_start,json=timeStart,proto3,oneof" json:"time_start,omitempty"`
+	TimeEnd       *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=time_end,json=timeEnd,proto3,oneof" json:"time_end,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,6,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Status        *bool                  `protobuf:"varint,7,opt,name=status,proto3,oneof" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2209,15 +2323,15 @@ func (x *UpdateCouncilsScheduleRequest) GetId() string {
 }
 
 func (x *UpdateCouncilsScheduleRequest) GetCouncilsCode() string {
-	if x != nil {
-		return x.CouncilsCode
+	if x != nil && x.CouncilsCode != nil {
+		return *x.CouncilsCode
 	}
 	return ""
 }
 
 func (x *UpdateCouncilsScheduleRequest) GetTopicCode() string {
-	if x != nil {
-		return x.TopicCode
+	if x != nil && x.TopicCode != nil {
+		return *x.TopicCode
 	}
 	return ""
 }
@@ -2236,9 +2350,16 @@ func (x *UpdateCouncilsScheduleRequest) GetTimeEnd() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *UpdateCouncilsScheduleRequest) GetStatus() bool {
+func (x *UpdateCouncilsScheduleRequest) GetUpdatedBy() string {
 	if x != nil {
-		return x.Status
+		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *UpdateCouncilsScheduleRequest) GetStatus() bool {
+	if x != nil && x.Status != nil {
+		return *x.Status
 	}
 	return false
 }
@@ -2377,11 +2498,7 @@ func (x *DeleteCouncilsScheduleResponse) GetSuccess() bool {
 
 type ListCouncilsSchedulesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	CouncilsCode  string                 `protobuf:"bytes,3,opt,name=councils_code,json=councilsCode,proto3" json:"councils_code,omitempty"`
-	TopicCode     string                 `protobuf:"bytes,4,opt,name=topic_code,json=topicCode,proto3" json:"topic_code,omitempty"`
-	Status        bool                   `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2416,45 +2533,19 @@ func (*ListCouncilsSchedulesRequest) Descriptor() ([]byte, []int) {
 	return file_proto_council_council_proto_rawDescGZIP(), []int{42}
 }
 
-func (x *ListCouncilsSchedulesRequest) GetPage() int32 {
+func (x *ListCouncilsSchedulesRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListCouncilsSchedulesRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListCouncilsSchedulesRequest) GetCouncilsCode() string {
-	if x != nil {
-		return x.CouncilsCode
-	}
-	return ""
-}
-
-func (x *ListCouncilsSchedulesRequest) GetTopicCode() string {
-	if x != nil {
-		return x.TopicCode
-	}
-	return ""
-}
-
-func (x *ListCouncilsSchedulesRequest) GetStatus() bool {
-	if x != nil {
-		return x.Status
-	}
-	return false
+	return nil
 }
 
 type ListCouncilsSchedulesResponse struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	CouncilsSchedules []*CouncilsSchedule    `protobuf:"bytes,1,rep,name=councils_schedules,json=councilsSchedules,proto3" json:"councils_schedules,omitempty"`
 	Total             int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page              int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize          int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -2503,11 +2594,25 @@ func (x *ListCouncilsSchedulesResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListCouncilsSchedulesResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListCouncilsSchedulesResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 var File_proto_council_council_proto protoreflect.FileDescriptor
 
 const file_proto_council_council_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/council/council.proto\x12\acouncil\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\x02\n" +
+	"\x1bproto/council/council.proto\x12\acouncil\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\xa7\x02\n" +
 	"\aCouncil\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1d\n" +
@@ -2521,76 +2626,94 @@ const file_proto_council_council_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\a \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\b \x01(\tR\tupdatedBy\"p\n" +
+	"updated_by\x18\b \x01(\tR\tupdatedBy\"\x8f\x01\n" +
 	"\x14CreateCouncilRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1d\n" +
 	"\n" +
 	"major_code\x18\x02 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x03 \x01(\tR\fsemesterCode\"C\n" +
+	"\rsemester_code\x18\x03 \x01(\tR\fsemesterCode\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x04 \x01(\tR\tcreatedBy\"C\n" +
 	"\x15CreateCouncilResponse\x12*\n" +
 	"\acouncil\x18\x01 \x01(\v2\x10.council.CouncilR\acouncil\"#\n" +
 	"\x11GetCouncilRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"@\n" +
 	"\x12GetCouncilResponse\x12*\n" +
-	"\acouncil\x18\x01 \x01(\v2\x10.council.CouncilR\acouncil\"\x80\x01\n" +
+	"\acouncil\x18\x01 \x01(\v2\x10.council.CouncilR\acouncil\"\xca\x01\n" +
 	"\x14UpdateCouncilRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1d\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\"\n" +
 	"\n" +
-	"major_code\x18\x03 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\"C\n" +
+	"major_code\x18\x03 \x01(\tH\x00R\tmajorCode\x88\x01\x01\x12(\n" +
+	"\rsemester_code\x18\x04 \x01(\tH\x01R\fsemesterCode\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x05 \x01(\tR\tupdatedByB\r\n" +
+	"\v_major_codeB\x10\n" +
+	"\x0e_semester_code\"C\n" +
 	"\x15UpdateCouncilResponse\x12*\n" +
 	"\acouncil\x18\x01 \x01(\v2\x10.council.CouncilR\acouncil\"&\n" +
 	"\x14DeleteCouncilRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x15DeleteCouncilResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x8a\x01\n" +
-	"\x13ListCouncilsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"major_code\x18\x03 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\"Z\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"D\n" +
+	"\x13ListCouncilsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x8b\x01\n" +
 	"\x14ListCouncilsResponse\x12,\n" +
 	"\bcouncils\x18\x01 \x03(\v2\x10.council.CouncilR\bcouncils\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xab\x01\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xdf\x02\n" +
 	"\aDefence\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
 	"\fcouncil_code\x18\x03 \x01(\tR\vcouncilCode\x12!\n" +
 	"\fteacher_code\x18\x04 \x01(\tR\vteacherCode\x124\n" +
-	"\bposition\x18\x05 \x01(\x0e2\x18.council.DefencePositionR\bposition\"\xa8\x01\n" +
+	"\bposition\x18\x05 \x01(\x0e2\x18.council.DefencePositionR\bposition\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\b \x01(\tR\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\t \x01(\tR\tupdatedBy\"\xc7\x01\n" +
 	"\x14CreateDefenceRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12!\n" +
 	"\fcouncil_code\x18\x02 \x01(\tR\vcouncilCode\x12!\n" +
 	"\fteacher_code\x18\x03 \x01(\tR\vteacherCode\x124\n" +
-	"\bposition\x18\x04 \x01(\x0e2\x18.council.DefencePositionR\bposition\"C\n" +
+	"\bposition\x18\x04 \x01(\x0e2\x18.council.DefencePositionR\bposition\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x05 \x01(\tR\tcreatedBy\"C\n" +
 	"\x15CreateDefenceResponse\x12*\n" +
 	"\adefence\x18\x01 \x01(\v2\x10.council.DefenceR\adefence\"#\n" +
 	"\x11GetDefenceRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"@\n" +
 	"\x12GetDefenceResponse\x12*\n" +
-	"\adefence\x18\x01 \x01(\v2\x10.council.DefenceR\adefence\"\xb8\x01\n" +
+	"\adefence\x18\x01 \x01(\v2\x10.council.DefenceR\adefence\"\x95\x02\n" +
 	"\x14UpdateDefenceRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
-	"\fcouncil_code\x18\x03 \x01(\tR\vcouncilCode\x12!\n" +
-	"\fteacher_code\x18\x04 \x01(\tR\vteacherCode\x124\n" +
-	"\bposition\x18\x05 \x01(\x0e2\x18.council.DefencePositionR\bposition\"C\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12&\n" +
+	"\fcouncil_code\x18\x03 \x01(\tH\x00R\vcouncilCode\x88\x01\x01\x12&\n" +
+	"\fteacher_code\x18\x04 \x01(\tH\x01R\vteacherCode\x88\x01\x01\x129\n" +
+	"\bposition\x18\x05 \x01(\x0e2\x18.council.DefencePositionH\x02R\bposition\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x06 \x01(\tR\tupdatedByB\x0f\n" +
+	"\r_council_codeB\x0f\n" +
+	"\r_teacher_codeB\v\n" +
+	"\t_position\"C\n" +
 	"\x15UpdateDefenceResponse\x12*\n" +
 	"\adefence\x18\x01 \x01(\v2\x10.council.DefenceR\adefence\"&\n" +
 	"\x14DeleteDefenceRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x15DeleteDefenceResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x8c\x01\n" +
-	"\x13ListDefencesRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12!\n" +
-	"\fcouncil_code\x18\x03 \x01(\tR\vcouncilCode\x12!\n" +
-	"\fteacher_code\x18\x04 \x01(\tR\vteacherCode\"Z\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"D\n" +
+	"\x13ListDefencesRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x8b\x01\n" +
 	"\x14ListDefencesResponse\x12,\n" +
 	"\bdefences\x18\x01 \x03(\v2\x10.council.DefenceR\bdefences\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xcd\x01\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x8b\x02\n" +
 	"\rGradeDefences\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\acouncil\x18\x02 \x01(\x05R\acouncil\x12\x1c\n" +
@@ -2598,32 +2721,45 @@ const file_proto_council_council_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"T\n" +
+	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x06 \x01(\tR\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedBy\"s\n" +
 	"\x1aCreateGradeDefencesRequest\x12\x18\n" +
 	"\acouncil\x18\x01 \x01(\x05R\acouncil\x12\x1c\n" +
-	"\tsecretary\x18\x02 \x01(\x05R\tsecretary\"\\\n" +
+	"\tsecretary\x18\x02 \x01(\x05R\tsecretary\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x03 \x01(\tR\tcreatedBy\"\\\n" +
 	"\x1bCreateGradeDefencesResponse\x12=\n" +
 	"\x0egrade_defences\x18\x01 \x01(\v2\x16.council.GradeDefencesR\rgradeDefences\")\n" +
 	"\x17GetGradeDefencesRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"Y\n" +
 	"\x18GetGradeDefencesResponse\x12=\n" +
-	"\x0egrade_defences\x18\x01 \x01(\v2\x16.council.GradeDefencesR\rgradeDefences\"d\n" +
+	"\x0egrade_defences\x18\x01 \x01(\v2\x16.council.GradeDefencesR\rgradeDefences\"\xa7\x01\n" +
 	"\x1aUpdateGradeDefencesRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
-	"\acouncil\x18\x02 \x01(\x05R\acouncil\x12\x1c\n" +
-	"\tsecretary\x18\x03 \x01(\x05R\tsecretary\"\\\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\acouncil\x18\x02 \x01(\x05H\x00R\acouncil\x88\x01\x01\x12!\n" +
+	"\tsecretary\x18\x03 \x01(\x05H\x01R\tsecretary\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x04 \x01(\tR\tupdatedByB\n" +
+	"\n" +
+	"\b_councilB\f\n" +
+	"\n" +
+	"_secretary\"\\\n" +
 	"\x1bUpdateGradeDefencesResponse\x12=\n" +
 	"\x0egrade_defences\x18\x01 \x01(\v2\x16.council.GradeDefencesR\rgradeDefences\",\n" +
 	"\x1aDeleteGradeDefencesRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"7\n" +
 	"\x1bDeleteGradeDefencesResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"K\n" +
-	"\x18ListGradeDefencesRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"p\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"I\n" +
+	"\x18ListGradeDefencesRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\xa1\x01\n" +
 	"\x19ListGradeDefencesResponse\x12=\n" +
 	"\x0egrade_defences\x18\x01 \x03(\v2\x16.council.GradeDefencesR\rgradeDefences\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xe6\x02\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xa4\x03\n" +
 	"\x10CouncilsSchedule\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
 	"\rcouncils_code\x18\x02 \x01(\tR\fcouncilsCode\x12\x1d\n" +
@@ -2635,47 +2771,58 @@ const file_proto_council_council_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x16\n" +
-	"\x06status\x18\b \x01(\bR\x06status\"\xed\x01\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\b \x01(\tR\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\t \x01(\tR\tupdatedBy\x12\x16\n" +
+	"\x06status\x18\n" +
+	" \x01(\bR\x06status\"\x8c\x02\n" +
 	"\x1dCreateCouncilsScheduleRequest\x12#\n" +
 	"\rcouncils_code\x18\x01 \x01(\tR\fcouncilsCode\x12\x1d\n" +
 	"\n" +
 	"topic_code\x18\x02 \x01(\tR\ttopicCode\x129\n" +
 	"\n" +
 	"time_start\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimeStart\x125\n" +
-	"\btime_end\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\atimeEnd\x12\x16\n" +
-	"\x06status\x18\x05 \x01(\bR\x06status\"h\n" +
+	"\btime_end\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\atimeEnd\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x05 \x01(\tR\tcreatedBy\x12\x16\n" +
+	"\x06status\x18\x06 \x01(\bR\x06status\"h\n" +
 	"\x1eCreateCouncilsScheduleResponse\x12F\n" +
 	"\x11councils_schedule\x18\x01 \x01(\v2\x19.council.CouncilsScheduleR\x10councilsSchedule\",\n" +
 	"\x1aGetCouncilsScheduleRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"e\n" +
 	"\x1bGetCouncilsScheduleResponse\x12F\n" +
-	"\x11councils_schedule\x18\x01 \x01(\v2\x19.council.CouncilsScheduleR\x10councilsSchedule\"\xfd\x01\n" +
+	"\x11councils_schedule\x18\x01 \x01(\v2\x19.council.CouncilsScheduleR\x10councilsSchedule\"\xfd\x02\n" +
 	"\x1dUpdateCouncilsScheduleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
-	"\rcouncils_code\x18\x02 \x01(\tR\fcouncilsCode\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12(\n" +
+	"\rcouncils_code\x18\x02 \x01(\tH\x00R\fcouncilsCode\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"topic_code\x18\x03 \x01(\tR\ttopicCode\x129\n" +
+	"topic_code\x18\x03 \x01(\tH\x01R\ttopicCode\x88\x01\x01\x12>\n" +
 	"\n" +
-	"time_start\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\ttimeStart\x125\n" +
-	"\btime_end\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\atimeEnd\x12\x16\n" +
-	"\x06status\x18\x06 \x01(\bR\x06status\"h\n" +
+	"time_start\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x02R\ttimeStart\x88\x01\x01\x12:\n" +
+	"\btime_end\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x03R\atimeEnd\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x06 \x01(\tR\tupdatedBy\x12\x1b\n" +
+	"\x06status\x18\a \x01(\bH\x04R\x06status\x88\x01\x01B\x10\n" +
+	"\x0e_councils_codeB\r\n" +
+	"\v_topic_codeB\r\n" +
+	"\v_time_startB\v\n" +
+	"\t_time_endB\t\n" +
+	"\a_status\"h\n" +
 	"\x1eUpdateCouncilsScheduleResponse\x12F\n" +
 	"\x11councils_schedule\x18\x01 \x01(\v2\x19.council.CouncilsScheduleR\x10councilsSchedule\"/\n" +
 	"\x1dDeleteCouncilsScheduleRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\":\n" +
 	"\x1eDeleteCouncilsScheduleResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xab\x01\n" +
-	"\x1cListCouncilsSchedulesRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12#\n" +
-	"\rcouncils_code\x18\x03 \x01(\tR\fcouncilsCode\x12\x1d\n" +
-	"\n" +
-	"topic_code\x18\x04 \x01(\tR\ttopicCode\x12\x16\n" +
-	"\x06status\x18\x05 \x01(\bR\x06status\"\x7f\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"M\n" +
+	"\x1cListCouncilsSchedulesRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\xb0\x01\n" +
 	"\x1dListCouncilsSchedulesResponse\x12H\n" +
 	"\x12councils_schedules\x18\x01 \x03(\v2\x19.council.CouncilsScheduleR\x11councilsSchedules\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total*I\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize*I\n" +
 	"\x0fDefencePosition\x12\r\n" +
 	"\tPRESIDENT\x10\x00\x12\r\n" +
 	"\tSECRETARY\x10\x01\x12\f\n" +
@@ -2767,6 +2914,7 @@ var file_proto_council_council_proto_goTypes = []any{
 	(*ListCouncilsSchedulesRequest)(nil),   // 43: council.ListCouncilsSchedulesRequest
 	(*ListCouncilsSchedulesResponse)(nil),  // 44: council.ListCouncilsSchedulesResponse
 	(*timestamppb.Timestamp)(nil),          // 45: google.protobuf.Timestamp
+	(*common.SearchRequest)(nil),           // 46: common.SearchRequest
 }
 var file_proto_council_council_proto_depIdxs = []int32{
 	45, // 0: council.Council.created_at:type_name -> google.protobuf.Timestamp
@@ -2774,77 +2922,83 @@ var file_proto_council_council_proto_depIdxs = []int32{
 	1,  // 2: council.CreateCouncilResponse.council:type_name -> council.Council
 	1,  // 3: council.GetCouncilResponse.council:type_name -> council.Council
 	1,  // 4: council.UpdateCouncilResponse.council:type_name -> council.Council
-	1,  // 5: council.ListCouncilsResponse.councils:type_name -> council.Council
-	0,  // 6: council.Defence.position:type_name -> council.DefencePosition
-	0,  // 7: council.CreateDefenceRequest.position:type_name -> council.DefencePosition
-	12, // 8: council.CreateDefenceResponse.defence:type_name -> council.Defence
-	12, // 9: council.GetDefenceResponse.defence:type_name -> council.Defence
-	0,  // 10: council.UpdateDefenceRequest.position:type_name -> council.DefencePosition
-	12, // 11: council.UpdateDefenceResponse.defence:type_name -> council.Defence
-	12, // 12: council.ListDefencesResponse.defences:type_name -> council.Defence
-	45, // 13: council.GradeDefences.created_at:type_name -> google.protobuf.Timestamp
-	45, // 14: council.GradeDefences.updated_at:type_name -> google.protobuf.Timestamp
-	23, // 15: council.CreateGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
-	23, // 16: council.GetGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
-	23, // 17: council.UpdateGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
-	23, // 18: council.ListGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
-	45, // 19: council.CouncilsSchedule.time_start:type_name -> google.protobuf.Timestamp
-	45, // 20: council.CouncilsSchedule.time_end:type_name -> google.protobuf.Timestamp
-	45, // 21: council.CouncilsSchedule.created_at:type_name -> google.protobuf.Timestamp
-	45, // 22: council.CouncilsSchedule.updated_at:type_name -> google.protobuf.Timestamp
-	45, // 23: council.CreateCouncilsScheduleRequest.time_start:type_name -> google.protobuf.Timestamp
-	45, // 24: council.CreateCouncilsScheduleRequest.time_end:type_name -> google.protobuf.Timestamp
-	34, // 25: council.CreateCouncilsScheduleResponse.councils_schedule:type_name -> council.CouncilsSchedule
-	34, // 26: council.GetCouncilsScheduleResponse.councils_schedule:type_name -> council.CouncilsSchedule
-	45, // 27: council.UpdateCouncilsScheduleRequest.time_start:type_name -> google.protobuf.Timestamp
-	45, // 28: council.UpdateCouncilsScheduleRequest.time_end:type_name -> google.protobuf.Timestamp
-	34, // 29: council.UpdateCouncilsScheduleResponse.councils_schedule:type_name -> council.CouncilsSchedule
-	34, // 30: council.ListCouncilsSchedulesResponse.councils_schedules:type_name -> council.CouncilsSchedule
-	2,  // 31: council.CouncilService.CreateCouncil:input_type -> council.CreateCouncilRequest
-	4,  // 32: council.CouncilService.GetCouncil:input_type -> council.GetCouncilRequest
-	6,  // 33: council.CouncilService.UpdateCouncil:input_type -> council.UpdateCouncilRequest
-	8,  // 34: council.CouncilService.DeleteCouncil:input_type -> council.DeleteCouncilRequest
-	10, // 35: council.CouncilService.ListCouncils:input_type -> council.ListCouncilsRequest
-	13, // 36: council.CouncilService.CreateDefence:input_type -> council.CreateDefenceRequest
-	15, // 37: council.CouncilService.GetDefence:input_type -> council.GetDefenceRequest
-	17, // 38: council.CouncilService.UpdateDefence:input_type -> council.UpdateDefenceRequest
-	19, // 39: council.CouncilService.DeleteDefence:input_type -> council.DeleteDefenceRequest
-	21, // 40: council.CouncilService.ListDefences:input_type -> council.ListDefencesRequest
-	24, // 41: council.CouncilService.CreateGradeDefences:input_type -> council.CreateGradeDefencesRequest
-	26, // 42: council.CouncilService.GetGradeDefences:input_type -> council.GetGradeDefencesRequest
-	28, // 43: council.CouncilService.UpdateGradeDefences:input_type -> council.UpdateGradeDefencesRequest
-	30, // 44: council.CouncilService.DeleteGradeDefences:input_type -> council.DeleteGradeDefencesRequest
-	32, // 45: council.CouncilService.ListGradeDefences:input_type -> council.ListGradeDefencesRequest
-	35, // 46: council.CouncilService.CreateCouncilsSchedule:input_type -> council.CreateCouncilsScheduleRequest
-	37, // 47: council.CouncilService.GetCouncilsSchedule:input_type -> council.GetCouncilsScheduleRequest
-	39, // 48: council.CouncilService.UpdateCouncilsSchedule:input_type -> council.UpdateCouncilsScheduleRequest
-	41, // 49: council.CouncilService.DeleteCouncilsSchedule:input_type -> council.DeleteCouncilsScheduleRequest
-	43, // 50: council.CouncilService.ListCouncilsSchedules:input_type -> council.ListCouncilsSchedulesRequest
-	3,  // 51: council.CouncilService.CreateCouncil:output_type -> council.CreateCouncilResponse
-	5,  // 52: council.CouncilService.GetCouncil:output_type -> council.GetCouncilResponse
-	7,  // 53: council.CouncilService.UpdateCouncil:output_type -> council.UpdateCouncilResponse
-	9,  // 54: council.CouncilService.DeleteCouncil:output_type -> council.DeleteCouncilResponse
-	11, // 55: council.CouncilService.ListCouncils:output_type -> council.ListCouncilsResponse
-	14, // 56: council.CouncilService.CreateDefence:output_type -> council.CreateDefenceResponse
-	16, // 57: council.CouncilService.GetDefence:output_type -> council.GetDefenceResponse
-	18, // 58: council.CouncilService.UpdateDefence:output_type -> council.UpdateDefenceResponse
-	20, // 59: council.CouncilService.DeleteDefence:output_type -> council.DeleteDefenceResponse
-	22, // 60: council.CouncilService.ListDefences:output_type -> council.ListDefencesResponse
-	25, // 61: council.CouncilService.CreateGradeDefences:output_type -> council.CreateGradeDefencesResponse
-	27, // 62: council.CouncilService.GetGradeDefences:output_type -> council.GetGradeDefencesResponse
-	29, // 63: council.CouncilService.UpdateGradeDefences:output_type -> council.UpdateGradeDefencesResponse
-	31, // 64: council.CouncilService.DeleteGradeDefences:output_type -> council.DeleteGradeDefencesResponse
-	33, // 65: council.CouncilService.ListGradeDefences:output_type -> council.ListGradeDefencesResponse
-	36, // 66: council.CouncilService.CreateCouncilsSchedule:output_type -> council.CreateCouncilsScheduleResponse
-	38, // 67: council.CouncilService.GetCouncilsSchedule:output_type -> council.GetCouncilsScheduleResponse
-	40, // 68: council.CouncilService.UpdateCouncilsSchedule:output_type -> council.UpdateCouncilsScheduleResponse
-	42, // 69: council.CouncilService.DeleteCouncilsSchedule:output_type -> council.DeleteCouncilsScheduleResponse
-	44, // 70: council.CouncilService.ListCouncilsSchedules:output_type -> council.ListCouncilsSchedulesResponse
-	51, // [51:71] is the sub-list for method output_type
-	31, // [31:51] is the sub-list for method input_type
-	31, // [31:31] is the sub-list for extension type_name
-	31, // [31:31] is the sub-list for extension extendee
-	0,  // [0:31] is the sub-list for field type_name
+	46, // 5: council.ListCouncilsRequest.search:type_name -> common.SearchRequest
+	1,  // 6: council.ListCouncilsResponse.councils:type_name -> council.Council
+	0,  // 7: council.Defence.position:type_name -> council.DefencePosition
+	45, // 8: council.Defence.created_at:type_name -> google.protobuf.Timestamp
+	45, // 9: council.Defence.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 10: council.CreateDefenceRequest.position:type_name -> council.DefencePosition
+	12, // 11: council.CreateDefenceResponse.defence:type_name -> council.Defence
+	12, // 12: council.GetDefenceResponse.defence:type_name -> council.Defence
+	0,  // 13: council.UpdateDefenceRequest.position:type_name -> council.DefencePosition
+	12, // 14: council.UpdateDefenceResponse.defence:type_name -> council.Defence
+	46, // 15: council.ListDefencesRequest.search:type_name -> common.SearchRequest
+	12, // 16: council.ListDefencesResponse.defences:type_name -> council.Defence
+	45, // 17: council.GradeDefences.created_at:type_name -> google.protobuf.Timestamp
+	45, // 18: council.GradeDefences.updated_at:type_name -> google.protobuf.Timestamp
+	23, // 19: council.CreateGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
+	23, // 20: council.GetGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
+	23, // 21: council.UpdateGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
+	46, // 22: council.ListGradeDefencesRequest.search:type_name -> common.SearchRequest
+	23, // 23: council.ListGradeDefencesResponse.grade_defences:type_name -> council.GradeDefences
+	45, // 24: council.CouncilsSchedule.time_start:type_name -> google.protobuf.Timestamp
+	45, // 25: council.CouncilsSchedule.time_end:type_name -> google.protobuf.Timestamp
+	45, // 26: council.CouncilsSchedule.created_at:type_name -> google.protobuf.Timestamp
+	45, // 27: council.CouncilsSchedule.updated_at:type_name -> google.protobuf.Timestamp
+	45, // 28: council.CreateCouncilsScheduleRequest.time_start:type_name -> google.protobuf.Timestamp
+	45, // 29: council.CreateCouncilsScheduleRequest.time_end:type_name -> google.protobuf.Timestamp
+	34, // 30: council.CreateCouncilsScheduleResponse.councils_schedule:type_name -> council.CouncilsSchedule
+	34, // 31: council.GetCouncilsScheduleResponse.councils_schedule:type_name -> council.CouncilsSchedule
+	45, // 32: council.UpdateCouncilsScheduleRequest.time_start:type_name -> google.protobuf.Timestamp
+	45, // 33: council.UpdateCouncilsScheduleRequest.time_end:type_name -> google.protobuf.Timestamp
+	34, // 34: council.UpdateCouncilsScheduleResponse.councils_schedule:type_name -> council.CouncilsSchedule
+	46, // 35: council.ListCouncilsSchedulesRequest.search:type_name -> common.SearchRequest
+	34, // 36: council.ListCouncilsSchedulesResponse.councils_schedules:type_name -> council.CouncilsSchedule
+	2,  // 37: council.CouncilService.CreateCouncil:input_type -> council.CreateCouncilRequest
+	4,  // 38: council.CouncilService.GetCouncil:input_type -> council.GetCouncilRequest
+	6,  // 39: council.CouncilService.UpdateCouncil:input_type -> council.UpdateCouncilRequest
+	8,  // 40: council.CouncilService.DeleteCouncil:input_type -> council.DeleteCouncilRequest
+	10, // 41: council.CouncilService.ListCouncils:input_type -> council.ListCouncilsRequest
+	13, // 42: council.CouncilService.CreateDefence:input_type -> council.CreateDefenceRequest
+	15, // 43: council.CouncilService.GetDefence:input_type -> council.GetDefenceRequest
+	17, // 44: council.CouncilService.UpdateDefence:input_type -> council.UpdateDefenceRequest
+	19, // 45: council.CouncilService.DeleteDefence:input_type -> council.DeleteDefenceRequest
+	21, // 46: council.CouncilService.ListDefences:input_type -> council.ListDefencesRequest
+	24, // 47: council.CouncilService.CreateGradeDefences:input_type -> council.CreateGradeDefencesRequest
+	26, // 48: council.CouncilService.GetGradeDefences:input_type -> council.GetGradeDefencesRequest
+	28, // 49: council.CouncilService.UpdateGradeDefences:input_type -> council.UpdateGradeDefencesRequest
+	30, // 50: council.CouncilService.DeleteGradeDefences:input_type -> council.DeleteGradeDefencesRequest
+	32, // 51: council.CouncilService.ListGradeDefences:input_type -> council.ListGradeDefencesRequest
+	35, // 52: council.CouncilService.CreateCouncilsSchedule:input_type -> council.CreateCouncilsScheduleRequest
+	37, // 53: council.CouncilService.GetCouncilsSchedule:input_type -> council.GetCouncilsScheduleRequest
+	39, // 54: council.CouncilService.UpdateCouncilsSchedule:input_type -> council.UpdateCouncilsScheduleRequest
+	41, // 55: council.CouncilService.DeleteCouncilsSchedule:input_type -> council.DeleteCouncilsScheduleRequest
+	43, // 56: council.CouncilService.ListCouncilsSchedules:input_type -> council.ListCouncilsSchedulesRequest
+	3,  // 57: council.CouncilService.CreateCouncil:output_type -> council.CreateCouncilResponse
+	5,  // 58: council.CouncilService.GetCouncil:output_type -> council.GetCouncilResponse
+	7,  // 59: council.CouncilService.UpdateCouncil:output_type -> council.UpdateCouncilResponse
+	9,  // 60: council.CouncilService.DeleteCouncil:output_type -> council.DeleteCouncilResponse
+	11, // 61: council.CouncilService.ListCouncils:output_type -> council.ListCouncilsResponse
+	14, // 62: council.CouncilService.CreateDefence:output_type -> council.CreateDefenceResponse
+	16, // 63: council.CouncilService.GetDefence:output_type -> council.GetDefenceResponse
+	18, // 64: council.CouncilService.UpdateDefence:output_type -> council.UpdateDefenceResponse
+	20, // 65: council.CouncilService.DeleteDefence:output_type -> council.DeleteDefenceResponse
+	22, // 66: council.CouncilService.ListDefences:output_type -> council.ListDefencesResponse
+	25, // 67: council.CouncilService.CreateGradeDefences:output_type -> council.CreateGradeDefencesResponse
+	27, // 68: council.CouncilService.GetGradeDefences:output_type -> council.GetGradeDefencesResponse
+	29, // 69: council.CouncilService.UpdateGradeDefences:output_type -> council.UpdateGradeDefencesResponse
+	31, // 70: council.CouncilService.DeleteGradeDefences:output_type -> council.DeleteGradeDefencesResponse
+	33, // 71: council.CouncilService.ListGradeDefences:output_type -> council.ListGradeDefencesResponse
+	36, // 72: council.CouncilService.CreateCouncilsSchedule:output_type -> council.CreateCouncilsScheduleResponse
+	38, // 73: council.CouncilService.GetCouncilsSchedule:output_type -> council.GetCouncilsScheduleResponse
+	40, // 74: council.CouncilService.UpdateCouncilsSchedule:output_type -> council.UpdateCouncilsScheduleResponse
+	42, // 75: council.CouncilService.DeleteCouncilsSchedule:output_type -> council.DeleteCouncilsScheduleResponse
+	44, // 76: council.CouncilService.ListCouncilsSchedules:output_type -> council.ListCouncilsSchedulesResponse
+	57, // [57:77] is the sub-list for method output_type
+	37, // [37:57] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_proto_council_council_proto_init() }
@@ -2852,6 +3006,10 @@ func file_proto_council_council_proto_init() {
 	if File_proto_council_council_proto != nil {
 		return
 	}
+	file_proto_council_council_proto_msgTypes[5].OneofWrappers = []any{}
+	file_proto_council_council_proto_msgTypes[16].OneofWrappers = []any{}
+	file_proto_council_council_proto_msgTypes[27].OneofWrappers = []any{}
+	file_proto_council_council_proto_msgTypes[38].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

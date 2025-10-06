@@ -3,20 +3,27 @@ package main
 import (
 	"log"
 	"net"
+	pb "thaily/proto/council"
 	"thaily/src/pkg/config"
 	"thaily/src/pkg/database"
+	"thaily/src/pkg/logger"
 	"thaily/src/service/council/handler"
-	pb "thaily/proto/council"
 
 	"google.golang.org/grpc"
 )
 
 func main() {
 	// Load configuration
-	cfg, err := config.Load("env/council.env")
+	cfg, err := config.Load("../../../env/council.env")
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
+
+	// Initialize file logger
+	if err := logger.InitFileLogger("council-service", "log"); err != nil {
+		log.Fatalf("Failed to initialize file logger: %v", err)
+	}
+	defer logger.GetFileLogger().Close()
 
 	// Connect to database
 	db, err := database.Connect(cfg.GetDSN())
@@ -34,7 +41,9 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
+	)
 	pb.RegisterCouncilServiceServer(grpcServer, h)
 
 	log.Println("CouncilService running on :50052")

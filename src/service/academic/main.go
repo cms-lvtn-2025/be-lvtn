@@ -6,6 +6,7 @@ import (
 	pb "thaily/proto/academic"
 	"thaily/src/pkg/config"
 	"thaily/src/pkg/database"
+	"thaily/src/pkg/logger"
 	"thaily/src/service/academic/handler"
 
 	"google.golang.org/grpc"
@@ -17,6 +18,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
+
+	// Initialize file logger
+	if err := logger.InitFileLogger("academic-service", "log"); err != nil {
+		log.Fatalf("Failed to initialize file logger: %v", err)
+	}
+	defer logger.GetFileLogger().Close()
+
 	// Connect to database
 	db, err := database.Connect(cfg.GetDSN())
 	if err != nil {
@@ -33,7 +41,9 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
+	)
 	pb.RegisterAcademicServiceServer(grpcServer, h)
 
 	log.Println("AcademicService running on :50051")

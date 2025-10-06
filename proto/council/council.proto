@@ -5,6 +5,7 @@ package council;
 option go_package = "./council";
 
 import "google/protobuf/timestamp.proto";
+import "proto/common/common.proto";
 
 // ============= Enums =============
 enum DefencePosition {
@@ -30,6 +31,7 @@ message CreateCouncilRequest {
   string title = 1;
   string major_code = 2;
   string semester_code = 3;
+  string created_by = 4;
 }
 
 message CreateCouncilResponse {
@@ -47,8 +49,9 @@ message GetCouncilResponse {
 message UpdateCouncilRequest {
   string id = 1;
   string title = 2;
-  string major_code = 3;
-  string semester_code = 4;
+  optional string major_code = 3;
+  optional string semester_code = 4;
+  string updated_by = 5;
 }
 
 message UpdateCouncilResponse {
@@ -64,15 +67,14 @@ message DeleteCouncilResponse {
 }
 
 message ListCouncilsRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  string major_code = 3;
-  string semester_code = 4;
+  common.SearchRequest search = 1;
 }
 
 message ListCouncilsResponse {
   repeated Council councils = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Defence =============
@@ -82,6 +84,10 @@ message Defence {
   string council_code = 3;
   string teacher_code = 4;
   DefencePosition position = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  string created_by = 8;
+  string updated_by = 9;
 }
 
 message CreateDefenceRequest {
@@ -89,6 +95,7 @@ message CreateDefenceRequest {
   string council_code = 2;
   string teacher_code = 3;
   DefencePosition position = 4;
+  string created_by = 5;
 }
 
 message CreateDefenceResponse {
@@ -106,9 +113,10 @@ message GetDefenceResponse {
 message UpdateDefenceRequest {
   string id = 1;
   string title = 2;
-  string council_code = 3;
-  string teacher_code = 4;
-  DefencePosition position = 5;
+  optional string council_code = 3;
+  optional string teacher_code = 4;
+  optional DefencePosition position = 5;
+  string updated_by = 6;
 }
 
 message UpdateDefenceResponse {
@@ -124,15 +132,14 @@ message DeleteDefenceResponse {
 }
 
 message ListDefencesRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  string council_code = 3;
-  string teacher_code = 4;
+  common.SearchRequest search = 1;
 }
 
 message ListDefencesResponse {
   repeated Defence defences = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Grade_defences =============
@@ -142,11 +149,14 @@ message GradeDefences {
   int32 secretary = 3;
   google.protobuf.Timestamp created_at = 4;
   google.protobuf.Timestamp updated_at = 5;
+  string created_by = 6;
+  string updated_by = 7;
 }
 
 message CreateGradeDefencesRequest {
   int32 council = 1;
   int32 secretary = 2;
+  string created_by = 3;
 }
 
 message CreateGradeDefencesResponse {
@@ -163,8 +173,9 @@ message GetGradeDefencesResponse {
 
 message UpdateGradeDefencesRequest {
   string id = 1;
-  int32 council = 2;
-  int32 secretary = 3;
+  optional int32 council = 2;
+  optional int32 secretary = 3;
+  string updated_by = 4;
 }
 
 message UpdateGradeDefencesResponse {
@@ -180,13 +191,14 @@ message DeleteGradeDefencesResponse {
 }
 
 message ListGradeDefencesRequest {
-  int32 page = 1;
-  int32 page_size = 2;
+  common.SearchRequest search = 1;
 }
 
 message ListGradeDefencesResponse {
   repeated GradeDefences grade_defences = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= CouncilsSchedule =============
@@ -198,7 +210,9 @@ message CouncilsSchedule {
   google.protobuf.Timestamp time_end = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
-  bool status = 8;
+  string created_by = 8;
+  string updated_by = 9;
+  bool status = 10;
 }
 
 message CreateCouncilsScheduleRequest {
@@ -206,7 +220,8 @@ message CreateCouncilsScheduleRequest {
   string topic_code = 2;
   google.protobuf.Timestamp time_start = 3;
   google.protobuf.Timestamp time_end = 4;
-  bool status = 5;
+  string created_by = 5;
+  bool status = 6;
 }
 
 message CreateCouncilsScheduleResponse {
@@ -223,11 +238,12 @@ message GetCouncilsScheduleResponse {
 
 message UpdateCouncilsScheduleRequest {
   string id = 1;
-  string councils_code = 2;
-  string topic_code = 3;
-  google.protobuf.Timestamp time_start = 4;
-  google.protobuf.Timestamp time_end = 5;
-  bool status = 6;
+  optional string councils_code = 2;
+  optional string topic_code = 3;
+  optional google.protobuf.Timestamp time_start = 4;
+  optional google.protobuf.Timestamp time_end = 5;
+  string updated_by = 6;
+  optional bool status = 7;
 }
 
 message UpdateCouncilsScheduleResponse {
@@ -243,16 +259,14 @@ message DeleteCouncilsScheduleResponse {
 }
 
 message ListCouncilsSchedulesRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  string councils_code = 3;
-  string topic_code = 4;
-  bool status = 5;
+  common.SearchRequest search = 1;
 }
 
 message ListCouncilsSchedulesResponse {
   repeated CouncilsSchedule councils_schedules = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Service =============

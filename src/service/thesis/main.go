@@ -3,20 +3,27 @@ package main
 import (
 	"log"
 	"net"
+	pb "thaily/proto/thesis"
 	"thaily/src/pkg/config"
 	"thaily/src/pkg/database"
+	"thaily/src/pkg/logger"
 	"thaily/src/service/thesis/handler"
-	pb "thaily/proto/thesis"
 
 	"google.golang.org/grpc"
 )
 
 func main() {
 	// Load configuration
-	cfg, err := config.Load("env/thesis.env")
+	cfg, err := config.Load("../../../env/thesis.env")
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
+
+	// Initialize file logger
+	if err := logger.InitFileLogger("thesis-service", "log"); err != nil {
+		log.Fatalf("Failed to initialize file logger: %v", err)
+	}
+	defer logger.GetFileLogger().Close()
 
 	// Connect to database
 	db, err := database.Connect(cfg.GetDSN())
@@ -34,7 +41,9 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
+	)
 	pb.RegisterThesisServiceServer(grpcServer, h)
 
 	log.Println("ThesisService running on :50055")

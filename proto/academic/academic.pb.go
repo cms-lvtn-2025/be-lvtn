@@ -12,6 +12,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
+	common "thaily/proto/common"
 	unsafe "unsafe"
 )
 
@@ -110,6 +111,7 @@ func (x *Semester) GetUpdatedBy() string {
 type CreateSemesterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,2,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -147,6 +149,13 @@ func (*CreateSemesterRequest) Descriptor() ([]byte, []int) {
 func (x *CreateSemesterRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateSemesterRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -287,6 +296,7 @@ type UpdateSemesterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	UpdatedBy     *string                `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -331,6 +341,13 @@ func (x *UpdateSemesterRequest) GetId() string {
 func (x *UpdateSemesterRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *UpdateSemesterRequest) GetUpdatedBy() string {
+	if x != nil && x.UpdatedBy != nil {
+		return *x.UpdatedBy
 	}
 	return ""
 }
@@ -469,8 +486,7 @@ func (x *DeleteSemesterResponse) GetSuccess() bool {
 
 type ListSemestersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -505,24 +521,19 @@ func (*ListSemestersRequest) Descriptor() ([]byte, []int) {
 	return file_proto_academic_academic_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ListSemestersRequest) GetPage() int32 {
+func (x *ListSemestersRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListSemestersRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
+	return nil
 }
 
 type ListSemestersResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Semesters     []*Semester            `protobuf:"bytes,1,rep,name=semesters,proto3" json:"semesters,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -567,6 +578,20 @@ func (x *ListSemestersResponse) GetSemesters() []*Semester {
 func (x *ListSemestersResponse) GetTotal() int32 {
 	if x != nil {
 		return x.Total
+	}
+	return 0
+}
+
+func (x *ListSemestersResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListSemestersResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
 	}
 	return 0
 }
@@ -659,6 +684,7 @@ func (x *Faculty) GetUpdatedBy() string {
 type CreateFacultyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -696,6 +722,13 @@ func (*CreateFacultyRequest) Descriptor() ([]byte, []int) {
 func (x *CreateFacultyRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateFacultyRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -836,6 +869,7 @@ type UpdateFacultyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	UpdatedBy     *string                `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -880,6 +914,13 @@ func (x *UpdateFacultyRequest) GetId() string {
 func (x *UpdateFacultyRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *UpdateFacultyRequest) GetUpdatedBy() string {
+	if x != nil && x.UpdatedBy != nil {
+		return *x.UpdatedBy
 	}
 	return ""
 }
@@ -1018,8 +1059,7 @@ func (x *DeleteFacultyResponse) GetSuccess() bool {
 
 type ListFacultiesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1054,24 +1094,19 @@ func (*ListFacultiesRequest) Descriptor() ([]byte, []int) {
 	return file_proto_academic_academic_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *ListFacultiesRequest) GetPage() int32 {
+func (x *ListFacultiesRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListFacultiesRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
+	return nil
 }
 
 type ListFacultiesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Faculties     []*Faculty             `protobuf:"bytes,1,rep,name=faculties,proto3" json:"faculties,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1116,6 +1151,20 @@ func (x *ListFacultiesResponse) GetFaculties() []*Faculty {
 func (x *ListFacultiesResponse) GetTotal() int32 {
 	if x != nil {
 		return x.Total
+	}
+	return 0
+}
+
+func (x *ListFacultiesResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListFacultiesResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
 	}
 	return 0
 }
@@ -1217,6 +1266,7 @@ type CreateMajorRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	FacultyCode   string                 `protobuf:"bytes,2,opt,name=faculty_code,json=facultyCode,proto3" json:"faculty_code,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,3,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1261,6 +1311,13 @@ func (x *CreateMajorRequest) GetTitle() string {
 func (x *CreateMajorRequest) GetFacultyCode() string {
 	if x != nil {
 		return x.FacultyCode
+	}
+	return ""
+}
+
+func (x *CreateMajorRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -1401,7 +1458,8 @@ type UpdateMajorRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	FacultyCode   string                 `protobuf:"bytes,3,opt,name=faculty_code,json=facultyCode,proto3" json:"faculty_code,omitempty"`
+	FacultyCode   *string                `protobuf:"bytes,3,opt,name=faculty_code,json=facultyCode,proto3,oneof" json:"faculty_code,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,4,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1451,8 +1509,15 @@ func (x *UpdateMajorRequest) GetTitle() string {
 }
 
 func (x *UpdateMajorRequest) GetFacultyCode() string {
+	if x != nil && x.FacultyCode != nil {
+		return *x.FacultyCode
+	}
+	return ""
+}
+
+func (x *UpdateMajorRequest) GetUpdatedBy() string {
 	if x != nil {
-		return x.FacultyCode
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -1591,9 +1656,7 @@ func (x *DeleteMajorResponse) GetSuccess() bool {
 
 type ListMajorsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	FacultyCode   string                 `protobuf:"bytes,3,opt,name=faculty_code,json=facultyCode,proto3" json:"faculty_code,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1628,31 +1691,19 @@ func (*ListMajorsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_academic_academic_proto_rawDescGZIP(), []int{31}
 }
 
-func (x *ListMajorsRequest) GetPage() int32 {
+func (x *ListMajorsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListMajorsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListMajorsRequest) GetFacultyCode() string {
-	if x != nil {
-		return x.FacultyCode
-	}
-	return ""
+	return nil
 }
 
 type ListMajorsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Majors        []*Major               `protobuf:"bytes,1,rep,name=majors,proto3" json:"majors,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1701,11 +1752,25 @@ func (x *ListMajorsResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListMajorsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListMajorsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 var File_proto_academic_academic_proto protoreflect.FileDescriptor
 
 const file_proto_academic_academic_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/academic/academic.proto\x12\bacademic\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x01\n" +
+	"\x1dproto/academic/academic.proto\x12\bacademic\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\xe4\x01\n" +
 	"\bSemester\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x129\n" +
@@ -1716,30 +1781,36 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\x05 \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x06 \x01(\tR\tupdatedBy\"-\n" +
+	"updated_by\x18\x06 \x01(\tR\tupdatedBy\"L\n" +
 	"\x15CreateSemesterRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\"H\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x02 \x01(\tR\tcreatedBy\"H\n" +
 	"\x16CreateSemesterResponse\x12.\n" +
 	"\bsemester\x18\x01 \x01(\v2\x12.academic.SemesterR\bsemester\"$\n" +
 	"\x12GetSemesterRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"E\n" +
 	"\x13GetSemesterResponse\x12.\n" +
-	"\bsemester\x18\x01 \x01(\v2\x12.academic.SemesterR\bsemester\"=\n" +
+	"\bsemester\x18\x01 \x01(\v2\x12.academic.SemesterR\bsemester\"p\n" +
 	"\x15UpdateSemesterRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\"H\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\"\n" +
+	"\n" +
+	"updated_by\x18\x03 \x01(\tH\x00R\tupdatedBy\x88\x01\x01B\r\n" +
+	"\v_updated_by\"H\n" +
 	"\x16UpdateSemesterResponse\x12.\n" +
 	"\bsemester\x18\x01 \x01(\v2\x12.academic.SemesterR\bsemester\"'\n" +
 	"\x15DeleteSemesterRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"2\n" +
 	"\x16DeleteSemesterResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"G\n" +
-	"\x14ListSemestersRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"_\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"E\n" +
+	"\x14ListSemestersRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x90\x01\n" +
 	"\x15ListSemestersResponse\x120\n" +
 	"\tsemesters\x18\x01 \x03(\v2\x12.academic.SemesterR\tsemesters\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xe3\x01\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xe3\x01\n" +
 	"\aFaculty\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x129\n" +
@@ -1750,30 +1821,36 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\x05 \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x06 \x01(\tR\tupdatedBy\",\n" +
+	"updated_by\x18\x06 \x01(\tR\tupdatedBy\"K\n" +
 	"\x14CreateFacultyRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\"D\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x05 \x01(\tR\tcreatedBy\"D\n" +
 	"\x15CreateFacultyResponse\x12+\n" +
 	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"#\n" +
 	"\x11GetFacultyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"A\n" +
 	"\x12GetFacultyResponse\x12+\n" +
-	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"<\n" +
+	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"o\n" +
 	"\x14UpdateFacultyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\"D\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\"\n" +
+	"\n" +
+	"updated_by\x18\x03 \x01(\tH\x00R\tupdatedBy\x88\x01\x01B\r\n" +
+	"\v_updated_by\"D\n" +
 	"\x15UpdateFacultyResponse\x12+\n" +
 	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"&\n" +
 	"\x14DeleteFacultyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x15DeleteFacultyResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"G\n" +
-	"\x14ListFacultiesRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"^\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"E\n" +
+	"\x14ListFacultiesRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x8f\x01\n" +
 	"\x15ListFacultiesResponse\x12/\n" +
 	"\tfaculties\x18\x01 \x03(\v2\x11.academic.FacultyR\tfaculties\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\x84\x02\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x84\x02\n" +
 	"\x05Major\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
@@ -1785,33 +1862,38 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\x06 \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedBy\"M\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedBy\"l\n" +
 	"\x12CreateMajorRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12!\n" +
-	"\ffaculty_code\x18\x02 \x01(\tR\vfacultyCode\"<\n" +
+	"\ffaculty_code\x18\x02 \x01(\tR\vfacultyCode\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x03 \x01(\tR\tcreatedBy\"<\n" +
 	"\x13CreateMajorResponse\x12%\n" +
 	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"!\n" +
 	"\x0fGetMajorRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"9\n" +
 	"\x10GetMajorResponse\x12%\n" +
-	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"]\n" +
+	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"\x92\x01\n" +
 	"\x12UpdateMajorRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
-	"\ffaculty_code\x18\x03 \x01(\tR\vfacultyCode\"<\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12&\n" +
+	"\ffaculty_code\x18\x03 \x01(\tH\x00R\vfacultyCode\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x04 \x01(\tR\tupdatedByB\x0f\n" +
+	"\r_faculty_code\"<\n" +
 	"\x13UpdateMajorResponse\x12%\n" +
 	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"$\n" +
 	"\x12DeleteMajorRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"/\n" +
 	"\x13DeleteMajorResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"g\n" +
-	"\x11ListMajorsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12!\n" +
-	"\ffaculty_code\x18\x03 \x01(\tR\vfacultyCode\"S\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"B\n" +
+	"\x11ListMajorsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x84\x01\n" +
 	"\x12ListMajorsResponse\x12'\n" +
 	"\x06majors\x18\x01 \x03(\v2\x0f.academic.MajorR\x06majors\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total2\xaf\t\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize2\xaf\t\n" +
 	"\x0fAcademicService\x12S\n" +
 	"\x0eCreateSemester\x12\x1f.academic.CreateSemesterRequest\x1a .academic.CreateSemesterResponse\x12J\n" +
 	"\vGetSemester\x12\x1c.academic.GetSemesterRequest\x1a\x1d.academic.GetSemesterResponse\x12S\n" +
@@ -1880,6 +1962,7 @@ var file_proto_academic_academic_proto_goTypes = []any{
 	(*ListMajorsRequest)(nil),      // 31: academic.ListMajorsRequest
 	(*ListMajorsResponse)(nil),     // 32: academic.ListMajorsResponse
 	(*timestamppb.Timestamp)(nil),  // 33: google.protobuf.Timestamp
+	(*common.SearchRequest)(nil),   // 34: common.SearchRequest
 }
 var file_proto_academic_academic_proto_depIdxs = []int32{
 	33, // 0: academic.Semester.created_at:type_name -> google.protobuf.Timestamp
@@ -1887,54 +1970,57 @@ var file_proto_academic_academic_proto_depIdxs = []int32{
 	0,  // 2: academic.CreateSemesterResponse.semester:type_name -> academic.Semester
 	0,  // 3: academic.GetSemesterResponse.semester:type_name -> academic.Semester
 	0,  // 4: academic.UpdateSemesterResponse.semester:type_name -> academic.Semester
-	0,  // 5: academic.ListSemestersResponse.semesters:type_name -> academic.Semester
-	33, // 6: academic.Faculty.created_at:type_name -> google.protobuf.Timestamp
-	33, // 7: academic.Faculty.updated_at:type_name -> google.protobuf.Timestamp
-	11, // 8: academic.CreateFacultyResponse.faculty:type_name -> academic.Faculty
-	11, // 9: academic.GetFacultyResponse.faculty:type_name -> academic.Faculty
-	11, // 10: academic.UpdateFacultyResponse.faculty:type_name -> academic.Faculty
-	11, // 11: academic.ListFacultiesResponse.faculties:type_name -> academic.Faculty
-	33, // 12: academic.Major.created_at:type_name -> google.protobuf.Timestamp
-	33, // 13: academic.Major.updated_at:type_name -> google.protobuf.Timestamp
-	22, // 14: academic.CreateMajorResponse.major:type_name -> academic.Major
-	22, // 15: academic.GetMajorResponse.major:type_name -> academic.Major
-	22, // 16: academic.UpdateMajorResponse.major:type_name -> academic.Major
-	22, // 17: academic.ListMajorsResponse.majors:type_name -> academic.Major
-	1,  // 18: academic.AcademicService.CreateSemester:input_type -> academic.CreateSemesterRequest
-	3,  // 19: academic.AcademicService.GetSemester:input_type -> academic.GetSemesterRequest
-	5,  // 20: academic.AcademicService.UpdateSemester:input_type -> academic.UpdateSemesterRequest
-	7,  // 21: academic.AcademicService.DeleteSemester:input_type -> academic.DeleteSemesterRequest
-	9,  // 22: academic.AcademicService.ListSemesters:input_type -> academic.ListSemestersRequest
-	12, // 23: academic.AcademicService.CreateFaculty:input_type -> academic.CreateFacultyRequest
-	14, // 24: academic.AcademicService.GetFaculty:input_type -> academic.GetFacultyRequest
-	16, // 25: academic.AcademicService.UpdateFaculty:input_type -> academic.UpdateFacultyRequest
-	18, // 26: academic.AcademicService.DeleteFaculty:input_type -> academic.DeleteFacultyRequest
-	20, // 27: academic.AcademicService.ListFaculties:input_type -> academic.ListFacultiesRequest
-	23, // 28: academic.AcademicService.CreateMajor:input_type -> academic.CreateMajorRequest
-	25, // 29: academic.AcademicService.GetMajor:input_type -> academic.GetMajorRequest
-	27, // 30: academic.AcademicService.UpdateMajor:input_type -> academic.UpdateMajorRequest
-	29, // 31: academic.AcademicService.DeleteMajor:input_type -> academic.DeleteMajorRequest
-	31, // 32: academic.AcademicService.ListMajors:input_type -> academic.ListMajorsRequest
-	2,  // 33: academic.AcademicService.CreateSemester:output_type -> academic.CreateSemesterResponse
-	4,  // 34: academic.AcademicService.GetSemester:output_type -> academic.GetSemesterResponse
-	6,  // 35: academic.AcademicService.UpdateSemester:output_type -> academic.UpdateSemesterResponse
-	8,  // 36: academic.AcademicService.DeleteSemester:output_type -> academic.DeleteSemesterResponse
-	10, // 37: academic.AcademicService.ListSemesters:output_type -> academic.ListSemestersResponse
-	13, // 38: academic.AcademicService.CreateFaculty:output_type -> academic.CreateFacultyResponse
-	15, // 39: academic.AcademicService.GetFaculty:output_type -> academic.GetFacultyResponse
-	17, // 40: academic.AcademicService.UpdateFaculty:output_type -> academic.UpdateFacultyResponse
-	19, // 41: academic.AcademicService.DeleteFaculty:output_type -> academic.DeleteFacultyResponse
-	21, // 42: academic.AcademicService.ListFaculties:output_type -> academic.ListFacultiesResponse
-	24, // 43: academic.AcademicService.CreateMajor:output_type -> academic.CreateMajorResponse
-	26, // 44: academic.AcademicService.GetMajor:output_type -> academic.GetMajorResponse
-	28, // 45: academic.AcademicService.UpdateMajor:output_type -> academic.UpdateMajorResponse
-	30, // 46: academic.AcademicService.DeleteMajor:output_type -> academic.DeleteMajorResponse
-	32, // 47: academic.AcademicService.ListMajors:output_type -> academic.ListMajorsResponse
-	33, // [33:48] is the sub-list for method output_type
-	18, // [18:33] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	34, // 5: academic.ListSemestersRequest.search:type_name -> common.SearchRequest
+	0,  // 6: academic.ListSemestersResponse.semesters:type_name -> academic.Semester
+	33, // 7: academic.Faculty.created_at:type_name -> google.protobuf.Timestamp
+	33, // 8: academic.Faculty.updated_at:type_name -> google.protobuf.Timestamp
+	11, // 9: academic.CreateFacultyResponse.faculty:type_name -> academic.Faculty
+	11, // 10: academic.GetFacultyResponse.faculty:type_name -> academic.Faculty
+	11, // 11: academic.UpdateFacultyResponse.faculty:type_name -> academic.Faculty
+	34, // 12: academic.ListFacultiesRequest.search:type_name -> common.SearchRequest
+	11, // 13: academic.ListFacultiesResponse.faculties:type_name -> academic.Faculty
+	33, // 14: academic.Major.created_at:type_name -> google.protobuf.Timestamp
+	33, // 15: academic.Major.updated_at:type_name -> google.protobuf.Timestamp
+	22, // 16: academic.CreateMajorResponse.major:type_name -> academic.Major
+	22, // 17: academic.GetMajorResponse.major:type_name -> academic.Major
+	22, // 18: academic.UpdateMajorResponse.major:type_name -> academic.Major
+	34, // 19: academic.ListMajorsRequest.search:type_name -> common.SearchRequest
+	22, // 20: academic.ListMajorsResponse.majors:type_name -> academic.Major
+	1,  // 21: academic.AcademicService.CreateSemester:input_type -> academic.CreateSemesterRequest
+	3,  // 22: academic.AcademicService.GetSemester:input_type -> academic.GetSemesterRequest
+	5,  // 23: academic.AcademicService.UpdateSemester:input_type -> academic.UpdateSemesterRequest
+	7,  // 24: academic.AcademicService.DeleteSemester:input_type -> academic.DeleteSemesterRequest
+	9,  // 25: academic.AcademicService.ListSemesters:input_type -> academic.ListSemestersRequest
+	12, // 26: academic.AcademicService.CreateFaculty:input_type -> academic.CreateFacultyRequest
+	14, // 27: academic.AcademicService.GetFaculty:input_type -> academic.GetFacultyRequest
+	16, // 28: academic.AcademicService.UpdateFaculty:input_type -> academic.UpdateFacultyRequest
+	18, // 29: academic.AcademicService.DeleteFaculty:input_type -> academic.DeleteFacultyRequest
+	20, // 30: academic.AcademicService.ListFaculties:input_type -> academic.ListFacultiesRequest
+	23, // 31: academic.AcademicService.CreateMajor:input_type -> academic.CreateMajorRequest
+	25, // 32: academic.AcademicService.GetMajor:input_type -> academic.GetMajorRequest
+	27, // 33: academic.AcademicService.UpdateMajor:input_type -> academic.UpdateMajorRequest
+	29, // 34: academic.AcademicService.DeleteMajor:input_type -> academic.DeleteMajorRequest
+	31, // 35: academic.AcademicService.ListMajors:input_type -> academic.ListMajorsRequest
+	2,  // 36: academic.AcademicService.CreateSemester:output_type -> academic.CreateSemesterResponse
+	4,  // 37: academic.AcademicService.GetSemester:output_type -> academic.GetSemesterResponse
+	6,  // 38: academic.AcademicService.UpdateSemester:output_type -> academic.UpdateSemesterResponse
+	8,  // 39: academic.AcademicService.DeleteSemester:output_type -> academic.DeleteSemesterResponse
+	10, // 40: academic.AcademicService.ListSemesters:output_type -> academic.ListSemestersResponse
+	13, // 41: academic.AcademicService.CreateFaculty:output_type -> academic.CreateFacultyResponse
+	15, // 42: academic.AcademicService.GetFaculty:output_type -> academic.GetFacultyResponse
+	17, // 43: academic.AcademicService.UpdateFaculty:output_type -> academic.UpdateFacultyResponse
+	19, // 44: academic.AcademicService.DeleteFaculty:output_type -> academic.DeleteFacultyResponse
+	21, // 45: academic.AcademicService.ListFaculties:output_type -> academic.ListFacultiesResponse
+	24, // 46: academic.AcademicService.CreateMajor:output_type -> academic.CreateMajorResponse
+	26, // 47: academic.AcademicService.GetMajor:output_type -> academic.GetMajorResponse
+	28, // 48: academic.AcademicService.UpdateMajor:output_type -> academic.UpdateMajorResponse
+	30, // 49: academic.AcademicService.DeleteMajor:output_type -> academic.DeleteMajorResponse
+	32, // 50: academic.AcademicService.ListMajors:output_type -> academic.ListMajorsResponse
+	36, // [36:51] is the sub-list for method output_type
+	21, // [21:36] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_proto_academic_academic_proto_init() }
@@ -1942,6 +2028,9 @@ func file_proto_academic_academic_proto_init() {
 	if File_proto_academic_academic_proto != nil {
 		return
 	}
+	file_proto_academic_academic_proto_msgTypes[5].OneofWrappers = []any{}
+	file_proto_academic_academic_proto_msgTypes[16].OneofWrappers = []any{}
+	file_proto_academic_academic_proto_msgTypes[27].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

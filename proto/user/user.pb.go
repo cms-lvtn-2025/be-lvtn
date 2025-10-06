@@ -12,6 +12,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
+	common "thaily/proto/common"
 	unsafe "unsafe"
 )
 
@@ -207,12 +208,13 @@ func (x *Student) GetUpdatedBy() string {
 type CreateStudentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Phone         string                 `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone,omitempty"`
+	Phone         *string                `protobuf:"bytes,2,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
 	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
-	Gender        Gender                 `protobuf:"varint,4,opt,name=gender,proto3,enum=user.Gender" json:"gender,omitempty"`
+	Gender        *Gender                `protobuf:"varint,4,opt,name=gender,proto3,enum=user.Gender,oneof" json:"gender,omitempty"`
 	MajorCode     string                 `protobuf:"bytes,5,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
 	ClassCode     string                 `protobuf:"bytes,6,opt,name=class_code,json=classCode,proto3" json:"class_code,omitempty"`
 	SemesterCode  string                 `protobuf:"bytes,7,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -255,8 +257,8 @@ func (x *CreateStudentRequest) GetEmail() string {
 }
 
 func (x *CreateStudentRequest) GetPhone() string {
-	if x != nil {
-		return x.Phone
+	if x != nil && x.Phone != nil {
+		return *x.Phone
 	}
 	return ""
 }
@@ -269,8 +271,8 @@ func (x *CreateStudentRequest) GetUsername() string {
 }
 
 func (x *CreateStudentRequest) GetGender() Gender {
-	if x != nil {
-		return x.Gender
+	if x != nil && x.Gender != nil {
+		return *x.Gender
 	}
 	return Gender_MALE
 }
@@ -292,6 +294,13 @@ func (x *CreateStudentRequest) GetClassCode() string {
 func (x *CreateStudentRequest) GetSemesterCode() string {
 	if x != nil {
 		return x.SemesterCode
+	}
+	return ""
+}
+
+func (x *CreateStudentRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -431,13 +440,14 @@ func (x *GetStudentResponse) GetStudent() *Student {
 type UpdateStudentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	Phone         string                 `protobuf:"bytes,3,opt,name=phone,proto3" json:"phone,omitempty"`
-	Username      string                 `protobuf:"bytes,4,opt,name=username,proto3" json:"username,omitempty"`
-	Gender        Gender                 `protobuf:"varint,5,opt,name=gender,proto3,enum=user.Gender" json:"gender,omitempty"`
-	MajorCode     string                 `protobuf:"bytes,6,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	ClassCode     string                 `protobuf:"bytes,7,opt,name=class_code,json=classCode,proto3" json:"class_code,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,8,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	Email         *string                `protobuf:"bytes,2,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	Phone         *string                `protobuf:"bytes,3,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	Username      *string                `protobuf:"bytes,4,opt,name=username,proto3,oneof" json:"username,omitempty"`
+	Gender        *Gender                `protobuf:"varint,5,opt,name=gender,proto3,enum=user.Gender,oneof" json:"gender,omitempty"`
+	MajorCode     *string                `protobuf:"bytes,6,opt,name=major_code,json=majorCode,proto3,oneof" json:"major_code,omitempty"`
+	ClassCode     *string                `protobuf:"bytes,7,opt,name=class_code,json=classCode,proto3,oneof" json:"class_code,omitempty"`
+	SemesterCode  *string                `protobuf:"bytes,8,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,9,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -480,50 +490,57 @@ func (x *UpdateStudentRequest) GetId() string {
 }
 
 func (x *UpdateStudentRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
+	if x != nil && x.Email != nil {
+		return *x.Email
 	}
 	return ""
 }
 
 func (x *UpdateStudentRequest) GetPhone() string {
-	if x != nil {
-		return x.Phone
+	if x != nil && x.Phone != nil {
+		return *x.Phone
 	}
 	return ""
 }
 
 func (x *UpdateStudentRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
+	if x != nil && x.Username != nil {
+		return *x.Username
 	}
 	return ""
 }
 
 func (x *UpdateStudentRequest) GetGender() Gender {
-	if x != nil {
-		return x.Gender
+	if x != nil && x.Gender != nil {
+		return *x.Gender
 	}
 	return Gender_MALE
 }
 
 func (x *UpdateStudentRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
+	if x != nil && x.MajorCode != nil {
+		return *x.MajorCode
 	}
 	return ""
 }
 
 func (x *UpdateStudentRequest) GetClassCode() string {
-	if x != nil {
-		return x.ClassCode
+	if x != nil && x.ClassCode != nil {
+		return *x.ClassCode
 	}
 	return ""
 }
 
 func (x *UpdateStudentRequest) GetSemesterCode() string {
+	if x != nil && x.SemesterCode != nil {
+		return *x.SemesterCode
+	}
+	return ""
+}
+
+func (x *UpdateStudentRequest) GetUpdatedBy() string {
 	if x != nil {
-		return x.SemesterCode
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -662,11 +679,7 @@ func (x *DeleteStudentResponse) GetSuccess() bool {
 
 type ListStudentsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	MajorCode     string                 `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	ClassCode     string                 `protobuf:"bytes,4,opt,name=class_code,json=classCode,proto3" json:"class_code,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -701,45 +714,19 @@ func (*ListStudentsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_user_user_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ListStudentsRequest) GetPage() int32 {
+func (x *ListStudentsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListStudentsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListStudentsRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
-	}
-	return ""
-}
-
-func (x *ListStudentsRequest) GetClassCode() string {
-	if x != nil {
-		return x.ClassCode
-	}
-	return ""
-}
-
-func (x *ListStudentsRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
-	}
-	return ""
+	return nil
 }
 
 type ListStudentsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Students      []*Student             `protobuf:"bytes,1,rep,name=students,proto3" json:"students,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -784,6 +771,20 @@ func (x *ListStudentsResponse) GetStudents() []*Student {
 func (x *ListStudentsResponse) GetTotal() int32 {
 	if x != nil {
 		return x.Total
+	}
+	return 0
+}
+
+func (x *ListStudentsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListStudentsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
 	}
 	return 0
 }
@@ -912,6 +913,7 @@ type CreateTeacherRequest struct {
 	Gender        Gender                 `protobuf:"varint,3,opt,name=gender,proto3,enum=user.Gender" json:"gender,omitempty"`
 	MajorCode     string                 `protobuf:"bytes,4,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
 	SemesterCode  string                 `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -977,6 +979,13 @@ func (x *CreateTeacherRequest) GetMajorCode() string {
 func (x *CreateTeacherRequest) GetSemesterCode() string {
 	if x != nil {
 		return x.SemesterCode
+	}
+	return ""
+}
+
+func (x *CreateTeacherRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -1121,6 +1130,7 @@ type UpdateTeacherRequest struct {
 	Gender        Gender                 `protobuf:"varint,4,opt,name=gender,proto3,enum=user.Gender" json:"gender,omitempty"`
 	MajorCode     string                 `protobuf:"bytes,5,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
 	SemesterCode  string                 `protobuf:"bytes,6,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1193,6 +1203,13 @@ func (x *UpdateTeacherRequest) GetMajorCode() string {
 func (x *UpdateTeacherRequest) GetSemesterCode() string {
 	if x != nil {
 		return x.SemesterCode
+	}
+	return ""
+}
+
+func (x *UpdateTeacherRequest) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -1331,10 +1348,7 @@ func (x *DeleteTeacherResponse) GetSuccess() bool {
 
 type ListTeachersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	MajorCode     string                 `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1369,38 +1383,19 @@ func (*ListTeachersRequest) Descriptor() ([]byte, []int) {
 	return file_proto_user_user_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *ListTeachersRequest) GetPage() int32 {
+func (x *ListTeachersRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListTeachersRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListTeachersRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
-	}
-	return ""
-}
-
-func (x *ListTeachersRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
-	}
-	return ""
+	return nil
 }
 
 type ListTeachersResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Teachers      []*Teacher             `protobuf:"bytes,1,rep,name=teachers,proto3" json:"teachers,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1449,11 +1444,25 @@ func (x *ListTeachersResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListTeachersResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListTeachersResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 var File_proto_user_user_proto protoreflect.FileDescriptor
 
 const file_proto_user_user_proto_rawDesc = "" +
 	"\n" +
-	"\x15proto/user/user.proto\x12\x04user\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9e\x03\n" +
+	"\x15proto/user/user.proto\x12\x04user\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\x9e\x03\n" +
 	"\aStudent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x14\n" +
@@ -1473,51 +1482,60 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\v \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\f \x01(\tR\tupdatedBy\"\xe7\x01\n" +
+	"updated_by\x18\f \x01(\tR\tupdatedBy\"\xa5\x02\n" +
 	"\x14CreateStudentRequest\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\x12\x14\n" +
-	"\x05phone\x18\x02 \x01(\tR\x05phone\x12\x1a\n" +
-	"\busername\x18\x03 \x01(\tR\busername\x12$\n" +
-	"\x06gender\x18\x04 \x01(\x0e2\f.user.GenderR\x06gender\x12\x1d\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x19\n" +
+	"\x05phone\x18\x02 \x01(\tH\x00R\x05phone\x88\x01\x01\x12\x1a\n" +
+	"\busername\x18\x03 \x01(\tR\busername\x12)\n" +
+	"\x06gender\x18\x04 \x01(\x0e2\f.user.GenderH\x01R\x06gender\x88\x01\x01\x12\x1d\n" +
 	"\n" +
 	"major_code\x18\x05 \x01(\tR\tmajorCode\x12\x1d\n" +
 	"\n" +
 	"class_code\x18\x06 \x01(\tR\tclassCode\x12#\n" +
-	"\rsemester_code\x18\a \x01(\tR\fsemesterCode\"@\n" +
+	"\rsemester_code\x18\a \x01(\tR\fsemesterCode\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\b \x01(\tR\tcreatedByB\b\n" +
+	"\x06_phoneB\t\n" +
+	"\a_gender\"@\n" +
 	"\x15CreateStudentResponse\x12'\n" +
 	"\astudent\x18\x01 \x01(\v2\r.user.StudentR\astudent\"#\n" +
 	"\x11GetStudentRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
 	"\x12GetStudentResponse\x12'\n" +
-	"\astudent\x18\x01 \x01(\v2\r.user.StudentR\astudent\"\xf7\x01\n" +
+	"\astudent\x18\x01 \x01(\v2\r.user.StudentR\astudent\"\x95\x03\n" +
 	"\x14UpdateStudentRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12\x14\n" +
-	"\x05phone\x18\x03 \x01(\tR\x05phone\x12\x1a\n" +
-	"\busername\x18\x04 \x01(\tR\busername\x12$\n" +
-	"\x06gender\x18\x05 \x01(\x0e2\f.user.GenderR\x06gender\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x88\x01\x01\x12\x19\n" +
+	"\x05phone\x18\x03 \x01(\tH\x01R\x05phone\x88\x01\x01\x12\x1f\n" +
+	"\busername\x18\x04 \x01(\tH\x02R\busername\x88\x01\x01\x12)\n" +
+	"\x06gender\x18\x05 \x01(\x0e2\f.user.GenderH\x03R\x06gender\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"major_code\x18\x06 \x01(\tR\tmajorCode\x12\x1d\n" +
+	"major_code\x18\x06 \x01(\tH\x04R\tmajorCode\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"class_code\x18\a \x01(\tR\tclassCode\x12#\n" +
-	"\rsemester_code\x18\b \x01(\tR\fsemesterCode\"@\n" +
+	"class_code\x18\a \x01(\tH\x05R\tclassCode\x88\x01\x01\x12(\n" +
+	"\rsemester_code\x18\b \x01(\tH\x06R\fsemesterCode\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\t \x01(\tR\tupdatedByB\b\n" +
+	"\x06_emailB\b\n" +
+	"\x06_phoneB\v\n" +
+	"\t_usernameB\t\n" +
+	"\a_genderB\r\n" +
+	"\v_major_codeB\r\n" +
+	"\v_class_codeB\x10\n" +
+	"\x0e_semester_code\"@\n" +
 	"\x15UpdateStudentResponse\x12'\n" +
 	"\astudent\x18\x01 \x01(\v2\r.user.StudentR\astudent\"&\n" +
 	"\x14DeleteStudentRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x15DeleteStudentResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xa9\x01\n" +
-	"\x13ListStudentsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"major_code\x18\x03 \x01(\tR\tmajorCode\x12\x1d\n" +
-	"\n" +
-	"class_code\x18\x04 \x01(\tR\tclassCode\x12#\n" +
-	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\"W\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"D\n" +
+	"\x13ListStudentsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x88\x01\n" +
 	"\x14ListStudentsResponse\x12)\n" +
 	"\bstudents\x18\x01 \x03(\v2\r.user.StudentR\bstudents\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xe9\x02\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xe9\x02\n" +
 	"\aTeacher\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -1534,20 +1552,22 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"created_by\x18\t \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
 	"updated_by\x18\n" +
-	" \x01(\tR\tupdatedBy\"\xb2\x01\n" +
+	" \x01(\tR\tupdatedBy\"\xd1\x01\n" +
 	"\x14CreateTeacherRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12$\n" +
 	"\x06gender\x18\x03 \x01(\x0e2\f.user.GenderR\x06gender\x12\x1d\n" +
 	"\n" +
 	"major_code\x18\x04 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\"@\n" +
+	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x06 \x01(\tR\tcreatedBy\"@\n" +
 	"\x15CreateTeacherResponse\x12'\n" +
 	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"#\n" +
 	"\x11GetTeacherRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
 	"\x12GetTeacherResponse\x12'\n" +
-	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"\xc2\x01\n" +
+	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"\xe1\x01\n" +
 	"\x14UpdateTeacherRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -1555,22 +1575,22 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"\x06gender\x18\x04 \x01(\x0e2\f.user.GenderR\x06gender\x12\x1d\n" +
 	"\n" +
 	"major_code\x18\x05 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x06 \x01(\tR\fsemesterCode\"@\n" +
+	"\rsemester_code\x18\x06 \x01(\tR\fsemesterCode\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedBy\"@\n" +
 	"\x15UpdateTeacherResponse\x12'\n" +
 	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"&\n" +
 	"\x14DeleteTeacherRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x15DeleteTeacherResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x8a\x01\n" +
-	"\x13ListTeachersRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"major_code\x18\x03 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\"W\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"D\n" +
+	"\x13ListTeachersRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x88\x01\n" +
 	"\x14ListTeachersResponse\x12)\n" +
 	"\bteachers\x18\x01 \x03(\v2\r.user.TeacherR\bteachers\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total*)\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize*)\n" +
 	"\x06Gender\x12\b\n" +
 	"\x04MALE\x10\x00\x12\n" +
 	"\n" +
@@ -1629,6 +1649,7 @@ var file_proto_user_user_proto_goTypes = []any{
 	(*ListTeachersRequest)(nil),   // 21: user.ListTeachersRequest
 	(*ListTeachersResponse)(nil),  // 22: user.ListTeachersResponse
 	(*timestamppb.Timestamp)(nil), // 23: google.protobuf.Timestamp
+	(*common.SearchRequest)(nil),  // 24: common.SearchRequest
 }
 var file_proto_user_user_proto_depIdxs = []int32{
 	0,  // 0: user.Student.gender:type_name -> user.Gender
@@ -1639,41 +1660,43 @@ var file_proto_user_user_proto_depIdxs = []int32{
 	1,  // 5: user.GetStudentResponse.student:type_name -> user.Student
 	0,  // 6: user.UpdateStudentRequest.gender:type_name -> user.Gender
 	1,  // 7: user.UpdateStudentResponse.student:type_name -> user.Student
-	1,  // 8: user.ListStudentsResponse.students:type_name -> user.Student
-	0,  // 9: user.Teacher.gender:type_name -> user.Gender
-	23, // 10: user.Teacher.created_at:type_name -> google.protobuf.Timestamp
-	23, // 11: user.Teacher.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 12: user.CreateTeacherRequest.gender:type_name -> user.Gender
-	12, // 13: user.CreateTeacherResponse.teacher:type_name -> user.Teacher
-	12, // 14: user.GetTeacherResponse.teacher:type_name -> user.Teacher
-	0,  // 15: user.UpdateTeacherRequest.gender:type_name -> user.Gender
-	12, // 16: user.UpdateTeacherResponse.teacher:type_name -> user.Teacher
-	12, // 17: user.ListTeachersResponse.teachers:type_name -> user.Teacher
-	2,  // 18: user.UserService.CreateStudent:input_type -> user.CreateStudentRequest
-	4,  // 19: user.UserService.GetStudent:input_type -> user.GetStudentRequest
-	6,  // 20: user.UserService.UpdateStudent:input_type -> user.UpdateStudentRequest
-	8,  // 21: user.UserService.DeleteStudent:input_type -> user.DeleteStudentRequest
-	10, // 22: user.UserService.ListStudents:input_type -> user.ListStudentsRequest
-	13, // 23: user.UserService.CreateTeacher:input_type -> user.CreateTeacherRequest
-	15, // 24: user.UserService.GetTeacher:input_type -> user.GetTeacherRequest
-	17, // 25: user.UserService.UpdateTeacher:input_type -> user.UpdateTeacherRequest
-	19, // 26: user.UserService.DeleteTeacher:input_type -> user.DeleteTeacherRequest
-	21, // 27: user.UserService.ListTeachers:input_type -> user.ListTeachersRequest
-	3,  // 28: user.UserService.CreateStudent:output_type -> user.CreateStudentResponse
-	5,  // 29: user.UserService.GetStudent:output_type -> user.GetStudentResponse
-	7,  // 30: user.UserService.UpdateStudent:output_type -> user.UpdateStudentResponse
-	9,  // 31: user.UserService.DeleteStudent:output_type -> user.DeleteStudentResponse
-	11, // 32: user.UserService.ListStudents:output_type -> user.ListStudentsResponse
-	14, // 33: user.UserService.CreateTeacher:output_type -> user.CreateTeacherResponse
-	16, // 34: user.UserService.GetTeacher:output_type -> user.GetTeacherResponse
-	18, // 35: user.UserService.UpdateTeacher:output_type -> user.UpdateTeacherResponse
-	20, // 36: user.UserService.DeleteTeacher:output_type -> user.DeleteTeacherResponse
-	22, // 37: user.UserService.ListTeachers:output_type -> user.ListTeachersResponse
-	28, // [28:38] is the sub-list for method output_type
-	18, // [18:28] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	24, // 8: user.ListStudentsRequest.search:type_name -> common.SearchRequest
+	1,  // 9: user.ListStudentsResponse.students:type_name -> user.Student
+	0,  // 10: user.Teacher.gender:type_name -> user.Gender
+	23, // 11: user.Teacher.created_at:type_name -> google.protobuf.Timestamp
+	23, // 12: user.Teacher.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 13: user.CreateTeacherRequest.gender:type_name -> user.Gender
+	12, // 14: user.CreateTeacherResponse.teacher:type_name -> user.Teacher
+	12, // 15: user.GetTeacherResponse.teacher:type_name -> user.Teacher
+	0,  // 16: user.UpdateTeacherRequest.gender:type_name -> user.Gender
+	12, // 17: user.UpdateTeacherResponse.teacher:type_name -> user.Teacher
+	24, // 18: user.ListTeachersRequest.search:type_name -> common.SearchRequest
+	12, // 19: user.ListTeachersResponse.teachers:type_name -> user.Teacher
+	2,  // 20: user.UserService.CreateStudent:input_type -> user.CreateStudentRequest
+	4,  // 21: user.UserService.GetStudent:input_type -> user.GetStudentRequest
+	6,  // 22: user.UserService.UpdateStudent:input_type -> user.UpdateStudentRequest
+	8,  // 23: user.UserService.DeleteStudent:input_type -> user.DeleteStudentRequest
+	10, // 24: user.UserService.ListStudents:input_type -> user.ListStudentsRequest
+	13, // 25: user.UserService.CreateTeacher:input_type -> user.CreateTeacherRequest
+	15, // 26: user.UserService.GetTeacher:input_type -> user.GetTeacherRequest
+	17, // 27: user.UserService.UpdateTeacher:input_type -> user.UpdateTeacherRequest
+	19, // 28: user.UserService.DeleteTeacher:input_type -> user.DeleteTeacherRequest
+	21, // 29: user.UserService.ListTeachers:input_type -> user.ListTeachersRequest
+	3,  // 30: user.UserService.CreateStudent:output_type -> user.CreateStudentResponse
+	5,  // 31: user.UserService.GetStudent:output_type -> user.GetStudentResponse
+	7,  // 32: user.UserService.UpdateStudent:output_type -> user.UpdateStudentResponse
+	9,  // 33: user.UserService.DeleteStudent:output_type -> user.DeleteStudentResponse
+	11, // 34: user.UserService.ListStudents:output_type -> user.ListStudentsResponse
+	14, // 35: user.UserService.CreateTeacher:output_type -> user.CreateTeacherResponse
+	16, // 36: user.UserService.GetTeacher:output_type -> user.GetTeacherResponse
+	18, // 37: user.UserService.UpdateTeacher:output_type -> user.UpdateTeacherResponse
+	20, // 38: user.UserService.DeleteTeacher:output_type -> user.DeleteTeacherResponse
+	22, // 39: user.UserService.ListTeachers:output_type -> user.ListTeachersResponse
+	30, // [30:40] is the sub-list for method output_type
+	20, // [20:30] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_proto_user_user_proto_init() }
@@ -1681,6 +1704,8 @@ func file_proto_user_user_proto_init() {
 	if File_proto_user_user_proto != nil {
 		return
 	}
+	file_proto_user_user_proto_msgTypes[1].OneofWrappers = []any{}
+	file_proto_user_user_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

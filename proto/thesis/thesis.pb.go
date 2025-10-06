@@ -12,6 +12,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
+	common "thaily/proto/common"
 	unsafe "unsafe"
 )
 
@@ -291,9 +292,10 @@ func (x *Midterm) GetUpdatedBy() string {
 type CreateMidtermRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Grade         int32                  `protobuf:"varint,2,opt,name=grade,proto3" json:"grade,omitempty"`
+	Grade         *int32                 `protobuf:"varint,2,opt,name=grade,proto3,oneof" json:"grade,omitempty"`
 	Status        MidtermStatus          `protobuf:"varint,3,opt,name=status,proto3,enum=thesis.MidtermStatus" json:"status,omitempty"`
-	Feedback      string                 `protobuf:"bytes,4,opt,name=feedback,proto3" json:"feedback,omitempty"`
+	Feedback      *string                `protobuf:"bytes,4,opt,name=feedback,proto3,oneof" json:"feedback,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -336,8 +338,8 @@ func (x *CreateMidtermRequest) GetTitle() string {
 }
 
 func (x *CreateMidtermRequest) GetGrade() int32 {
-	if x != nil {
-		return x.Grade
+	if x != nil && x.Grade != nil {
+		return *x.Grade
 	}
 	return 0
 }
@@ -350,8 +352,15 @@ func (x *CreateMidtermRequest) GetStatus() MidtermStatus {
 }
 
 func (x *CreateMidtermRequest) GetFeedback() string {
+	if x != nil && x.Feedback != nil {
+		return *x.Feedback
+	}
+	return ""
+}
+
+func (x *CreateMidtermRequest) GetCreatedBy() string {
 	if x != nil {
-		return x.Feedback
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -492,9 +501,10 @@ type UpdateMidtermRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Grade         int32                  `protobuf:"varint,3,opt,name=grade,proto3" json:"grade,omitempty"`
-	Status        MidtermStatus          `protobuf:"varint,4,opt,name=status,proto3,enum=thesis.MidtermStatus" json:"status,omitempty"`
-	Feedback      string                 `protobuf:"bytes,5,opt,name=feedback,proto3" json:"feedback,omitempty"`
+	Grade         *int32                 `protobuf:"varint,3,opt,name=grade,proto3,oneof" json:"grade,omitempty"`
+	Status        *MidtermStatus         `protobuf:"varint,4,opt,name=status,proto3,enum=thesis.MidtermStatus,oneof" json:"status,omitempty"`
+	Feedback      *string                `protobuf:"bytes,5,opt,name=feedback,proto3,oneof" json:"feedback,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,6,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -544,22 +554,29 @@ func (x *UpdateMidtermRequest) GetTitle() string {
 }
 
 func (x *UpdateMidtermRequest) GetGrade() int32 {
-	if x != nil {
-		return x.Grade
+	if x != nil && x.Grade != nil {
+		return *x.Grade
 	}
 	return 0
 }
 
 func (x *UpdateMidtermRequest) GetStatus() MidtermStatus {
-	if x != nil {
-		return x.Status
+	if x != nil && x.Status != nil {
+		return *x.Status
 	}
 	return MidtermStatus_NOT_SUBMITTED
 }
 
 func (x *UpdateMidtermRequest) GetFeedback() string {
+	if x != nil && x.Feedback != nil {
+		return *x.Feedback
+	}
+	return ""
+}
+
+func (x *UpdateMidtermRequest) GetUpdatedBy() string {
 	if x != nil {
-		return x.Feedback
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -698,8 +715,7 @@ func (x *DeleteMidtermResponse) GetSuccess() bool {
 
 type ListMidtermsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -734,24 +750,19 @@ func (*ListMidtermsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ListMidtermsRequest) GetPage() int32 {
+func (x *ListMidtermsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListMidtermsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
+	return nil
 }
 
 type ListMidtermsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Midterms      []*Midterm             `protobuf:"bytes,1,rep,name=midterms,proto3" json:"midterms,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -796,6 +807,20 @@ func (x *ListMidtermsResponse) GetMidterms() []*Midterm {
 func (x *ListMidtermsResponse) GetTotal() int32 {
 	if x != nil {
 		return x.Total
+	}
+	return 0
+}
+
+func (x *ListMidtermsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListMidtermsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
 	}
 	return 0
 }
@@ -944,13 +969,14 @@ func (x *Final) GetUpdatedBy() string {
 type CreateFinalRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Title           string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	SupervisorGrade int32                  `protobuf:"varint,2,opt,name=supervisor_grade,json=supervisorGrade,proto3" json:"supervisor_grade,omitempty"`
-	ReviewerGrade   int32                  `protobuf:"varint,3,opt,name=reviewer_grade,json=reviewerGrade,proto3" json:"reviewer_grade,omitempty"`
-	DefenseGrade    int32                  `protobuf:"varint,4,opt,name=defense_grade,json=defenseGrade,proto3" json:"defense_grade,omitempty"`
-	FinalGrade      int32                  `protobuf:"varint,5,opt,name=final_grade,json=finalGrade,proto3" json:"final_grade,omitempty"`
+	SupervisorGrade *int32                 `protobuf:"varint,2,opt,name=supervisor_grade,json=supervisorGrade,proto3,oneof" json:"supervisor_grade,omitempty"`
+	ReviewerGrade   *int32                 `protobuf:"varint,3,opt,name=reviewer_grade,json=reviewerGrade,proto3,oneof" json:"reviewer_grade,omitempty"`
+	DefenseGrade    *int32                 `protobuf:"varint,4,opt,name=defense_grade,json=defenseGrade,proto3,oneof" json:"defense_grade,omitempty"`
+	FinalGrade      *int32                 `protobuf:"varint,5,opt,name=final_grade,json=finalGrade,proto3,oneof" json:"final_grade,omitempty"`
 	Status          FinalStatus            `protobuf:"varint,6,opt,name=status,proto3,enum=thesis.FinalStatus" json:"status,omitempty"`
-	Notes           string                 `protobuf:"bytes,7,opt,name=notes,proto3" json:"notes,omitempty"`
+	Notes           *string                `protobuf:"bytes,7,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
 	CompletionDate  *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=completion_date,json=completionDate,proto3" json:"completion_date,omitempty"`
+	CreatedBy       string                 `protobuf:"bytes,9,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -993,29 +1019,29 @@ func (x *CreateFinalRequest) GetTitle() string {
 }
 
 func (x *CreateFinalRequest) GetSupervisorGrade() int32 {
-	if x != nil {
-		return x.SupervisorGrade
+	if x != nil && x.SupervisorGrade != nil {
+		return *x.SupervisorGrade
 	}
 	return 0
 }
 
 func (x *CreateFinalRequest) GetReviewerGrade() int32 {
-	if x != nil {
-		return x.ReviewerGrade
+	if x != nil && x.ReviewerGrade != nil {
+		return *x.ReviewerGrade
 	}
 	return 0
 }
 
 func (x *CreateFinalRequest) GetDefenseGrade() int32 {
-	if x != nil {
-		return x.DefenseGrade
+	if x != nil && x.DefenseGrade != nil {
+		return *x.DefenseGrade
 	}
 	return 0
 }
 
 func (x *CreateFinalRequest) GetFinalGrade() int32 {
-	if x != nil {
-		return x.FinalGrade
+	if x != nil && x.FinalGrade != nil {
+		return *x.FinalGrade
 	}
 	return 0
 }
@@ -1028,8 +1054,8 @@ func (x *CreateFinalRequest) GetStatus() FinalStatus {
 }
 
 func (x *CreateFinalRequest) GetNotes() string {
-	if x != nil {
-		return x.Notes
+	if x != nil && x.Notes != nil {
+		return *x.Notes
 	}
 	return ""
 }
@@ -1039,6 +1065,13 @@ func (x *CreateFinalRequest) GetCompletionDate() *timestamppb.Timestamp {
 		return x.CompletionDate
 	}
 	return nil
+}
+
+func (x *CreateFinalRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
 }
 
 type CreateFinalResponse struct {
@@ -1177,13 +1210,14 @@ type UpdateFinalRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title           string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	SupervisorGrade int32                  `protobuf:"varint,3,opt,name=supervisor_grade,json=supervisorGrade,proto3" json:"supervisor_grade,omitempty"`
-	ReviewerGrade   int32                  `protobuf:"varint,4,opt,name=reviewer_grade,json=reviewerGrade,proto3" json:"reviewer_grade,omitempty"`
-	DefenseGrade    int32                  `protobuf:"varint,5,opt,name=defense_grade,json=defenseGrade,proto3" json:"defense_grade,omitempty"`
-	FinalGrade      int32                  `protobuf:"varint,6,opt,name=final_grade,json=finalGrade,proto3" json:"final_grade,omitempty"`
-	Status          FinalStatus            `protobuf:"varint,7,opt,name=status,proto3,enum=thesis.FinalStatus" json:"status,omitempty"`
-	Notes           string                 `protobuf:"bytes,8,opt,name=notes,proto3" json:"notes,omitempty"`
+	SupervisorGrade *int32                 `protobuf:"varint,3,opt,name=supervisor_grade,json=supervisorGrade,proto3,oneof" json:"supervisor_grade,omitempty"`
+	ReviewerGrade   *int32                 `protobuf:"varint,4,opt,name=reviewer_grade,json=reviewerGrade,proto3,oneof" json:"reviewer_grade,omitempty"`
+	DefenseGrade    *int32                 `protobuf:"varint,5,opt,name=defense_grade,json=defenseGrade,proto3,oneof" json:"defense_grade,omitempty"`
+	FinalGrade      *int32                 `protobuf:"varint,6,opt,name=final_grade,json=finalGrade,proto3,oneof" json:"final_grade,omitempty"`
+	Status          *FinalStatus           `protobuf:"varint,7,opt,name=status,proto3,enum=thesis.FinalStatus,oneof" json:"status,omitempty"`
+	Notes           *string                `protobuf:"bytes,8,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
 	CompletionDate  *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=completion_date,json=completionDate,proto3" json:"completion_date,omitempty"`
+	UpdatedBy       string                 `protobuf:"bytes,10,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1233,43 +1267,43 @@ func (x *UpdateFinalRequest) GetTitle() string {
 }
 
 func (x *UpdateFinalRequest) GetSupervisorGrade() int32 {
-	if x != nil {
-		return x.SupervisorGrade
+	if x != nil && x.SupervisorGrade != nil {
+		return *x.SupervisorGrade
 	}
 	return 0
 }
 
 func (x *UpdateFinalRequest) GetReviewerGrade() int32 {
-	if x != nil {
-		return x.ReviewerGrade
+	if x != nil && x.ReviewerGrade != nil {
+		return *x.ReviewerGrade
 	}
 	return 0
 }
 
 func (x *UpdateFinalRequest) GetDefenseGrade() int32 {
-	if x != nil {
-		return x.DefenseGrade
+	if x != nil && x.DefenseGrade != nil {
+		return *x.DefenseGrade
 	}
 	return 0
 }
 
 func (x *UpdateFinalRequest) GetFinalGrade() int32 {
-	if x != nil {
-		return x.FinalGrade
+	if x != nil && x.FinalGrade != nil {
+		return *x.FinalGrade
 	}
 	return 0
 }
 
 func (x *UpdateFinalRequest) GetStatus() FinalStatus {
-	if x != nil {
-		return x.Status
+	if x != nil && x.Status != nil {
+		return *x.Status
 	}
 	return FinalStatus_PENDING
 }
 
 func (x *UpdateFinalRequest) GetNotes() string {
-	if x != nil {
-		return x.Notes
+	if x != nil && x.Notes != nil {
+		return *x.Notes
 	}
 	return ""
 }
@@ -1279,6 +1313,13 @@ func (x *UpdateFinalRequest) GetCompletionDate() *timestamppb.Timestamp {
 		return x.CompletionDate
 	}
 	return nil
+}
+
+func (x *UpdateFinalRequest) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
 }
 
 type UpdateFinalResponse struct {
@@ -1415,9 +1456,7 @@ func (x *DeleteFinalResponse) GetSuccess() bool {
 
 type ListFinalsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	Status        FinalStatus            `protobuf:"varint,3,opt,name=status,proto3,enum=thesis.FinalStatus" json:"status,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1452,31 +1491,19 @@ func (*ListFinalsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *ListFinalsRequest) GetPage() int32 {
+func (x *ListFinalsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListFinalsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListFinalsRequest) GetStatus() FinalStatus {
-	if x != nil {
-		return x.Status
-	}
-	return FinalStatus_PENDING
+	return nil
 }
 
 type ListFinalsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Finals        []*Final               `protobuf:"bytes,1,rep,name=finals,proto3" json:"finals,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1521,6 +1548,20 @@ func (x *ListFinalsResponse) GetFinals() []*Final {
 func (x *ListFinalsResponse) GetTotal() int32 {
 	if x != nil {
 		return x.Total
+	}
+	return 0
+}
+
+func (x *ListFinalsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListFinalsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
 	}
 	return 0
 }
@@ -1647,8 +1688,9 @@ type CreateEnrollmentRequest struct {
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	StudentCode   string                 `protobuf:"bytes,2,opt,name=student_code,json=studentCode,proto3" json:"student_code,omitempty"`
 	MidtermCode   string                 `protobuf:"bytes,3,opt,name=midterm_code,json=midtermCode,proto3" json:"midterm_code,omitempty"`
-	FinalCode     string                 `protobuf:"bytes,4,opt,name=final_code,json=finalCode,proto3" json:"final_code,omitempty"`
-	GradeCode     string                 `protobuf:"bytes,5,opt,name=grade_code,json=gradeCode,proto3" json:"grade_code,omitempty"`
+	FinalCode     *string                `protobuf:"bytes,4,opt,name=final_code,json=finalCode,proto3,oneof" json:"final_code,omitempty"`
+	GradeCode     *string                `protobuf:"bytes,5,opt,name=grade_code,json=gradeCode,proto3,oneof" json:"grade_code,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1705,15 +1747,22 @@ func (x *CreateEnrollmentRequest) GetMidtermCode() string {
 }
 
 func (x *CreateEnrollmentRequest) GetFinalCode() string {
-	if x != nil {
-		return x.FinalCode
+	if x != nil && x.FinalCode != nil {
+		return *x.FinalCode
 	}
 	return ""
 }
 
 func (x *CreateEnrollmentRequest) GetGradeCode() string {
+	if x != nil && x.GradeCode != nil {
+		return *x.GradeCode
+	}
+	return ""
+}
+
+func (x *CreateEnrollmentRequest) GetCreatedBy() string {
 	if x != nil {
-		return x.GradeCode
+		return x.CreatedBy
 	}
 	return ""
 }
@@ -1855,9 +1904,10 @@ type UpdateEnrollmentRequest struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	StudentCode   string                 `protobuf:"bytes,3,opt,name=student_code,json=studentCode,proto3" json:"student_code,omitempty"`
-	MidtermCode   string                 `protobuf:"bytes,4,opt,name=midterm_code,json=midtermCode,proto3" json:"midterm_code,omitempty"`
-	FinalCode     string                 `protobuf:"bytes,5,opt,name=final_code,json=finalCode,proto3" json:"final_code,omitempty"`
-	GradeCode     string                 `protobuf:"bytes,6,opt,name=grade_code,json=gradeCode,proto3" json:"grade_code,omitempty"`
+	MidtermCode   *string                `protobuf:"bytes,4,opt,name=midterm_code,json=midtermCode,proto3,oneof" json:"midterm_code,omitempty"`
+	FinalCode     *string                `protobuf:"bytes,5,opt,name=final_code,json=finalCode,proto3,oneof" json:"final_code,omitempty"`
+	GradeCode     *string                `protobuf:"bytes,6,opt,name=grade_code,json=gradeCode,proto3,oneof" json:"grade_code,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1914,22 +1964,29 @@ func (x *UpdateEnrollmentRequest) GetStudentCode() string {
 }
 
 func (x *UpdateEnrollmentRequest) GetMidtermCode() string {
-	if x != nil {
-		return x.MidtermCode
+	if x != nil && x.MidtermCode != nil {
+		return *x.MidtermCode
 	}
 	return ""
 }
 
 func (x *UpdateEnrollmentRequest) GetFinalCode() string {
-	if x != nil {
-		return x.FinalCode
+	if x != nil && x.FinalCode != nil {
+		return *x.FinalCode
 	}
 	return ""
 }
 
 func (x *UpdateEnrollmentRequest) GetGradeCode() string {
+	if x != nil && x.GradeCode != nil {
+		return *x.GradeCode
+	}
+	return ""
+}
+
+func (x *UpdateEnrollmentRequest) GetUpdatedBy() string {
 	if x != nil {
-		return x.GradeCode
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -2068,9 +2125,7 @@ func (x *DeleteEnrollmentResponse) GetSuccess() bool {
 
 type ListEnrollmentsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	StudentCode   string                 `protobuf:"bytes,3,opt,name=student_code,json=studentCode,proto3" json:"student_code,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2105,31 +2160,19 @@ func (*ListEnrollmentsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{31}
 }
 
-func (x *ListEnrollmentsRequest) GetPage() int32 {
+func (x *ListEnrollmentsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListEnrollmentsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListEnrollmentsRequest) GetStudentCode() string {
-	if x != nil {
-		return x.StudentCode
-	}
-	return ""
+	return nil
 }
 
 type ListEnrollmentsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enrollments   []*Enrollment          `protobuf:"bytes,1,rep,name=enrollments,proto3" json:"enrollments,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2178,6 +2221,20 @@ func (x *ListEnrollmentsResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListEnrollmentsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListEnrollmentsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 // ============= Topic =============
 type Topic struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
@@ -2187,7 +2244,6 @@ type Topic struct {
 	EnrollmentCode        string                 `protobuf:"bytes,4,opt,name=enrollment_code,json=enrollmentCode,proto3" json:"enrollment_code,omitempty"`
 	SemesterCode          string                 `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
 	TeacherSupervisorCode string                 `protobuf:"bytes,6,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3" json:"teacher_supervisor_code,omitempty"`
-	GradeDefencesCode     string                 `protobuf:"bytes,7,opt,name=grade_defences_code,json=gradeDefencesCode,proto3" json:"grade_defences_code,omitempty"`
 	Status                TopicStatus            `protobuf:"varint,8,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
 	TimeStart             *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=time_start,json=timeStart,proto3" json:"time_start,omitempty"`
 	TimeEnd               *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=time_end,json=timeEnd,proto3" json:"time_end,omitempty"`
@@ -2271,13 +2327,6 @@ func (x *Topic) GetTeacherSupervisorCode() string {
 	return ""
 }
 
-func (x *Topic) GetGradeDefencesCode() string {
-	if x != nil {
-		return x.GradeDefencesCode
-	}
-	return ""
-}
-
 func (x *Topic) GetStatus() TopicStatus {
 	if x != nil {
 		return x.Status
@@ -2334,10 +2383,10 @@ type CreateTopicRequest struct {
 	EnrollmentCode        string                 `protobuf:"bytes,3,opt,name=enrollment_code,json=enrollmentCode,proto3" json:"enrollment_code,omitempty"`
 	SemesterCode          string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
 	TeacherSupervisorCode string                 `protobuf:"bytes,5,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3" json:"teacher_supervisor_code,omitempty"`
-	GradeDefencesCode     string                 `protobuf:"bytes,6,opt,name=grade_defences_code,json=gradeDefencesCode,proto3" json:"grade_defences_code,omitempty"`
 	Status                TopicStatus            `protobuf:"varint,7,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
 	TimeStart             *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=time_start,json=timeStart,proto3" json:"time_start,omitempty"`
 	TimeEnd               *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=time_end,json=timeEnd,proto3" json:"time_end,omitempty"`
+	CreatedBy             string                 `protobuf:"bytes,10,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -2407,13 +2456,6 @@ func (x *CreateTopicRequest) GetTeacherSupervisorCode() string {
 	return ""
 }
 
-func (x *CreateTopicRequest) GetGradeDefencesCode() string {
-	if x != nil {
-		return x.GradeDefencesCode
-	}
-	return ""
-}
-
 func (x *CreateTopicRequest) GetStatus() TopicStatus {
 	if x != nil {
 		return x.Status
@@ -2433,6 +2475,13 @@ func (x *CreateTopicRequest) GetTimeEnd() *timestamppb.Timestamp {
 		return x.TimeEnd
 	}
 	return nil
+}
+
+func (x *CreateTopicRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
 }
 
 type CreateTopicResponse struct {
@@ -2571,14 +2620,14 @@ type UpdateTopicRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title                 string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	MajorCode             string                 `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	EnrollmentCode        string                 `protobuf:"bytes,4,opt,name=enrollment_code,json=enrollmentCode,proto3" json:"enrollment_code,omitempty"`
-	SemesterCode          string                 `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
-	TeacherSupervisorCode string                 `protobuf:"bytes,6,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3" json:"teacher_supervisor_code,omitempty"`
-	GradeDefencesCode     string                 `protobuf:"bytes,7,opt,name=grade_defences_code,json=gradeDefencesCode,proto3" json:"grade_defences_code,omitempty"`
-	Status                TopicStatus            `protobuf:"varint,8,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
-	TimeStart             *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=time_start,json=timeStart,proto3" json:"time_start,omitempty"`
-	TimeEnd               *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=time_end,json=timeEnd,proto3" json:"time_end,omitempty"`
+	MajorCode             *string                `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3,oneof" json:"major_code,omitempty"`
+	EnrollmentCode        *string                `protobuf:"bytes,4,opt,name=enrollment_code,json=enrollmentCode,proto3,oneof" json:"enrollment_code,omitempty"`
+	SemesterCode          *string                `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
+	TeacherSupervisorCode *string                `protobuf:"bytes,6,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3,oneof" json:"teacher_supervisor_code,omitempty"`
+	Status                *TopicStatus           `protobuf:"varint,8,opt,name=status,proto3,enum=thesis.TopicStatus,oneof" json:"status,omitempty"`
+	TimeStart             *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=time_start,json=timeStart,proto3,oneof" json:"time_start,omitempty"`
+	TimeEnd               *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=time_end,json=timeEnd,proto3,oneof" json:"time_end,omitempty"`
+	UpdatedBy             string                 `protobuf:"bytes,11,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -2628,43 +2677,36 @@ func (x *UpdateTopicRequest) GetTitle() string {
 }
 
 func (x *UpdateTopicRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
+	if x != nil && x.MajorCode != nil {
+		return *x.MajorCode
 	}
 	return ""
 }
 
 func (x *UpdateTopicRequest) GetEnrollmentCode() string {
-	if x != nil {
-		return x.EnrollmentCode
+	if x != nil && x.EnrollmentCode != nil {
+		return *x.EnrollmentCode
 	}
 	return ""
 }
 
 func (x *UpdateTopicRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
+	if x != nil && x.SemesterCode != nil {
+		return *x.SemesterCode
 	}
 	return ""
 }
 
 func (x *UpdateTopicRequest) GetTeacherSupervisorCode() string {
-	if x != nil {
-		return x.TeacherSupervisorCode
-	}
-	return ""
-}
-
-func (x *UpdateTopicRequest) GetGradeDefencesCode() string {
-	if x != nil {
-		return x.GradeDefencesCode
+	if x != nil && x.TeacherSupervisorCode != nil {
+		return *x.TeacherSupervisorCode
 	}
 	return ""
 }
 
 func (x *UpdateTopicRequest) GetStatus() TopicStatus {
-	if x != nil {
-		return x.Status
+	if x != nil && x.Status != nil {
+		return *x.Status
 	}
 	return TopicStatus_TOPIC_PENDING
 }
@@ -2681,6 +2723,13 @@ func (x *UpdateTopicRequest) GetTimeEnd() *timestamppb.Timestamp {
 		return x.TimeEnd
 	}
 	return nil
+}
+
+func (x *UpdateTopicRequest) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
 }
 
 type UpdateTopicResponse struct {
@@ -2816,15 +2865,10 @@ func (x *DeleteTopicResponse) GetSuccess() bool {
 }
 
 type ListTopicsRequest struct {
-	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Page                  int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize              int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	MajorCode             string                 `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	SemesterCode          string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
-	TeacherSupervisorCode string                 `protobuf:"bytes,5,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3" json:"teacher_supervisor_code,omitempty"`
-	Status                TopicStatus            `protobuf:"varint,6,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListTopicsRequest) Reset() {
@@ -2857,52 +2901,19 @@ func (*ListTopicsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{42}
 }
 
-func (x *ListTopicsRequest) GetPage() int32 {
+func (x *ListTopicsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListTopicsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListTopicsRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
-	}
-	return ""
-}
-
-func (x *ListTopicsRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
-	}
-	return ""
-}
-
-func (x *ListTopicsRequest) GetTeacherSupervisorCode() string {
-	if x != nil {
-		return x.TeacherSupervisorCode
-	}
-	return ""
-}
-
-func (x *ListTopicsRequest) GetStatus() TopicStatus {
-	if x != nil {
-		return x.Status
-	}
-	return TopicStatus_TOPIC_PENDING
+	return nil
 }
 
 type ListTopicsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Topics        []*Topic               `protobuf:"bytes,1,rep,name=topics,proto3" json:"topics,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2951,11 +2962,25 @@ func (x *ListTopicsResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListTopicsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListTopicsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 var File_proto_thesis_thesis_proto protoreflect.FileDescriptor
 
 const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\n" +
-	"\x19proto/thesis/thesis.proto\x12\x06thesis\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\x02\n" +
+	"\x19proto/thesis/thesis.proto\x12\x06thesis\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\xc4\x02\n" +
 	"\aMidterm\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
@@ -2969,36 +2994,46 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\b \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\t \x01(\tR\tupdatedBy\"\x8d\x01\n" +
+	"updated_by\x18\t \x01(\tR\tupdatedBy\"\xcd\x01\n" +
 	"\x14CreateMidtermRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\x12\x14\n" +
-	"\x05grade\x18\x02 \x01(\x05R\x05grade\x12-\n" +
-	"\x06status\x18\x03 \x01(\x0e2\x15.thesis.MidtermStatusR\x06status\x12\x1a\n" +
-	"\bfeedback\x18\x04 \x01(\tR\bfeedback\"B\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12\x19\n" +
+	"\x05grade\x18\x02 \x01(\x05H\x00R\x05grade\x88\x01\x01\x12-\n" +
+	"\x06status\x18\x03 \x01(\x0e2\x15.thesis.MidtermStatusR\x06status\x12\x1f\n" +
+	"\bfeedback\x18\x04 \x01(\tH\x01R\bfeedback\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x05 \x01(\tR\tcreatedByB\b\n" +
+	"\x06_gradeB\v\n" +
+	"\t_feedback\"B\n" +
 	"\x15CreateMidtermResponse\x12)\n" +
 	"\amidterm\x18\x01 \x01(\v2\x0f.thesis.MidtermR\amidterm\"#\n" +
 	"\x11GetMidtermRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"?\n" +
 	"\x12GetMidtermResponse\x12)\n" +
-	"\amidterm\x18\x01 \x01(\v2\x0f.thesis.MidtermR\amidterm\"\x9d\x01\n" +
+	"\amidterm\x18\x01 \x01(\v2\x0f.thesis.MidtermR\amidterm\"\xed\x01\n" +
 	"\x14UpdateMidtermRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
-	"\x05grade\x18\x03 \x01(\x05R\x05grade\x12-\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x15.thesis.MidtermStatusR\x06status\x12\x1a\n" +
-	"\bfeedback\x18\x05 \x01(\tR\bfeedback\"B\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x19\n" +
+	"\x05grade\x18\x03 \x01(\x05H\x00R\x05grade\x88\x01\x01\x122\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x15.thesis.MidtermStatusH\x01R\x06status\x88\x01\x01\x12\x1f\n" +
+	"\bfeedback\x18\x05 \x01(\tH\x02R\bfeedback\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x06 \x01(\tR\tupdatedByB\b\n" +
+	"\x06_gradeB\t\n" +
+	"\a_statusB\v\n" +
+	"\t_feedback\"B\n" +
 	"\x15UpdateMidtermResponse\x12)\n" +
 	"\amidterm\x18\x01 \x01(\v2\x0f.thesis.MidtermR\amidterm\"&\n" +
 	"\x14DeleteMidtermRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x15DeleteMidtermResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"F\n" +
-	"\x13ListMidtermsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"Y\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"D\n" +
+	"\x13ListMidtermsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x8a\x01\n" +
 	"\x14ListMidtermsResponse\x12+\n" +
 	"\bmidterms\x18\x01 \x03(\v2\x0f.thesis.MidtermR\bmidterms\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\x81\x04\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x81\x04\n" +
 	"\x05Final\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12)\n" +
@@ -3018,47 +3053,63 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\f \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\r \x01(\tR\tupdatedBy\"\xca\x02\n" +
+	"updated_by\x18\r \x01(\tR\tupdatedBy\"\xd6\x03\n" +
 	"\x12CreateFinalRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\x12)\n" +
-	"\x10supervisor_grade\x18\x02 \x01(\x05R\x0fsupervisorGrade\x12%\n" +
-	"\x0ereviewer_grade\x18\x03 \x01(\x05R\rreviewerGrade\x12#\n" +
-	"\rdefense_grade\x18\x04 \x01(\x05R\fdefenseGrade\x12\x1f\n" +
-	"\vfinal_grade\x18\x05 \x01(\x05R\n" +
-	"finalGrade\x12+\n" +
-	"\x06status\x18\x06 \x01(\x0e2\x13.thesis.FinalStatusR\x06status\x12\x14\n" +
-	"\x05notes\x18\a \x01(\tR\x05notes\x12C\n" +
-	"\x0fcompletion_date\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionDate\":\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12.\n" +
+	"\x10supervisor_grade\x18\x02 \x01(\x05H\x00R\x0fsupervisorGrade\x88\x01\x01\x12*\n" +
+	"\x0ereviewer_grade\x18\x03 \x01(\x05H\x01R\rreviewerGrade\x88\x01\x01\x12(\n" +
+	"\rdefense_grade\x18\x04 \x01(\x05H\x02R\fdefenseGrade\x88\x01\x01\x12$\n" +
+	"\vfinal_grade\x18\x05 \x01(\x05H\x03R\n" +
+	"finalGrade\x88\x01\x01\x12+\n" +
+	"\x06status\x18\x06 \x01(\x0e2\x13.thesis.FinalStatusR\x06status\x12\x19\n" +
+	"\x05notes\x18\a \x01(\tH\x04R\x05notes\x88\x01\x01\x12C\n" +
+	"\x0fcompletion_date\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionDate\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\t \x01(\tR\tcreatedByB\x13\n" +
+	"\x11_supervisor_gradeB\x11\n" +
+	"\x0f_reviewer_gradeB\x10\n" +
+	"\x0e_defense_gradeB\x0e\n" +
+	"\f_final_gradeB\b\n" +
+	"\x06_notes\":\n" +
 	"\x13CreateFinalResponse\x12#\n" +
 	"\x05final\x18\x01 \x01(\v2\r.thesis.FinalR\x05final\"!\n" +
 	"\x0fGetFinalRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"7\n" +
 	"\x10GetFinalResponse\x12#\n" +
-	"\x05final\x18\x01 \x01(\v2\r.thesis.FinalR\x05final\"\xda\x02\n" +
+	"\x05final\x18\x01 \x01(\v2\r.thesis.FinalR\x05final\"\xf6\x03\n" +
 	"\x12UpdateFinalRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12)\n" +
-	"\x10supervisor_grade\x18\x03 \x01(\x05R\x0fsupervisorGrade\x12%\n" +
-	"\x0ereviewer_grade\x18\x04 \x01(\x05R\rreviewerGrade\x12#\n" +
-	"\rdefense_grade\x18\x05 \x01(\x05R\fdefenseGrade\x12\x1f\n" +
-	"\vfinal_grade\x18\x06 \x01(\x05R\n" +
-	"finalGrade\x12+\n" +
-	"\x06status\x18\a \x01(\x0e2\x13.thesis.FinalStatusR\x06status\x12\x14\n" +
-	"\x05notes\x18\b \x01(\tR\x05notes\x12C\n" +
-	"\x0fcompletion_date\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionDate\":\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12.\n" +
+	"\x10supervisor_grade\x18\x03 \x01(\x05H\x00R\x0fsupervisorGrade\x88\x01\x01\x12*\n" +
+	"\x0ereviewer_grade\x18\x04 \x01(\x05H\x01R\rreviewerGrade\x88\x01\x01\x12(\n" +
+	"\rdefense_grade\x18\x05 \x01(\x05H\x02R\fdefenseGrade\x88\x01\x01\x12$\n" +
+	"\vfinal_grade\x18\x06 \x01(\x05H\x03R\n" +
+	"finalGrade\x88\x01\x01\x120\n" +
+	"\x06status\x18\a \x01(\x0e2\x13.thesis.FinalStatusH\x04R\x06status\x88\x01\x01\x12\x19\n" +
+	"\x05notes\x18\b \x01(\tH\x05R\x05notes\x88\x01\x01\x12C\n" +
+	"\x0fcompletion_date\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionDate\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\n" +
+	" \x01(\tR\tupdatedByB\x13\n" +
+	"\x11_supervisor_gradeB\x11\n" +
+	"\x0f_reviewer_gradeB\x10\n" +
+	"\x0e_defense_gradeB\x0e\n" +
+	"\f_final_gradeB\t\n" +
+	"\a_statusB\b\n" +
+	"\x06_notes\":\n" +
 	"\x13UpdateFinalResponse\x12#\n" +
 	"\x05final\x18\x01 \x01(\v2\r.thesis.FinalR\x05final\"$\n" +
 	"\x12DeleteFinalRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"/\n" +
 	"\x13DeleteFinalResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"q\n" +
-	"\x11ListFinalsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12+\n" +
-	"\x06status\x18\x03 \x01(\x0e2\x13.thesis.FinalStatusR\x06status\"Q\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"B\n" +
+	"\x11ListFinalsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x82\x01\n" +
 	"\x12ListFinalsResponse\x12%\n" +
 	"\x06finals\x18\x01 \x03(\v2\r.thesis.FinalR\x06finals\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xea\x02\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xea\x02\n" +
 	"\n" +
 	"Enrollment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
@@ -3077,15 +3128,19 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"created_by\x18\t \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
 	"updated_by\x18\n" +
-	" \x01(\tR\tupdatedBy\"\xb3\x01\n" +
+	" \x01(\tR\tupdatedBy\"\xfa\x01\n" +
 	"\x17CreateEnrollmentRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12!\n" +
 	"\fstudent_code\x18\x02 \x01(\tR\vstudentCode\x12!\n" +
-	"\fmidterm_code\x18\x03 \x01(\tR\vmidtermCode\x12\x1d\n" +
+	"\fmidterm_code\x18\x03 \x01(\tR\vmidtermCode\x12\"\n" +
 	"\n" +
-	"final_code\x18\x04 \x01(\tR\tfinalCode\x12\x1d\n" +
+	"final_code\x18\x04 \x01(\tH\x00R\tfinalCode\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"grade_code\x18\x05 \x01(\tR\tgradeCode\"N\n" +
+	"grade_code\x18\x05 \x01(\tH\x01R\tgradeCode\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x06 \x01(\tR\tcreatedByB\r\n" +
+	"\v_final_codeB\r\n" +
+	"\v_grade_code\"N\n" +
 	"\x18CreateEnrollmentResponse\x122\n" +
 	"\n" +
 	"enrollment\x18\x01 \x01(\v2\x12.thesis.EnrollmentR\n" +
@@ -3095,16 +3150,21 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\x15GetEnrollmentResponse\x122\n" +
 	"\n" +
 	"enrollment\x18\x01 \x01(\v2\x12.thesis.EnrollmentR\n" +
-	"enrollment\"\xc3\x01\n" +
+	"enrollment\"\xa0\x02\n" +
 	"\x17UpdateEnrollmentRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
-	"\fstudent_code\x18\x03 \x01(\tR\vstudentCode\x12!\n" +
-	"\fmidterm_code\x18\x04 \x01(\tR\vmidtermCode\x12\x1d\n" +
+	"\fstudent_code\x18\x03 \x01(\tR\vstudentCode\x12&\n" +
+	"\fmidterm_code\x18\x04 \x01(\tH\x00R\vmidtermCode\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"final_code\x18\x05 \x01(\tR\tfinalCode\x12\x1d\n" +
+	"final_code\x18\x05 \x01(\tH\x01R\tfinalCode\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"grade_code\x18\x06 \x01(\tR\tgradeCode\"N\n" +
+	"grade_code\x18\x06 \x01(\tH\x02R\tgradeCode\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedByB\x0f\n" +
+	"\r_midterm_codeB\r\n" +
+	"\v_final_codeB\r\n" +
+	"\v_grade_code\"N\n" +
 	"\x18UpdateEnrollmentResponse\x122\n" +
 	"\n" +
 	"enrollment\x18\x01 \x01(\v2\x12.thesis.EnrollmentR\n" +
@@ -3112,14 +3172,14 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\x17DeleteEnrollmentRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x18DeleteEnrollmentResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"l\n" +
-	"\x16ListEnrollmentsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12!\n" +
-	"\fstudent_code\x18\x03 \x01(\tR\vstudentCode\"e\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"G\n" +
+	"\x16ListEnrollmentsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x96\x01\n" +
 	"\x17ListEnrollmentsResponse\x124\n" +
 	"\venrollments\x18\x01 \x03(\v2\x12.thesis.EnrollmentR\venrollments\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\xd5\x04\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xa5\x04\n" +
 	"\x05Topic\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1d\n" +
@@ -3127,8 +3187,7 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"major_code\x18\x03 \x01(\tR\tmajorCode\x12'\n" +
 	"\x0fenrollment_code\x18\x04 \x01(\tR\x0eenrollmentCode\x12#\n" +
 	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\x126\n" +
-	"\x17teacher_supervisor_code\x18\x06 \x01(\tR\x15teacherSupervisorCode\x12.\n" +
-	"\x13grade_defences_code\x18\a \x01(\tR\x11gradeDefencesCode\x12+\n" +
+	"\x17teacher_supervisor_code\x18\x06 \x01(\tR\x15teacherSupervisorCode\x12+\n" +
 	"\x06status\x18\b \x01(\x0e2\x13.thesis.TopicStatusR\x06status\x129\n" +
 	"\n" +
 	"time_start\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimeStart\x125\n" +
@@ -3141,56 +3200,62 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\r \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x0e \x01(\tR\tupdatedBy\"\x9e\x03\n" +
+	"updated_by\x18\x0e \x01(\tR\tupdatedBy\"\x8d\x03\n" +
 	"\x12CreateTopicRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1d\n" +
 	"\n" +
 	"major_code\x18\x02 \x01(\tR\tmajorCode\x12'\n" +
 	"\x0fenrollment_code\x18\x03 \x01(\tR\x0eenrollmentCode\x12#\n" +
 	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\x126\n" +
-	"\x17teacher_supervisor_code\x18\x05 \x01(\tR\x15teacherSupervisorCode\x12.\n" +
-	"\x13grade_defences_code\x18\x06 \x01(\tR\x11gradeDefencesCode\x12+\n" +
+	"\x17teacher_supervisor_code\x18\x05 \x01(\tR\x15teacherSupervisorCode\x12+\n" +
 	"\x06status\x18\a \x01(\x0e2\x13.thesis.TopicStatusR\x06status\x129\n" +
 	"\n" +
 	"time_start\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\ttimeStart\x125\n" +
-	"\btime_end\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\atimeEnd\":\n" +
+	"\btime_end\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\atimeEnd\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\n" +
+	" \x01(\tR\tcreatedBy\":\n" +
 	"\x13CreateTopicResponse\x12#\n" +
 	"\x05topic\x18\x01 \x01(\v2\r.thesis.TopicR\x05topic\"!\n" +
 	"\x0fGetTopicRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"7\n" +
 	"\x10GetTopicResponse\x12#\n" +
-	"\x05topic\x18\x01 \x01(\v2\r.thesis.TopicR\x05topic\"\xae\x03\n" +
+	"\x05topic\x18\x01 \x01(\v2\r.thesis.TopicR\x05topic\"\xb8\x04\n" +
 	"\x12UpdateTopicRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1d\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\"\n" +
 	"\n" +
-	"major_code\x18\x03 \x01(\tR\tmajorCode\x12'\n" +
-	"\x0fenrollment_code\x18\x04 \x01(\tR\x0eenrollmentCode\x12#\n" +
-	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\x126\n" +
-	"\x17teacher_supervisor_code\x18\x06 \x01(\tR\x15teacherSupervisorCode\x12.\n" +
-	"\x13grade_defences_code\x18\a \x01(\tR\x11gradeDefencesCode\x12+\n" +
-	"\x06status\x18\b \x01(\x0e2\x13.thesis.TopicStatusR\x06status\x129\n" +
+	"major_code\x18\x03 \x01(\tH\x00R\tmajorCode\x88\x01\x01\x12,\n" +
+	"\x0fenrollment_code\x18\x04 \x01(\tH\x01R\x0eenrollmentCode\x88\x01\x01\x12(\n" +
+	"\rsemester_code\x18\x05 \x01(\tH\x02R\fsemesterCode\x88\x01\x01\x12;\n" +
+	"\x17teacher_supervisor_code\x18\x06 \x01(\tH\x03R\x15teacherSupervisorCode\x88\x01\x01\x120\n" +
+	"\x06status\x18\b \x01(\x0e2\x13.thesis.TopicStatusH\x04R\x06status\x88\x01\x01\x12>\n" +
 	"\n" +
-	"time_start\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimeStart\x125\n" +
+	"time_start\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x05R\ttimeStart\x88\x01\x01\x12:\n" +
 	"\btime_end\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\atimeEnd\":\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampH\x06R\atimeEnd\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\v \x01(\tR\tupdatedByB\r\n" +
+	"\v_major_codeB\x12\n" +
+	"\x10_enrollment_codeB\x10\n" +
+	"\x0e_semester_codeB\x1a\n" +
+	"\x18_teacher_supervisor_codeB\t\n" +
+	"\a_statusB\r\n" +
+	"\v_time_startB\v\n" +
+	"\t_time_end\":\n" +
 	"\x13UpdateTopicResponse\x12#\n" +
 	"\x05topic\x18\x01 \x01(\v2\r.thesis.TopicR\x05topic\"$\n" +
 	"\x12DeleteTopicRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"/\n" +
 	"\x13DeleteTopicResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xed\x01\n" +
-	"\x11ListTopicsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
-	"\n" +
-	"major_code\x18\x03 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\x126\n" +
-	"\x17teacher_supervisor_code\x18\x05 \x01(\tR\x15teacherSupervisorCode\x12+\n" +
-	"\x06status\x18\x06 \x01(\x0e2\x13.thesis.TopicStatusR\x06status\"Q\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"B\n" +
+	"\x11ListTopicsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x82\x01\n" +
 	"\x12ListTopicsResponse\x12%\n" +
 	"\x06topics\x18\x01 \x03(\v2\r.thesis.TopicR\x06topics\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total*=\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize*=\n" +
 	"\rMidtermStatus\x12\x11\n" +
 	"\rNOT_SUBMITTED\x10\x00\x12\r\n" +
 	"\tSUBMITTED\x10\x01\x12\n" +
@@ -3298,6 +3363,7 @@ var file_proto_thesis_thesis_proto_goTypes = []any{
 	(*ListTopicsRequest)(nil),        // 45: thesis.ListTopicsRequest
 	(*ListTopicsResponse)(nil),       // 46: thesis.ListTopicsResponse
 	(*timestamppb.Timestamp)(nil),    // 47: google.protobuf.Timestamp
+	(*common.SearchRequest)(nil),     // 48: common.SearchRequest
 }
 var file_proto_thesis_thesis_proto_depIdxs = []int32{
 	0,  // 0: thesis.Midterm.status:type_name -> thesis.MidtermStatus
@@ -3308,87 +3374,89 @@ var file_proto_thesis_thesis_proto_depIdxs = []int32{
 	3,  // 5: thesis.GetMidtermResponse.midterm:type_name -> thesis.Midterm
 	0,  // 6: thesis.UpdateMidtermRequest.status:type_name -> thesis.MidtermStatus
 	3,  // 7: thesis.UpdateMidtermResponse.midterm:type_name -> thesis.Midterm
-	3,  // 8: thesis.ListMidtermsResponse.midterms:type_name -> thesis.Midterm
-	1,  // 9: thesis.Final.status:type_name -> thesis.FinalStatus
-	47, // 10: thesis.Final.completion_date:type_name -> google.protobuf.Timestamp
-	47, // 11: thesis.Final.created_at:type_name -> google.protobuf.Timestamp
-	47, // 12: thesis.Final.updated_at:type_name -> google.protobuf.Timestamp
-	1,  // 13: thesis.CreateFinalRequest.status:type_name -> thesis.FinalStatus
-	47, // 14: thesis.CreateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
-	14, // 15: thesis.CreateFinalResponse.final:type_name -> thesis.Final
-	14, // 16: thesis.GetFinalResponse.final:type_name -> thesis.Final
-	1,  // 17: thesis.UpdateFinalRequest.status:type_name -> thesis.FinalStatus
-	47, // 18: thesis.UpdateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
-	14, // 19: thesis.UpdateFinalResponse.final:type_name -> thesis.Final
-	1,  // 20: thesis.ListFinalsRequest.status:type_name -> thesis.FinalStatus
-	14, // 21: thesis.ListFinalsResponse.finals:type_name -> thesis.Final
-	47, // 22: thesis.Enrollment.created_at:type_name -> google.protobuf.Timestamp
-	47, // 23: thesis.Enrollment.updated_at:type_name -> google.protobuf.Timestamp
-	25, // 24: thesis.CreateEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
-	25, // 25: thesis.GetEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
-	25, // 26: thesis.UpdateEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
-	25, // 27: thesis.ListEnrollmentsResponse.enrollments:type_name -> thesis.Enrollment
-	2,  // 28: thesis.Topic.status:type_name -> thesis.TopicStatus
-	47, // 29: thesis.Topic.time_start:type_name -> google.protobuf.Timestamp
-	47, // 30: thesis.Topic.time_end:type_name -> google.protobuf.Timestamp
-	47, // 31: thesis.Topic.created_at:type_name -> google.protobuf.Timestamp
-	47, // 32: thesis.Topic.updated_at:type_name -> google.protobuf.Timestamp
-	2,  // 33: thesis.CreateTopicRequest.status:type_name -> thesis.TopicStatus
-	47, // 34: thesis.CreateTopicRequest.time_start:type_name -> google.protobuf.Timestamp
-	47, // 35: thesis.CreateTopicRequest.time_end:type_name -> google.protobuf.Timestamp
-	36, // 36: thesis.CreateTopicResponse.topic:type_name -> thesis.Topic
-	36, // 37: thesis.GetTopicResponse.topic:type_name -> thesis.Topic
-	2,  // 38: thesis.UpdateTopicRequest.status:type_name -> thesis.TopicStatus
-	47, // 39: thesis.UpdateTopicRequest.time_start:type_name -> google.protobuf.Timestamp
-	47, // 40: thesis.UpdateTopicRequest.time_end:type_name -> google.protobuf.Timestamp
-	36, // 41: thesis.UpdateTopicResponse.topic:type_name -> thesis.Topic
-	2,  // 42: thesis.ListTopicsRequest.status:type_name -> thesis.TopicStatus
-	36, // 43: thesis.ListTopicsResponse.topics:type_name -> thesis.Topic
-	4,  // 44: thesis.ThesisService.CreateMidterm:input_type -> thesis.CreateMidtermRequest
-	6,  // 45: thesis.ThesisService.GetMidterm:input_type -> thesis.GetMidtermRequest
-	8,  // 46: thesis.ThesisService.UpdateMidterm:input_type -> thesis.UpdateMidtermRequest
-	10, // 47: thesis.ThesisService.DeleteMidterm:input_type -> thesis.DeleteMidtermRequest
-	12, // 48: thesis.ThesisService.ListMidterms:input_type -> thesis.ListMidtermsRequest
-	15, // 49: thesis.ThesisService.CreateFinal:input_type -> thesis.CreateFinalRequest
-	17, // 50: thesis.ThesisService.GetFinal:input_type -> thesis.GetFinalRequest
-	19, // 51: thesis.ThesisService.UpdateFinal:input_type -> thesis.UpdateFinalRequest
-	21, // 52: thesis.ThesisService.DeleteFinal:input_type -> thesis.DeleteFinalRequest
-	23, // 53: thesis.ThesisService.ListFinals:input_type -> thesis.ListFinalsRequest
-	26, // 54: thesis.ThesisService.CreateEnrollment:input_type -> thesis.CreateEnrollmentRequest
-	28, // 55: thesis.ThesisService.GetEnrollment:input_type -> thesis.GetEnrollmentRequest
-	30, // 56: thesis.ThesisService.UpdateEnrollment:input_type -> thesis.UpdateEnrollmentRequest
-	32, // 57: thesis.ThesisService.DeleteEnrollment:input_type -> thesis.DeleteEnrollmentRequest
-	34, // 58: thesis.ThesisService.ListEnrollments:input_type -> thesis.ListEnrollmentsRequest
-	37, // 59: thesis.ThesisService.CreateTopic:input_type -> thesis.CreateTopicRequest
-	39, // 60: thesis.ThesisService.GetTopic:input_type -> thesis.GetTopicRequest
-	41, // 61: thesis.ThesisService.UpdateTopic:input_type -> thesis.UpdateTopicRequest
-	43, // 62: thesis.ThesisService.DeleteTopic:input_type -> thesis.DeleteTopicRequest
-	45, // 63: thesis.ThesisService.ListTopics:input_type -> thesis.ListTopicsRequest
-	5,  // 64: thesis.ThesisService.CreateMidterm:output_type -> thesis.CreateMidtermResponse
-	7,  // 65: thesis.ThesisService.GetMidterm:output_type -> thesis.GetMidtermResponse
-	9,  // 66: thesis.ThesisService.UpdateMidterm:output_type -> thesis.UpdateMidtermResponse
-	11, // 67: thesis.ThesisService.DeleteMidterm:output_type -> thesis.DeleteMidtermResponse
-	13, // 68: thesis.ThesisService.ListMidterms:output_type -> thesis.ListMidtermsResponse
-	16, // 69: thesis.ThesisService.CreateFinal:output_type -> thesis.CreateFinalResponse
-	18, // 70: thesis.ThesisService.GetFinal:output_type -> thesis.GetFinalResponse
-	20, // 71: thesis.ThesisService.UpdateFinal:output_type -> thesis.UpdateFinalResponse
-	22, // 72: thesis.ThesisService.DeleteFinal:output_type -> thesis.DeleteFinalResponse
-	24, // 73: thesis.ThesisService.ListFinals:output_type -> thesis.ListFinalsResponse
-	27, // 74: thesis.ThesisService.CreateEnrollment:output_type -> thesis.CreateEnrollmentResponse
-	29, // 75: thesis.ThesisService.GetEnrollment:output_type -> thesis.GetEnrollmentResponse
-	31, // 76: thesis.ThesisService.UpdateEnrollment:output_type -> thesis.UpdateEnrollmentResponse
-	33, // 77: thesis.ThesisService.DeleteEnrollment:output_type -> thesis.DeleteEnrollmentResponse
-	35, // 78: thesis.ThesisService.ListEnrollments:output_type -> thesis.ListEnrollmentsResponse
-	38, // 79: thesis.ThesisService.CreateTopic:output_type -> thesis.CreateTopicResponse
-	40, // 80: thesis.ThesisService.GetTopic:output_type -> thesis.GetTopicResponse
-	42, // 81: thesis.ThesisService.UpdateTopic:output_type -> thesis.UpdateTopicResponse
-	44, // 82: thesis.ThesisService.DeleteTopic:output_type -> thesis.DeleteTopicResponse
-	46, // 83: thesis.ThesisService.ListTopics:output_type -> thesis.ListTopicsResponse
-	64, // [64:84] is the sub-list for method output_type
-	44, // [44:64] is the sub-list for method input_type
-	44, // [44:44] is the sub-list for extension type_name
-	44, // [44:44] is the sub-list for extension extendee
-	0,  // [0:44] is the sub-list for field type_name
+	48, // 8: thesis.ListMidtermsRequest.search:type_name -> common.SearchRequest
+	3,  // 9: thesis.ListMidtermsResponse.midterms:type_name -> thesis.Midterm
+	1,  // 10: thesis.Final.status:type_name -> thesis.FinalStatus
+	47, // 11: thesis.Final.completion_date:type_name -> google.protobuf.Timestamp
+	47, // 12: thesis.Final.created_at:type_name -> google.protobuf.Timestamp
+	47, // 13: thesis.Final.updated_at:type_name -> google.protobuf.Timestamp
+	1,  // 14: thesis.CreateFinalRequest.status:type_name -> thesis.FinalStatus
+	47, // 15: thesis.CreateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
+	14, // 16: thesis.CreateFinalResponse.final:type_name -> thesis.Final
+	14, // 17: thesis.GetFinalResponse.final:type_name -> thesis.Final
+	1,  // 18: thesis.UpdateFinalRequest.status:type_name -> thesis.FinalStatus
+	47, // 19: thesis.UpdateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
+	14, // 20: thesis.UpdateFinalResponse.final:type_name -> thesis.Final
+	48, // 21: thesis.ListFinalsRequest.search:type_name -> common.SearchRequest
+	14, // 22: thesis.ListFinalsResponse.finals:type_name -> thesis.Final
+	47, // 23: thesis.Enrollment.created_at:type_name -> google.protobuf.Timestamp
+	47, // 24: thesis.Enrollment.updated_at:type_name -> google.protobuf.Timestamp
+	25, // 25: thesis.CreateEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
+	25, // 26: thesis.GetEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
+	25, // 27: thesis.UpdateEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
+	48, // 28: thesis.ListEnrollmentsRequest.search:type_name -> common.SearchRequest
+	25, // 29: thesis.ListEnrollmentsResponse.enrollments:type_name -> thesis.Enrollment
+	2,  // 30: thesis.Topic.status:type_name -> thesis.TopicStatus
+	47, // 31: thesis.Topic.time_start:type_name -> google.protobuf.Timestamp
+	47, // 32: thesis.Topic.time_end:type_name -> google.protobuf.Timestamp
+	47, // 33: thesis.Topic.created_at:type_name -> google.protobuf.Timestamp
+	47, // 34: thesis.Topic.updated_at:type_name -> google.protobuf.Timestamp
+	2,  // 35: thesis.CreateTopicRequest.status:type_name -> thesis.TopicStatus
+	47, // 36: thesis.CreateTopicRequest.time_start:type_name -> google.protobuf.Timestamp
+	47, // 37: thesis.CreateTopicRequest.time_end:type_name -> google.protobuf.Timestamp
+	36, // 38: thesis.CreateTopicResponse.topic:type_name -> thesis.Topic
+	36, // 39: thesis.GetTopicResponse.topic:type_name -> thesis.Topic
+	2,  // 40: thesis.UpdateTopicRequest.status:type_name -> thesis.TopicStatus
+	47, // 41: thesis.UpdateTopicRequest.time_start:type_name -> google.protobuf.Timestamp
+	47, // 42: thesis.UpdateTopicRequest.time_end:type_name -> google.protobuf.Timestamp
+	36, // 43: thesis.UpdateTopicResponse.topic:type_name -> thesis.Topic
+	48, // 44: thesis.ListTopicsRequest.search:type_name -> common.SearchRequest
+	36, // 45: thesis.ListTopicsResponse.topics:type_name -> thesis.Topic
+	4,  // 46: thesis.ThesisService.CreateMidterm:input_type -> thesis.CreateMidtermRequest
+	6,  // 47: thesis.ThesisService.GetMidterm:input_type -> thesis.GetMidtermRequest
+	8,  // 48: thesis.ThesisService.UpdateMidterm:input_type -> thesis.UpdateMidtermRequest
+	10, // 49: thesis.ThesisService.DeleteMidterm:input_type -> thesis.DeleteMidtermRequest
+	12, // 50: thesis.ThesisService.ListMidterms:input_type -> thesis.ListMidtermsRequest
+	15, // 51: thesis.ThesisService.CreateFinal:input_type -> thesis.CreateFinalRequest
+	17, // 52: thesis.ThesisService.GetFinal:input_type -> thesis.GetFinalRequest
+	19, // 53: thesis.ThesisService.UpdateFinal:input_type -> thesis.UpdateFinalRequest
+	21, // 54: thesis.ThesisService.DeleteFinal:input_type -> thesis.DeleteFinalRequest
+	23, // 55: thesis.ThesisService.ListFinals:input_type -> thesis.ListFinalsRequest
+	26, // 56: thesis.ThesisService.CreateEnrollment:input_type -> thesis.CreateEnrollmentRequest
+	28, // 57: thesis.ThesisService.GetEnrollment:input_type -> thesis.GetEnrollmentRequest
+	30, // 58: thesis.ThesisService.UpdateEnrollment:input_type -> thesis.UpdateEnrollmentRequest
+	32, // 59: thesis.ThesisService.DeleteEnrollment:input_type -> thesis.DeleteEnrollmentRequest
+	34, // 60: thesis.ThesisService.ListEnrollments:input_type -> thesis.ListEnrollmentsRequest
+	37, // 61: thesis.ThesisService.CreateTopic:input_type -> thesis.CreateTopicRequest
+	39, // 62: thesis.ThesisService.GetTopic:input_type -> thesis.GetTopicRequest
+	41, // 63: thesis.ThesisService.UpdateTopic:input_type -> thesis.UpdateTopicRequest
+	43, // 64: thesis.ThesisService.DeleteTopic:input_type -> thesis.DeleteTopicRequest
+	45, // 65: thesis.ThesisService.ListTopics:input_type -> thesis.ListTopicsRequest
+	5,  // 66: thesis.ThesisService.CreateMidterm:output_type -> thesis.CreateMidtermResponse
+	7,  // 67: thesis.ThesisService.GetMidterm:output_type -> thesis.GetMidtermResponse
+	9,  // 68: thesis.ThesisService.UpdateMidterm:output_type -> thesis.UpdateMidtermResponse
+	11, // 69: thesis.ThesisService.DeleteMidterm:output_type -> thesis.DeleteMidtermResponse
+	13, // 70: thesis.ThesisService.ListMidterms:output_type -> thesis.ListMidtermsResponse
+	16, // 71: thesis.ThesisService.CreateFinal:output_type -> thesis.CreateFinalResponse
+	18, // 72: thesis.ThesisService.GetFinal:output_type -> thesis.GetFinalResponse
+	20, // 73: thesis.ThesisService.UpdateFinal:output_type -> thesis.UpdateFinalResponse
+	22, // 74: thesis.ThesisService.DeleteFinal:output_type -> thesis.DeleteFinalResponse
+	24, // 75: thesis.ThesisService.ListFinals:output_type -> thesis.ListFinalsResponse
+	27, // 76: thesis.ThesisService.CreateEnrollment:output_type -> thesis.CreateEnrollmentResponse
+	29, // 77: thesis.ThesisService.GetEnrollment:output_type -> thesis.GetEnrollmentResponse
+	31, // 78: thesis.ThesisService.UpdateEnrollment:output_type -> thesis.UpdateEnrollmentResponse
+	33, // 79: thesis.ThesisService.DeleteEnrollment:output_type -> thesis.DeleteEnrollmentResponse
+	35, // 80: thesis.ThesisService.ListEnrollments:output_type -> thesis.ListEnrollmentsResponse
+	38, // 81: thesis.ThesisService.CreateTopic:output_type -> thesis.CreateTopicResponse
+	40, // 82: thesis.ThesisService.GetTopic:output_type -> thesis.GetTopicResponse
+	42, // 83: thesis.ThesisService.UpdateTopic:output_type -> thesis.UpdateTopicResponse
+	44, // 84: thesis.ThesisService.DeleteTopic:output_type -> thesis.DeleteTopicResponse
+	46, // 85: thesis.ThesisService.ListTopics:output_type -> thesis.ListTopicsResponse
+	66, // [66:86] is the sub-list for method output_type
+	46, // [46:66] is the sub-list for method input_type
+	46, // [46:46] is the sub-list for extension type_name
+	46, // [46:46] is the sub-list for extension extendee
+	0,  // [0:46] is the sub-list for field type_name
 }
 
 func init() { file_proto_thesis_thesis_proto_init() }
@@ -3396,6 +3464,13 @@ func file_proto_thesis_thesis_proto_init() {
 	if File_proto_thesis_thesis_proto != nil {
 		return
 	}
+	file_proto_thesis_thesis_proto_msgTypes[1].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[5].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[12].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[16].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[23].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[27].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[38].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

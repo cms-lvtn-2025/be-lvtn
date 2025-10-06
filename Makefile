@@ -3,6 +3,10 @@ PROTOC = protoc --go_out=. --go_opt=paths=source_relative \
 GEN = go run scripts/gen_skeleton.go
 
 # map service -> port
+
+proto-common:
+	$(PROTOC) proto/common/common.proto
+
 proto-academic:
 	$(PROTOC) proto/academic/academic.proto
 	$(GEN) academic AcademicService 50051
@@ -28,7 +32,7 @@ proto-user:
 	$(GEN) user UserService 50056
 
 # Generate all services
-all: proto-academic proto-council proto-file proto-role proto-thesis proto-user
+all: proto-common proto-academic proto-council proto-file proto-role proto-thesis proto-user
 
 # Build targets
 build-academic:

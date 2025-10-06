@@ -6,6 +6,8 @@ option go_package = "./thesis";
 
 import "google/protobuf/timestamp.proto";
 
+import "proto/common/common.proto";
+
 // ============= Enums =============
 enum MidtermStatus {
   NOT_SUBMITTED = 0;
@@ -43,9 +45,10 @@ message Midterm {
 
 message CreateMidtermRequest {
   string title = 1;
-  int32 grade = 2;
+  optional int32 grade = 2;
   MidtermStatus status = 3;
-  string feedback = 4;
+  optional string feedback = 4;
+  string created_by = 5;
 }
 
 message CreateMidtermResponse {
@@ -63,9 +66,10 @@ message GetMidtermResponse {
 message UpdateMidtermRequest {
   string id = 1;
   string title = 2;
-  int32 grade = 3;
-  MidtermStatus status = 4;
-  string feedback = 5;
+  optional int32 grade = 3;
+  optional MidtermStatus status = 4;
+  optional string feedback = 5;
+  string updated_by = 6;
 }
 
 message UpdateMidtermResponse {
@@ -81,13 +85,14 @@ message DeleteMidtermResponse {
 }
 
 message ListMidtermsRequest {
-  int32 page = 1;
-  int32 page_size = 2;
+  common.SearchRequest search = 1;
 }
 
 message ListMidtermsResponse {
   repeated Midterm midterms = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Final =============
@@ -109,13 +114,14 @@ message Final {
 
 message CreateFinalRequest {
   string title = 1;
-  int32 supervisor_grade = 2;
-  int32 reviewer_grade = 3;
-  int32 defense_grade = 4;
-  int32 final_grade = 5;
+  optional int32 supervisor_grade = 2;
+  optional int32 reviewer_grade = 3;
+  optional int32 defense_grade = 4;
+  optional int32 final_grade = 5;
   FinalStatus status = 6;
-  string notes = 7;
+  optional string notes = 7;
   google.protobuf.Timestamp completion_date = 8;
+  string created_by = 9;
 }
 
 message CreateFinalResponse {
@@ -133,13 +139,14 @@ message GetFinalResponse {
 message UpdateFinalRequest {
   string id = 1;
   string title = 2;
-  int32 supervisor_grade = 3;
-  int32 reviewer_grade = 4;
-  int32 defense_grade = 5;
-  int32 final_grade = 6;
-  FinalStatus status = 7;
-  string notes = 8;
+  optional int32 supervisor_grade = 3;
+  optional int32 reviewer_grade = 4;
+  optional int32 defense_grade = 5;
+  optional int32 final_grade = 6;
+  optional FinalStatus status = 7;
+  optional string notes = 8;
   google.protobuf.Timestamp completion_date = 9;
+  string updated_by = 10;
 }
 
 message UpdateFinalResponse {
@@ -155,14 +162,14 @@ message DeleteFinalResponse {
 }
 
 message ListFinalsRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  FinalStatus status = 3;
+  common.SearchRequest search = 1;
 }
 
 message ListFinalsResponse {
   repeated Final finals = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Enrollment =============
@@ -183,8 +190,9 @@ message CreateEnrollmentRequest {
   string title = 1;
   string student_code = 2;
   string midterm_code = 3;
-  string final_code = 4;
-  string grade_code = 5;
+  optional string final_code = 4;
+  optional string grade_code = 5;
+  string created_by = 6;
 }
 
 message CreateEnrollmentResponse {
@@ -203,9 +211,10 @@ message UpdateEnrollmentRequest {
   string id = 1;
   string title = 2;
   string student_code = 3;
-  string midterm_code = 4;
-  string final_code = 5;
-  string grade_code = 6;
+  optional string midterm_code = 4;
+  optional string final_code = 5;
+  optional string grade_code = 6;
+  string updated_by=7;
 }
 
 message UpdateEnrollmentResponse {
@@ -221,14 +230,14 @@ message DeleteEnrollmentResponse {
 }
 
 message ListEnrollmentsRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  string student_code = 3;
+  common.SearchRequest search = 1;
 }
 
 message ListEnrollmentsResponse {
   repeated Enrollment enrollments = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Topic =============
@@ -239,7 +248,6 @@ message Topic {
   string enrollment_code = 4;
   string semester_code = 5;
   string teacher_supervisor_code = 6;
-  string grade_defences_code = 7;
   TopicStatus status = 8;
   google.protobuf.Timestamp time_start = 9;
   google.protobuf.Timestamp time_end = 10;
@@ -255,10 +263,10 @@ message CreateTopicRequest {
   string enrollment_code = 3;
   string semester_code = 4;
   string teacher_supervisor_code = 5;
-  string grade_defences_code = 6;
   TopicStatus status = 7;
   google.protobuf.Timestamp time_start = 8;
   google.protobuf.Timestamp time_end = 9;
+  string created_by = 10;
 }
 
 message CreateTopicResponse {
@@ -276,14 +284,14 @@ message GetTopicResponse {
 message UpdateTopicRequest {
   string id = 1;
   string title = 2;
-  string major_code = 3;
-  string enrollment_code = 4;
-  string semester_code = 5;
-  string teacher_supervisor_code = 6;
-  string grade_defences_code = 7;
-  TopicStatus status = 8;
-  google.protobuf.Timestamp time_start = 9;
-  google.protobuf.Timestamp time_end = 10;
+  optional string major_code = 3;
+  optional string enrollment_code = 4;
+  optional string semester_code = 5;
+  optional string teacher_supervisor_code = 6;
+  optional TopicStatus status = 8;
+  optional google.protobuf.Timestamp time_start = 9;
+  optional google.protobuf.Timestamp time_end = 10;
+  string updated_by = 11;
 }
 
 message UpdateTopicResponse {
@@ -299,17 +307,14 @@ message DeleteTopicResponse {
 }
 
 message ListTopicsRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  string major_code = 3;
-  string semester_code = 4;
-  string teacher_supervisor_code = 5;
-  TopicStatus status = 6;
+  common.SearchRequest search = 1;
 }
 
 message ListTopicsResponse {
   repeated Topic topics = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Service =============

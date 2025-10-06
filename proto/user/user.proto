@@ -5,6 +5,7 @@ package user;
 option go_package = "./user";
 
 import "google/protobuf/timestamp.proto";
+import "proto/common/common.proto";
 
 enum Gender {
   MALE = 0;
@@ -30,12 +31,13 @@ message Student {
 
 message CreateStudentRequest {
   string email = 1;
-  string phone = 2;
+  optional string phone = 2;
   string username = 3;
-  Gender gender = 4;
+  optional Gender gender = 4;
   string major_code = 5;
   string class_code = 6;
   string semester_code = 7;
+  string created_by = 8;
 }
 
 message CreateStudentResponse {
@@ -52,13 +54,14 @@ message GetStudentResponse {
 
 message UpdateStudentRequest {
   string id = 1;
-  string email = 2;
-  string phone = 3;
-  string username = 4;
-  Gender gender = 5;
-  string major_code = 6;
-  string class_code = 7;
-  string semester_code = 8;
+  optional string email = 2;
+  optional string phone = 3;
+  optional string username = 4;
+  optional Gender gender = 5;
+  optional string major_code = 6;
+  optional string class_code = 7;
+  optional string semester_code = 8;
+  string updated_by = 9;
 }
 
 message UpdateStudentResponse {
@@ -74,16 +77,14 @@ message DeleteStudentResponse {
 }
 
 message ListStudentsRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  string major_code = 3;
-  string class_code = 4;
-  string semester_code = 5;
+  common.SearchRequest search = 1;
 }
 
 message ListStudentsResponse {
   repeated Student students = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Teacher =============
@@ -106,6 +107,7 @@ message CreateTeacherRequest {
   Gender gender = 3;
   string major_code = 4;
   string semester_code = 5;
+  string created_by = 6;
 }
 
 message CreateTeacherResponse {
@@ -127,6 +129,7 @@ message UpdateTeacherRequest {
   Gender gender = 4;
   string major_code = 5;
   string semester_code = 6;
+  string updated_by = 7;
 }
 
 message UpdateTeacherResponse {
@@ -142,15 +145,14 @@ message DeleteTeacherResponse {
 }
 
 message ListTeachersRequest {
-  int32 page = 1;
-  int32 page_size = 2;
-  string major_code = 3;
-  string semester_code = 4;
+  common.SearchRequest search = 1;
 }
 
 message ListTeachersResponse {
   repeated Teacher teachers = 1;
   int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
 }
 
 // ============= Service =============

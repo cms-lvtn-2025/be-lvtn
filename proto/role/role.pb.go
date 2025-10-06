@@ -12,6 +12,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
+	common "thaily/proto/common"
 	unsafe "unsafe"
 )
 
@@ -198,6 +199,7 @@ type CreateRoleSystemRequest struct {
 	Role          RoleType               `protobuf:"varint,3,opt,name=role,proto3,enum=role.RoleType" json:"role,omitempty"`
 	SemesterCode  string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
 	Activate      bool                   `protobuf:"varint,5,opt,name=activate,proto3" json:"activate,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -265,6 +267,13 @@ func (x *CreateRoleSystemRequest) GetActivate() bool {
 		return x.Activate
 	}
 	return false
+}
+
+func (x *CreateRoleSystemRequest) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
 }
 
 type CreateRoleSystemResponse struct {
@@ -403,10 +412,11 @@ type UpdateRoleSystemRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	TeacherCode   string                 `protobuf:"bytes,3,opt,name=teacher_code,json=teacherCode,proto3" json:"teacher_code,omitempty"`
-	Role          RoleType               `protobuf:"varint,4,opt,name=role,proto3,enum=role.RoleType" json:"role,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
-	Activate      bool                   `protobuf:"varint,6,opt,name=activate,proto3" json:"activate,omitempty"`
+	TeacherCode   *string                `protobuf:"bytes,3,opt,name=teacher_code,json=teacherCode,proto3,oneof" json:"teacher_code,omitempty"`
+	Role          *RoleType              `protobuf:"varint,4,opt,name=role,proto3,enum=role.RoleType,oneof" json:"role,omitempty"`
+	SemesterCode  *string                `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
+	Activate      *bool                  `protobuf:"varint,6,opt,name=activate,proto3,oneof" json:"activate,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -456,31 +466,38 @@ func (x *UpdateRoleSystemRequest) GetTitle() string {
 }
 
 func (x *UpdateRoleSystemRequest) GetTeacherCode() string {
-	if x != nil {
-		return x.TeacherCode
+	if x != nil && x.TeacherCode != nil {
+		return *x.TeacherCode
 	}
 	return ""
 }
 
 func (x *UpdateRoleSystemRequest) GetRole() RoleType {
-	if x != nil {
-		return x.Role
+	if x != nil && x.Role != nil {
+		return *x.Role
 	}
 	return RoleType_ACADEMIC_AFFAIRS_STAFF
 }
 
 func (x *UpdateRoleSystemRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
+	if x != nil && x.SemesterCode != nil {
+		return *x.SemesterCode
 	}
 	return ""
 }
 
 func (x *UpdateRoleSystemRequest) GetActivate() bool {
-	if x != nil {
-		return x.Activate
+	if x != nil && x.Activate != nil {
+		return *x.Activate
 	}
 	return false
+}
+
+func (x *UpdateRoleSystemRequest) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
 }
 
 type UpdateRoleSystemResponse struct {
@@ -617,12 +634,7 @@ func (x *DeleteRoleSystemResponse) GetSuccess() bool {
 
 type ListRoleSystemsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	TeacherCode   string                 `protobuf:"bytes,3,opt,name=teacher_code,json=teacherCode,proto3" json:"teacher_code,omitempty"`
-	Role          RoleType               `protobuf:"varint,4,opt,name=role,proto3,enum=role.RoleType" json:"role,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
-	Activate      bool                   `protobuf:"varint,6,opt,name=activate,proto3" json:"activate,omitempty"`
+	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -657,52 +669,19 @@ func (*ListRoleSystemsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_role_role_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ListRoleSystemsRequest) GetPage() int32 {
+func (x *ListRoleSystemsRequest) GetSearch() *common.SearchRequest {
 	if x != nil {
-		return x.Page
+		return x.Search
 	}
-	return 0
-}
-
-func (x *ListRoleSystemsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListRoleSystemsRequest) GetTeacherCode() string {
-	if x != nil {
-		return x.TeacherCode
-	}
-	return ""
-}
-
-func (x *ListRoleSystemsRequest) GetRole() RoleType {
-	if x != nil {
-		return x.Role
-	}
-	return RoleType_ACADEMIC_AFFAIRS_STAFF
-}
-
-func (x *ListRoleSystemsRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
-	}
-	return ""
-}
-
-func (x *ListRoleSystemsRequest) GetActivate() bool {
-	if x != nil {
-		return x.Activate
-	}
-	return false
+	return nil
 }
 
 type ListRoleSystemsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RoleSystems   []*RoleSystem          `protobuf:"bytes,1,rep,name=role_systems,json=roleSystems,proto3" json:"role_systems,omitempty"`
 	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -751,11 +730,25 @@ func (x *ListRoleSystemsResponse) GetTotal() int32 {
 	return 0
 }
 
+func (x *ListRoleSystemsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListRoleSystemsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 var File_proto_role_role_proto protoreflect.FileDescriptor
 
 const file_proto_role_role_proto_rawDesc = "" +
 	"\n" +
-	"\x15proto/role/role.proto\x12\x04role\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x02\n" +
+	"\x15proto/role/role.proto\x12\x04role\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\xee\x02\n" +
 	"\n" +
 	"RoleSystem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
@@ -772,13 +765,15 @@ const file_proto_role_role_proto_rawDesc = "" +
 	"created_by\x18\t \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
 	"updated_by\x18\n" +
-	" \x01(\tR\tupdatedBy\"\xb7\x01\n" +
+	" \x01(\tR\tupdatedBy\"\xd6\x01\n" +
 	"\x17CreateRoleSystemRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12!\n" +
 	"\fteacher_code\x18\x02 \x01(\tR\vteacherCode\x12\"\n" +
 	"\x04role\x18\x03 \x01(\x0e2\x0e.role.RoleTypeR\x04role\x12#\n" +
 	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\x12\x1a\n" +
-	"\bactivate\x18\x05 \x01(\bR\bactivate\"M\n" +
+	"\bactivate\x18\x05 \x01(\bR\bactivate\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x06 \x01(\tR\tcreatedBy\"M\n" +
 	"\x18CreateRoleSystemResponse\x121\n" +
 	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
 	"roleSystem\"&\n" +
@@ -786,31 +781,34 @@ const file_proto_role_role_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"J\n" +
 	"\x15GetRoleSystemResponse\x121\n" +
 	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
-	"roleSystem\"\xc7\x01\n" +
+	"roleSystem\"\xb3\x02\n" +
 	"\x17UpdateRoleSystemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
-	"\fteacher_code\x18\x03 \x01(\tR\vteacherCode\x12\"\n" +
-	"\x04role\x18\x04 \x01(\x0e2\x0e.role.RoleTypeR\x04role\x12#\n" +
-	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\x12\x1a\n" +
-	"\bactivate\x18\x06 \x01(\bR\bactivate\"M\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12&\n" +
+	"\fteacher_code\x18\x03 \x01(\tH\x00R\vteacherCode\x88\x01\x01\x12'\n" +
+	"\x04role\x18\x04 \x01(\x0e2\x0e.role.RoleTypeH\x01R\x04role\x88\x01\x01\x12(\n" +
+	"\rsemester_code\x18\x05 \x01(\tH\x02R\fsemesterCode\x88\x01\x01\x12\x1f\n" +
+	"\bactivate\x18\x06 \x01(\bH\x03R\bactivate\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedByB\x0f\n" +
+	"\r_teacher_codeB\a\n" +
+	"\x05_roleB\x10\n" +
+	"\x0e_semester_codeB\v\n" +
+	"\t_activate\"M\n" +
 	"\x18UpdateRoleSystemResponse\x121\n" +
 	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
 	"roleSystem\")\n" +
 	"\x17DeleteRoleSystemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x18DeleteRoleSystemResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xd1\x01\n" +
-	"\x16ListRoleSystemsRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12!\n" +
-	"\fteacher_code\x18\x03 \x01(\tR\vteacherCode\x12\"\n" +
-	"\x04role\x18\x04 \x01(\x0e2\x0e.role.RoleTypeR\x04role\x12#\n" +
-	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\x12\x1a\n" +
-	"\bactivate\x18\x06 \x01(\bR\bactivate\"d\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"G\n" +
+	"\x16ListRoleSystemsRequest\x12-\n" +
+	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\x95\x01\n" +
 	"\x17ListRoleSystemsResponse\x123\n" +
 	"\frole_systems\x18\x01 \x03(\v2\x10.role.RoleSystemR\vroleSystems\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total*o\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize*o\n" +
 	"\bRoleType\x12\x1a\n" +
 	"\x16ACADEMIC_AFFAIRS_STAFF\x10\x00\x12\x17\n" +
 	"\x13SUPERVISOR_LECTURER\x10\x01\x12\x17\n" +
@@ -851,6 +849,7 @@ var file_proto_role_role_proto_goTypes = []any{
 	(*ListRoleSystemsRequest)(nil),   // 10: role.ListRoleSystemsRequest
 	(*ListRoleSystemsResponse)(nil),  // 11: role.ListRoleSystemsResponse
 	(*timestamppb.Timestamp)(nil),    // 12: google.protobuf.Timestamp
+	(*common.SearchRequest)(nil),     // 13: common.SearchRequest
 }
 var file_proto_role_role_proto_depIdxs = []int32{
 	0,  // 0: role.RoleSystem.role:type_name -> role.RoleType
@@ -861,7 +860,7 @@ var file_proto_role_role_proto_depIdxs = []int32{
 	1,  // 5: role.GetRoleSystemResponse.role_system:type_name -> role.RoleSystem
 	0,  // 6: role.UpdateRoleSystemRequest.role:type_name -> role.RoleType
 	1,  // 7: role.UpdateRoleSystemResponse.role_system:type_name -> role.RoleSystem
-	0,  // 8: role.ListRoleSystemsRequest.role:type_name -> role.RoleType
+	13, // 8: role.ListRoleSystemsRequest.search:type_name -> common.SearchRequest
 	1,  // 9: role.ListRoleSystemsResponse.role_systems:type_name -> role.RoleSystem
 	2,  // 10: role.RoleService.CreateRoleSystem:input_type -> role.CreateRoleSystemRequest
 	4,  // 11: role.RoleService.GetRoleSystem:input_type -> role.GetRoleSystemRequest
@@ -885,6 +884,7 @@ func file_proto_role_role_proto_init() {
 	if File_proto_role_role_proto != nil {
 		return
 	}
+	file_proto_role_role_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

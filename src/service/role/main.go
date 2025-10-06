@@ -3,20 +3,27 @@ package main
 import (
 	"log"
 	"net"
+	pb "thaily/proto/role"
 	"thaily/src/pkg/config"
 	"thaily/src/pkg/database"
+	"thaily/src/pkg/logger"
 	"thaily/src/service/role/handler"
-	pb "thaily/proto/role"
 
 	"google.golang.org/grpc"
 )
 
 func main() {
 	// Load configuration
-	cfg, err := config.Load("env/role.env")
+	cfg, err := config.Load("../../../env/role.env")
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
+
+	// Initialize file logger
+	if err := logger.InitFileLogger("role-service", "log"); err != nil {
+		log.Fatalf("Failed to initialize file logger: %v", err)
+	}
+	defer logger.GetFileLogger().Close()
 
 	// Connect to database
 	db, err := database.Connect(cfg.GetDSN())
@@ -34,7 +41,9 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
+	)
 	pb.RegisterRoleServiceServer(grpcServer, h)
 
 	log.Println("RoleService running on :50054")
