@@ -57,18 +57,37 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 		return nil, status.Errorf(codes.Internal, "failed to create teacher: %v", err)
 	}
 
-	// Retrieve the created teacher
-	getQuery := `
+	result, err := h.GetTeacher(ctx, &pb.GetTeacherRequest{
+		Id: teacherID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get teacher: %v", err)
+	}
+
+	return &pb.CreateTeacherResponse{
+		Teacher: result.GetTeacher(),
+	}, nil
+}
+
+func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*pb.GetTeacherResponse, error) {
+	defer logger.TraceFunction(ctx)()
+
+	if req.Id == "" {
+		return nil, status.Error(codes.InvalidArgument, "id is required")
+	}
+
+	query := `
 		SELECT id, email, username, gender, major_code, semester_code, created_at, updated_at, created_by, updated_by
-		FROM Teacher
+		FROM Teahcer
 		WHERE id = ?
 	`
 
 	var teacher pb.Teacher
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
+	var genderStr string
 
-	if err := h.queryRow(ctx, getQuery, teacherID).Scan(
+	err := h.queryRow(ctx, query, req.Id).Scan(
 		&teacher.Id,
 		&teacher.Email,
 		&teacher.Username,
@@ -79,8 +98,13 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 		&updatedAt,
 		&teacher.CreatedBy,
 		&updatedBy,
-	); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to retrieve created teacher: %v", err)
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Error(codes.NotFound, "teacher not found")
+		}
+		return nil, status.Errorf(codes.Internal, "teacher to get student: %v", err)
 	}
 
 	// Convert gender string to enum
@@ -104,14 +128,9 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 		teacher.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.CreateTeacherResponse{
+	return &pb.GetTeacherResponse{
 		Teacher: &teacher,
 	}, nil
-}
-
-func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*pb.GetTeacherResponse, error) {
-	// TODO: Implement GetTeacher
-	return &pb.GetTeacherResponse{}, nil
 }
 
 func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherRequest) (*pb.UpdateTeacherResponse, error) {

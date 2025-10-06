@@ -74,60 +74,14 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 		return nil, status.Errorf(codes.Internal, "failed to create student: %v", err)
 	}
 
-	// Retrieve the created student
-	getQuery := `
-		SELECT id, email, phone, username, gender, major_code, class_code, semester_code, created_at, updated_at, created_by, updated_by
-		FROM Student
-		WHERE id = ?
-	`
-
-	var student pb.Student
-	var createdAt, updatedAt sql.NullTime
-	var updatedBy sql.NullString
-
-	err = h.queryRow(ctx, getQuery, studentID).Scan(
-		&student.Id,
-		&student.Email,
-		&student.Phone,
-		&student.Username,
-		&genderStr,
-		&student.MajorCode,
-		&student.ClassCode,
-		&student.SemesterCode,
-		&createdAt,
-		&updatedAt,
-		&student.CreatedBy,
-		&updatedBy,
-	)
-
+	result, err := h.GetStudent(ctx, &pb.GetStudentRequest{Id: studentID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to retrieve created student: %v", err)
+		return nil, status.Error(codes.Internal, "failed to get student")
 	}
-
-	// Convert gender string to enum
-	switch genderStr {
-	case "male":
-		student.Gender = pb.Gender_MALE
-	case "female":
-		student.Gender = pb.Gender_FEMALE
-	case "other":
-		student.Gender = pb.Gender_OTHER
-	default:
-		student.Gender = pb.Gender_MALE
-	}
-	if createdAt.Valid {
-		student.CreatedAt = timestamppb.New(createdAt.Time)
-	}
-	if updatedAt.Valid {
-		student.UpdatedAt = timestamppb.New(updatedAt.Time)
-	}
-	if updatedBy.Valid {
-		student.UpdatedBy = updatedBy.String
-	}
-
 	return &pb.CreateStudentResponse{
-		Student: &student,
+		Student: result.GetStudent(),
 	}, nil
+
 }
 
 func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*pb.GetStudentResponse, error) {
@@ -269,63 +223,12 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 		return nil, status.Errorf(codes.Internal, "failed to update student: %v", err)
 	}
 
-	// Retrieve the updated student
-	getQuery := `
-		SELECT id, email, phone, username, gender, major_code, class_code, semester_code, created_at, updated_at, created_by, updated_by
-		FROM Student
-		WHERE id = ?
-	`
-
-	var student pb.Student
-	var createdAt, updatedAt sql.NullTime
-	var updatedBy sql.NullString
-	var genderStr string
-
-	err = h.queryRow(ctx, getQuery, req.Id).Scan(
-		&student.Id,
-		&student.Email,
-		&student.Phone,
-		&student.Username,
-		&genderStr,
-		&student.MajorCode,
-		&student.ClassCode,
-		&student.SemesterCode,
-		&createdAt,
-		&updatedAt,
-		&student.CreatedBy,
-		&updatedBy,
-	)
-
+	result, err := h.GetStudent(ctx, &pb.GetStudentRequest{Id: req.Id})
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, status.Error(codes.NotFound, "student not found")
-		}
-		return nil, status.Errorf(codes.Internal, "failed to retrieve updated student: %v", err)
+		return nil, status.Error(codes.Internal, "failed to get student")
 	}
-
-	// Convert gender string to enum
-	switch genderStr {
-	case "male":
-		student.Gender = pb.Gender_MALE
-	case "female":
-		student.Gender = pb.Gender_FEMALE
-	case "other":
-		student.Gender = pb.Gender_OTHER
-	default:
-		student.Gender = pb.Gender_MALE
-	}
-	if createdAt.Valid {
-		student.CreatedAt = timestamppb.New(createdAt.Time)
-	}
-	if updatedAt.Valid {
-		student.UpdatedAt = timestamppb.New(updatedAt.Time)
-	}
-	if updatedBy.Valid {
-		student.UpdatedBy = updatedBy.String
-	}
-
 	return &pb.UpdateStudentResponse{
-		Student: &student,
+		Student: result.GetStudent(),
 	}, nil
 }
 
