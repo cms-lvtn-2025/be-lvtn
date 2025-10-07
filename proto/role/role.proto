@@ -51,7 +51,7 @@ message GetRoleSystemResponse {
 
 message UpdateRoleSystemRequest {
   string id = 1;
-  string title = 2;
+  optional string title = 2;
   optional string teacher_code = 3;
   optional RoleType role = 4;
   optional string semester_code = 5;

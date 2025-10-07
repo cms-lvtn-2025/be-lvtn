@@ -19,26 +19,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CouncilService_CreateCouncil_FullMethodName          = "/council.CouncilService/CreateCouncil"
-	CouncilService_GetCouncil_FullMethodName             = "/council.CouncilService/GetCouncil"
-	CouncilService_UpdateCouncil_FullMethodName          = "/council.CouncilService/UpdateCouncil"
-	CouncilService_DeleteCouncil_FullMethodName          = "/council.CouncilService/DeleteCouncil"
-	CouncilService_ListCouncils_FullMethodName           = "/council.CouncilService/ListCouncils"
-	CouncilService_CreateDefence_FullMethodName          = "/council.CouncilService/CreateDefence"
-	CouncilService_GetDefence_FullMethodName             = "/council.CouncilService/GetDefence"
-	CouncilService_UpdateDefence_FullMethodName          = "/council.CouncilService/UpdateDefence"
-	CouncilService_DeleteDefence_FullMethodName          = "/council.CouncilService/DeleteDefence"
-	CouncilService_ListDefences_FullMethodName           = "/council.CouncilService/ListDefences"
-	CouncilService_CreateGradeDefences_FullMethodName    = "/council.CouncilService/CreateGradeDefences"
-	CouncilService_GetGradeDefences_FullMethodName       = "/council.CouncilService/GetGradeDefences"
-	CouncilService_UpdateGradeDefences_FullMethodName    = "/council.CouncilService/UpdateGradeDefences"
-	CouncilService_DeleteGradeDefences_FullMethodName    = "/council.CouncilService/DeleteGradeDefences"
-	CouncilService_ListGradeDefences_FullMethodName      = "/council.CouncilService/ListGradeDefences"
-	CouncilService_CreateCouncilsSchedule_FullMethodName = "/council.CouncilService/CreateCouncilsSchedule"
-	CouncilService_GetCouncilsSchedule_FullMethodName    = "/council.CouncilService/GetCouncilsSchedule"
-	CouncilService_UpdateCouncilsSchedule_FullMethodName = "/council.CouncilService/UpdateCouncilsSchedule"
-	CouncilService_DeleteCouncilsSchedule_FullMethodName = "/council.CouncilService/DeleteCouncilsSchedule"
-	CouncilService_ListCouncilsSchedules_FullMethodName  = "/council.CouncilService/ListCouncilsSchedules"
+	CouncilService_CreateCouncil_FullMethodName         = "/council.CouncilService/CreateCouncil"
+	CouncilService_GetCouncil_FullMethodName            = "/council.CouncilService/GetCouncil"
+	CouncilService_UpdateCouncil_FullMethodName         = "/council.CouncilService/UpdateCouncil"
+	CouncilService_DeleteCouncil_FullMethodName         = "/council.CouncilService/DeleteCouncil"
+	CouncilService_ListCouncils_FullMethodName          = "/council.CouncilService/ListCouncils"
+	CouncilService_CreateDefence_FullMethodName         = "/council.CouncilService/CreateDefence"
+	CouncilService_GetDefence_FullMethodName            = "/council.CouncilService/GetDefence"
+	CouncilService_UpdateDefence_FullMethodName         = "/council.CouncilService/UpdateDefence"
+	CouncilService_DeleteDefence_FullMethodName         = "/council.CouncilService/DeleteDefence"
+	CouncilService_ListDefences_FullMethodName          = "/council.CouncilService/ListDefences"
+	CouncilService_CreateGradeDefence_FullMethodName    = "/council.CouncilService/CreateGradeDefence"
+	CouncilService_GetGradeDefence_FullMethodName       = "/council.CouncilService/GetGradeDefence"
+	CouncilService_UpdateGradeDefence_FullMethodName    = "/council.CouncilService/UpdateGradeDefence"
+	CouncilService_DeleteGradeDefence_FullMethodName    = "/council.CouncilService/DeleteGradeDefence"
+	CouncilService_ListGradeDefences_FullMethodName     = "/council.CouncilService/ListGradeDefences"
+	CouncilService_CreateCouncilSchedule_FullMethodName = "/council.CouncilService/CreateCouncilSchedule"
+	CouncilService_GetCouncilSchedule_FullMethodName    = "/council.CouncilService/GetCouncilSchedule"
+	CouncilService_UpdateCouncilSchedule_FullMethodName = "/council.CouncilService/UpdateCouncilSchedule"
+	CouncilService_DeleteCouncilSchedule_FullMethodName = "/council.CouncilService/DeleteCouncilSchedule"
+	CouncilService_ListCouncilSchedules_FullMethodName  = "/council.CouncilService/ListCouncilSchedules"
 )
 
 // CouncilServiceClient is the client API for CouncilService service.
@@ -59,18 +59,18 @@ type CouncilServiceClient interface {
 	UpdateDefence(ctx context.Context, in *UpdateDefenceRequest, opts ...grpc.CallOption) (*UpdateDefenceResponse, error)
 	DeleteDefence(ctx context.Context, in *DeleteDefenceRequest, opts ...grpc.CallOption) (*DeleteDefenceResponse, error)
 	ListDefences(ctx context.Context, in *ListDefencesRequest, opts ...grpc.CallOption) (*ListDefencesResponse, error)
-	// GradeDefences
-	CreateGradeDefences(ctx context.Context, in *CreateGradeDefencesRequest, opts ...grpc.CallOption) (*CreateGradeDefencesResponse, error)
-	GetGradeDefences(ctx context.Context, in *GetGradeDefencesRequest, opts ...grpc.CallOption) (*GetGradeDefencesResponse, error)
-	UpdateGradeDefences(ctx context.Context, in *UpdateGradeDefencesRequest, opts ...grpc.CallOption) (*UpdateGradeDefencesResponse, error)
-	DeleteGradeDefences(ctx context.Context, in *DeleteGradeDefencesRequest, opts ...grpc.CallOption) (*DeleteGradeDefencesResponse, error)
+	// GradeDefence
+	CreateGradeDefence(ctx context.Context, in *CreateGradeDefenceRequest, opts ...grpc.CallOption) (*CreateGradeDefenceResponse, error)
+	GetGradeDefence(ctx context.Context, in *GetGradeDefenceRequest, opts ...grpc.CallOption) (*GetGradeDefenceResponse, error)
+	UpdateGradeDefence(ctx context.Context, in *UpdateGradeDefenceRequest, opts ...grpc.CallOption) (*UpdateGradeDefenceResponse, error)
+	DeleteGradeDefence(ctx context.Context, in *DeleteGradeDefenceRequest, opts ...grpc.CallOption) (*DeleteGradeDefenceResponse, error)
 	ListGradeDefences(ctx context.Context, in *ListGradeDefencesRequest, opts ...grpc.CallOption) (*ListGradeDefencesResponse, error)
-	// CouncilsSchedule
-	CreateCouncilsSchedule(ctx context.Context, in *CreateCouncilsScheduleRequest, opts ...grpc.CallOption) (*CreateCouncilsScheduleResponse, error)
-	GetCouncilsSchedule(ctx context.Context, in *GetCouncilsScheduleRequest, opts ...grpc.CallOption) (*GetCouncilsScheduleResponse, error)
-	UpdateCouncilsSchedule(ctx context.Context, in *UpdateCouncilsScheduleRequest, opts ...grpc.CallOption) (*UpdateCouncilsScheduleResponse, error)
-	DeleteCouncilsSchedule(ctx context.Context, in *DeleteCouncilsScheduleRequest, opts ...grpc.CallOption) (*DeleteCouncilsScheduleResponse, error)
-	ListCouncilsSchedules(ctx context.Context, in *ListCouncilsSchedulesRequest, opts ...grpc.CallOption) (*ListCouncilsSchedulesResponse, error)
+	// CouncilSchedule
+	CreateCouncilSchedule(ctx context.Context, in *CreateCouncilScheduleRequest, opts ...grpc.CallOption) (*CreateCouncilScheduleResponse, error)
+	GetCouncilSchedule(ctx context.Context, in *GetCouncilScheduleRequest, opts ...grpc.CallOption) (*GetCouncilScheduleResponse, error)
+	UpdateCouncilSchedule(ctx context.Context, in *UpdateCouncilScheduleRequest, opts ...grpc.CallOption) (*UpdateCouncilScheduleResponse, error)
+	DeleteCouncilSchedule(ctx context.Context, in *DeleteCouncilScheduleRequest, opts ...grpc.CallOption) (*DeleteCouncilScheduleResponse, error)
+	ListCouncilSchedules(ctx context.Context, in *ListCouncilSchedulesRequest, opts ...grpc.CallOption) (*ListCouncilSchedulesResponse, error)
 }
 
 type councilServiceClient struct {
@@ -181,40 +181,40 @@ func (c *councilServiceClient) ListDefences(ctx context.Context, in *ListDefence
 	return out, nil
 }
 
-func (c *councilServiceClient) CreateGradeDefences(ctx context.Context, in *CreateGradeDefencesRequest, opts ...grpc.CallOption) (*CreateGradeDefencesResponse, error) {
+func (c *councilServiceClient) CreateGradeDefence(ctx context.Context, in *CreateGradeDefenceRequest, opts ...grpc.CallOption) (*CreateGradeDefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateGradeDefencesResponse)
-	err := c.cc.Invoke(ctx, CouncilService_CreateGradeDefences_FullMethodName, in, out, cOpts...)
+	out := new(CreateGradeDefenceResponse)
+	err := c.cc.Invoke(ctx, CouncilService_CreateGradeDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *councilServiceClient) GetGradeDefences(ctx context.Context, in *GetGradeDefencesRequest, opts ...grpc.CallOption) (*GetGradeDefencesResponse, error) {
+func (c *councilServiceClient) GetGradeDefence(ctx context.Context, in *GetGradeDefenceRequest, opts ...grpc.CallOption) (*GetGradeDefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetGradeDefencesResponse)
-	err := c.cc.Invoke(ctx, CouncilService_GetGradeDefences_FullMethodName, in, out, cOpts...)
+	out := new(GetGradeDefenceResponse)
+	err := c.cc.Invoke(ctx, CouncilService_GetGradeDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *councilServiceClient) UpdateGradeDefences(ctx context.Context, in *UpdateGradeDefencesRequest, opts ...grpc.CallOption) (*UpdateGradeDefencesResponse, error) {
+func (c *councilServiceClient) UpdateGradeDefence(ctx context.Context, in *UpdateGradeDefenceRequest, opts ...grpc.CallOption) (*UpdateGradeDefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateGradeDefencesResponse)
-	err := c.cc.Invoke(ctx, CouncilService_UpdateGradeDefences_FullMethodName, in, out, cOpts...)
+	out := new(UpdateGradeDefenceResponse)
+	err := c.cc.Invoke(ctx, CouncilService_UpdateGradeDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *councilServiceClient) DeleteGradeDefences(ctx context.Context, in *DeleteGradeDefencesRequest, opts ...grpc.CallOption) (*DeleteGradeDefencesResponse, error) {
+func (c *councilServiceClient) DeleteGradeDefence(ctx context.Context, in *DeleteGradeDefenceRequest, opts ...grpc.CallOption) (*DeleteGradeDefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteGradeDefencesResponse)
-	err := c.cc.Invoke(ctx, CouncilService_DeleteGradeDefences_FullMethodName, in, out, cOpts...)
+	out := new(DeleteGradeDefenceResponse)
+	err := c.cc.Invoke(ctx, CouncilService_DeleteGradeDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -231,50 +231,50 @@ func (c *councilServiceClient) ListGradeDefences(ctx context.Context, in *ListGr
 	return out, nil
 }
 
-func (c *councilServiceClient) CreateCouncilsSchedule(ctx context.Context, in *CreateCouncilsScheduleRequest, opts ...grpc.CallOption) (*CreateCouncilsScheduleResponse, error) {
+func (c *councilServiceClient) CreateCouncilSchedule(ctx context.Context, in *CreateCouncilScheduleRequest, opts ...grpc.CallOption) (*CreateCouncilScheduleResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateCouncilsScheduleResponse)
-	err := c.cc.Invoke(ctx, CouncilService_CreateCouncilsSchedule_FullMethodName, in, out, cOpts...)
+	out := new(CreateCouncilScheduleResponse)
+	err := c.cc.Invoke(ctx, CouncilService_CreateCouncilSchedule_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *councilServiceClient) GetCouncilsSchedule(ctx context.Context, in *GetCouncilsScheduleRequest, opts ...grpc.CallOption) (*GetCouncilsScheduleResponse, error) {
+func (c *councilServiceClient) GetCouncilSchedule(ctx context.Context, in *GetCouncilScheduleRequest, opts ...grpc.CallOption) (*GetCouncilScheduleResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCouncilsScheduleResponse)
-	err := c.cc.Invoke(ctx, CouncilService_GetCouncilsSchedule_FullMethodName, in, out, cOpts...)
+	out := new(GetCouncilScheduleResponse)
+	err := c.cc.Invoke(ctx, CouncilService_GetCouncilSchedule_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *councilServiceClient) UpdateCouncilsSchedule(ctx context.Context, in *UpdateCouncilsScheduleRequest, opts ...grpc.CallOption) (*UpdateCouncilsScheduleResponse, error) {
+func (c *councilServiceClient) UpdateCouncilSchedule(ctx context.Context, in *UpdateCouncilScheduleRequest, opts ...grpc.CallOption) (*UpdateCouncilScheduleResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateCouncilsScheduleResponse)
-	err := c.cc.Invoke(ctx, CouncilService_UpdateCouncilsSchedule_FullMethodName, in, out, cOpts...)
+	out := new(UpdateCouncilScheduleResponse)
+	err := c.cc.Invoke(ctx, CouncilService_UpdateCouncilSchedule_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *councilServiceClient) DeleteCouncilsSchedule(ctx context.Context, in *DeleteCouncilsScheduleRequest, opts ...grpc.CallOption) (*DeleteCouncilsScheduleResponse, error) {
+func (c *councilServiceClient) DeleteCouncilSchedule(ctx context.Context, in *DeleteCouncilScheduleRequest, opts ...grpc.CallOption) (*DeleteCouncilScheduleResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteCouncilsScheduleResponse)
-	err := c.cc.Invoke(ctx, CouncilService_DeleteCouncilsSchedule_FullMethodName, in, out, cOpts...)
+	out := new(DeleteCouncilScheduleResponse)
+	err := c.cc.Invoke(ctx, CouncilService_DeleteCouncilSchedule_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *councilServiceClient) ListCouncilsSchedules(ctx context.Context, in *ListCouncilsSchedulesRequest, opts ...grpc.CallOption) (*ListCouncilsSchedulesResponse, error) {
+func (c *councilServiceClient) ListCouncilSchedules(ctx context.Context, in *ListCouncilSchedulesRequest, opts ...grpc.CallOption) (*ListCouncilSchedulesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListCouncilsSchedulesResponse)
-	err := c.cc.Invoke(ctx, CouncilService_ListCouncilsSchedules_FullMethodName, in, out, cOpts...)
+	out := new(ListCouncilSchedulesResponse)
+	err := c.cc.Invoke(ctx, CouncilService_ListCouncilSchedules_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -299,18 +299,18 @@ type CouncilServiceServer interface {
 	UpdateDefence(context.Context, *UpdateDefenceRequest) (*UpdateDefenceResponse, error)
 	DeleteDefence(context.Context, *DeleteDefenceRequest) (*DeleteDefenceResponse, error)
 	ListDefences(context.Context, *ListDefencesRequest) (*ListDefencesResponse, error)
-	// GradeDefences
-	CreateGradeDefences(context.Context, *CreateGradeDefencesRequest) (*CreateGradeDefencesResponse, error)
-	GetGradeDefences(context.Context, *GetGradeDefencesRequest) (*GetGradeDefencesResponse, error)
-	UpdateGradeDefences(context.Context, *UpdateGradeDefencesRequest) (*UpdateGradeDefencesResponse, error)
-	DeleteGradeDefences(context.Context, *DeleteGradeDefencesRequest) (*DeleteGradeDefencesResponse, error)
+	// GradeDefence
+	CreateGradeDefence(context.Context, *CreateGradeDefenceRequest) (*CreateGradeDefenceResponse, error)
+	GetGradeDefence(context.Context, *GetGradeDefenceRequest) (*GetGradeDefenceResponse, error)
+	UpdateGradeDefence(context.Context, *UpdateGradeDefenceRequest) (*UpdateGradeDefenceResponse, error)
+	DeleteGradeDefence(context.Context, *DeleteGradeDefenceRequest) (*DeleteGradeDefenceResponse, error)
 	ListGradeDefences(context.Context, *ListGradeDefencesRequest) (*ListGradeDefencesResponse, error)
-	// CouncilsSchedule
-	CreateCouncilsSchedule(context.Context, *CreateCouncilsScheduleRequest) (*CreateCouncilsScheduleResponse, error)
-	GetCouncilsSchedule(context.Context, *GetCouncilsScheduleRequest) (*GetCouncilsScheduleResponse, error)
-	UpdateCouncilsSchedule(context.Context, *UpdateCouncilsScheduleRequest) (*UpdateCouncilsScheduleResponse, error)
-	DeleteCouncilsSchedule(context.Context, *DeleteCouncilsScheduleRequest) (*DeleteCouncilsScheduleResponse, error)
-	ListCouncilsSchedules(context.Context, *ListCouncilsSchedulesRequest) (*ListCouncilsSchedulesResponse, error)
+	// CouncilSchedule
+	CreateCouncilSchedule(context.Context, *CreateCouncilScheduleRequest) (*CreateCouncilScheduleResponse, error)
+	GetCouncilSchedule(context.Context, *GetCouncilScheduleRequest) (*GetCouncilScheduleResponse, error)
+	UpdateCouncilSchedule(context.Context, *UpdateCouncilScheduleRequest) (*UpdateCouncilScheduleResponse, error)
+	DeleteCouncilSchedule(context.Context, *DeleteCouncilScheduleRequest) (*DeleteCouncilScheduleResponse, error)
+	ListCouncilSchedules(context.Context, *ListCouncilSchedulesRequest) (*ListCouncilSchedulesResponse, error)
 	mustEmbedUnimplementedCouncilServiceServer()
 }
 
@@ -351,35 +351,35 @@ func (UnimplementedCouncilServiceServer) DeleteDefence(context.Context, *DeleteD
 func (UnimplementedCouncilServiceServer) ListDefences(context.Context, *ListDefencesRequest) (*ListDefencesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDefences not implemented")
 }
-func (UnimplementedCouncilServiceServer) CreateGradeDefences(context.Context, *CreateGradeDefencesRequest) (*CreateGradeDefencesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateGradeDefences not implemented")
+func (UnimplementedCouncilServiceServer) CreateGradeDefence(context.Context, *CreateGradeDefenceRequest) (*CreateGradeDefenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGradeDefence not implemented")
 }
-func (UnimplementedCouncilServiceServer) GetGradeDefences(context.Context, *GetGradeDefencesRequest) (*GetGradeDefencesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGradeDefences not implemented")
+func (UnimplementedCouncilServiceServer) GetGradeDefence(context.Context, *GetGradeDefenceRequest) (*GetGradeDefenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGradeDefence not implemented")
 }
-func (UnimplementedCouncilServiceServer) UpdateGradeDefences(context.Context, *UpdateGradeDefencesRequest) (*UpdateGradeDefencesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateGradeDefences not implemented")
+func (UnimplementedCouncilServiceServer) UpdateGradeDefence(context.Context, *UpdateGradeDefenceRequest) (*UpdateGradeDefenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGradeDefence not implemented")
 }
-func (UnimplementedCouncilServiceServer) DeleteGradeDefences(context.Context, *DeleteGradeDefencesRequest) (*DeleteGradeDefencesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteGradeDefences not implemented")
+func (UnimplementedCouncilServiceServer) DeleteGradeDefence(context.Context, *DeleteGradeDefenceRequest) (*DeleteGradeDefenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGradeDefence not implemented")
 }
 func (UnimplementedCouncilServiceServer) ListGradeDefences(context.Context, *ListGradeDefencesRequest) (*ListGradeDefencesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGradeDefences not implemented")
 }
-func (UnimplementedCouncilServiceServer) CreateCouncilsSchedule(context.Context, *CreateCouncilsScheduleRequest) (*CreateCouncilsScheduleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCouncilsSchedule not implemented")
+func (UnimplementedCouncilServiceServer) CreateCouncilSchedule(context.Context, *CreateCouncilScheduleRequest) (*CreateCouncilScheduleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCouncilSchedule not implemented")
 }
-func (UnimplementedCouncilServiceServer) GetCouncilsSchedule(context.Context, *GetCouncilsScheduleRequest) (*GetCouncilsScheduleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCouncilsSchedule not implemented")
+func (UnimplementedCouncilServiceServer) GetCouncilSchedule(context.Context, *GetCouncilScheduleRequest) (*GetCouncilScheduleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCouncilSchedule not implemented")
 }
-func (UnimplementedCouncilServiceServer) UpdateCouncilsSchedule(context.Context, *UpdateCouncilsScheduleRequest) (*UpdateCouncilsScheduleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateCouncilsSchedule not implemented")
+func (UnimplementedCouncilServiceServer) UpdateCouncilSchedule(context.Context, *UpdateCouncilScheduleRequest) (*UpdateCouncilScheduleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCouncilSchedule not implemented")
 }
-func (UnimplementedCouncilServiceServer) DeleteCouncilsSchedule(context.Context, *DeleteCouncilsScheduleRequest) (*DeleteCouncilsScheduleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteCouncilsSchedule not implemented")
+func (UnimplementedCouncilServiceServer) DeleteCouncilSchedule(context.Context, *DeleteCouncilScheduleRequest) (*DeleteCouncilScheduleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCouncilSchedule not implemented")
 }
-func (UnimplementedCouncilServiceServer) ListCouncilsSchedules(context.Context, *ListCouncilsSchedulesRequest) (*ListCouncilsSchedulesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListCouncilsSchedules not implemented")
+func (UnimplementedCouncilServiceServer) ListCouncilSchedules(context.Context, *ListCouncilSchedulesRequest) (*ListCouncilSchedulesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCouncilSchedules not implemented")
 }
 func (UnimplementedCouncilServiceServer) mustEmbedUnimplementedCouncilServiceServer() {}
 func (UnimplementedCouncilServiceServer) testEmbeddedByValue()                        {}
@@ -582,74 +582,74 @@ func _CouncilService_ListDefences_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_CreateGradeDefences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateGradeDefencesRequest)
+func _CouncilService_CreateGradeDefence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGradeDefenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).CreateGradeDefences(ctx, in)
+		return srv.(CouncilServiceServer).CreateGradeDefence(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_CreateGradeDefences_FullMethodName,
+		FullMethod: CouncilService_CreateGradeDefence_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).CreateGradeDefences(ctx, req.(*CreateGradeDefencesRequest))
+		return srv.(CouncilServiceServer).CreateGradeDefence(ctx, req.(*CreateGradeDefenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_GetGradeDefences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGradeDefencesRequest)
+func _CouncilService_GetGradeDefence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGradeDefenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).GetGradeDefences(ctx, in)
+		return srv.(CouncilServiceServer).GetGradeDefence(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_GetGradeDefences_FullMethodName,
+		FullMethod: CouncilService_GetGradeDefence_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).GetGradeDefences(ctx, req.(*GetGradeDefencesRequest))
+		return srv.(CouncilServiceServer).GetGradeDefence(ctx, req.(*GetGradeDefenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_UpdateGradeDefences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateGradeDefencesRequest)
+func _CouncilService_UpdateGradeDefence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGradeDefenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).UpdateGradeDefences(ctx, in)
+		return srv.(CouncilServiceServer).UpdateGradeDefence(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_UpdateGradeDefences_FullMethodName,
+		FullMethod: CouncilService_UpdateGradeDefence_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).UpdateGradeDefences(ctx, req.(*UpdateGradeDefencesRequest))
+		return srv.(CouncilServiceServer).UpdateGradeDefence(ctx, req.(*UpdateGradeDefenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_DeleteGradeDefences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteGradeDefencesRequest)
+func _CouncilService_DeleteGradeDefence_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGradeDefenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).DeleteGradeDefences(ctx, in)
+		return srv.(CouncilServiceServer).DeleteGradeDefence(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_DeleteGradeDefences_FullMethodName,
+		FullMethod: CouncilService_DeleteGradeDefence_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).DeleteGradeDefences(ctx, req.(*DeleteGradeDefencesRequest))
+		return srv.(CouncilServiceServer).DeleteGradeDefence(ctx, req.(*DeleteGradeDefenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -672,92 +672,92 @@ func _CouncilService_ListGradeDefences_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_CreateCouncilsSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCouncilsScheduleRequest)
+func _CouncilService_CreateCouncilSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCouncilScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).CreateCouncilsSchedule(ctx, in)
+		return srv.(CouncilServiceServer).CreateCouncilSchedule(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_CreateCouncilsSchedule_FullMethodName,
+		FullMethod: CouncilService_CreateCouncilSchedule_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).CreateCouncilsSchedule(ctx, req.(*CreateCouncilsScheduleRequest))
+		return srv.(CouncilServiceServer).CreateCouncilSchedule(ctx, req.(*CreateCouncilScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_GetCouncilsSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCouncilsScheduleRequest)
+func _CouncilService_GetCouncilSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCouncilScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).GetCouncilsSchedule(ctx, in)
+		return srv.(CouncilServiceServer).GetCouncilSchedule(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_GetCouncilsSchedule_FullMethodName,
+		FullMethod: CouncilService_GetCouncilSchedule_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).GetCouncilsSchedule(ctx, req.(*GetCouncilsScheduleRequest))
+		return srv.(CouncilServiceServer).GetCouncilSchedule(ctx, req.(*GetCouncilScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_UpdateCouncilsSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCouncilsScheduleRequest)
+func _CouncilService_UpdateCouncilSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCouncilScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).UpdateCouncilsSchedule(ctx, in)
+		return srv.(CouncilServiceServer).UpdateCouncilSchedule(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_UpdateCouncilsSchedule_FullMethodName,
+		FullMethod: CouncilService_UpdateCouncilSchedule_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).UpdateCouncilsSchedule(ctx, req.(*UpdateCouncilsScheduleRequest))
+		return srv.(CouncilServiceServer).UpdateCouncilSchedule(ctx, req.(*UpdateCouncilScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_DeleteCouncilsSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteCouncilsScheduleRequest)
+func _CouncilService_DeleteCouncilSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCouncilScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).DeleteCouncilsSchedule(ctx, in)
+		return srv.(CouncilServiceServer).DeleteCouncilSchedule(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_DeleteCouncilsSchedule_FullMethodName,
+		FullMethod: CouncilService_DeleteCouncilSchedule_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).DeleteCouncilsSchedule(ctx, req.(*DeleteCouncilsScheduleRequest))
+		return srv.(CouncilServiceServer).DeleteCouncilSchedule(ctx, req.(*DeleteCouncilScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CouncilService_ListCouncilsSchedules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListCouncilsSchedulesRequest)
+func _CouncilService_ListCouncilSchedules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCouncilSchedulesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CouncilServiceServer).ListCouncilsSchedules(ctx, in)
+		return srv.(CouncilServiceServer).ListCouncilSchedules(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CouncilService_ListCouncilsSchedules_FullMethodName,
+		FullMethod: CouncilService_ListCouncilSchedules_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CouncilServiceServer).ListCouncilsSchedules(ctx, req.(*ListCouncilsSchedulesRequest))
+		return srv.(CouncilServiceServer).ListCouncilSchedules(ctx, req.(*ListCouncilSchedulesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -810,44 +810,44 @@ var CouncilService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CouncilService_ListDefences_Handler,
 		},
 		{
-			MethodName: "CreateGradeDefences",
-			Handler:    _CouncilService_CreateGradeDefences_Handler,
+			MethodName: "CreateGradeDefence",
+			Handler:    _CouncilService_CreateGradeDefence_Handler,
 		},
 		{
-			MethodName: "GetGradeDefences",
-			Handler:    _CouncilService_GetGradeDefences_Handler,
+			MethodName: "GetGradeDefence",
+			Handler:    _CouncilService_GetGradeDefence_Handler,
 		},
 		{
-			MethodName: "UpdateGradeDefences",
-			Handler:    _CouncilService_UpdateGradeDefences_Handler,
+			MethodName: "UpdateGradeDefence",
+			Handler:    _CouncilService_UpdateGradeDefence_Handler,
 		},
 		{
-			MethodName: "DeleteGradeDefences",
-			Handler:    _CouncilService_DeleteGradeDefences_Handler,
+			MethodName: "DeleteGradeDefence",
+			Handler:    _CouncilService_DeleteGradeDefence_Handler,
 		},
 		{
 			MethodName: "ListGradeDefences",
 			Handler:    _CouncilService_ListGradeDefences_Handler,
 		},
 		{
-			MethodName: "CreateCouncilsSchedule",
-			Handler:    _CouncilService_CreateCouncilsSchedule_Handler,
+			MethodName: "CreateCouncilSchedule",
+			Handler:    _CouncilService_CreateCouncilSchedule_Handler,
 		},
 		{
-			MethodName: "GetCouncilsSchedule",
-			Handler:    _CouncilService_GetCouncilsSchedule_Handler,
+			MethodName: "GetCouncilSchedule",
+			Handler:    _CouncilService_GetCouncilSchedule_Handler,
 		},
 		{
-			MethodName: "UpdateCouncilsSchedule",
-			Handler:    _CouncilService_UpdateCouncilsSchedule_Handler,
+			MethodName: "UpdateCouncilSchedule",
+			Handler:    _CouncilService_UpdateCouncilSchedule_Handler,
 		},
 		{
-			MethodName: "DeleteCouncilsSchedule",
-			Handler:    _CouncilService_DeleteCouncilsSchedule_Handler,
+			MethodName: "DeleteCouncilSchedule",
+			Handler:    _CouncilService_DeleteCouncilSchedule_Handler,
 		},
 		{
-			MethodName: "ListCouncilsSchedules",
-			Handler:    _CouncilService_ListCouncilsSchedules_Handler,
+			MethodName: "ListCouncilSchedules",
+			Handler:    _CouncilService_ListCouncilSchedules_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

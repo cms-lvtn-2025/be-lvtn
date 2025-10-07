@@ -59,7 +59,7 @@ message GetFileResponse {
 
 message UpdateFileRequest {
   string id = 1;
-  string title = 2;
+  optional string title = 2;
   optional string file = 3;
   optional FileStatus status = 4;
   optional TableType table = 5;

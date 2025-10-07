@@ -15,62 +15,76 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// CreateTeacher creates a new Teacher record
 func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherRequest) (*pb.CreateTeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
-	// Validate require field
-	if req.Email == "" || req.MajorCode == "" || req.Username == "" || req.MajorCode == "" || req.SemesterCode == "" {
-		return nil, status.Error(codes.InvalidArgument, "email, username, major_code, class_code, and semester_code are required")
+	// Validate required fields (only string types)
+	if req.Email == "" {
+		return nil, status.Error(codes.InvalidArgument, "email is required")
+	}
+	if req.Username == "" {
+		return nil, status.Error(codes.InvalidArgument, "username is required")
+	}
+	if req.MajorCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "major_code is required")
+	}
+	if req.SemesterCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
-	// Generate UUID for teacher
-	teacherID := uuid.New().String()
+	// Generate UUID
+	id := uuid.New().String()
 
-	// Set default gender if not provided
-	gender := req.Gender
-	// Convert gender enum to string
-	genderStr := "male"
-	switch gender {
+	// Prepare fields
+
+	// Convert Gender enum to string
+	GenderValue := pb.Gender_MALE
+
+	GenderValue = req.Gender
+	GenderStr := "male"
+	switch GenderValue {
 	case pb.Gender_MALE:
-		genderStr = "male"
+		GenderStr = "male"
 	case pb.Gender_FEMALE:
-		genderStr = "female"
+		GenderStr = "female"
 	case pb.Gender_OTHER:
-		genderStr = "other"
+		GenderStr = "other"
 	}
 
+	// Insert into database
 	query := `
 		INSERT INTO Teacher (id, email, username, gender, major_code, semester_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
-	if _, err := h.execQuery(ctx, query,
-		teacherID,
+	_, err := h.execQuery(ctx, query,
+		id,
 		req.Email,
 		req.Username,
-		genderStr,
+		GenderStr,
 		req.MajorCode,
 		req.SemesterCode,
 		req.CreatedBy,
-	); err != nil {
+	)
+
+	if err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") {
-			return nil, status.Error(codes.AlreadyExists, "teacher with this email already exists")
+			return nil, status.Error(codes.AlreadyExists, "teacher already exists")
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create teacher: %v", err)
 	}
 
-	result, err := h.GetTeacher(ctx, &pb.GetTeacherRequest{
-		Id: teacherID,
-	})
+	result, err := h.GetTeacher(ctx, &pb.GetTeacherRequest{Id: id})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get teacher: %v", err)
+		return nil, status.Error(codes.Internal, "failed to get teacher")
 	}
-
 	return &pb.CreateTeacherResponse{
 		Teacher: result.GetTeacher(),
 	}, nil
 }
 
+// GetTeacher retrieves a Teacher by ID
 func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*pb.GetTeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
@@ -80,25 +94,25 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 
 	query := `
 		SELECT id, email, username, gender, major_code, semester_code, created_at, updated_at, created_by, updated_by
-		FROM Teahcer
+		FROM Teacher
 		WHERE id = ?
 	`
 
-	var teacher pb.Teacher
+	var entity pb.Teacher
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-	var genderStr string
+	var GenderStr string
 
 	err := h.queryRow(ctx, query, req.Id).Scan(
-		&teacher.Id,
-		&teacher.Email,
-		&teacher.Username,
-		&genderStr,
-		&teacher.MajorCode,
-		&teacher.SemesterCode,
+		&entity.Id,
+		&entity.Email,
+		&entity.Username,
+		&GenderStr,
+		&entity.MajorCode,
+		&entity.SemesterCode,
 		&createdAt,
 		&updatedAt,
-		&teacher.CreatedBy,
+		&entity.CreatedBy,
 		&updatedBy,
 	)
 
@@ -106,84 +120,93 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 		if err == sql.ErrNoRows {
 			return nil, status.Error(codes.NotFound, "teacher not found")
 		}
-		return nil, status.Errorf(codes.Internal, "teacher to get student: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get teacher: %v", err)
 	}
 
-	// Convert gender string to enum
-	switch genderStr {
+	// Convert Gender string to enum
+	switch GenderStr {
 	case "male":
-		teacher.Gender = pb.Gender_MALE
+		entity.Gender = pb.Gender_MALE
 	case "female":
-		teacher.Gender = pb.Gender_FEMALE
+		entity.Gender = pb.Gender_FEMALE
 	case "other":
-		teacher.Gender = pb.Gender_OTHER
+		entity.Gender = pb.Gender_OTHER
 	default:
-		teacher.Gender = pb.Gender_MALE
+		entity.Gender = pb.Gender_MALE
 	}
+
 	if createdAt.Valid {
-		teacher.CreatedAt = timestamppb.New(createdAt.Time)
+		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
 	if updatedAt.Valid {
-		teacher.UpdatedAt = timestamppb.New(updatedAt.Time)
+		entity.UpdatedAt = timestamppb.New(updatedAt.Time)
 	}
 	if updatedBy.Valid {
-		teacher.UpdatedBy = updatedBy.String
+		entity.UpdatedBy = updatedBy.String
 	}
 
 	return &pb.GetTeacherResponse{
-		Teacher: &teacher,
+		Teacher: &entity,
 	}, nil
 }
 
+// UpdateTeacher updates an existing Teacher
 func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherRequest) (*pb.UpdateTeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
+
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
+	// Build dynamic update query
 	updateFields := []string{}
 	args := []interface{}{}
 
 	if req.Email != nil {
 		updateFields = append(updateFields, "email = ?")
 		args = append(args, *req.Email)
+
 	}
 	if req.Username != nil {
 		updateFields = append(updateFields, "username = ?")
 		args = append(args, *req.Username)
+
+	}
+	if req.Gender != nil {
+		updateFields = append(updateFields, "gender = ?")
+		GenderStr := "male"
+		switch *req.Gender {
+		case pb.Gender_MALE:
+			GenderStr = "male"
+		case pb.Gender_FEMALE:
+			GenderStr = "female"
+		case pb.Gender_OTHER:
+			GenderStr = "other"
+		}
+		args = append(args, GenderStr)
+
 	}
 	if req.MajorCode != nil {
 		updateFields = append(updateFields, "major_code = ?")
 		args = append(args, *req.MajorCode)
+
 	}
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
 
 	}
-	if req.Gender != nil {
-		updateFields = append(updateFields, "gender = ?")
-		genderStr := "male"
-		switch *req.Gender {
-		case pb.Gender_MALE:
-			genderStr = "male"
-		case pb.Gender_FEMALE:
-			genderStr = "female"
-		case pb.Gender_OTHER:
-			genderStr = "other"
-		}
-		args = append(args, genderStr)
-	}
+
 	if len(updateFields) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "update field is required")
+		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
 	args = append(args, req.UpdatedBy)
-
 	updateFields = append(updateFields, "updated_at = NOW()")
 
+	// Add id as last parameter
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
@@ -192,19 +215,21 @@ func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherReques
 		WHERE id = ?
 	`, strings.Join(updateFields, ", "))
 
-	if _, err := h.execQuery(ctx, query, args...); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update student: %v", err)
+	_, err := h.execQuery(ctx, query, args...)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update teacher: %v", err)
 	}
 
 	result, err := h.GetTeacher(ctx, &pb.GetTeacherRequest{Id: req.Id})
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get student")
+		return nil, status.Error(codes.Internal, "failed to get teacher")
 	}
 	return &pb.UpdateTeacherResponse{
 		Teacher: result.GetTeacher(),
 	}, nil
 }
 
+// DeleteTeacher deletes a Teacher by ID
 func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherRequest) (*pb.DeleteTeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
@@ -212,7 +237,7 @@ func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Teacher WHERE id = $1`
+	query := `DELETE FROM Teacher WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -233,6 +258,7 @@ func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherReques
 	}, nil
 }
 
+// ListTeachers lists Teachers with pagination and filtering
 func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest) (*pb.ListTeachersResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
@@ -264,8 +290,8 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 		"email":         true,
 		"username":      true,
 		"gender":        true,
-		"semester_code": true,
 		"major_code":    true,
+		"semester_code": true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -297,10 +323,10 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 		return nil, status.Errorf(codes.Internal, "failed to count teachers: %v", err)
 	}
 
-	// Get students with pagination
+	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, email, phone, username, gender, major_code, class_code, semester_code, created_at, updated_at, created_by, updated_by
+		SELECT id, email, username, gender, major_code, semester_code, created_at, updated_at, created_by, updated_by
 		FROM Teacher
 		%s
 		ORDER BY %s %s
@@ -313,60 +339,60 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 	}
 	defer rows.Close()
 
-	teachers := []*pb.Teacher{}
+	entities := []*pb.Teacher{}
 	for rows.Next() {
-		var teacher pb.Teacher
+		var entity pb.Teacher
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-		var genderStr string
+		var GenderStr string
 
 		err := rows.Scan(
-			&teacher.Id,
-			&teacher.Email,
-			&teacher.Username,
-			&genderStr,
-			&teacher.MajorCode,
-			&teacher.SemesterCode,
+			&entity.Id,
+			&entity.Email,
+			&entity.Username,
+			&GenderStr,
+			&entity.MajorCode,
+			&entity.SemesterCode,
 			&createdAt,
 			&updatedAt,
-			&teacher.CreatedBy,
+			&entity.CreatedBy,
 			&updatedBy,
 		)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to scan student: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to scan teacher: %v", err)
 		}
 
-		// Convert gender string to enum
-		switch genderStr {
+		// Convert Gender string to enum
+		switch GenderStr {
 		case "male":
-			teacher.Gender = pb.Gender_MALE
+			entity.Gender = pb.Gender_MALE
 		case "female":
-			teacher.Gender = pb.Gender_FEMALE
+			entity.Gender = pb.Gender_FEMALE
 		case "other":
-			teacher.Gender = pb.Gender_OTHER
+			entity.Gender = pb.Gender_OTHER
 		default:
-			teacher.Gender = pb.Gender_MALE
+			entity.Gender = pb.Gender_MALE
 		}
 
 		if createdAt.Valid {
-			teacher.CreatedAt = timestamppb.New(createdAt.Time)
+			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
 		if updatedAt.Valid {
-			teacher.UpdatedAt = timestamppb.New(updatedAt.Time)
+			entity.UpdatedAt = timestamppb.New(updatedAt.Time)
 		}
 		if updatedBy.Valid {
-			teacher.UpdatedBy = updatedBy.String
+			entity.UpdatedBy = updatedBy.String
 		}
 
-		teachers = append(teachers, &teacher)
+		entities = append(entities, &entity)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, status.Errorf(codes.Internal, "error iterating students: %v", err)
+		return nil, status.Errorf(codes.Internal, "error iterating teachers: %v", err)
 	}
 
 	return &pb.ListTeachersResponse{
-		Teachers: teachers,
+		Teachers: entities,
 		Total:    total,
 		Page:     page,
 		PageSize: pageSize,

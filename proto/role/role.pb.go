@@ -411,7 +411,7 @@ func (x *GetRoleSystemResponse) GetRoleSystem() *RoleSystem {
 type UpdateRoleSystemRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	TeacherCode   *string                `protobuf:"bytes,3,opt,name=teacher_code,json=teacherCode,proto3,oneof" json:"teacher_code,omitempty"`
 	Role          *RoleType              `protobuf:"varint,4,opt,name=role,proto3,enum=role.RoleType,oneof" json:"role,omitempty"`
 	SemesterCode  *string                `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
@@ -459,8 +459,8 @@ func (x *UpdateRoleSystemRequest) GetId() string {
 }
 
 func (x *UpdateRoleSystemRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -781,16 +781,17 @@ const file_proto_role_role_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"J\n" +
 	"\x15GetRoleSystemResponse\x121\n" +
 	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
-	"roleSystem\"\xb3\x02\n" +
+	"roleSystem\"\xc2\x02\n" +
 	"\x17UpdateRoleSystemRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12&\n" +
-	"\fteacher_code\x18\x03 \x01(\tH\x00R\vteacherCode\x88\x01\x01\x12'\n" +
-	"\x04role\x18\x04 \x01(\x0e2\x0e.role.RoleTypeH\x01R\x04role\x88\x01\x01\x12(\n" +
-	"\rsemester_code\x18\x05 \x01(\tH\x02R\fsemesterCode\x88\x01\x01\x12\x1f\n" +
-	"\bactivate\x18\x06 \x01(\bH\x03R\bactivate\x88\x01\x01\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12&\n" +
+	"\fteacher_code\x18\x03 \x01(\tH\x01R\vteacherCode\x88\x01\x01\x12'\n" +
+	"\x04role\x18\x04 \x01(\x0e2\x0e.role.RoleTypeH\x02R\x04role\x88\x01\x01\x12(\n" +
+	"\rsemester_code\x18\x05 \x01(\tH\x03R\fsemesterCode\x88\x01\x01\x12\x1f\n" +
+	"\bactivate\x18\x06 \x01(\bH\x04R\bactivate\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedByB\x0f\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedByB\b\n" +
+	"\x06_titleB\x0f\n" +
 	"\r_teacher_codeB\a\n" +
 	"\x05_roleB\x10\n" +
 	"\x0e_semester_codeB\v\n" +

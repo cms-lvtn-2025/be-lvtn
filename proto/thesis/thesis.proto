@@ -65,7 +65,7 @@ message GetMidtermResponse {
 
 message UpdateMidtermRequest {
   string id = 1;
-  string title = 2;
+  optional string title = 2;
   optional int32 grade = 3;
   optional MidtermStatus status = 4;
   optional string feedback = 5;
@@ -138,14 +138,14 @@ message GetFinalResponse {
 
 message UpdateFinalRequest {
   string id = 1;
-  string title = 2;
+  optional string title = 2;
   optional int32 supervisor_grade = 3;
   optional int32 reviewer_grade = 4;
   optional int32 defense_grade = 5;
   optional int32 final_grade = 6;
   optional FinalStatus status = 7;
   optional string notes = 8;
-  google.protobuf.Timestamp completion_date = 9;
+  optional google.protobuf.Timestamp completion_date = 9;
   string updated_by = 10;
 }
 
@@ -209,8 +209,8 @@ message GetEnrollmentResponse {
 
 message UpdateEnrollmentRequest {
   string id = 1;
-  string title = 2;
-  string student_code = 3;
+  optional string title = 2;
+  optional string student_code = 3;
   optional string midterm_code = 4;
   optional string final_code = 5;
   optional string grade_code = 6;
@@ -283,7 +283,7 @@ message GetTopicResponse {
 
 message UpdateTopicRequest {
   string id = 1;
-  string title = 2;
+  optional string title = 2;
   optional string major_code = 3;
   optional string enrollment_code = 4;
   optional string semester_code = 5;

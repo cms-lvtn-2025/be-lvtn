@@ -1,8 +1,6 @@
 PROTOC = protoc --go_out=. --go_opt=paths=source_relative \
                --go-grpc_out=. --go-grpc_opt=paths=source_relative
-GEN = go run scripts/gen_skeleton.go
 
-# map service -> port
 
 proto-common:
 	$(PROTOC) proto/common/common.proto

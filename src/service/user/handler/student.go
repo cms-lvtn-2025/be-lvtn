@@ -15,52 +15,63 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// CreateStudent creates a new Student record
 func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentRequest) (*pb.CreateStudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
-	// Validate required fields
-	if req.Email == "" || req.Username == "" || req.MajorCode == "" || req.ClassCode == "" || req.SemesterCode == "" {
-		return nil, status.Error(codes.InvalidArgument, "email, username, major_code, class_code, and semester_code are required")
+	// Validate required fields (only string types)
+	if req.Email == "" {
+		return nil, status.Error(codes.InvalidArgument, "email is required")
+	}
+	if req.Username == "" {
+		return nil, status.Error(codes.InvalidArgument, "username is required")
+	}
+	if req.MajorCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "major_code is required")
+	}
+	if req.ClassCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "class_code is required")
+	}
+	if req.SemesterCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
-	// Generate UUID for student
-	studentID := uuid.New().String()
+	// Generate UUID
+	id := uuid.New().String()
 
-	// Set default gender if not provided
-	gender := pb.Gender_MALE
-	if req.Gender != nil {
-		gender = *req.Gender
-	}
-
-	// Set default phone if not provided
-	phone := ""
+	// Prepare fields
+	Phone := ""
 	if req.Phone != nil {
-		phone = *req.Phone
+		Phone = *req.Phone
 	}
 
-	// Convert gender enum to string
-	genderStr := "male"
-	switch gender {
+	// Convert Gender enum to string
+	GenderValue := pb.Gender_MALE
+	if req.Gender != nil {
+		GenderValue = *req.Gender
+	}
+	GenderStr := "male"
+	switch GenderValue {
 	case pb.Gender_MALE:
-		genderStr = "male"
+		GenderStr = "male"
 	case pb.Gender_FEMALE:
-		genderStr = "female"
+		GenderStr = "female"
 	case pb.Gender_OTHER:
-		genderStr = "other"
+		GenderStr = "other"
 	}
 
-	// Insert student into database
+	// Insert into database
 	query := `
 		INSERT INTO Student (id, email, phone, username, gender, major_code, class_code, semester_code, created_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
-		studentID,
+		id,
 		req.Email,
-		phone,
+		Phone,
 		req.Username,
-		genderStr,
+		GenderStr,
 		req.MajorCode,
 		req.ClassCode,
 		req.SemesterCode,
@@ -69,21 +80,21 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 
 	if err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") {
-			return nil, status.Error(codes.AlreadyExists, "student with this email already exists")
+			return nil, status.Error(codes.AlreadyExists, "student already exists")
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create student: %v", err)
 	}
 
-	result, err := h.GetStudent(ctx, &pb.GetStudentRequest{Id: studentID})
+	result, err := h.GetStudent(ctx, &pb.GetStudentRequest{Id: id})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get student")
 	}
 	return &pb.CreateStudentResponse{
 		Student: result.GetStudent(),
 	}, nil
-
 }
 
+// GetStudent retrieves a Student by ID
 func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*pb.GetStudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
@@ -97,23 +108,23 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 		WHERE id = ?
 	`
 
-	var student pb.Student
+	var entity pb.Student
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-	var genderStr string
+	var GenderStr string
 
 	err := h.queryRow(ctx, query, req.Id).Scan(
-		&student.Id,
-		&student.Email,
-		&student.Phone,
-		&student.Username,
-		&genderStr,
-		&student.MajorCode,
-		&student.ClassCode,
-		&student.SemesterCode,
+		&entity.Id,
+		&entity.Email,
+		&entity.Phone,
+		&entity.Username,
+		&GenderStr,
+		&entity.MajorCode,
+		&entity.ClassCode,
+		&entity.SemesterCode,
 		&createdAt,
 		&updatedAt,
-		&student.CreatedBy,
+		&entity.CreatedBy,
 		&updatedBy,
 	)
 
@@ -124,32 +135,34 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 		return nil, status.Errorf(codes.Internal, "failed to get student: %v", err)
 	}
 
-	// Convert gender string to enum
-	switch genderStr {
+	// Convert Gender string to enum
+	switch GenderStr {
 	case "male":
-		student.Gender = pb.Gender_MALE
+		entity.Gender = pb.Gender_MALE
 	case "female":
-		student.Gender = pb.Gender_FEMALE
+		entity.Gender = pb.Gender_FEMALE
 	case "other":
-		student.Gender = pb.Gender_OTHER
+		entity.Gender = pb.Gender_OTHER
 	default:
-		student.Gender = pb.Gender_MALE
+		entity.Gender = pb.Gender_MALE
 	}
+
 	if createdAt.Valid {
-		student.CreatedAt = timestamppb.New(createdAt.Time)
+		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
 	if updatedAt.Valid {
-		student.UpdatedAt = timestamppb.New(updatedAt.Time)
+		entity.UpdatedAt = timestamppb.New(updatedAt.Time)
 	}
 	if updatedBy.Valid {
-		student.UpdatedBy = updatedBy.String
+		entity.UpdatedBy = updatedBy.String
 	}
 
 	return &pb.GetStudentResponse{
-		Student: &student,
+		Student: &entity,
 	}, nil
 }
 
+// UpdateStudent updates an existing Student
 func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentRequest) (*pb.UpdateStudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
@@ -157,46 +170,53 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	// Build dynamic update query based on provided fields
+	// Build dynamic update query
 	updateFields := []string{}
 	args := []interface{}{}
 
 	if req.Email != nil {
 		updateFields = append(updateFields, "email = ?")
 		args = append(args, *req.Email)
+
 	}
 	if req.Phone != nil {
 		updateFields = append(updateFields, "phone = ?")
 		args = append(args, *req.Phone)
+
 	}
 	if req.Username != nil {
 		updateFields = append(updateFields, "username = ?")
 		args = append(args, *req.Username)
+
 	}
 	if req.Gender != nil {
 		updateFields = append(updateFields, "gender = ?")
-		genderStr := "male"
+		GenderStr := "male"
 		switch *req.Gender {
 		case pb.Gender_MALE:
-			genderStr = "male"
+			GenderStr = "male"
 		case pb.Gender_FEMALE:
-			genderStr = "female"
+			GenderStr = "female"
 		case pb.Gender_OTHER:
-			genderStr = "other"
+			GenderStr = "other"
 		}
-		args = append(args, genderStr)
+		args = append(args, GenderStr)
+
 	}
 	if req.MajorCode != nil {
 		updateFields = append(updateFields, "major_code = ?")
 		args = append(args, *req.MajorCode)
+
 	}
 	if req.ClassCode != nil {
 		updateFields = append(updateFields, "class_code = ?")
 		args = append(args, *req.ClassCode)
+
 	}
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
+
 	}
 
 	if len(updateFields) == 0 {
@@ -206,7 +226,6 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
 	args = append(args, req.UpdatedBy)
-
 	updateFields = append(updateFields, "updated_at = NOW()")
 
 	// Add id as last parameter
@@ -232,6 +251,7 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 	}, nil
 }
 
+// DeleteStudent deletes a Student by ID
 func (h *Handler) DeleteStudent(ctx context.Context, req *pb.DeleteStudentRequest) (*pb.DeleteStudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
@@ -239,7 +259,7 @@ func (h *Handler) DeleteStudent(ctx context.Context, req *pb.DeleteStudentReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Student WHERE id = $1`
+	query := `DELETE FROM Student WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -260,6 +280,7 @@ func (h *Handler) DeleteStudent(ctx context.Context, req *pb.DeleteStudentReques
 	}, nil
 }
 
+// ListStudents lists Students with pagination and filtering
 func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest) (*pb.ListStudentsResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
@@ -289,11 +310,12 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 	args := []interface{}{}
 	whiteMap := map[string]bool{
 		"email":         true,
+		"phone":         true,
 		"username":      true,
 		"gender":        true,
-		"semester_code": true,
-		"class_code":    true,
 		"major_code":    true,
+		"class_code":    true,
+		"semester_code": true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -325,7 +347,7 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 		return nil, status.Errorf(codes.Internal, "failed to count students: %v", err)
 	}
 
-	// Get students with pagination
+	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
 		SELECT id, email, phone, username, gender, major_code, class_code, semester_code, created_at, updated_at, created_by, updated_by
@@ -341,54 +363,54 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 	}
 	defer rows.Close()
 
-	students := []*pb.Student{}
+	entities := []*pb.Student{}
 	for rows.Next() {
-		var student pb.Student
+		var entity pb.Student
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-		var genderStr string
+		var GenderStr string
 
 		err := rows.Scan(
-			&student.Id,
-			&student.Email,
-			&student.Phone,
-			&student.Username,
-			&genderStr,
-			&student.MajorCode,
-			&student.ClassCode,
-			&student.SemesterCode,
+			&entity.Id,
+			&entity.Email,
+			&entity.Phone,
+			&entity.Username,
+			&GenderStr,
+			&entity.MajorCode,
+			&entity.ClassCode,
+			&entity.SemesterCode,
 			&createdAt,
 			&updatedAt,
-			&student.CreatedBy,
+			&entity.CreatedBy,
 			&updatedBy,
 		)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to scan student: %v", err)
 		}
 
-		// Convert gender string to enum
-		switch genderStr {
+		// Convert Gender string to enum
+		switch GenderStr {
 		case "male":
-			student.Gender = pb.Gender_MALE
+			entity.Gender = pb.Gender_MALE
 		case "female":
-			student.Gender = pb.Gender_FEMALE
+			entity.Gender = pb.Gender_FEMALE
 		case "other":
-			student.Gender = pb.Gender_OTHER
+			entity.Gender = pb.Gender_OTHER
 		default:
-			student.Gender = pb.Gender_MALE
+			entity.Gender = pb.Gender_MALE
 		}
 
 		if createdAt.Valid {
-			student.CreatedAt = timestamppb.New(createdAt.Time)
+			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
 		if updatedAt.Valid {
-			student.UpdatedAt = timestamppb.New(updatedAt.Time)
+			entity.UpdatedAt = timestamppb.New(updatedAt.Time)
 		}
 		if updatedBy.Valid {
-			student.UpdatedBy = updatedBy.String
+			entity.UpdatedBy = updatedBy.String
 		}
 
-		students = append(students, &student)
+		entities = append(entities, &entity)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -396,7 +418,7 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 	}
 
 	return &pb.ListStudentsResponse{
-		Students: students,
+		Students: entities,
 		Total:    total,
 		Page:     page,
 		PageSize: pageSize,

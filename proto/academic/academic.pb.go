@@ -295,8 +295,8 @@ func (x *GetSemesterResponse) GetSemester() *Semester {
 type UpdateSemesterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	UpdatedBy     *string                `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -339,15 +339,15 @@ func (x *UpdateSemesterRequest) GetId() string {
 }
 
 func (x *UpdateSemesterRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
 
 func (x *UpdateSemesterRequest) GetUpdatedBy() string {
-	if x != nil && x.UpdatedBy != nil {
-		return *x.UpdatedBy
+	if x != nil {
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -868,8 +868,8 @@ func (x *GetFacultyResponse) GetFaculty() *Faculty {
 type UpdateFacultyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	UpdatedBy     *string                `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -912,15 +912,15 @@ func (x *UpdateFacultyRequest) GetId() string {
 }
 
 func (x *UpdateFacultyRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
 
 func (x *UpdateFacultyRequest) GetUpdatedBy() string {
-	if x != nil && x.UpdatedBy != nil {
-		return *x.UpdatedBy
+	if x != nil {
+		return x.UpdatedBy
 	}
 	return ""
 }
@@ -1457,7 +1457,7 @@ func (x *GetMajorResponse) GetMajor() *Major {
 type UpdateMajorRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	FacultyCode   *string                `protobuf:"bytes,3,opt,name=faculty_code,json=facultyCode,proto3,oneof" json:"faculty_code,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,4,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1502,8 +1502,8 @@ func (x *UpdateMajorRequest) GetId() string {
 }
 
 func (x *UpdateMajorRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -1791,13 +1791,13 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\x12GetSemesterRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"E\n" +
 	"\x13GetSemesterResponse\x12.\n" +
-	"\bsemester\x18\x01 \x01(\v2\x12.academic.SemesterR\bsemester\"p\n" +
+	"\bsemester\x18\x01 \x01(\v2\x12.academic.SemesterR\bsemester\"k\n" +
 	"\x15UpdateSemesterRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\"\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x03 \x01(\tH\x00R\tupdatedBy\x88\x01\x01B\r\n" +
-	"\v_updated_by\"H\n" +
+	"updated_by\x18\x03 \x01(\tR\tupdatedByB\b\n" +
+	"\x06_title\"H\n" +
 	"\x16UpdateSemesterResponse\x12.\n" +
 	"\bsemester\x18\x01 \x01(\v2\x12.academic.SemesterR\bsemester\"'\n" +
 	"\x15DeleteSemesterRequest\x12\x0e\n" +
@@ -1831,13 +1831,13 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\x11GetFacultyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"A\n" +
 	"\x12GetFacultyResponse\x12+\n" +
-	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"o\n" +
+	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"j\n" +
 	"\x14UpdateFacultyRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\"\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x03 \x01(\tH\x00R\tupdatedBy\x88\x01\x01B\r\n" +
-	"\v_updated_by\"D\n" +
+	"updated_by\x18\x03 \x01(\tR\tupdatedByB\b\n" +
+	"\x06_title\"D\n" +
 	"\x15UpdateFacultyResponse\x12+\n" +
 	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"&\n" +
 	"\x14DeleteFacultyRequest\x12\x0e\n" +
@@ -1873,13 +1873,14 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\x0fGetMajorRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"9\n" +
 	"\x10GetMajorResponse\x12%\n" +
-	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"\x92\x01\n" +
+	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"\xa1\x01\n" +
 	"\x12UpdateMajorRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12&\n" +
-	"\ffaculty_code\x18\x03 \x01(\tH\x00R\vfacultyCode\x88\x01\x01\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12&\n" +
+	"\ffaculty_code\x18\x03 \x01(\tH\x01R\vfacultyCode\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x04 \x01(\tR\tupdatedByB\x0f\n" +
+	"updated_by\x18\x04 \x01(\tR\tupdatedByB\b\n" +
+	"\x06_titleB\x0f\n" +
 	"\r_faculty_code\"<\n" +
 	"\x13UpdateMajorResponse\x12%\n" +
 	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"$\n" +

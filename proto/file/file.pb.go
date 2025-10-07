@@ -476,7 +476,7 @@ func (x *GetFileResponse) GetFile() *File {
 type UpdateFileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	File          *string                `protobuf:"bytes,3,opt,name=file,proto3,oneof" json:"file,omitempty"`
 	Status        *FileStatus            `protobuf:"varint,4,opt,name=status,proto3,enum=file.FileStatus,oneof" json:"status,omitempty"`
 	Table         *TableType             `protobuf:"varint,5,opt,name=table,proto3,enum=file.TableType,oneof" json:"table,omitempty"`
@@ -525,8 +525,8 @@ func (x *UpdateFileRequest) GetId() string {
 }
 
 func (x *UpdateFileRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -855,17 +855,18 @@ const file_proto_file_file_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x0fGetFileResponse\x12\x1e\n" +
 	"\x04file\x18\x01 \x01(\v2\n" +
-	".file.FileR\x04file\"\xbf\x02\n" +
+	".file.FileR\x04file\"\xce\x02\n" +
 	"\x11UpdateFileRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x17\n" +
-	"\x04file\x18\x03 \x01(\tH\x00R\x04file\x88\x01\x01\x12-\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x10.file.FileStatusH\x01R\x06status\x88\x01\x01\x12*\n" +
-	"\x05table\x18\x05 \x01(\x0e2\x0f.file.TableTypeH\x02R\x05table\x88\x01\x01\x12\x1b\n" +
-	"\x06option\x18\x06 \x01(\tH\x03R\x06option\x88\x01\x01\x12\x1e\n" +
-	"\btable_id\x18\a \x01(\tH\x04R\atableId\x88\x01\x01\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
+	"\x04file\x18\x03 \x01(\tH\x01R\x04file\x88\x01\x01\x12-\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x10.file.FileStatusH\x02R\x06status\x88\x01\x01\x12*\n" +
+	"\x05table\x18\x05 \x01(\x0e2\x0f.file.TableTypeH\x03R\x05table\x88\x01\x01\x12\x1b\n" +
+	"\x06option\x18\x06 \x01(\tH\x04R\x06option\x88\x01\x01\x12\x1e\n" +
+	"\btable_id\x18\a \x01(\tH\x05R\atableId\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\b \x01(\tR\tupdatedByB\a\n" +
+	"updated_by\x18\b \x01(\tR\tupdatedByB\b\n" +
+	"\x06_titleB\a\n" +
 	"\x05_fileB\t\n" +
 	"\a_statusB\b\n" +
 	"\x06_tableB\t\n" +

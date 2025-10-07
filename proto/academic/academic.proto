@@ -36,8 +36,8 @@ message GetSemesterResponse {
 
 message UpdateSemesterRequest {
   string id = 1;
-  string title = 2;
-  optional string updated_by = 3;
+  optional string title = 2;
+  string updated_by = 3;
 }
 
 message UpdateSemesterResponse {
@@ -92,8 +92,8 @@ message GetFacultyResponse {
 
 message UpdateFacultyRequest {
   string id = 1;
-  string title = 2;
-  optional string updated_by = 3;
+  optional string title = 2;
+  string updated_by = 3;
 }
 
 message UpdateFacultyResponse {
@@ -151,7 +151,7 @@ message GetMajorResponse {
 
 message UpdateMajorRequest {
   string id = 1;
-  string title = 2;
+  optional string title = 2;
   optional string faculty_code = 3;
   string updated_by = 4;
 }

@@ -500,7 +500,7 @@ func (x *GetMidtermResponse) GetMidterm() *Midterm {
 type UpdateMidtermRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Grade         *int32                 `protobuf:"varint,3,opt,name=grade,proto3,oneof" json:"grade,omitempty"`
 	Status        *MidtermStatus         `protobuf:"varint,4,opt,name=status,proto3,enum=thesis.MidtermStatus,oneof" json:"status,omitempty"`
 	Feedback      *string                `protobuf:"bytes,5,opt,name=feedback,proto3,oneof" json:"feedback,omitempty"`
@@ -547,8 +547,8 @@ func (x *UpdateMidtermRequest) GetId() string {
 }
 
 func (x *UpdateMidtermRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -1209,14 +1209,14 @@ func (x *GetFinalResponse) GetFinal() *Final {
 type UpdateFinalRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title           string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title           *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	SupervisorGrade *int32                 `protobuf:"varint,3,opt,name=supervisor_grade,json=supervisorGrade,proto3,oneof" json:"supervisor_grade,omitempty"`
 	ReviewerGrade   *int32                 `protobuf:"varint,4,opt,name=reviewer_grade,json=reviewerGrade,proto3,oneof" json:"reviewer_grade,omitempty"`
 	DefenseGrade    *int32                 `protobuf:"varint,5,opt,name=defense_grade,json=defenseGrade,proto3,oneof" json:"defense_grade,omitempty"`
 	FinalGrade      *int32                 `protobuf:"varint,6,opt,name=final_grade,json=finalGrade,proto3,oneof" json:"final_grade,omitempty"`
 	Status          *FinalStatus           `protobuf:"varint,7,opt,name=status,proto3,enum=thesis.FinalStatus,oneof" json:"status,omitempty"`
 	Notes           *string                `protobuf:"bytes,8,opt,name=notes,proto3,oneof" json:"notes,omitempty"`
-	CompletionDate  *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=completion_date,json=completionDate,proto3" json:"completion_date,omitempty"`
+	CompletionDate  *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=completion_date,json=completionDate,proto3,oneof" json:"completion_date,omitempty"`
 	UpdatedBy       string                 `protobuf:"bytes,10,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -1260,8 +1260,8 @@ func (x *UpdateFinalRequest) GetId() string {
 }
 
 func (x *UpdateFinalRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -1902,8 +1902,8 @@ func (x *GetEnrollmentResponse) GetEnrollment() *Enrollment {
 type UpdateEnrollmentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	StudentCode   string                 `protobuf:"bytes,3,opt,name=student_code,json=studentCode,proto3" json:"student_code,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
+	StudentCode   *string                `protobuf:"bytes,3,opt,name=student_code,json=studentCode,proto3,oneof" json:"student_code,omitempty"`
 	MidtermCode   *string                `protobuf:"bytes,4,opt,name=midterm_code,json=midtermCode,proto3,oneof" json:"midterm_code,omitempty"`
 	FinalCode     *string                `protobuf:"bytes,5,opt,name=final_code,json=finalCode,proto3,oneof" json:"final_code,omitempty"`
 	GradeCode     *string                `protobuf:"bytes,6,opt,name=grade_code,json=gradeCode,proto3,oneof" json:"grade_code,omitempty"`
@@ -1950,15 +1950,15 @@ func (x *UpdateEnrollmentRequest) GetId() string {
 }
 
 func (x *UpdateEnrollmentRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
 
 func (x *UpdateEnrollmentRequest) GetStudentCode() string {
-	if x != nil {
-		return x.StudentCode
+	if x != nil && x.StudentCode != nil {
+		return *x.StudentCode
 	}
 	return ""
 }
@@ -2619,7 +2619,7 @@ func (x *GetTopicResponse) GetTopic() *Topic {
 type UpdateTopicRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title                 string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title                 *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	MajorCode             *string                `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3,oneof" json:"major_code,omitempty"`
 	EnrollmentCode        *string                `protobuf:"bytes,4,opt,name=enrollment_code,json=enrollmentCode,proto3,oneof" json:"enrollment_code,omitempty"`
 	SemesterCode          *string                `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
@@ -2670,8 +2670,8 @@ func (x *UpdateTopicRequest) GetId() string {
 }
 
 func (x *UpdateTopicRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -3009,15 +3009,16 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\x11GetMidtermRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"?\n" +
 	"\x12GetMidtermResponse\x12)\n" +
-	"\amidterm\x18\x01 \x01(\v2\x0f.thesis.MidtermR\amidterm\"\xed\x01\n" +
+	"\amidterm\x18\x01 \x01(\v2\x0f.thesis.MidtermR\amidterm\"\xfc\x01\n" +
 	"\x14UpdateMidtermRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x19\n" +
-	"\x05grade\x18\x03 \x01(\x05H\x00R\x05grade\x88\x01\x01\x122\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x15.thesis.MidtermStatusH\x01R\x06status\x88\x01\x01\x12\x1f\n" +
-	"\bfeedback\x18\x05 \x01(\tH\x02R\bfeedback\x88\x01\x01\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x19\n" +
+	"\x05grade\x18\x03 \x01(\x05H\x01R\x05grade\x88\x01\x01\x122\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x15.thesis.MidtermStatusH\x02R\x06status\x88\x01\x01\x12\x1f\n" +
+	"\bfeedback\x18\x05 \x01(\tH\x03R\bfeedback\x88\x01\x01\x12\x1d\n" +
 	"\n" +
 	"updated_by\x18\x06 \x01(\tR\tupdatedByB\b\n" +
+	"\x06_titleB\b\n" +
 	"\x06_gradeB\t\n" +
 	"\a_statusB\v\n" +
 	"\t_feedback\"B\n" +
@@ -3076,27 +3077,29 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\x0fGetFinalRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"7\n" +
 	"\x10GetFinalResponse\x12#\n" +
-	"\x05final\x18\x01 \x01(\v2\r.thesis.FinalR\x05final\"\xf6\x03\n" +
+	"\x05final\x18\x01 \x01(\v2\r.thesis.FinalR\x05final\"\x9e\x04\n" +
 	"\x12UpdateFinalRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12.\n" +
-	"\x10supervisor_grade\x18\x03 \x01(\x05H\x00R\x0fsupervisorGrade\x88\x01\x01\x12*\n" +
-	"\x0ereviewer_grade\x18\x04 \x01(\x05H\x01R\rreviewerGrade\x88\x01\x01\x12(\n" +
-	"\rdefense_grade\x18\x05 \x01(\x05H\x02R\fdefenseGrade\x88\x01\x01\x12$\n" +
-	"\vfinal_grade\x18\x06 \x01(\x05H\x03R\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12.\n" +
+	"\x10supervisor_grade\x18\x03 \x01(\x05H\x01R\x0fsupervisorGrade\x88\x01\x01\x12*\n" +
+	"\x0ereviewer_grade\x18\x04 \x01(\x05H\x02R\rreviewerGrade\x88\x01\x01\x12(\n" +
+	"\rdefense_grade\x18\x05 \x01(\x05H\x03R\fdefenseGrade\x88\x01\x01\x12$\n" +
+	"\vfinal_grade\x18\x06 \x01(\x05H\x04R\n" +
 	"finalGrade\x88\x01\x01\x120\n" +
-	"\x06status\x18\a \x01(\x0e2\x13.thesis.FinalStatusH\x04R\x06status\x88\x01\x01\x12\x19\n" +
-	"\x05notes\x18\b \x01(\tH\x05R\x05notes\x88\x01\x01\x12C\n" +
-	"\x0fcompletion_date\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionDate\x12\x1d\n" +
+	"\x06status\x18\a \x01(\x0e2\x13.thesis.FinalStatusH\x05R\x06status\x88\x01\x01\x12\x19\n" +
+	"\x05notes\x18\b \x01(\tH\x06R\x05notes\x88\x01\x01\x12H\n" +
+	"\x0fcompletion_date\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\aR\x0ecompletionDate\x88\x01\x01\x12\x1d\n" +
 	"\n" +
 	"updated_by\x18\n" +
-	" \x01(\tR\tupdatedByB\x13\n" +
+	" \x01(\tR\tupdatedByB\b\n" +
+	"\x06_titleB\x13\n" +
 	"\x11_supervisor_gradeB\x11\n" +
 	"\x0f_reviewer_gradeB\x10\n" +
 	"\x0e_defense_gradeB\x0e\n" +
 	"\f_final_gradeB\t\n" +
 	"\a_statusB\b\n" +
-	"\x06_notes\":\n" +
+	"\x06_notesB\x12\n" +
+	"\x10_completion_date\":\n" +
 	"\x13UpdateFinalResponse\x12#\n" +
 	"\x05final\x18\x01 \x01(\v2\r.thesis.FinalR\x05final\"$\n" +
 	"\x12DeleteFinalRequest\x12\x0e\n" +
@@ -3150,18 +3153,20 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\x15GetEnrollmentResponse\x122\n" +
 	"\n" +
 	"enrollment\x18\x01 \x01(\v2\x12.thesis.EnrollmentR\n" +
-	"enrollment\"\xa0\x02\n" +
+	"enrollment\"\xc5\x02\n" +
 	"\x17UpdateEnrollmentRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
-	"\fstudent_code\x18\x03 \x01(\tR\vstudentCode\x12&\n" +
-	"\fmidterm_code\x18\x04 \x01(\tH\x00R\vmidtermCode\x88\x01\x01\x12\"\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12&\n" +
+	"\fstudent_code\x18\x03 \x01(\tH\x01R\vstudentCode\x88\x01\x01\x12&\n" +
+	"\fmidterm_code\x18\x04 \x01(\tH\x02R\vmidtermCode\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"final_code\x18\x05 \x01(\tH\x01R\tfinalCode\x88\x01\x01\x12\"\n" +
+	"final_code\x18\x05 \x01(\tH\x03R\tfinalCode\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"grade_code\x18\x06 \x01(\tH\x02R\tgradeCode\x88\x01\x01\x12\x1d\n" +
+	"grade_code\x18\x06 \x01(\tH\x04R\tgradeCode\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedByB\x0f\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedByB\b\n" +
+	"\x06_titleB\x0f\n" +
+	"\r_student_codeB\x0f\n" +
 	"\r_midterm_codeB\r\n" +
 	"\v_final_codeB\r\n" +
 	"\v_grade_code\"N\n" +
@@ -3220,22 +3225,23 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\x0fGetTopicRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"7\n" +
 	"\x10GetTopicResponse\x12#\n" +
-	"\x05topic\x18\x01 \x01(\v2\r.thesis.TopicR\x05topic\"\xb8\x04\n" +
+	"\x05topic\x18\x01 \x01(\v2\r.thesis.TopicR\x05topic\"\xc7\x04\n" +
 	"\x12UpdateTopicRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\"\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"major_code\x18\x03 \x01(\tH\x00R\tmajorCode\x88\x01\x01\x12,\n" +
-	"\x0fenrollment_code\x18\x04 \x01(\tH\x01R\x0eenrollmentCode\x88\x01\x01\x12(\n" +
-	"\rsemester_code\x18\x05 \x01(\tH\x02R\fsemesterCode\x88\x01\x01\x12;\n" +
-	"\x17teacher_supervisor_code\x18\x06 \x01(\tH\x03R\x15teacherSupervisorCode\x88\x01\x01\x120\n" +
-	"\x06status\x18\b \x01(\x0e2\x13.thesis.TopicStatusH\x04R\x06status\x88\x01\x01\x12>\n" +
+	"major_code\x18\x03 \x01(\tH\x01R\tmajorCode\x88\x01\x01\x12,\n" +
+	"\x0fenrollment_code\x18\x04 \x01(\tH\x02R\x0eenrollmentCode\x88\x01\x01\x12(\n" +
+	"\rsemester_code\x18\x05 \x01(\tH\x03R\fsemesterCode\x88\x01\x01\x12;\n" +
+	"\x17teacher_supervisor_code\x18\x06 \x01(\tH\x04R\x15teacherSupervisorCode\x88\x01\x01\x120\n" +
+	"\x06status\x18\b \x01(\x0e2\x13.thesis.TopicStatusH\x05R\x06status\x88\x01\x01\x12>\n" +
 	"\n" +
-	"time_start\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x05R\ttimeStart\x88\x01\x01\x12:\n" +
+	"time_start\x18\t \x01(\v2\x1a.google.protobuf.TimestampH\x06R\ttimeStart\x88\x01\x01\x12:\n" +
 	"\btime_end\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampH\x06R\atimeEnd\x88\x01\x01\x12\x1d\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampH\aR\atimeEnd\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\v \x01(\tR\tupdatedByB\r\n" +
+	"updated_by\x18\v \x01(\tR\tupdatedByB\b\n" +
+	"\x06_titleB\r\n" +
 	"\v_major_codeB\x12\n" +
 	"\x10_enrollment_codeB\x10\n" +
 	"\x0e_semester_codeB\x1a\n" +
