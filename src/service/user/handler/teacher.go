@@ -212,11 +212,11 @@ func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Student WHERE id = $1`
+	query := `DELETE FROM Teacher WHERE id = $1`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete student: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to delete teacher: %v", err)
 	}
 
 	rowsAffected, err := result.RowsAffected()
@@ -225,7 +225,7 @@ func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherReques
 	}
 
 	if rowsAffected == 0 {
-		return nil, status.Error(codes.NotFound, "student not found")
+		return nil, status.Error(codes.NotFound, "teacher not found")
 	}
 
 	return &pb.DeleteTeacherResponse{
