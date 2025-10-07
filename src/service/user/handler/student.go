@@ -287,12 +287,22 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 	// Build WHERE clause from filters
 	whereClause := ""
 	args := []interface{}{}
-
+	whiteMap := map[string]bool{
+		"email":         true,
+		"username":      true,
+		"gender":        true,
+		"semester_code": true,
+		"class_code":    true,
+		"major_code":    true,
+	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
 		for _, filter := range req.Search.Filters {
 			if filter.GetCondition() != nil {
 				condition := filter.GetCondition()
+				if _, ok := whiteMap[condition.Field]; !ok {
+					continue
+				}
 				whereConditions = append(whereConditions, helper.BuildFilterCondition(condition, &args))
 			}
 		}

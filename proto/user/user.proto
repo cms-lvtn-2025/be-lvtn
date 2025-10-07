@@ -124,11 +124,11 @@ message GetTeacherResponse {
 
 message UpdateTeacherRequest {
   string id = 1;
-  string email = 2;
-  string username = 3;
-  Gender gender = 4;
-  string major_code = 5;
-  string semester_code = 6;
+  optional string email = 2;
+  optional string username = 3;
+  optional Gender gender = 4;
+  optional string major_code = 5;
+  optional string semester_code = 6;
   string updated_by = 7;
 }
 

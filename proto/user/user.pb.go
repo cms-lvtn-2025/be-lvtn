@@ -1125,11 +1125,11 @@ func (x *GetTeacherResponse) GetTeacher() *Teacher {
 type UpdateTeacherRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
-	Gender        Gender                 `protobuf:"varint,4,opt,name=gender,proto3,enum=user.Gender" json:"gender,omitempty"`
-	MajorCode     string                 `protobuf:"bytes,5,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	SemesterCode  string                 `protobuf:"bytes,6,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	Email         *string                `protobuf:"bytes,2,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	Username      *string                `protobuf:"bytes,3,opt,name=username,proto3,oneof" json:"username,omitempty"`
+	Gender        *Gender                `protobuf:"varint,4,opt,name=gender,proto3,enum=user.Gender,oneof" json:"gender,omitempty"`
+	MajorCode     *string                `protobuf:"bytes,5,opt,name=major_code,json=majorCode,proto3,oneof" json:"major_code,omitempty"`
+	SemesterCode  *string                `protobuf:"bytes,6,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1173,36 +1173,36 @@ func (x *UpdateTeacherRequest) GetId() string {
 }
 
 func (x *UpdateTeacherRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
+	if x != nil && x.Email != nil {
+		return *x.Email
 	}
 	return ""
 }
 
 func (x *UpdateTeacherRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
+	if x != nil && x.Username != nil {
+		return *x.Username
 	}
 	return ""
 }
 
 func (x *UpdateTeacherRequest) GetGender() Gender {
-	if x != nil {
-		return x.Gender
+	if x != nil && x.Gender != nil {
+		return *x.Gender
 	}
 	return Gender_MALE
 }
 
 func (x *UpdateTeacherRequest) GetMajorCode() string {
-	if x != nil {
-		return x.MajorCode
+	if x != nil && x.MajorCode != nil {
+		return *x.MajorCode
 	}
 	return ""
 }
 
 func (x *UpdateTeacherRequest) GetSemesterCode() string {
-	if x != nil {
-		return x.SemesterCode
+	if x != nil && x.SemesterCode != nil {
+		return *x.SemesterCode
 	}
 	return ""
 }
@@ -1567,17 +1567,22 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"\x11GetTeacherRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
 	"\x12GetTeacherResponse\x12'\n" +
-	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"\xe1\x01\n" +
+	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"\xbd\x02\n" +
 	"\x14UpdateTeacherRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
-	"\busername\x18\x03 \x01(\tR\busername\x12$\n" +
-	"\x06gender\x18\x04 \x01(\x0e2\f.user.GenderR\x06gender\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x88\x01\x01\x12\x1f\n" +
+	"\busername\x18\x03 \x01(\tH\x01R\busername\x88\x01\x01\x12)\n" +
+	"\x06gender\x18\x04 \x01(\x0e2\f.user.GenderH\x02R\x06gender\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"major_code\x18\x05 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x06 \x01(\tR\fsemesterCode\x12\x1d\n" +
+	"major_code\x18\x05 \x01(\tH\x03R\tmajorCode\x88\x01\x01\x12(\n" +
+	"\rsemester_code\x18\x06 \x01(\tH\x04R\fsemesterCode\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedBy\"@\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedByB\b\n" +
+	"\x06_emailB\v\n" +
+	"\t_usernameB\t\n" +
+	"\a_genderB\r\n" +
+	"\v_major_codeB\x10\n" +
+	"\x0e_semester_code\"@\n" +
 	"\x15UpdateTeacherResponse\x12'\n" +
 	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"&\n" +
 	"\x14DeleteTeacherRequest\x12\x0e\n" +
@@ -1706,6 +1711,7 @@ func file_proto_user_user_proto_init() {
 	}
 	file_proto_user_user_proto_msgTypes[1].OneofWrappers = []any{}
 	file_proto_user_user_proto_msgTypes[5].OneofWrappers = []any{}
+	file_proto_user_user_proto_msgTypes[16].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

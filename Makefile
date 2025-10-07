@@ -9,27 +9,27 @@ proto-common:
 
 proto-academic:
 	$(PROTOC) proto/academic/academic.proto
-	$(GEN) academic AcademicService 50051
+
 
 proto-council:
 	$(PROTOC) proto/council/council.proto
-	$(GEN) council CouncilService 50052
+
 
 proto-file:
 	$(PROTOC) proto/file/file.proto
-	$(GEN) file FileService 50053
+
 
 proto-role:
 	$(PROTOC) proto/role/role.proto
-	$(GEN) role RoleService 50054
+
 
 proto-thesis:
 	$(PROTOC) proto/thesis/thesis.proto
-	$(GEN) thesis ThesisService 50055
+
 
 proto-user:
 	$(PROTOC) proto/user/user.proto
-	$(GEN) user UserService 50056
+
 
 # Generate all services
 all: proto-common proto-academic proto-council proto-file proto-role proto-thesis proto-user
