@@ -113,7 +113,7 @@ CREATE TABLE `Topic` (
   `enrollment_code` varchar(255) NOT NULL,
   `semester_code` varchar(255) NOT NULL,
   `teacher_supervisor_code` varchar(255) NOT NULL,
-  `grade_defences_code` varchar(255),
+  `grade_defence_code` varchar(255),
   `status` ENUM ('pending', 'approved', 'in_progress', 'completed', 'rejected') NOT NULL,
   `time_start` datetime NOT NULL,
   `time_end` datetime NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE `Final` (
   `updated_by` varchar(255)
 );
 
-CREATE TABLE `Grade_defences` (
+CREATE TABLE `Grade_defence` (
   `id` varchar(255) PRIMARY KEY,
   `council` int,
   `secretary` int,
@@ -166,7 +166,7 @@ CREATE TABLE `Grade_defences` (
   `updated_at` datetime
 );
 
-CREATE TABLE `councils_schedule` (
+CREATE TABLE `Councils_schedule` (
   `id` varchar(255) PRIMARY KEY,
   `councils_code` varchar(255),
   `topic_code` varchar(255),
@@ -213,11 +213,11 @@ ALTER TABLE `Defence` ADD FOREIGN KEY (`council_code`) REFERENCES `Council` (`id
 
 ALTER TABLE `Defence` ADD FOREIGN KEY (`teacher_code`) REFERENCES `Teacher` (`id`);
 
-ALTER TABLE `councils_schedule` ADD FOREIGN KEY (`councils_code`) REFERENCES `Council` (`id`);
+ALTER TABLE `Councils_schedule` ADD FOREIGN KEY (`councils_code`) REFERENCES `Council` (`id`);
 
-ALTER TABLE `councils_schedule` ADD FOREIGN KEY (`topic_code`) REFERENCES `Topic` (`id`);
+ALTER TABLE `Councils_schedule` ADD FOREIGN KEY (`topic_code`) REFERENCES `Topic` (`id`);
 
-ALTER TABLE `Topic` ADD FOREIGN KEY (`grade_defences_code`) REFERENCES `Grade_defences` (`id`);
+ALTER TABLE `Topic` ADD FOREIGN KEY (`grade_defence_code`) REFERENCES `Grade_defence` (`id`);
 
 ALTER TABLE `File` ADD FOREIGN KEY (`table_id`) REFERENCES `Final` (`id`);
 
