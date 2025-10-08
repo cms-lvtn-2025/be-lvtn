@@ -1,0 +1,345 @@
+version: '3.8'
+
+services:
+  # ==============================================
+  # BACKEND GATEWAY
+  # ==============================================
+  backend-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-gateway
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - GIN_MODE=release
+      - SERVICE_USER=user-service:5001
+      - SERVICE_ACADEMIC=academic-service:5002
+      - SERVICE_THESIS=thesis-service:5003
+      - SERVICE_FILE=file-service:5004
+      - SERVICE_COUNCIL=council-service:5005
+      - SERVICE_ROLE=role-service:5006
+      - REDIS_CACHE_HOST=redis-cache
+      - REDIS_QUEUE_HOST=redis-queue
+      - MINIO_ENDPOINT=minio:9000
+    depends_on:
+      - redis-cache
+      - minio
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # ==============================================
+  # REDIS INSTANCES
+  # ==============================================
+
+  # Redis for caching
+  redis-cache:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-cache-data:/data
+    networks:
+      - backend-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Redis for job queue (BullMQ)
+  redis-queue:
+    image: redis:7-alpine
+    container_name: redis-queue
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-queue-data:/data
+    networks:
+      - backend-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # ==============================================
+  # MINIO (Object Storage)
+  # ==============================================
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"  # API port
+      - "9001:9001"  # Console UI port
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    networks:
+      - backend-network
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Minio client for creating buckets
+  minio-setup:
+    image: minio/mc:latest
+    container_name: minio-setup
+    depends_on:
+      - minio
+    networks:
+      - backend-network
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/avatars --ignore-existing;
+      /usr/bin/mc mb myminio/documents --ignore-existing;
+      /usr/bin/mc mb myminio/thesis --ignore-existing;
+      /usr/bin/mc mb myminio/academic --ignore-existing;
+      /usr/bin/mc anonymous set download myminio/avatars;
+      echo 'Minio buckets created successfully';
+      "
+
+  # ==============================================
+  # MICROSERVICES
+  # ==============================================
+
+  user-service:
+    build:
+      context: ./src/service/user
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - DB_HOST=user-db
+      - DB_PORT=3306
+      - DB_NAME=user_db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - REDIS_QUEUE_HOST=redis-queue
+    depends_on:
+      - user-db
+      - redis-queue
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  academic-service:
+    build:
+      context: ./src/service/academic
+      dockerfile: Dockerfile
+    container_name: academic-service
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - DB_HOST=academic-db
+      - DB_PORT=3306
+      - DB_NAME=academic_db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - REDIS_QUEUE_HOST=redis-queue
+    depends_on:
+      - academic-db
+      - redis-queue
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  thesis-service:
+    build:
+      context: ./src/service/thesis
+      dockerfile: Dockerfile
+    container_name: thesis-service
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - DB_HOST=thesis-db
+      - DB_PORT=3306
+      - DB_NAME=thesis_db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - REDIS_QUEUE_HOST=redis-queue
+    depends_on:
+      - thesis-db
+      - redis-queue
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  file-service:
+    build:
+      context: ./src/service/file
+      dockerfile: Dockerfile
+    container_name: file-service
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - DB_HOST=file-db
+      - DB_PORT=3306
+      - DB_NAME=file_db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - MINIO_ENDPOINT=minio:9000
+      - REDIS_QUEUE_HOST=redis-queue
+    depends_on:
+      - file-db
+      - minio
+      - redis-queue
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  council-service:
+    build:
+      context: ./src/service/council
+      dockerfile: Dockerfile
+    container_name: council-service
+    ports:
+      - "5005:5005"
+    environment:
+      - PORT=5005
+      - DB_HOST=council-db
+      - DB_PORT=3306
+      - DB_NAME=council_db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - REDIS_QUEUE_HOST=redis-queue
+    depends_on:
+      - council-db
+      - redis-queue
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  role-service:
+    build:
+      context: ./src/service/role
+      dockerfile: Dockerfile
+    container_name: role-service
+    ports:
+      - "5006:5006"
+    environment:
+      - PORT=5006
+      - DB_HOST=role-db
+      - DB_PORT=3306
+      - DB_NAME=role_db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - REDIS_QUEUE_HOST=redis-queue
+    depends_on:
+      - role-db
+      - redis-queue
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # ==============================================
+  # DATABASES
+  # ==============================================
+
+  user-db:
+    image: mysql:8
+    container_name: user-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: user_db
+    volumes:
+      - user-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  academic-db:
+    image: mysql:8
+    container_name: academic-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: academic_db
+    volumes:
+      - academic-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  thesis-db:
+    image: mysql:8
+    container_name: thesis-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: thesis_db
+    volumes:
+      - thesis-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  file-db:
+    image: mysql:8
+    container_name: file-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: file_db
+    volumes:
+      - file-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  council-db:
+    image: mysql:8
+    container_name: council-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: council_db
+    volumes:
+      - council-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  role-db:
+    image: mysql:8
+    container_name: role-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: role_db
+    volumes:
+      - role-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+# ==============================================
+# NETWORKS
+# ==============================================
+networks:
+  backend-network:
+    driver: bridge
+
+# ==============================================
+# VOLUMES
+# ==============================================
+volumes:
+  # Redis
+  redis-cache-data:
+  redis-queue-data:
+
+  # Minio
+  minio-data:
+
+  # Databases
+  user-db-data:
+  academic-db-data:
+  thesis-db-data:
+  file-db-data:
+  council-db-data:
+  role-db-data:
