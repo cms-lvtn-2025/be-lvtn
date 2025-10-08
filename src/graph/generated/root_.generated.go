@@ -38,7 +38,219 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Council struct {
+		CreatedAt    func(childComplexity int) int
+		CreatedBy    func(childComplexity int) int
+		Defences     func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Major        func(childComplexity int) int
+		MajorCode    func(childComplexity int) int
+		Schedules    func(childComplexity int) int
+		Semester     func(childComplexity int) int
+		SemesterCode func(childComplexity int) int
+		Title        func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		UpdatedBy    func(childComplexity int) int
+	}
+
+	CouncilSchedule struct {
+		Council      func(childComplexity int) int
+		CouncilsCode func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Status       func(childComplexity int) int
+		TimeEnd      func(childComplexity int) int
+		TimeStart    func(childComplexity int) int
+		Topic        func(childComplexity int) int
+		TopicCode    func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+	}
+
+	Defence struct {
+		Council     func(childComplexity int) int
+		CouncilCode func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Position    func(childComplexity int) int
+		Teacher     func(childComplexity int) int
+		TeacherCode func(childComplexity int) int
+		Title       func(childComplexity int) int
+	}
+
+	Enrollment struct {
+		CreatedAt   func(childComplexity int) int
+		CreatedBy   func(childComplexity int) int
+		Final       func(childComplexity int) int
+		FinalCode   func(childComplexity int) int
+		GradeCode   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Midterm     func(childComplexity int) int
+		MidtermCode func(childComplexity int) int
+		Student     func(childComplexity int) int
+		StudentCode func(childComplexity int) int
+		Title       func(childComplexity int) int
+		Topic       func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		UpdatedBy   func(childComplexity int) int
+	}
+
+	Faculty struct {
+		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Majors    func(childComplexity int) int
+		Title     func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UpdatedBy func(childComplexity int) int
+	}
+
+	File struct {
+		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		File      func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Option    func(childComplexity int) int
+		Status    func(childComplexity int) int
+		Table     func(childComplexity int) int
+		TableID   func(childComplexity int) int
+		Title     func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UpdatedBy func(childComplexity int) int
+	}
+
+	Final struct {
+		CompletionDate  func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		CreatedBy       func(childComplexity int) int
+		DefenseGrade    func(childComplexity int) int
+		FinalGrade      func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Notes           func(childComplexity int) int
+		ReviewerGrade   func(childComplexity int) int
+		Status          func(childComplexity int) int
+		SupervisorGrade func(childComplexity int) int
+		Title           func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		UpdatedBy       func(childComplexity int) int
+	}
+
+	GradeDefence struct {
+		Council   func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Secretary func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	Major struct {
+		CreatedAt   func(childComplexity int) int
+		CreatedBy   func(childComplexity int) int
+		Faculty     func(childComplexity int) int
+		FacultyCode func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Title       func(childComplexity int) int
+		Topics      func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		UpdatedBy   func(childComplexity int) int
+	}
+
+	Midterm struct {
+		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		Feedback  func(childComplexity int) int
+		Grade     func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Status    func(childComplexity int) int
+		Title     func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UpdatedBy func(childComplexity int) int
+	}
+
 	Query struct {
+	}
+
+	RoleSystem struct {
+		Activate     func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		CreatedBy    func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Role         func(childComplexity int) int
+		Semester     func(childComplexity int) int
+		SemesterCode func(childComplexity int) int
+		Teacher      func(childComplexity int) int
+		TeacherCode  func(childComplexity int) int
+		Title        func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		UpdatedBy    func(childComplexity int) int
+	}
+
+	Semester struct {
+		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Students  func(childComplexity int) int
+		Teachers  func(childComplexity int) int
+		Title     func(childComplexity int) int
+		Topics    func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UpdatedBy func(childComplexity int) int
+	}
+
+	Student struct {
+		ClassCode    func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		CreatedBy    func(childComplexity int) int
+		Email        func(childComplexity int) int
+		Enrollments  func(childComplexity int) int
+		Gender       func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Major        func(childComplexity int) int
+		MajorCode    func(childComplexity int) int
+		Phone        func(childComplexity int) int
+		Semester     func(childComplexity int) int
+		SemesterCode func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		UpdatedBy    func(childComplexity int) int
+		Username     func(childComplexity int) int
+	}
+
+	Teacher struct {
+		CreatedAt        func(childComplexity int) int
+		CreatedBy        func(childComplexity int) int
+		Email            func(childComplexity int) int
+		Gender           func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Major            func(childComplexity int) int
+		MajorCode        func(childComplexity int) int
+		Roles            func(childComplexity int) int
+		Semester         func(childComplexity int) int
+		SemesterCode     func(childComplexity int) int
+		TopicsSupervised func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+		UpdatedBy        func(childComplexity int) int
+		Username         func(childComplexity int) int
+	}
+
+	Topic struct {
+		CreatedAt             func(childComplexity int) int
+		CreatedBy             func(childComplexity int) int
+		Enrollment            func(childComplexity int) int
+		EnrollmentCode        func(childComplexity int) int
+		Files                 func(childComplexity int) int
+		GradeDefence          func(childComplexity int) int
+		GradeDefenceCode      func(childComplexity int) int
+		ID                    func(childComplexity int) int
+		Major                 func(childComplexity int) int
+		MajorCode             func(childComplexity int) int
+		Semester              func(childComplexity int) int
+		SemesterCode          func(childComplexity int) int
+		Status                func(childComplexity int) int
+		TeacherSupervisor     func(childComplexity int) int
+		TeacherSupervisorCode func(childComplexity int) int
+		TimeEnd               func(childComplexity int) int
+		TimeStart             func(childComplexity int) int
+		Title                 func(childComplexity int) int
+		UpdatedAt             func(childComplexity int) int
+		UpdatedBy             func(childComplexity int) int
 	}
 }
 
@@ -60,6 +272,1175 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Council.createdAt":
+		if e.complexity.Council.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Council.CreatedAt(childComplexity), true
+
+	case "Council.createdBy":
+		if e.complexity.Council.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Council.CreatedBy(childComplexity), true
+
+	case "Council.defences":
+		if e.complexity.Council.Defences == nil {
+			break
+		}
+
+		return e.complexity.Council.Defences(childComplexity), true
+
+	case "Council.id":
+		if e.complexity.Council.ID == nil {
+			break
+		}
+
+		return e.complexity.Council.ID(childComplexity), true
+
+	case "Council.major":
+		if e.complexity.Council.Major == nil {
+			break
+		}
+
+		return e.complexity.Council.Major(childComplexity), true
+
+	case "Council.majorCode":
+		if e.complexity.Council.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.Council.MajorCode(childComplexity), true
+
+	case "Council.schedules":
+		if e.complexity.Council.Schedules == nil {
+			break
+		}
+
+		return e.complexity.Council.Schedules(childComplexity), true
+
+	case "Council.semester":
+		if e.complexity.Council.Semester == nil {
+			break
+		}
+
+		return e.complexity.Council.Semester(childComplexity), true
+
+	case "Council.semesterCode":
+		if e.complexity.Council.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.Council.SemesterCode(childComplexity), true
+
+	case "Council.title":
+		if e.complexity.Council.Title == nil {
+			break
+		}
+
+		return e.complexity.Council.Title(childComplexity), true
+
+	case "Council.updatedAt":
+		if e.complexity.Council.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Council.UpdatedAt(childComplexity), true
+
+	case "Council.updatedBy":
+		if e.complexity.Council.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Council.UpdatedBy(childComplexity), true
+
+	case "CouncilSchedule.council":
+		if e.complexity.CouncilSchedule.Council == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.Council(childComplexity), true
+
+	case "CouncilSchedule.councilsCode":
+		if e.complexity.CouncilSchedule.CouncilsCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.CouncilsCode(childComplexity), true
+
+	case "CouncilSchedule.createdAt":
+		if e.complexity.CouncilSchedule.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.CreatedAt(childComplexity), true
+
+	case "CouncilSchedule.id":
+		if e.complexity.CouncilSchedule.ID == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.ID(childComplexity), true
+
+	case "CouncilSchedule.status":
+		if e.complexity.CouncilSchedule.Status == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.Status(childComplexity), true
+
+	case "CouncilSchedule.timeEnd":
+		if e.complexity.CouncilSchedule.TimeEnd == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.TimeEnd(childComplexity), true
+
+	case "CouncilSchedule.timeStart":
+		if e.complexity.CouncilSchedule.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.TimeStart(childComplexity), true
+
+	case "CouncilSchedule.topic":
+		if e.complexity.CouncilSchedule.Topic == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.Topic(childComplexity), true
+
+	case "CouncilSchedule.topicCode":
+		if e.complexity.CouncilSchedule.TopicCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.TopicCode(childComplexity), true
+
+	case "CouncilSchedule.updatedAt":
+		if e.complexity.CouncilSchedule.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilSchedule.UpdatedAt(childComplexity), true
+
+	case "Defence.council":
+		if e.complexity.Defence.Council == nil {
+			break
+		}
+
+		return e.complexity.Defence.Council(childComplexity), true
+
+	case "Defence.councilCode":
+		if e.complexity.Defence.CouncilCode == nil {
+			break
+		}
+
+		return e.complexity.Defence.CouncilCode(childComplexity), true
+
+	case "Defence.id":
+		if e.complexity.Defence.ID == nil {
+			break
+		}
+
+		return e.complexity.Defence.ID(childComplexity), true
+
+	case "Defence.position":
+		if e.complexity.Defence.Position == nil {
+			break
+		}
+
+		return e.complexity.Defence.Position(childComplexity), true
+
+	case "Defence.teacher":
+		if e.complexity.Defence.Teacher == nil {
+			break
+		}
+
+		return e.complexity.Defence.Teacher(childComplexity), true
+
+	case "Defence.teacherCode":
+		if e.complexity.Defence.TeacherCode == nil {
+			break
+		}
+
+		return e.complexity.Defence.TeacherCode(childComplexity), true
+
+	case "Defence.title":
+		if e.complexity.Defence.Title == nil {
+			break
+		}
+
+		return e.complexity.Defence.Title(childComplexity), true
+
+	case "Enrollment.createdAt":
+		if e.complexity.Enrollment.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.CreatedAt(childComplexity), true
+
+	case "Enrollment.createdBy":
+		if e.complexity.Enrollment.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.CreatedBy(childComplexity), true
+
+	case "Enrollment.final":
+		if e.complexity.Enrollment.Final == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.Final(childComplexity), true
+
+	case "Enrollment.finalCode":
+		if e.complexity.Enrollment.FinalCode == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.FinalCode(childComplexity), true
+
+	case "Enrollment.gradeCode":
+		if e.complexity.Enrollment.GradeCode == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.GradeCode(childComplexity), true
+
+	case "Enrollment.id":
+		if e.complexity.Enrollment.ID == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.ID(childComplexity), true
+
+	case "Enrollment.midterm":
+		if e.complexity.Enrollment.Midterm == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.Midterm(childComplexity), true
+
+	case "Enrollment.midtermCode":
+		if e.complexity.Enrollment.MidtermCode == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.MidtermCode(childComplexity), true
+
+	case "Enrollment.student":
+		if e.complexity.Enrollment.Student == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.Student(childComplexity), true
+
+	case "Enrollment.studentCode":
+		if e.complexity.Enrollment.StudentCode == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.StudentCode(childComplexity), true
+
+	case "Enrollment.title":
+		if e.complexity.Enrollment.Title == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.Title(childComplexity), true
+
+	case "Enrollment.topic":
+		if e.complexity.Enrollment.Topic == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.Topic(childComplexity), true
+
+	case "Enrollment.updatedAt":
+		if e.complexity.Enrollment.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.UpdatedAt(childComplexity), true
+
+	case "Enrollment.updatedBy":
+		if e.complexity.Enrollment.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.UpdatedBy(childComplexity), true
+
+	case "Faculty.createdAt":
+		if e.complexity.Faculty.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Faculty.CreatedAt(childComplexity), true
+
+	case "Faculty.createdBy":
+		if e.complexity.Faculty.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Faculty.CreatedBy(childComplexity), true
+
+	case "Faculty.id":
+		if e.complexity.Faculty.ID == nil {
+			break
+		}
+
+		return e.complexity.Faculty.ID(childComplexity), true
+
+	case "Faculty.majors":
+		if e.complexity.Faculty.Majors == nil {
+			break
+		}
+
+		return e.complexity.Faculty.Majors(childComplexity), true
+
+	case "Faculty.title":
+		if e.complexity.Faculty.Title == nil {
+			break
+		}
+
+		return e.complexity.Faculty.Title(childComplexity), true
+
+	case "Faculty.updatedAt":
+		if e.complexity.Faculty.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Faculty.UpdatedAt(childComplexity), true
+
+	case "Faculty.updatedBy":
+		if e.complexity.Faculty.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Faculty.UpdatedBy(childComplexity), true
+
+	case "File.createdAt":
+		if e.complexity.File.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.File.CreatedAt(childComplexity), true
+
+	case "File.createdBy":
+		if e.complexity.File.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.File.CreatedBy(childComplexity), true
+
+	case "File.file":
+		if e.complexity.File.File == nil {
+			break
+		}
+
+		return e.complexity.File.File(childComplexity), true
+
+	case "File.id":
+		if e.complexity.File.ID == nil {
+			break
+		}
+
+		return e.complexity.File.ID(childComplexity), true
+
+	case "File.option":
+		if e.complexity.File.Option == nil {
+			break
+		}
+
+		return e.complexity.File.Option(childComplexity), true
+
+	case "File.status":
+		if e.complexity.File.Status == nil {
+			break
+		}
+
+		return e.complexity.File.Status(childComplexity), true
+
+	case "File.table":
+		if e.complexity.File.Table == nil {
+			break
+		}
+
+		return e.complexity.File.Table(childComplexity), true
+
+	case "File.tableId":
+		if e.complexity.File.TableID == nil {
+			break
+		}
+
+		return e.complexity.File.TableID(childComplexity), true
+
+	case "File.title":
+		if e.complexity.File.Title == nil {
+			break
+		}
+
+		return e.complexity.File.Title(childComplexity), true
+
+	case "File.updatedAt":
+		if e.complexity.File.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.File.UpdatedAt(childComplexity), true
+
+	case "File.updatedBy":
+		if e.complexity.File.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.File.UpdatedBy(childComplexity), true
+
+	case "Final.completionDate":
+		if e.complexity.Final.CompletionDate == nil {
+			break
+		}
+
+		return e.complexity.Final.CompletionDate(childComplexity), true
+
+	case "Final.createdAt":
+		if e.complexity.Final.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Final.CreatedAt(childComplexity), true
+
+	case "Final.createdBy":
+		if e.complexity.Final.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Final.CreatedBy(childComplexity), true
+
+	case "Final.defenseGrade":
+		if e.complexity.Final.DefenseGrade == nil {
+			break
+		}
+
+		return e.complexity.Final.DefenseGrade(childComplexity), true
+
+	case "Final.finalGrade":
+		if e.complexity.Final.FinalGrade == nil {
+			break
+		}
+
+		return e.complexity.Final.FinalGrade(childComplexity), true
+
+	case "Final.id":
+		if e.complexity.Final.ID == nil {
+			break
+		}
+
+		return e.complexity.Final.ID(childComplexity), true
+
+	case "Final.notes":
+		if e.complexity.Final.Notes == nil {
+			break
+		}
+
+		return e.complexity.Final.Notes(childComplexity), true
+
+	case "Final.reviewerGrade":
+		if e.complexity.Final.ReviewerGrade == nil {
+			break
+		}
+
+		return e.complexity.Final.ReviewerGrade(childComplexity), true
+
+	case "Final.status":
+		if e.complexity.Final.Status == nil {
+			break
+		}
+
+		return e.complexity.Final.Status(childComplexity), true
+
+	case "Final.supervisorGrade":
+		if e.complexity.Final.SupervisorGrade == nil {
+			break
+		}
+
+		return e.complexity.Final.SupervisorGrade(childComplexity), true
+
+	case "Final.title":
+		if e.complexity.Final.Title == nil {
+			break
+		}
+
+		return e.complexity.Final.Title(childComplexity), true
+
+	case "Final.updatedAt":
+		if e.complexity.Final.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Final.UpdatedAt(childComplexity), true
+
+	case "Final.updatedBy":
+		if e.complexity.Final.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Final.UpdatedBy(childComplexity), true
+
+	case "GradeDefence.council":
+		if e.complexity.GradeDefence.Council == nil {
+			break
+		}
+
+		return e.complexity.GradeDefence.Council(childComplexity), true
+
+	case "GradeDefence.createdAt":
+		if e.complexity.GradeDefence.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.GradeDefence.CreatedAt(childComplexity), true
+
+	case "GradeDefence.id":
+		if e.complexity.GradeDefence.ID == nil {
+			break
+		}
+
+		return e.complexity.GradeDefence.ID(childComplexity), true
+
+	case "GradeDefence.secretary":
+		if e.complexity.GradeDefence.Secretary == nil {
+			break
+		}
+
+		return e.complexity.GradeDefence.Secretary(childComplexity), true
+
+	case "GradeDefence.updatedAt":
+		if e.complexity.GradeDefence.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.GradeDefence.UpdatedAt(childComplexity), true
+
+	case "Major.createdAt":
+		if e.complexity.Major.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Major.CreatedAt(childComplexity), true
+
+	case "Major.createdBy":
+		if e.complexity.Major.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Major.CreatedBy(childComplexity), true
+
+	case "Major.faculty":
+		if e.complexity.Major.Faculty == nil {
+			break
+		}
+
+		return e.complexity.Major.Faculty(childComplexity), true
+
+	case "Major.facultyCode":
+		if e.complexity.Major.FacultyCode == nil {
+			break
+		}
+
+		return e.complexity.Major.FacultyCode(childComplexity), true
+
+	case "Major.id":
+		if e.complexity.Major.ID == nil {
+			break
+		}
+
+		return e.complexity.Major.ID(childComplexity), true
+
+	case "Major.title":
+		if e.complexity.Major.Title == nil {
+			break
+		}
+
+		return e.complexity.Major.Title(childComplexity), true
+
+	case "Major.topics":
+		if e.complexity.Major.Topics == nil {
+			break
+		}
+
+		return e.complexity.Major.Topics(childComplexity), true
+
+	case "Major.updatedAt":
+		if e.complexity.Major.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Major.UpdatedAt(childComplexity), true
+
+	case "Major.updatedBy":
+		if e.complexity.Major.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Major.UpdatedBy(childComplexity), true
+
+	case "Midterm.createdAt":
+		if e.complexity.Midterm.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Midterm.CreatedAt(childComplexity), true
+
+	case "Midterm.createdBy":
+		if e.complexity.Midterm.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Midterm.CreatedBy(childComplexity), true
+
+	case "Midterm.feedback":
+		if e.complexity.Midterm.Feedback == nil {
+			break
+		}
+
+		return e.complexity.Midterm.Feedback(childComplexity), true
+
+	case "Midterm.grade":
+		if e.complexity.Midterm.Grade == nil {
+			break
+		}
+
+		return e.complexity.Midterm.Grade(childComplexity), true
+
+	case "Midterm.id":
+		if e.complexity.Midterm.ID == nil {
+			break
+		}
+
+		return e.complexity.Midterm.ID(childComplexity), true
+
+	case "Midterm.status":
+		if e.complexity.Midterm.Status == nil {
+			break
+		}
+
+		return e.complexity.Midterm.Status(childComplexity), true
+
+	case "Midterm.title":
+		if e.complexity.Midterm.Title == nil {
+			break
+		}
+
+		return e.complexity.Midterm.Title(childComplexity), true
+
+	case "Midterm.updatedAt":
+		if e.complexity.Midterm.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Midterm.UpdatedAt(childComplexity), true
+
+	case "Midterm.updatedBy":
+		if e.complexity.Midterm.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Midterm.UpdatedBy(childComplexity), true
+
+	case "RoleSystem.activate":
+		if e.complexity.RoleSystem.Activate == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.Activate(childComplexity), true
+
+	case "RoleSystem.createdAt":
+		if e.complexity.RoleSystem.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.CreatedAt(childComplexity), true
+
+	case "RoleSystem.createdBy":
+		if e.complexity.RoleSystem.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.CreatedBy(childComplexity), true
+
+	case "RoleSystem.id":
+		if e.complexity.RoleSystem.ID == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.ID(childComplexity), true
+
+	case "RoleSystem.role":
+		if e.complexity.RoleSystem.Role == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.Role(childComplexity), true
+
+	case "RoleSystem.semester":
+		if e.complexity.RoleSystem.Semester == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.Semester(childComplexity), true
+
+	case "RoleSystem.semesterCode":
+		if e.complexity.RoleSystem.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.SemesterCode(childComplexity), true
+
+	case "RoleSystem.teacher":
+		if e.complexity.RoleSystem.Teacher == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.Teacher(childComplexity), true
+
+	case "RoleSystem.teacherCode":
+		if e.complexity.RoleSystem.TeacherCode == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.TeacherCode(childComplexity), true
+
+	case "RoleSystem.title":
+		if e.complexity.RoleSystem.Title == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.Title(childComplexity), true
+
+	case "RoleSystem.updatedAt":
+		if e.complexity.RoleSystem.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.UpdatedAt(childComplexity), true
+
+	case "RoleSystem.updatedBy":
+		if e.complexity.RoleSystem.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.RoleSystem.UpdatedBy(childComplexity), true
+
+	case "Semester.createdAt":
+		if e.complexity.Semester.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Semester.CreatedAt(childComplexity), true
+
+	case "Semester.createdBy":
+		if e.complexity.Semester.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Semester.CreatedBy(childComplexity), true
+
+	case "Semester.id":
+		if e.complexity.Semester.ID == nil {
+			break
+		}
+
+		return e.complexity.Semester.ID(childComplexity), true
+
+	case "Semester.students":
+		if e.complexity.Semester.Students == nil {
+			break
+		}
+
+		return e.complexity.Semester.Students(childComplexity), true
+
+	case "Semester.teachers":
+		if e.complexity.Semester.Teachers == nil {
+			break
+		}
+
+		return e.complexity.Semester.Teachers(childComplexity), true
+
+	case "Semester.title":
+		if e.complexity.Semester.Title == nil {
+			break
+		}
+
+		return e.complexity.Semester.Title(childComplexity), true
+
+	case "Semester.topics":
+		if e.complexity.Semester.Topics == nil {
+			break
+		}
+
+		return e.complexity.Semester.Topics(childComplexity), true
+
+	case "Semester.updatedAt":
+		if e.complexity.Semester.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Semester.UpdatedAt(childComplexity), true
+
+	case "Semester.updatedBy":
+		if e.complexity.Semester.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Semester.UpdatedBy(childComplexity), true
+
+	case "Student.classCode":
+		if e.complexity.Student.ClassCode == nil {
+			break
+		}
+
+		return e.complexity.Student.ClassCode(childComplexity), true
+
+	case "Student.createdAt":
+		if e.complexity.Student.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Student.CreatedAt(childComplexity), true
+
+	case "Student.createdBy":
+		if e.complexity.Student.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Student.CreatedBy(childComplexity), true
+
+	case "Student.email":
+		if e.complexity.Student.Email == nil {
+			break
+		}
+
+		return e.complexity.Student.Email(childComplexity), true
+
+	case "Student.enrollments":
+		if e.complexity.Student.Enrollments == nil {
+			break
+		}
+
+		return e.complexity.Student.Enrollments(childComplexity), true
+
+	case "Student.gender":
+		if e.complexity.Student.Gender == nil {
+			break
+		}
+
+		return e.complexity.Student.Gender(childComplexity), true
+
+	case "Student.id":
+		if e.complexity.Student.ID == nil {
+			break
+		}
+
+		return e.complexity.Student.ID(childComplexity), true
+
+	case "Student.major":
+		if e.complexity.Student.Major == nil {
+			break
+		}
+
+		return e.complexity.Student.Major(childComplexity), true
+
+	case "Student.majorCode":
+		if e.complexity.Student.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.Student.MajorCode(childComplexity), true
+
+	case "Student.phone":
+		if e.complexity.Student.Phone == nil {
+			break
+		}
+
+		return e.complexity.Student.Phone(childComplexity), true
+
+	case "Student.semester":
+		if e.complexity.Student.Semester == nil {
+			break
+		}
+
+		return e.complexity.Student.Semester(childComplexity), true
+
+	case "Student.semesterCode":
+		if e.complexity.Student.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.Student.SemesterCode(childComplexity), true
+
+	case "Student.updatedAt":
+		if e.complexity.Student.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Student.UpdatedAt(childComplexity), true
+
+	case "Student.updatedBy":
+		if e.complexity.Student.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Student.UpdatedBy(childComplexity), true
+
+	case "Student.username":
+		if e.complexity.Student.Username == nil {
+			break
+		}
+
+		return e.complexity.Student.Username(childComplexity), true
+
+	case "Teacher.createdAt":
+		if e.complexity.Teacher.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Teacher.CreatedAt(childComplexity), true
+
+	case "Teacher.createdBy":
+		if e.complexity.Teacher.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Teacher.CreatedBy(childComplexity), true
+
+	case "Teacher.email":
+		if e.complexity.Teacher.Email == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Email(childComplexity), true
+
+	case "Teacher.gender":
+		if e.complexity.Teacher.Gender == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Gender(childComplexity), true
+
+	case "Teacher.id":
+		if e.complexity.Teacher.ID == nil {
+			break
+		}
+
+		return e.complexity.Teacher.ID(childComplexity), true
+
+	case "Teacher.major":
+		if e.complexity.Teacher.Major == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Major(childComplexity), true
+
+	case "Teacher.majorCode":
+		if e.complexity.Teacher.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.Teacher.MajorCode(childComplexity), true
+
+	case "Teacher.roles":
+		if e.complexity.Teacher.Roles == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Roles(childComplexity), true
+
+	case "Teacher.semester":
+		if e.complexity.Teacher.Semester == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Semester(childComplexity), true
+
+	case "Teacher.semesterCode":
+		if e.complexity.Teacher.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.Teacher.SemesterCode(childComplexity), true
+
+	case "Teacher.topicsSupervised":
+		if e.complexity.Teacher.TopicsSupervised == nil {
+			break
+		}
+
+		return e.complexity.Teacher.TopicsSupervised(childComplexity), true
+
+	case "Teacher.updatedAt":
+		if e.complexity.Teacher.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Teacher.UpdatedAt(childComplexity), true
+
+	case "Teacher.updatedBy":
+		if e.complexity.Teacher.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Teacher.UpdatedBy(childComplexity), true
+
+	case "Teacher.username":
+		if e.complexity.Teacher.Username == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Username(childComplexity), true
+
+	case "Topic.createdAt":
+		if e.complexity.Topic.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Topic.CreatedAt(childComplexity), true
+
+	case "Topic.createdBy":
+		if e.complexity.Topic.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Topic.CreatedBy(childComplexity), true
+
+	case "Topic.enrollment":
+		if e.complexity.Topic.Enrollment == nil {
+			break
+		}
+
+		return e.complexity.Topic.Enrollment(childComplexity), true
+
+	case "Topic.enrollmentCode":
+		if e.complexity.Topic.EnrollmentCode == nil {
+			break
+		}
+
+		return e.complexity.Topic.EnrollmentCode(childComplexity), true
+
+	case "Topic.files":
+		if e.complexity.Topic.Files == nil {
+			break
+		}
+
+		return e.complexity.Topic.Files(childComplexity), true
+
+	case "Topic.gradeDefence":
+		if e.complexity.Topic.GradeDefence == nil {
+			break
+		}
+
+		return e.complexity.Topic.GradeDefence(childComplexity), true
+
+	case "Topic.gradeDefenceCode":
+		if e.complexity.Topic.GradeDefenceCode == nil {
+			break
+		}
+
+		return e.complexity.Topic.GradeDefenceCode(childComplexity), true
+
+	case "Topic.id":
+		if e.complexity.Topic.ID == nil {
+			break
+		}
+
+		return e.complexity.Topic.ID(childComplexity), true
+
+	case "Topic.major":
+		if e.complexity.Topic.Major == nil {
+			break
+		}
+
+		return e.complexity.Topic.Major(childComplexity), true
+
+	case "Topic.majorCode":
+		if e.complexity.Topic.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.Topic.MajorCode(childComplexity), true
+
+	case "Topic.semester":
+		if e.complexity.Topic.Semester == nil {
+			break
+		}
+
+		return e.complexity.Topic.Semester(childComplexity), true
+
+	case "Topic.semesterCode":
+		if e.complexity.Topic.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.Topic.SemesterCode(childComplexity), true
+
+	case "Topic.status":
+		if e.complexity.Topic.Status == nil {
+			break
+		}
+
+		return e.complexity.Topic.Status(childComplexity), true
+
+	case "Topic.teacherSupervisor":
+		if e.complexity.Topic.TeacherSupervisor == nil {
+			break
+		}
+
+		return e.complexity.Topic.TeacherSupervisor(childComplexity), true
+
+	case "Topic.teacherSupervisorCode":
+		if e.complexity.Topic.TeacherSupervisorCode == nil {
+			break
+		}
+
+		return e.complexity.Topic.TeacherSupervisorCode(childComplexity), true
+
+	case "Topic.timeEnd":
+		if e.complexity.Topic.TimeEnd == nil {
+			break
+		}
+
+		return e.complexity.Topic.TimeEnd(childComplexity), true
+
+	case "Topic.timeStart":
+		if e.complexity.Topic.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.Topic.TimeStart(childComplexity), true
+
+	case "Topic.title":
+		if e.complexity.Topic.Title == nil {
+			break
+		}
+
+		return e.complexity.Topic.Title(childComplexity), true
+
+	case "Topic.updatedAt":
+		if e.complexity.Topic.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Topic.UpdatedAt(childComplexity), true
+
+	case "Topic.updatedBy":
+		if e.complexity.Topic.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.Topic.UpdatedBy(childComplexity), true
 
 	}
 	return 0, false
@@ -149,5 +1530,302 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-var sources = []*ast.Source{}
+var sources = []*ast.Source{
+	{Name: "../schema/acadamic.graphqls", Input: `type Faculty {
+    id: ID!
+    title: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    majors: [Major!]!
+}
+
+
+type Major {
+    id: ID!
+    title: String!
+    facultyCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    faculty: Faculty
+    topics: [Topic!]
+}
+
+
+type Semester {
+    id: ID!
+    title: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    students: [Student!]
+    teachers: [Teacher!]
+    topics: [Topic!]
+}
+`, BuiltIn: false},
+	{Name: "../schema/council.graphqls", Input: `type Council {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    semester: Semester
+    defences: [Defence!]
+    schedules: [CouncilSchedule!]
+}
+
+type Defence {
+    id: ID!
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+
+    council: Council
+    teacher: Teacher
+}
+
+
+type GradeDefence {
+    id: ID!
+    council: Int
+    secretary: Int
+    createdAt: Time
+    updatedAt: Time
+}
+
+type CouncilSchedule {
+    id: ID!
+    councilsCode: String
+    topicCode: String
+    timeStart: Time
+    timeEnd: Time
+    createdAt: Time
+    updatedAt: Time
+    status: Boolean!
+
+    council: Council
+    topic: Topic
+}
+`, BuiltIn: false},
+	{Name: "../schema/file.graphqls", Input: `type File {
+    id: ID!
+    title: String!
+    file: String
+    status: FileStatus!
+    table: FileTable!
+    option: String
+    tableId: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+`, BuiltIn: false},
+	{Name: "../schema/role.graphqls", Input: `
+type RoleSystem {
+    id: ID!
+    title: String!
+    teacherCode: String
+    role: RoleSystemRole!
+    semesterCode: String!
+    activate: Boolean!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    teacher: Teacher
+    semester: Semester
+}
+`, BuiltIn: false},
+	{Name: "../schema/schema.graphqls", Input: `scalar Time
+
+"""Giới tính"""
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+"""Trạng thái file"""
+enum FileStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+"""Bảng đính kèm file"""
+enum FileTable {
+    TOPIC
+    MIDTERM
+    FINAL
+    ORDER
+}
+
+"""Vai trò trong hệ thống"""
+enum RoleSystemRole {
+    ACADEMIC_AFFAIRS_STAFF
+    SUPERVISOR_LECTURER
+    DEPARTMENT_LECTURER
+    REVIEWER_LECTURER
+}
+
+"""Trạng thái giữa kỳ"""
+enum MidtermStatus {
+    NOT_SUBMITTED
+    SUBMITTED
+    GRADED
+}
+
+"""Trạng thái đề tài"""
+enum TopicStatus {
+    PENDING
+    APPROVED
+    IN_PROGRESS
+    COMPLETED
+    REJECTED
+}
+
+"""Vai trò trong hội đồng bảo vệ"""
+enum DefencePosition {
+    PRESIDENT
+    SECRETARY
+    REVIEWER
+    MEMBER
+}
+
+"""Trạng thái đồ án cuối cùng"""
+enum FinalStatus {
+    PENDING
+    PASSED
+    FAILED
+    COMPLETED
+}
+
+
+`, BuiltIn: false},
+	{Name: "../schema/thesis.graphqls", Input: `type Midterm {
+    id: ID!
+    title: String!
+    grade: Int
+    status: MidtermStatus!
+    feedback: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type Enrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    midtermCode: String
+    finalCode: String
+    gradeCode: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    student: Student
+    midterm: Midterm
+    final: Final
+    topic: Topic
+}
+
+type Topic {
+    id: ID!
+    title: String!
+    majorCode: String!
+    enrollmentCode: String!
+    semesterCode: String!
+    teacherSupervisorCode: String!
+    gradeDefenceCode: String
+    status: TopicStatus!
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    enrollment: Enrollment
+    semester: Semester
+    teacherSupervisor: Teacher
+    gradeDefence: GradeDefence
+    files: [File!]
+}
+
+type Final {
+    id: ID!
+    title: String!
+    supervisorGrade: Int
+    reviewerGrade: Int
+    defenseGrade: Int
+    finalGrade: Int
+    status: FinalStatus!
+    notes: String
+    completionDate: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+`, BuiltIn: false},
+	{Name: "../schema/user.graphqls", Input: `
+type Student {
+    id: ID!
+    email: String!
+    phone: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    classCode: String
+    semesterCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    semester: Semester
+    enrollments: [Enrollment!]
+}
+
+
+type Teacher {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    semesterCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    semester: Semester
+    roles: [RoleSystem!]
+    topicsSupervised: [Topic!]
+}
+`, BuiltIn: false},
+}
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

@@ -1,0 +1,13 @@
+type File {
+    id: ID!
+    title: String!
+    file: String
+    status: FileStatus!
+    table: FileTable!
+    option: String
+    tableId: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}

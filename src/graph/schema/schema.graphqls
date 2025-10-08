@@ -1,0 +1,65 @@
+scalar Time
+
+"""Giới tính"""
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+"""Trạng thái file"""
+enum FileStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+"""Bảng đính kèm file"""
+enum FileTable {
+    TOPIC
+    MIDTERM
+    FINAL
+    ORDER
+}
+
+"""Vai trò trong hệ thống"""
+enum RoleSystemRole {
+    ACADEMIC_AFFAIRS_STAFF
+    SUPERVISOR_LECTURER
+    DEPARTMENT_LECTURER
+    REVIEWER_LECTURER
+}
+
+"""Trạng thái giữa kỳ"""
+enum MidtermStatus {
+    NOT_SUBMITTED
+    SUBMITTED
+    GRADED
+}
+
+"""Trạng thái đề tài"""
+enum TopicStatus {
+    PENDING
+    APPROVED
+    IN_PROGRESS
+    COMPLETED
+    REJECTED
+}
+
+"""Vai trò trong hội đồng bảo vệ"""
+enum DefencePosition {
+    PRESIDENT
+    SECRETARY
+    REVIEWER
+    MEMBER
+}
+
+"""Trạng thái đồ án cuối cùng"""
+enum FinalStatus {
+    PENDING
+    PASSED
+    FAILED
+    COMPLETED
+}
+
+

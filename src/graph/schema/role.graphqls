@@ -1,0 +1,16 @@
+
+type RoleSystem {
+    id: ID!
+    title: String!
+    teacherCode: String
+    role: RoleSystemRole!
+    semesterCode: String!
+    activate: Boolean!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    teacher: Teacher
+    semester: Semester
+}

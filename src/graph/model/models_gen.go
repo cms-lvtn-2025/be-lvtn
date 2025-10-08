@@ -2,5 +2,701 @@
 
 package model
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
+	"time"
+)
+
+type Council struct {
+	ID           string             `json:"id"`
+	Title        string             `json:"title"`
+	MajorCode    string             `json:"majorCode"`
+	SemesterCode string             `json:"semesterCode"`
+	CreatedAt    *time.Time         `json:"createdAt,omitempty"`
+	UpdatedAt    *time.Time         `json:"updatedAt,omitempty"`
+	CreatedBy    *string            `json:"createdBy,omitempty"`
+	UpdatedBy    *string            `json:"updatedBy,omitempty"`
+	Major        *Major             `json:"major,omitempty"`
+	Semester     *Semester          `json:"semester,omitempty"`
+	Defences     []*Defence         `json:"defences,omitempty"`
+	Schedules    []*CouncilSchedule `json:"schedules,omitempty"`
+}
+
+type CouncilSchedule struct {
+	ID           string     `json:"id"`
+	CouncilsCode *string    `json:"councilsCode,omitempty"`
+	TopicCode    *string    `json:"topicCode,omitempty"`
+	TimeStart    *time.Time `json:"timeStart,omitempty"`
+	TimeEnd      *time.Time `json:"timeEnd,omitempty"`
+	CreatedAt    *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt    *time.Time `json:"updatedAt,omitempty"`
+	Status       bool       `json:"status"`
+	Council      *Council   `json:"council,omitempty"`
+	Topic        *Topic     `json:"topic,omitempty"`
+}
+
+type Defence struct {
+	ID          string          `json:"id"`
+	Title       string          `json:"title"`
+	CouncilCode string          `json:"councilCode"`
+	TeacherCode string          `json:"teacherCode"`
+	Position    DefencePosition `json:"position"`
+	Council     *Council        `json:"council,omitempty"`
+	Teacher     *Teacher        `json:"teacher,omitempty"`
+}
+
+type Enrollment struct {
+	ID          string     `json:"id"`
+	Title       string     `json:"title"`
+	StudentCode string     `json:"studentCode"`
+	MidtermCode *string    `json:"midtermCode,omitempty"`
+	FinalCode   *string    `json:"finalCode,omitempty"`
+	GradeCode   *string    `json:"gradeCode,omitempty"`
+	CreatedAt   *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy   *string    `json:"createdBy,omitempty"`
+	UpdatedBy   *string    `json:"updatedBy,omitempty"`
+	Student     *Student   `json:"student,omitempty"`
+	Midterm     *Midterm   `json:"midterm,omitempty"`
+	Final       *Final     `json:"final,omitempty"`
+	Topic       *Topic     `json:"topic,omitempty"`
+}
+
+type Faculty struct {
+	ID        string     `json:"id"`
+	Title     string     `json:"title"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+	Majors    []*Major   `json:"majors"`
+}
+
+type File struct {
+	ID        string     `json:"id"`
+	Title     string     `json:"title"`
+	File      *string    `json:"file,omitempty"`
+	Status    FileStatus `json:"status"`
+	Table     FileTable  `json:"table"`
+	Option    *string    `json:"option,omitempty"`
+	TableID   string     `json:"tableId"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+}
+
+type Final struct {
+	ID              string      `json:"id"`
+	Title           string      `json:"title"`
+	SupervisorGrade *int32      `json:"supervisorGrade,omitempty"`
+	ReviewerGrade   *int32      `json:"reviewerGrade,omitempty"`
+	DefenseGrade    *int32      `json:"defenseGrade,omitempty"`
+	FinalGrade      *int32      `json:"finalGrade,omitempty"`
+	Status          FinalStatus `json:"status"`
+	Notes           *string     `json:"notes,omitempty"`
+	CompletionDate  *time.Time  `json:"completionDate,omitempty"`
+	CreatedAt       *time.Time  `json:"createdAt,omitempty"`
+	UpdatedAt       *time.Time  `json:"updatedAt,omitempty"`
+	CreatedBy       *string     `json:"createdBy,omitempty"`
+	UpdatedBy       *string     `json:"updatedBy,omitempty"`
+}
+
+type GradeDefence struct {
+	ID        string     `json:"id"`
+	Council   *int32     `json:"council,omitempty"`
+	Secretary *int32     `json:"secretary,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+}
+
+type Major struct {
+	ID          string     `json:"id"`
+	Title       string     `json:"title"`
+	FacultyCode string     `json:"facultyCode"`
+	CreatedAt   *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy   *string    `json:"createdBy,omitempty"`
+	UpdatedBy   *string    `json:"updatedBy,omitempty"`
+	Faculty     *Faculty   `json:"faculty,omitempty"`
+	Topics      []*Topic   `json:"topics,omitempty"`
+}
+
+type Midterm struct {
+	ID        string        `json:"id"`
+	Title     string        `json:"title"`
+	Grade     *int32        `json:"grade,omitempty"`
+	Status    MidtermStatus `json:"status"`
+	Feedback  *string       `json:"feedback,omitempty"`
+	CreatedAt *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy *string       `json:"createdBy,omitempty"`
+	UpdatedBy *string       `json:"updatedBy,omitempty"`
+}
+
 type Query struct {
+}
+
+type RoleSystem struct {
+	ID           string         `json:"id"`
+	Title        string         `json:"title"`
+	TeacherCode  *string        `json:"teacherCode,omitempty"`
+	Role         RoleSystemRole `json:"role"`
+	SemesterCode string         `json:"semesterCode"`
+	Activate     bool           `json:"activate"`
+	CreatedAt    *time.Time     `json:"createdAt,omitempty"`
+	UpdatedAt    *time.Time     `json:"updatedAt,omitempty"`
+	CreatedBy    *string        `json:"createdBy,omitempty"`
+	UpdatedBy    *string        `json:"updatedBy,omitempty"`
+	Teacher      *Teacher       `json:"teacher,omitempty"`
+	Semester     *Semester      `json:"semester,omitempty"`
+}
+
+type Semester struct {
+	ID        string     `json:"id"`
+	Title     string     `json:"title"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy *string    `json:"createdBy,omitempty"`
+	UpdatedBy *string    `json:"updatedBy,omitempty"`
+	Students  []*Student `json:"students,omitempty"`
+	Teachers  []*Teacher `json:"teachers,omitempty"`
+	Topics    []*Topic   `json:"topics,omitempty"`
+}
+
+type Student struct {
+	ID           string        `json:"id"`
+	Email        string        `json:"email"`
+	Phone        string        `json:"phone"`
+	Username     string        `json:"username"`
+	Gender       *Gender       `json:"gender,omitempty"`
+	MajorCode    string        `json:"majorCode"`
+	ClassCode    *string       `json:"classCode,omitempty"`
+	SemesterCode string        `json:"semesterCode"`
+	CreatedAt    *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy    *string       `json:"createdBy,omitempty"`
+	UpdatedBy    *string       `json:"updatedBy,omitempty"`
+	Major        *Major        `json:"major,omitempty"`
+	Semester     *Semester     `json:"semester,omitempty"`
+	Enrollments  []*Enrollment `json:"enrollments,omitempty"`
+}
+
+type Teacher struct {
+	ID               string        `json:"id"`
+	Email            string        `json:"email"`
+	Username         string        `json:"username"`
+	Gender           *Gender       `json:"gender,omitempty"`
+	MajorCode        string        `json:"majorCode"`
+	SemesterCode     string        `json:"semesterCode"`
+	CreatedAt        *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt        *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy        *string       `json:"createdBy,omitempty"`
+	UpdatedBy        *string       `json:"updatedBy,omitempty"`
+	Major            *Major        `json:"major,omitempty"`
+	Semester         *Semester     `json:"semester,omitempty"`
+	Roles            []*RoleSystem `json:"roles,omitempty"`
+	TopicsSupervised []*Topic      `json:"topicsSupervised,omitempty"`
+}
+
+type Topic struct {
+	ID                    string        `json:"id"`
+	Title                 string        `json:"title"`
+	MajorCode             string        `json:"majorCode"`
+	EnrollmentCode        string        `json:"enrollmentCode"`
+	SemesterCode          string        `json:"semesterCode"`
+	TeacherSupervisorCode string        `json:"teacherSupervisorCode"`
+	GradeDefenceCode      *string       `json:"gradeDefenceCode,omitempty"`
+	Status                TopicStatus   `json:"status"`
+	TimeStart             time.Time     `json:"timeStart"`
+	TimeEnd               time.Time     `json:"timeEnd"`
+	CreatedAt             *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt             *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy             *string       `json:"createdBy,omitempty"`
+	UpdatedBy             *string       `json:"updatedBy,omitempty"`
+	Major                 *Major        `json:"major,omitempty"`
+	Enrollment            *Enrollment   `json:"enrollment,omitempty"`
+	Semester              *Semester     `json:"semester,omitempty"`
+	TeacherSupervisor     *Teacher      `json:"teacherSupervisor,omitempty"`
+	GradeDefence          *GradeDefence `json:"gradeDefence,omitempty"`
+	Files                 []*File       `json:"files,omitempty"`
+}
+
+// Vai trò trong hội đồng bảo vệ
+type DefencePosition string
+
+const (
+	DefencePositionPresident DefencePosition = "PRESIDENT"
+	DefencePositionSecretary DefencePosition = "SECRETARY"
+	DefencePositionReviewer  DefencePosition = "REVIEWER"
+	DefencePositionMember    DefencePosition = "MEMBER"
+)
+
+var AllDefencePosition = []DefencePosition{
+	DefencePositionPresident,
+	DefencePositionSecretary,
+	DefencePositionReviewer,
+	DefencePositionMember,
+}
+
+func (e DefencePosition) IsValid() bool {
+	switch e {
+	case DefencePositionPresident, DefencePositionSecretary, DefencePositionReviewer, DefencePositionMember:
+		return true
+	}
+	return false
+}
+
+func (e DefencePosition) String() string {
+	return string(e)
+}
+
+func (e *DefencePosition) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DefencePosition(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DefencePosition", str)
+	}
+	return nil
+}
+
+func (e DefencePosition) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *DefencePosition) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e DefencePosition) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Trạng thái file
+type FileStatus string
+
+const (
+	FileStatusPending  FileStatus = "PENDING"
+	FileStatusApproved FileStatus = "APPROVED"
+	FileStatusRejected FileStatus = "REJECTED"
+)
+
+var AllFileStatus = []FileStatus{
+	FileStatusPending,
+	FileStatusApproved,
+	FileStatusRejected,
+}
+
+func (e FileStatus) IsValid() bool {
+	switch e {
+	case FileStatusPending, FileStatusApproved, FileStatusRejected:
+		return true
+	}
+	return false
+}
+
+func (e FileStatus) String() string {
+	return string(e)
+}
+
+func (e *FileStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FileStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FileStatus", str)
+	}
+	return nil
+}
+
+func (e FileStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FileStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FileStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Bảng đính kèm file
+type FileTable string
+
+const (
+	FileTableTopic   FileTable = "TOPIC"
+	FileTableMidterm FileTable = "MIDTERM"
+	FileTableFinal   FileTable = "FINAL"
+	FileTableOrder   FileTable = "ORDER"
+)
+
+var AllFileTable = []FileTable{
+	FileTableTopic,
+	FileTableMidterm,
+	FileTableFinal,
+	FileTableOrder,
+}
+
+func (e FileTable) IsValid() bool {
+	switch e {
+	case FileTableTopic, FileTableMidterm, FileTableFinal, FileTableOrder:
+		return true
+	}
+	return false
+}
+
+func (e FileTable) String() string {
+	return string(e)
+}
+
+func (e *FileTable) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FileTable(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FileTable", str)
+	}
+	return nil
+}
+
+func (e FileTable) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FileTable) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FileTable) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Trạng thái đồ án cuối cùng
+type FinalStatus string
+
+const (
+	FinalStatusPending   FinalStatus = "PENDING"
+	FinalStatusPassed    FinalStatus = "PASSED"
+	FinalStatusFailed    FinalStatus = "FAILED"
+	FinalStatusCompleted FinalStatus = "COMPLETED"
+)
+
+var AllFinalStatus = []FinalStatus{
+	FinalStatusPending,
+	FinalStatusPassed,
+	FinalStatusFailed,
+	FinalStatusCompleted,
+}
+
+func (e FinalStatus) IsValid() bool {
+	switch e {
+	case FinalStatusPending, FinalStatusPassed, FinalStatusFailed, FinalStatusCompleted:
+		return true
+	}
+	return false
+}
+
+func (e FinalStatus) String() string {
+	return string(e)
+}
+
+func (e *FinalStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FinalStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FinalStatus", str)
+	}
+	return nil
+}
+
+func (e FinalStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FinalStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FinalStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Giới tính
+type Gender string
+
+const (
+	GenderMale   Gender = "MALE"
+	GenderFemale Gender = "FEMALE"
+	GenderOther  Gender = "OTHER"
+)
+
+var AllGender = []Gender{
+	GenderMale,
+	GenderFemale,
+	GenderOther,
+}
+
+func (e Gender) IsValid() bool {
+	switch e {
+	case GenderMale, GenderFemale, GenderOther:
+		return true
+	}
+	return false
+}
+
+func (e Gender) String() string {
+	return string(e)
+}
+
+func (e *Gender) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Gender(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Gender", str)
+	}
+	return nil
+}
+
+func (e Gender) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Gender) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Gender) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Trạng thái giữa kỳ
+type MidtermStatus string
+
+const (
+	MidtermStatusNotSubmitted MidtermStatus = "NOT_SUBMITTED"
+	MidtermStatusSubmitted    MidtermStatus = "SUBMITTED"
+	MidtermStatusGraded       MidtermStatus = "GRADED"
+)
+
+var AllMidtermStatus = []MidtermStatus{
+	MidtermStatusNotSubmitted,
+	MidtermStatusSubmitted,
+	MidtermStatusGraded,
+}
+
+func (e MidtermStatus) IsValid() bool {
+	switch e {
+	case MidtermStatusNotSubmitted, MidtermStatusSubmitted, MidtermStatusGraded:
+		return true
+	}
+	return false
+}
+
+func (e MidtermStatus) String() string {
+	return string(e)
+}
+
+func (e *MidtermStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MidtermStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MidtermStatus", str)
+	}
+	return nil
+}
+
+func (e MidtermStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *MidtermStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e MidtermStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Vai trò trong hệ thống
+type RoleSystemRole string
+
+const (
+	RoleSystemRoleAcademicAffairsStaff RoleSystemRole = "ACADEMIC_AFFAIRS_STAFF"
+	RoleSystemRoleSupervisorLecturer   RoleSystemRole = "SUPERVISOR_LECTURER"
+	RoleSystemRoleDepartmentLecturer   RoleSystemRole = "DEPARTMENT_LECTURER"
+	RoleSystemRoleReviewerLecturer     RoleSystemRole = "REVIEWER_LECTURER"
+)
+
+var AllRoleSystemRole = []RoleSystemRole{
+	RoleSystemRoleAcademicAffairsStaff,
+	RoleSystemRoleSupervisorLecturer,
+	RoleSystemRoleDepartmentLecturer,
+	RoleSystemRoleReviewerLecturer,
+}
+
+func (e RoleSystemRole) IsValid() bool {
+	switch e {
+	case RoleSystemRoleAcademicAffairsStaff, RoleSystemRoleSupervisorLecturer, RoleSystemRoleDepartmentLecturer, RoleSystemRoleReviewerLecturer:
+		return true
+	}
+	return false
+}
+
+func (e RoleSystemRole) String() string {
+	return string(e)
+}
+
+func (e *RoleSystemRole) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RoleSystemRole(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RoleSystemRole", str)
+	}
+	return nil
+}
+
+func (e RoleSystemRole) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *RoleSystemRole) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e RoleSystemRole) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+// Trạng thái đề tài
+type TopicStatus string
+
+const (
+	TopicStatusPending    TopicStatus = "PENDING"
+	TopicStatusApproved   TopicStatus = "APPROVED"
+	TopicStatusInProgress TopicStatus = "IN_PROGRESS"
+	TopicStatusCompleted  TopicStatus = "COMPLETED"
+	TopicStatusRejected   TopicStatus = "REJECTED"
+)
+
+var AllTopicStatus = []TopicStatus{
+	TopicStatusPending,
+	TopicStatusApproved,
+	TopicStatusInProgress,
+	TopicStatusCompleted,
+	TopicStatusRejected,
+}
+
+func (e TopicStatus) IsValid() bool {
+	switch e {
+	case TopicStatusPending, TopicStatusApproved, TopicStatusInProgress, TopicStatusCompleted, TopicStatusRejected:
+		return true
+	}
+	return false
+}
+
+func (e TopicStatus) String() string {
+	return string(e)
+}
+
+func (e *TopicStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TopicStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TopicStatus", str)
+	}
+	return nil
+}
+
+func (e TopicStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TopicStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TopicStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }

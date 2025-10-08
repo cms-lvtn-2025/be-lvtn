@@ -1,0 +1,49 @@
+type Council {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    semester: Semester
+    defences: [Defence!]
+    schedules: [CouncilSchedule!]
+}
+
+type Defence {
+    id: ID!
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+
+    council: Council
+    teacher: Teacher
+}
+
+
+type GradeDefence {
+    id: ID!
+    council: Int
+    secretary: Int
+    createdAt: Time
+    updatedAt: Time
+}
+
+type CouncilSchedule {
+    id: ID!
+    councilsCode: String
+    topicCode: String
+    timeStart: Time
+    timeEnd: Time
+    createdAt: Time
+    updatedAt: Time
+    status: Boolean!
+
+    council: Council
+    topic: Topic
+}

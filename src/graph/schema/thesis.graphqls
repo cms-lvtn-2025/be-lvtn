@@ -1,0 +1,70 @@
+type Midterm {
+    id: ID!
+    title: String!
+    grade: Int
+    status: MidtermStatus!
+    feedback: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type Enrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    midtermCode: String
+    finalCode: String
+    gradeCode: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    student: Student
+    midterm: Midterm
+    final: Final
+    topic: Topic
+}
+
+type Topic {
+    id: ID!
+    title: String!
+    majorCode: String!
+    enrollmentCode: String!
+    semesterCode: String!
+    teacherSupervisorCode: String!
+    gradeDefenceCode: String
+    status: TopicStatus!
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    enrollment: Enrollment
+    semester: Semester
+    teacherSupervisor: Teacher
+    gradeDefence: GradeDefence
+    files: [File!]
+}
+
+type Final {
+    id: ID!
+    title: String!
+    supervisorGrade: Int
+    reviewerGrade: Int
+    defenseGrade: Int
+    finalGrade: Int
+    status: FinalStatus!
+    notes: String
+    completionDate: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+

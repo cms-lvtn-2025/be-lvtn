@@ -1,0 +1,38 @@
+
+type Student {
+    id: ID!
+    email: String!
+    phone: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    classCode: String
+    semesterCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    semester: Semester
+    enrollments: [Enrollment!]
+}
+
+
+type Teacher {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    semesterCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    semester: Semester
+    roles: [RoleSystem!]
+    topicsSupervised: [Topic!]
+}
