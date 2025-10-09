@@ -1,0 +1,16 @@
+
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.62.0, built with Go go1.24.6
+
+mkdir /home/thaily/code/heheheh_be/src/service/user/tmp-user
+!exclude handler
+!exclude log
+!exclude tmp-user
+building...
+running...
+2025/10/09 23:49:18 Database connected successfully
+2025/10/09 23:49:18 UserService running on :50056
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/user/tmp-user
+see you again~

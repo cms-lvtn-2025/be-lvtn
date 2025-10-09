@@ -1,0 +1,16 @@
+
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.62.0, built with Go go1.24.6
+
+mkdir /home/thaily/code/heheheh_be/src/service/thesis/tmp-thesis
+!exclude handler
+!exclude log
+!exclude tmp-thesis
+building...
+running...
+2025/10/09 23:49:22 Database connected successfully
+2025/10/09 23:49:22 ThesisService running on :50055
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/thesis/tmp-thesis
+see you again~

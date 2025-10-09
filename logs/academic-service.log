@@ -1,0 +1,16 @@
+
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.62.0, built with Go go1.24.6
+
+mkdir /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
+!exclude handler
+!exclude log
+!exclude tmp-academic
+building...
+running...
+2025/10/09 23:49:19 Database connected successfully
+2025/10/09 23:49:19 AcademicService running on :50051
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
+see you again~

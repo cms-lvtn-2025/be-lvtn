@@ -89,9 +89,13 @@ func setupGraphQL(r *gin.Engine, c *container.Container) {
 func setupRestAPI(r *gin.Engine, c *container.Container) {
 	// Create API handler với clients cần thiết
 	apiHandler := api.NewAPIHandler(
+		api.WithConfig(c.Config),
 		api.WithUserClient(c.Clients.User),
 		api.WithFileClient(c.Clients.File),
 		api.WithAcademicClient(c.Clients.Academic),
+		api.WithRedisClient(c.Clients.Redis),
+		api.WithMongoClient(c.Clients.MongoDB),
+		api.WithMimIo(c.Clients.MinIO),
 	)
 
 	// Register routes

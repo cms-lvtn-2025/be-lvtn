@@ -30,3 +30,6 @@ src/service/*/file
 src/service/*/role
 src/service/*/thesis
 src/service/*/user
+
+*.md
+*.yml

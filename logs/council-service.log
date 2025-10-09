@@ -1,0 +1,16 @@
+
+  __    _   ___  
+ / /\  | | | |_) 
+/_/--\ |_| |_| \_ v1.62.0, built with Go go1.24.6
+
+mkdir /home/thaily/code/heheheh_be/src/service/council/tmp-council
+!exclude handler
+!exclude log
+!exclude tmp-council
+building...
+running...
+2025/10/09 23:49:20 Database connected successfully
+2025/10/09 23:49:20 CouncilService running on :50052
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/council/tmp-council
+see you again~
