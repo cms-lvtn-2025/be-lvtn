@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"thaily/src/auth"
 	"thaily/src/pkg/response"
@@ -29,7 +30,7 @@ type LogoutRequest struct {
 
 // GoogleLogin tạo URL để redirect đến Google OAuth2
 func (h *APIHandler) GoogleLogin(c *gin.Context) {
-	authService := auth.NewService(h.Config, h.Redis, h.Mongodb)
+	authService := auth.NewService(h.Config, h.Redis, h.Mongodb, h.UserClient)
 
 	// Generate auth URL (state sẽ được tạo tự động bên trong)
 	authURL := authService.GetAuthURL("")
@@ -47,7 +48,7 @@ func (h *APIHandler) GoogleCallback(c *gin.Context) {
 		return
 	}
 
-	authService := auth.NewService(h.Config, h.Redis, h.Mongodb)
+	authService := auth.NewService(h.Config, h.Redis, h.Mongodb, h.UserClient)
 
 	// Exchange code để lấy user info
 	googleUser, err := authService.ExchangeCode(c.Request.Context(), req.Code)
@@ -55,13 +56,18 @@ func (h *APIHandler) GoogleCallback(c *gin.Context) {
 		response.InternalError(c, "Failed to exchange code: "+err.Error())
 		return
 	}
+	user, err := h.UserClient.GetUserByEmail(context.Background(), googleUser.Email)
+	if err != nil && user == nil && len(user.GetStudents()) == 0 {
+		response.InternalError(c, "Failed to get user: "+err.Error())
+	}
 
 	// Generate token pair (access + refresh token)
+
 	// NOTE: Không cần tạo user ngay, sẽ xử lý sau ở user service
 	userAgent := c.Request.UserAgent()
 	ipAddress := c.ClientIP()
 
-	tokenPair, err := authService.GenerateTokenPair(c.Request.Context(), googleUser, userAgent, ipAddress)
+	tokenPair, err := authService.GenerateTokenPair(c.Request.Context(), user, googleUser, userAgent, ipAddress)
 	if err != nil {
 		response.InternalError(c, "Failed to generate tokens: "+err.Error())
 		return
@@ -86,7 +92,7 @@ func (h *APIHandler) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	authService := auth.NewService(h.Config, h.Redis, h.Mongodb)
+	authService := auth.NewService(h.Config, h.Redis, h.Mongodb, h.UserClient)
 
 	tokenPair, err := authService.RefreshAccessToken(c.Request.Context(), req.RefreshToken)
 	if err != nil {
@@ -112,7 +118,7 @@ func (h *APIHandler) Logout(c *gin.Context) {
 		return
 	}
 
-	authService := auth.NewService(h.Config, h.Redis, h.Mongodb)
+	authService := auth.NewService(h.Config, h.Redis, h.Mongodb, h.UserClient)
 
 	if err := authService.Logout(c.Request.Context(), req.RefreshToken); err != nil {
 		response.InternalError(c, "Failed to logout: "+err.Error())

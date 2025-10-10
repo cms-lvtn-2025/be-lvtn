@@ -62,4 +62,13 @@ enum FinalStatus {
     COMPLETED
 }
 
+enum Role {
+    TEACHER
+    STUDENT
+}
 
+
+type Query {
+    getInfoStudent: Student!
+    getInfoTeacher: Teacher!
+}

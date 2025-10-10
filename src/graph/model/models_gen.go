@@ -579,6 +579,61 @@ func (e MidtermStatus) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+type Role string
+
+const (
+	RoleTeacher Role = "TEACHER"
+	RoleStudent Role = "STUDENT"
+)
+
+var AllRole = []Role{
+	RoleTeacher,
+	RoleStudent,
+}
+
+func (e Role) IsValid() bool {
+	switch e {
+	case RoleTeacher, RoleStudent:
+		return true
+	}
+	return false
+}
+
+func (e Role) String() string {
+	return string(e)
+}
+
+func (e *Role) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Role(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Role", str)
+	}
+	return nil
+}
+
+func (e Role) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Role) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Role) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
 // Vai trò trong hệ thống
 type RoleSystemRole string
 

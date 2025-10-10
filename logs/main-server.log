@@ -35,18 +35,142 @@ watching src/server/client
 !exclude tmp-server
 building...
 running...
-2025/10/09 23:49:26 Connected to Redis at localhost:10002 (DB: 0)
-2025/10/09 23:49:26 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
-2025/10/09 23:49:26 Server starting on http://localhost:8080
-2025/10/09 23:49:26 GraphQL Playground: http://localhost:8080/
-2025/10/09 23:49:26 GraphQL Endpoint: http://localhost:8080/query
-2025/10/09 23:49:26 REST API: http://localhost:8080/api/v1
-[GIN] 2025/10/09 - 23:49:37 |[97;42m 200 [0m|     256.741µs |             ::1 |[97;46m POST    [0m "/api/v1/auth/google/login"
-[GIN] 2025/10/09 - 23:50:59 |[90;43m 404 [0m|       2.516µs |       127.0.0.1 |[97;44m GET     [0m "/api/v1/auth/google/callback?state=0zj2B5tFgp6EQ_U_UsnYcQ%3D%3D&code=4%2F0AVGzR1B1D_q9YX4Q5mlAnobeZrlF5c4MIFPQT_w8YkcSWrEU1wTMYYIdbhP_Mga-_qRJ3Q&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&authuser=0&prompt=none"
-[GIN] 2025/10/09 - 23:53:20 |[97;41m 500 [0m|  329.605575ms |             ::1 |[97;46m POST    [0m "/api/v1/auth/google/callback"
-[GIN] 2025/10/09 - 23:53:53 |[97;42m 200 [0m|  423.368598ms |             ::1 |[97;46m POST    [0m "/api/v1/auth/google/callback"
-[GIN] 2025/10/09 - 23:54:44 |[90;43m 400 [0m|      99.333µs |             ::1 |[97;46m POST    [0m "/api/v1/auth/google/callback"
-[GIN] 2025/10/09 - 23:55:04 |[97;42m 200 [0m|    2.734978ms |             ::1 |[97;46m POST    [0m "/api/v1/auth/refresh"
+localhost:50056
+2025/10/11 00:04:36 Connected to Redis at localhost:10002 (DB: 0)
+2025/10/11 00:04:36 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
+2025/10/11 00:04:36 Server starting on http://localhost:8080
+2025/10/11 00:04:36 GraphQL Playground: http://localhost:8080/
+2025/10/11 00:04:36 GraphQL Endpoint: http://localhost:8080/query
+2025/10/11 00:04:36 REST API: http://localhost:8080/api/v1
+[GIN] 2025/10/11 - 00:04:36 |[90;43m 401 [0m|     152.866µs |       127.0.0.1 |[97;46m POST    [0m "/query"
+[GIN] 2025/10/11 - 00:04:37 |[90;43m 401 [0m|      92.698µs |       127.0.0.1 |[97;46m POST    [0m "/query"
+[GIN] 2025/10/11 - 00:04:42 |[97;42m 200 [0m|   17.762076ms |             ::1 |[97;46m POST    [0m "/api/v1/auth/refresh"
+map[email:lyvinhthai321@gmail.com exp:1.760116782e+09 google_id:104865270444088374631 iat:1.760115882e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
+not implemented: Major - major
+
+goroutine 145 [running]:
+runtime/debug.Stack()
+	/snap/go/10956/src/runtime/debug/stack.go:26 +0x5e
+runtime/debug.PrintStack()
+	/snap/go/10956/src/runtime/debug/stack.go:18 +0x13
+github.com/99designs/gqlgen/graphql.DefaultRecover({0xc000041130?, 0xc000059be8?}, {0x14cfea0?, 0xc000041130?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/recovery.go:17 +0x6a
+github.com/99designs/gqlgen/graphql.(*OperationContext).Recover(0xc000059bf0?, {0x194da68, 0xc000456b70}, {0x14cfea0?, 0xc000041130?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/context_operation.go:125 +0x38
+github.com/99designs/gqlgen/graphql.resolveField[...].func1()
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:101 +0x6d
+panic({0x14cfea0?, 0xc000041130?})
+	/snap/go/10956/src/runtime/panic.go:783 +0x132
+thaily/src/graph/resolver.(*studentResolver).Major(0xc000516020?, {0xc0004284a0?, 0xc000059d68?}, 0x47b7e5?)
+	/home/thaily/code/heheheh_be/src/graph/resolver/user.resolvers.go:16 +0x34
+thaily/src/graph/generated.(*executionContext)._Student_major.func1({0x194da68, 0xc000456b70})
+	/home/thaily/code/heheheh_be/src/graph/generated/user.generated.go:392 +0x52
+github.com/99designs/gqlgen/graphql.resolveField[...].func2()
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:109 +0x45
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func4({0x194da68?, 0xc000456b70?}, 0xc0001fe7e0?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:73 +0x22
+github.com/99designs/gqlgen/graphql.resolveField[...]({0x194da68, 0xc000405590}, 0xc0004587e0, {0xc00044b8c0, {0xc0001fe230, 0x7, 0x7}, 0x0}, 0xc000059fc0, 0xc0003182a0, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:116 +0x285
+github.com/99designs/gqlgen/graphql.ResolveField[...]({0x194da68?, 0xc000405590?}, 0xc00005a0d0?, {0xc00044b8c0?, {0xc0001fe230, 0x7, 0x7}, 0x0}, 0xc000059fc0, 0xc0003182a0, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:21 +0x165
+thaily/src/graph/generated.(*executionContext)._Student_major(0xc000354400, {0x194da68, 0xc000405590}, {0xc00044b8c0, {0xc0001fe230, 0x7, 0x7}, 0x0}, 0xc00031a0c0)
+	/home/thaily/code/heheheh_be/src/graph/generated/user.generated.go:386 +0x151
+thaily/src/graph/generated.(*executionContext)._Student.func1({0x194da68?, 0xc000405590?}, 0x1573ea0?)
+	/home/thaily/code/heheheh_be/src/graph/generated/user.generated.go:1130 +0x96
+thaily/src/graph/generated.(*executionContext)._Student.func3({0x194da68?, 0xc000405590?})
+	/home/thaily/code/heheheh_be/src/graph/generated/user.generated.go:1153 +0x25
+github.com/99designs/gqlgen/graphql.(*FieldSet).Dispatch(0xc00042a190, {0x194da68?, 0xc000405590?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/fieldset.go:41 +0xa2
+thaily/src/graph/generated.(*executionContext)._Student(0xc000354400, {0x194da68, 0xc000405590}, {0xc000538340, 0xd, 0xd}, 0xc00031a0c0)
+	/home/thaily/code/heheheh_be/src/graph/generated/user.generated.go:1193 +0x1b8a
+thaily/src/graph/generated.(*executionContext).marshalNStudent2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudent(0x194da68?, {0x194da68?, 0xc000405590?}, {0xc000538340?, 0xc000516020?, 0x194da68?}, 0xc000405590?)
+	/home/thaily/code/heheheh_be/src/graph/generated/user.generated.go:1304 +0xb7
+github.com/99designs/gqlgen/graphql.ResolveField[...].func1(0xc0001462a0?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:32 +0x37
+github.com/99designs/gqlgen/graphql.resolveField[...]({0x194da68, 0xc000405500}, 0xc0004587e0, {0xc00044b170, {0xc000538340, 0xd, 0xd}, 0x0}, 0xc00005a800, 0xc00040c700, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:136 +0x303
+github.com/99designs/gqlgen/graphql.ResolveField[...]({0x194da68?, 0xc000405500?}, 0xd?, {0xc00044b170?, {0xc000538340, 0xd, 0xd}, 0x0}, 0xc00005a800, 0xc00040c700, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:21 +0x165
+thaily/src/graph/generated.(*executionContext)._Query_getInfoStudent(0xc000354400, {0x194da68, 0xc000405500}, {0xc00044b170, {0xc000538340, 0xd, 0xd}, 0x0})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:48 +0x131
+thaily/src/graph/generated.(*executionContext)._Query.func1({0x194da68?, 0xc000405500?}, 0xc0003ae230)
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:315 +0x91
+thaily/src/graph/generated.(*executionContext)._Query.func2.1({0x194da68?, 0xc000405500?})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:324 +0x25
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func3({0x194da68?, 0xc000405500?}, 0x10?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:70 +0x22
+thaily/src/graph/generated.(*executionContext)._Query.func2({0x194da68, 0xc000405500})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:323 +0xa2
+thaily/src/graph/generated.(*executionContext)._Query.func3({0x158e280?, 0x1235501?})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:327 +0x1f
+github.com/99designs/gqlgen/graphql.(*FieldSet).Dispatch(0xc0003ae230, {0x194da68?, 0xc0004054d0?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/fieldset.go:41 +0xa2
+thaily/src/graph/generated.(*executionContext)._Query(0xc000354400, {0x194da68, 0xc000405470}, {0xc00040c230, 0x1, 0x1})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:362 +0xc0f
+thaily/src/graph/generated.(*executableSchema).Exec.func1({0x194da68, 0xc000405440})
+	/home/thaily/code/heheheh_be/src/graph/generated/root_.generated.go:1481 +0x230
+github.com/99designs/gqlgen/graphql/executor.(*Executor).DispatchOperation.func1.1.1({0x194da68, 0xc000405440})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/executor.go:137 +0x25
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func2({0x194da68?, 0xc000405440?}, 0x1475bc0?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:67 +0x22
+github.com/99designs/gqlgen/graphql/executor.(*Executor).DispatchOperation.func1.1({0x194da68, 0xc000405380})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/executor.go:136 +0x104
+github.com/99designs/gqlgen/graphql/handler/transport.POST.Do({0x0?, 0x20?}, {0x7f7a61668fe0, 0xc00045a100}, 0xc0001fc280, {0x194c000, 0xc0000fedc0})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/handler/transport/http_post.go:124 +0xaa2
+github.com/99designs/gqlgen/graphql/handler.(*Server).ServeHTTP(0xc0000a1260, {0x7f7a61668fe0, 0xc00045a100}, 0xc0001fc280)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/handler/server.go:166 +0x225
+thaily/src/router.setupGraphQL.WrapH.func4(0xc00045a100?)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/utils.go:49 +0x4b
+github.com/gin-gonic/gin.(*Context).Next(0xc00045a100)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+thaily/src/router.setupGraphQL.graphqlAuthMiddleware.func3(0xc00045a100)
+	/home/thaily/code/heheheh_be/src/router/router.go:121 +0x21c
+github.com/gin-gonic/gin.(*Context).Next(0xc00045a100)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.CustomRecoveryWithWriter.func1(0xc00011d778?)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/recovery.go:92 +0x51
+github.com/gin-gonic/gin.(*Context).Next(0xc00045a100)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc00045a100)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/logger.go:249 +0xca
+github.com/gin-gonic/gin.(*Context).Next(0xc00045a100)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc0001a8340, 0xc00045a100)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/gin.go:689 +0x435
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc0001a8340, {0x194c270, 0xc00045c0f0}, 0xc0001fc000)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/gin.go:643 +0x1ad
+net/http.serverHandler.ServeHTTP({0x1948e58?}, {0x194c270?, 0xc00045c0f0?}, 0x1?)
+	/snap/go/10956/src/net/http/server.go:3340 +0x8e
+net/http.(*conn).serve(0xc00044a000, {0x194da68, 0xc0002c8690})
+	/snap/go/10956/src/net/http/server.go:2109 +0x665
+created by net/http.(*Server).Serve in goroutine 1
+	/snap/go/10956/src/net/http/server.go:3493 +0x485
+[GIN] 2025/10/11 - 00:04:51 |[97;42m 200 [0m|     3.82958ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+src/graph/resolver/user.resolvers.go has changed
+building...
+# thaily/src/graph/resolver
+src/graph/resolver/user.resolvers.go:17:1: missing return
+failed to build, error: exit status 1
+running...
+localhost:50056
+2025/10/11 00:05:19 Connected to Redis at localhost:10002 (DB: 0)
+2025/10/11 00:05:19 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
+2025/10/11 00:05:19 Server starting on http://localhost:8080
+2025/10/11 00:05:19 GraphQL Playground: http://localhost:8080/
+2025/10/11 00:05:19 GraphQL Endpoint: http://localhost:8080/query
+2025/10/11 00:05:19 REST API: http://localhost:8080/api/v1
+src/graph/resolver/user.resolvers.go has changed
+building...
+running...
+localhost:50056
+2025/10/11 00:05:30 Connected to Redis at localhost:10002 (DB: 0)
+2025/10/11 00:05:30 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
+2025/10/11 00:05:30 Server starting on http://localhost:8080
+2025/10/11 00:05:30 GraphQL Playground: http://localhost:8080/
+2025/10/11 00:05:30 GraphQL Endpoint: http://localhost:8080/query
+2025/10/11 00:05:30 REST API: http://localhost:8080/api/v1
+map[email:lyvinhthai321@gmail.com exp:1.760116782e+09 google_id:104865270444088374631 iat:1.760115882e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
+[GIN] 2025/10/11 - 00:05:42 |[97;42m 200 [0m|     9.35903ms |       127.0.0.1 |[97;46m POST    [0m "/query"
 cleaning...
 deleting /home/thaily/code/heheheh_be/tmp-server
 see you again~

@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"thaily/src/api"
@@ -83,7 +82,7 @@ func setupGraphQL(r *gin.Engine, c *container.Container) {
 
 	// Routes
 	r.GET("/", gin.WrapH(playground.Handler("GraphQL Playground", "/query")))
-	r.Any("/query", graphqlAuthMiddleware(), gin.WrapH(srv))
+	r.Any("/query", graphqlAuthMiddleware(c.Config.JWT), gin.WrapH(srv))
 }
 
 func setupRestAPI(r *gin.Engine, c *container.Container) {
@@ -104,26 +103,21 @@ func setupRestAPI(r *gin.Engine, c *container.Container) {
 }
 
 // graphqlAuthMiddleware xử lý authentication cho GraphQL
-func graphqlAuthMiddleware() gin.HandlerFunc {
+func graphqlAuthMiddleware(cfg config.JWTConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-
-		if len(token) > 7 && strings.HasPrefix(token, "Bearer ") {
-			token = token[7:]
-			claims, err := helper.ParseJWT(token)
-			if claims == nil || err != nil {
-				c.JSON(401, gin.H{"message": "Invalid Authorization header"})
-				c.Abort()
-				return
-			}
-			ctx := context.WithValue(c.Request.Context(), helper.Auth, claims)
-			c.Request = c.Request.WithContext(ctx)
-		} else {
-			c.JSON(401, gin.H{"message": "Unauthorized"})
+		authHeader := c.GetHeader("Authorization")
+		semester := c.GetHeader("x-semester")
+		claims, err := helper.ValidateAndParseClaims(authHeader, cfg.AccessSecret)
+		if err != nil {
+			c.JSON(401, gin.H{"message": err.Error()})
 			c.Abort()
 			return
 		}
 
+		// Set claims vào context cho GraphQL resolver
+		ctx := context.WithValue(c.Request.Context(), helper.Auth, claims)
+		ctx = context.WithValue(ctx, "semester", semester)
+		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	}
 }

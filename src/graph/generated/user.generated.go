@@ -17,6 +17,11 @@ import (
 
 // region    ************************** generated!.gotpl **************************
 
+type StudentResolver interface {
+	Major(ctx context.Context, obj *model.Student) (*model.Major, error)
+	Semester(ctx context.Context, obj *model.Student) (*model.Semester, error)
+}
+
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
@@ -384,7 +389,7 @@ func (ec *executionContext) _Student_major(ctx context.Context, field graphql.Co
 		field,
 		ec.fieldContext_Student_major,
 		func(ctx context.Context) (any, error) {
-			return obj.Major, nil
+			return ec.resolvers.Student().Major(ctx, obj)
 		},
 		nil,
 		ec.marshalOMajor2ᚖthailyᚋsrcᚋgraphᚋmodelᚐMajor,
@@ -397,8 +402,8 @@ func (ec *executionContext) fieldContext_Student_major(_ context.Context, field 
 	fc = &graphql.FieldContext{
 		Object:     "Student",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -433,7 +438,7 @@ func (ec *executionContext) _Student_semester(ctx context.Context, field graphql
 		field,
 		ec.fieldContext_Student_semester,
 		func(ctx context.Context) (any, error) {
-			return obj.Semester, nil
+			return ec.resolvers.Student().Semester(ctx, obj)
 		},
 		nil,
 		ec.marshalOSemester2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSemester,
@@ -446,8 +451,8 @@ func (ec *executionContext) fieldContext_Student_semester(_ context.Context, fie
 	fc = &graphql.FieldContext{
 		Object:     "Student",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1074,36 +1079,36 @@ func (ec *executionContext) _Student(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Student_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "email":
 			out.Values[i] = ec._Student_email(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "phone":
 			out.Values[i] = ec._Student_phone(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "username":
 			out.Values[i] = ec._Student_username(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "gender":
 			out.Values[i] = ec._Student_gender(ctx, field, obj)
 		case "majorCode":
 			out.Values[i] = ec._Student_majorCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "classCode":
 			out.Values[i] = ec._Student_classCode(ctx, field, obj)
 		case "semesterCode":
 			out.Values[i] = ec._Student_semesterCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
 			out.Values[i] = ec._Student_createdAt(ctx, field, obj)
@@ -1114,9 +1119,71 @@ func (ec *executionContext) _Student(ctx context.Context, sel ast.SelectionSet, 
 		case "updatedBy":
 			out.Values[i] = ec._Student_updatedBy(ctx, field, obj)
 		case "major":
-			out.Values[i] = ec._Student_major(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Student_major(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "semester":
-			out.Values[i] = ec._Student_semester(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Student_semester(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "enrollments":
 			out.Values[i] = ec._Student_enrollments(ctx, field, obj)
 		default:
@@ -1223,6 +1290,10 @@ func (ec *executionContext) _Teacher(ctx context.Context, sel ast.SelectionSet, 
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNStudent2thailyᚋsrcᚋgraphᚋmodelᚐStudent(ctx context.Context, sel ast.SelectionSet, v model.Student) graphql.Marshaler {
+	return ec._Student(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNStudent2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudent(ctx context.Context, sel ast.SelectionSet, v *model.Student) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -1231,6 +1302,10 @@ func (ec *executionContext) marshalNStudent2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSt
 		return graphql.Null
 	}
 	return ec._Student(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTeacher2thailyᚋsrcᚋgraphᚋmodelᚐTeacher(ctx context.Context, sel ast.SelectionSet, v model.Teacher) graphql.Marshaler {
+	return ec._Teacher(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher(ctx context.Context, sel ast.SelectionSet, v *model.Teacher) graphql.Marshaler {

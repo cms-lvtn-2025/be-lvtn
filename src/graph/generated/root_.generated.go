@@ -32,6 +32,8 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Query() QueryResolver
+	Student() StudentResolver
 }
 
 type DirectiveRoot struct {
@@ -166,6 +168,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		GetInfoStudent func(childComplexity int) int
+		GetInfoTeacher func(childComplexity int) int
 	}
 
 	RoleSystem struct {
@@ -952,6 +956,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Midterm.UpdatedBy(childComplexity), true
 
+	case "Query.getInfoStudent":
+		if e.complexity.Query.GetInfoStudent == nil {
+			break
+		}
+
+		return e.complexity.Query.GetInfoStudent(childComplexity), true
+
+	case "Query.getInfoTeacher":
+		if e.complexity.Query.GetInfoTeacher == nil {
+			break
+		}
+
+		return e.complexity.Query.GetInfoTeacher(childComplexity), true
+
 	case "RoleSystem.activate":
 		if e.complexity.RoleSystem.Activate == nil {
 			break
@@ -1715,8 +1733,16 @@ enum FinalStatus {
     COMPLETED
 }
 
+enum Role {
+    TEACHER
+    STUDENT
+}
 
-`, BuiltIn: false},
+
+type Query {
+    getInfoStudent: Student!
+    getInfoTeacher: Teacher!
+}`, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {
     id: ID!
     title: String!
@@ -1826,6 +1852,7 @@ type Teacher {
     roles: [RoleSystem!]
     topicsSupervised: [Topic!]
 }
+
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

@@ -1,0 +1,1 @@
+{"duration_ms":1,"method":"/academic.AcademicService/GetMajor","queries":[],"request_id":"97745a94-4172-46e1-9d6d-c25f4d9997e9","service_name":"academic-service","success":true,"timestamp":"2025-10-11T00:05:42+07:00","trace":{"function_name":"GetMajor","duration_ms":1}}

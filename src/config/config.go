@@ -62,32 +62,32 @@ type RedisConfig struct {
 }
 
 type MongoConfig struct {
-	URI                     string
-	Database                string
-	Username                string
-	Password                string
-	AuthSource              string
-	MaxPoolSize             int
-	MinPoolSize             int
-	MaxConnIdleTime         int // seconds
-	ConnectTimeout          int // seconds
-	ServerSelectionTimeout  int // seconds
+	URI                    string
+	Database               string
+	Username               string
+	Password               string
+	AuthSource             string
+	MaxPoolSize            int
+	MinPoolSize            int
+	MaxConnIdleTime        int // seconds
+	ConnectTimeout         int // seconds
+	ServerSelectionTimeout int // seconds
 }
 
 type JWTConfig struct {
-	AccessSecret         string
-	RefreshSecret        string
-	AccessTokenExpiry    int // minutes
-	RefreshTokenExpiry   int // days
+	AccessSecret       string
+	RefreshSecret      string
+	AccessTokenExpiry  int // minutes
+	RefreshTokenExpiry int // days
 }
 
 func Load() (*Config, error) {
 	// Try multiple paths for .server.env
 	envPaths := []string{
-		"env/.server.env",           // From project root
-		"../env/.server.env",        // From src/
-		"../../env/.server.env",     // From src/config/
-		".server.env",               // Current directory
+		"env/.server.env",       // From project root
+		"../env/.server.env",    // From src/
+		"../../env/.server.env", // From src/config/
+		".server.env",           // Current directory
 	}
 
 	loaded := false
@@ -110,27 +110,27 @@ func Load() (*Config, error) {
 		},
 		Services: ServiceMap{
 			Academic: ServiceConfig{
-				Port:    getEnv("PORT", "500051"),
+				Port:    getEnv("ACADEMIC_PORT", "500051"),
 				Endpont: getEnv("SERVICE_ACADEMIC_URL", "academic"),
 			},
 			Council: ServiceConfig{
-				Port:    getEnv("PORT", "500052"),
+				Port:    getEnv("COUNCIL_PORT", "500052"),
 				Endpont: getEnv("SERVICE_COUNCIL_URL", "council"),
 			},
 			File: ServiceConfig{
-				Port:    getEnv("PORT", "500053"),
+				Port:    getEnv("FILE_PORT", "500053"),
 				Endpont: getEnv("SERVICE_FILE_URL", "file"),
 			},
 			Role: ServiceConfig{
-				Port:    getEnv("PORT", "500054"),
+				Port:    getEnv("ROLE_PORT", "500054"),
 				Endpont: getEnv("SERVICE_ROLE_URL", "role"),
 			},
 			Thesis: ServiceConfig{
-				Port:    getEnv("PORT", "500055"),
+				Port:    getEnv("THESIS_PORT", "500055"),
 				Endpont: getEnv("SERVICE_THESIS_URL", "thesis"),
 			},
 			User: ServiceConfig{
-				Port:    getEnv("PORT", "500056"),
+				Port:    getEnv("USER_PORT", "500056"),
 				Endpont: getEnv("SERVICE_USER_URL", "user"),
 			},
 			MinIo: MinioConfig{
@@ -171,7 +171,7 @@ func Load() (*Config, error) {
 		JWT: JWTConfig{
 			AccessSecret:       getEnv("JWT_ACCESS_SECRET", "your-secret-key-change-this-in-production"),
 			RefreshSecret:      getEnv("JWT_REFRESH_SECRET", "your-refresh-secret-key-change-this-in-production"),
-			AccessTokenExpiry:  getEnvAsInt("JWT_ACCESS_EXPIRY", 15),  // 15 minutes
+			AccessTokenExpiry:  getEnvAsInt("JWT_ACCESS_EXPIRY", 15), // 15 minutes
 			RefreshTokenExpiry: getEnvAsInt("JWT_REFRESH_EXPIRY", 7), // 7 days
 		},
 	}

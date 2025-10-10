@@ -6,6 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type FileUpload struct {
+}
+
 // UploadFile xử lý upload file
 func (h *APIHandler) UploadFile(c *gin.Context) {
 	if h.FileClient == nil {

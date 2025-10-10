@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	pb "thaily/proto/user"
 	"time"
 
 	"thaily/src/config"
@@ -29,11 +30,12 @@ type Service struct {
 	config      *config.Config
 	redis       *client.RedisClient
 	mongodb     *client.MongoClient
+	user        *client.GRPCUser
 	oauthConfig *oauth2.Config
 }
 
 // NewService tạo auth service mới
-func NewService(cfg *config.Config, redis *client.RedisClient, mongodb *client.MongoClient) *Service {
+func NewService(cfg *config.Config, redis *client.RedisClient, mongodb *client.MongoClient, user *client.GRPCUser) *Service {
 	oauthConfig := &oauth2.Config{
 		ClientID:     cfg.Google.ClientID,
 		ClientSecret: cfg.Google.ClientSecret,
@@ -50,6 +52,7 @@ func NewService(cfg *config.Config, redis *client.RedisClient, mongodb *client.M
 		redis:       redis,
 		mongodb:     mongodb,
 		oauthConfig: oauthConfig,
+		user:        user,
 	}
 }
 
@@ -80,9 +83,14 @@ func (s *Service) ExchangeCode(ctx context.Context, code string) (*GoogleUserInf
 
 // GenerateTokenPair tạo access token và refresh token
 // NOTE: User data sẽ được xử lý ở service user sau, giờ chỉ cần lưu session
-func (s *Service) GenerateTokenPair(ctx context.Context, googleUser *GoogleUserInfo, userAgent, ipAddress string) (*TokenPair, error) {
+func (s *Service) GenerateTokenPair(ctx context.Context, user *pb.ListStudentsResponse, googleUser *GoogleUserInfo, userAgent, ipAddress string) (*TokenPair, error) {
 	// Tạo access token (JWT) với email từ Google
-	accessToken, err := s.createAccessToken(googleUser.Email, googleUser.Name, googleUser.ID)
+	ids := ""
+	for _, student := range user.GetStudents() {
+		ids += student.GetSemesterCode() + "-" + student.GetId() + ","
+	}
+
+	accessToken, err := s.createAccessToken(googleUser.Email, googleUser.Name, googleUser.ID, ids)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create access token: %w", err)
 	}
@@ -134,6 +142,11 @@ func (s *Service) GenerateTokenPair(ctx context.Context, googleUser *GoogleUserI
 
 // RefreshAccessToken làm mới access token bằng refresh token
 func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (*TokenPair, error) {
+	// Check if user client is initialized
+	if s.user == nil {
+		return nil, fmt.Errorf("user service client is not initialized")
+	}
+
 	// Lấy claims từ Redis
 	redisKey := RedisKeyPrefix + refreshToken
 	claimsJSON, err := s.redis.Get(ctx, redisKey)
@@ -164,8 +177,17 @@ func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		return nil, fmt.Errorf("session not found")
 	}
 
+	user, err := s.user.GetUserByEmail(ctx, session.Email)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user email")
+	}
+	ids := ""
+	for _, student := range user.GetStudents() {
+		ids += student.GetSemesterCode() + "-" + student.GetId() + ","
+	}
+
 	// Tạo access token mới
-	accessToken, err := s.createAccessToken(session.Email, "", claims.UserID)
+	accessToken, err := s.createAccessToken(session.Email, "", claims.UserID, ids)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create access token: %w", err)
 	}
@@ -201,8 +223,9 @@ func (s *Service) Logout(ctx context.Context, refreshToken string) error {
 
 // Private helper methods
 
-func (s *Service) createAccessToken(email, name, googleID string) (string, error) {
+func (s *Service) createAccessToken(email, name, googleID string, ids string) (string, error) {
 	claims := jwt.MapClaims{
+		"ids":       ids,
 		"email":     email,
 		"name":      name,
 		"google_id": googleID,

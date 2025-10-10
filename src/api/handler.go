@@ -91,20 +91,12 @@ func (h *APIHandler) RegisterRoutes(r *gin.RouterGroup) {
 		auth.POST("/logout", h.Logout)
 	}
 
-	// User routes - cần authentication
-	users := r.Group("/users")
-	users.Use(AuthMiddleware())
-	{
-		users.GET("/me", h.GetCurrentUser)
-		users.PUT("/profile", h.UpdateProfile)
-	}
-
 	// File routes
 	files := r.Group("/files")
 	{
 		// Upload cần authentication
-		files.POST("/upload", AuthMiddleware(), h.UploadFile)
+		files.POST("/upload", AuthMiddleware(h.Config.JWT), h.UploadFile)
 		// Get file có thể public hoặc private tùy logic
-		files.GET("/:id", OptionalAuthMiddleware(), h.GetFile)
+		files.GET("/:id", OptionalAuthMiddleware(h.Config.JWT), h.GetFile)
 	}
 }

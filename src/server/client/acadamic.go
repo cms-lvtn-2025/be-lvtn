@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	pb "thaily/proto/academic"
 
 	"google.golang.org/grpc"
@@ -21,4 +22,10 @@ func NewGRPCAcadamicClient(addr string) (*GRPCAcadamicClient, error) {
 
 	client := pb.NewAcademicServiceClient(conn)
 	return &GRPCAcadamicClient{conn: conn, client: client}, nil
+}
+
+func (g *GRPCAcadamicClient) GetMajorById(ctx context.Context, id string) (*pb.GetMajorResponse, error) {
+	return g.client.GetMajor(ctx, &pb.GetMajorRequest{
+		Id: id,
+	})
 }

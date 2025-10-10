@@ -155,11 +155,10 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
-  HomeQuery:
+
+  Student:
     fields:
-      area:
+      major:
         resolver: true
-  AreaQuery:
-    fields:
-      equipment:
+      semester:
         resolver: true
