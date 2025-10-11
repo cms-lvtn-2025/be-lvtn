@@ -9,5 +9,9 @@ mkdir /home/thaily/code/heheheh_be/src/service/user/tmp-user
 !exclude tmp-user
 building...
 running...
-2025/10/11 20:44:34 Database connected successfully
-2025/10/11 20:44:34 UserService running on :50056
+2025/10/11 23:52:47 Database connected successfully with connection pool:
+2025/10/11 23:52:47   - MaxOpenConns: 20
+2025/10/11 23:52:47   - MaxIdleConns: 10
+2025/10/11 23:52:47   - ConnMaxLifetime: 5m0s
+2025/10/11 23:52:47   - ConnMaxIdleTime: 2m0s
+2025/10/11 23:52:47 UserService running on :50056

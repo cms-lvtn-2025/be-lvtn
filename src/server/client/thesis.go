@@ -27,6 +27,7 @@ func NewGRPCthesis(addr string) (*GRPCthesis, error) {
 }
 
 func (t *GRPCthesis) GetTopicBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListTopicsResponse, error) {
+	fmt.Println("GetTopicBySearch", search)
 	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
 		Search: search,
 	})

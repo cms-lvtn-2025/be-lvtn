@@ -392,7 +392,7 @@ func (c *Controller) GetEnrollments(ctx context.Context, topicCode string) ([]*m
 			return nil, err
 		}
 	}
-	fmt.Print(enrolls)
+	
 	return c.pbEnrollmentsToModel(enrolls), nil
 }
 
