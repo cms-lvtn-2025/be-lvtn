@@ -36,6 +36,7 @@ func (c *Controller) GetMajorByCode(ctx context.Context, code string) (*model.Ma
 	if code == "" {
 		return nil, nil
 	}
+
 	res, err := c.academic.GetMajorById(ctx, code)
 	if err != nil {
 		return nil, err

@@ -9,9 +9,8 @@ mkdir /home/thaily/code/heheheh_be/src/service/council/tmp-council
 !exclude tmp-council
 building...
 running...
-2025/10/11 00:04:28 Database connected successfully
-2025/10/11 00:04:28 Failed to listen: listen tcp :50052: bind: address already in use
-Process Exit with Code: 1
+2025/10/11 11:56:22 Database connected successfully
+2025/10/11 11:56:22 CouncilService running on :50052
 cleaning...
 deleting /home/thaily/code/heheheh_be/src/service/council/tmp-council
 see you again~

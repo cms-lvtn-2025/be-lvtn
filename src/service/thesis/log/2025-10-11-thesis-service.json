@@ -1,0 +1,1 @@
+{"duration_ms":0,"method":"/thesis.ThesisService/GetMidterm","queries":[],"request_id":"672e26d3-a280-42d3-a813-24530c785fd6","service_name":"thesis-service","success":true,"timestamp":"2025-10-11T11:58:38+07:00","trace":{"function_name":"GetMidterm","duration_ms":0}}

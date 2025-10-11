@@ -125,6 +125,7 @@ func (c *Controller) GetInfoStudent(ctx context.Context) (*model.Student, error)
 	}
 
 	user, err := c.user.GetUserById(ctx, myId)
+
 	if err != nil {
 		return nil, err
 	}
