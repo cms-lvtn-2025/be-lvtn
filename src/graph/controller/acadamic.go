@@ -32,6 +32,31 @@ func (c *Controller) pbMajorToModel(resp *pb.GetMajorResponse) *model.Major {
 	}
 }
 
+func (c *Controller) pbSemesterToModel(resp *pb.GetSemesterResponse) *model.Semester {
+	if resp == nil {
+		return nil
+	}
+	s := resp.GetSemester()
+	var createdAt, updatedAt *time.Time
+	if s.CreatedAt != nil {
+		t := s.CreatedAt.AsTime()
+		createdAt = &t
+
+	}
+	if s.UpdatedAt != nil {
+		t := s.UpdatedAt.AsTime()
+		updatedAt = &t
+	}
+	return &model.Semester{
+		ID:        s.Id,
+		Title:     s.Title,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		CreatedBy: &s.CreatedBy,
+		UpdatedBy: &s.UpdatedBy,
+	}
+}
+
 func (c *Controller) GetMajorByCode(ctx context.Context, code string) (*model.Major, error) {
 	if code == "" {
 		return nil, nil
@@ -45,4 +70,18 @@ func (c *Controller) GetMajorByCode(ctx context.Context, code string) (*model.Ma
 		return nil, nil
 	}
 	return c.pbMajorToModel(res), nil
+}
+
+func (c *Controller) GetSemesterByCode(ctx context.Context, code string) (*model.Semester, error) {
+	if code == "" {
+		return nil, nil
+	}
+	res, err := c.academic.GetSemesterById(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil || res.Semester == nil {
+		return nil, nil
+	}
+	return c.pbSemesterToModel(res), nil
 }

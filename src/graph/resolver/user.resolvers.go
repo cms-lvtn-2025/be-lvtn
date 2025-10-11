@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
@@ -18,7 +17,7 @@ func (r *studentResolver) Major(ctx context.Context, obj *model.Student) (*model
 
 // Semester is the resolver for the semester field.
 func (r *studentResolver) Semester(ctx context.Context, obj *model.Student) (*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
+	return r.Ctrl.GetSemesterByCode(ctx, obj.SemesterCode)
 }
 
 // Student returns generated.StudentResolver implementation.

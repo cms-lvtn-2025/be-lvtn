@@ -9,8 +9,8 @@ mkdir /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
 !exclude tmp-academic
 building...
 running...
-2025/10/11 11:56:21 Database connected successfully
-2025/10/11 11:56:21 AcademicService running on :50051
+2025/10/11 12:17:56 Database connected successfully
+2025/10/11 12:17:56 AcademicService running on :50051
 cleaning...
 deleting /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
 see you again~

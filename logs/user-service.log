@@ -3,11 +3,14 @@
  / /\  | | | |_) 
 /_/--\ |_| |_| \_ v1.62.0, built with Go go1.24.6
 
-mkdir /home/thaily/code/heheheh_be/src/service/user/tmp-user
 !exclude handler
 !exclude log
 !exclude tmp-user
 building...
 running...
-2025/10/11 11:56:20 Database connected successfully
-2025/10/11 11:56:20 UserService running on :50056
+2025/10/11 12:17:56 Database connected successfully
+2025/10/11 12:17:56 Failed to listen: listen tcp :50056: bind: address already in use
+Process Exit with Code: 1
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/user/tmp-user
+see you again~

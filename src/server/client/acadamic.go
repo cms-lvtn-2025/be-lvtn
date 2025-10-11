@@ -29,3 +29,9 @@ func (g *GRPCAcadamicClient) GetMajorById(ctx context.Context, id string) (*pb.G
 		Id: id,
 	})
 }
+
+func (g *GRPCAcadamicClient) GetSemesterById(ctx context.Context, id string) (*pb.GetSemesterResponse, error) {
+	return g.client.GetSemester(ctx, &pb.GetSemesterRequest{
+		Id: id,
+	})
+}

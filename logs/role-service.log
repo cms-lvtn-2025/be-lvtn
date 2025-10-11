@@ -9,8 +9,8 @@ mkdir /home/thaily/code/heheheh_be/src/service/role/tmp-role
 !exclude tmp-role
 building...
 running...
-2025/10/11 11:56:23 Database connected successfully
-2025/10/11 11:56:23 RoleService running on :50054
+2025/10/11 12:17:58 Database connected successfully
+2025/10/11 12:17:58 RoleService running on :50054
 cleaning...
 deleting /home/thaily/code/heheheh_be/src/service/role/tmp-role
 see you again~
