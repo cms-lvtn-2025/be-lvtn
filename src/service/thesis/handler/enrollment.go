@@ -45,8 +45,8 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 
 	// Insert into database
 	query := `
-		INSERT INTO Enrollment (id, title, student_code, midterm_code, final_code, grade_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Enrollment (id, title, student_code, midterm_code, topic_code, final_code, grade_code, created_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -54,6 +54,7 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 		req.Title,
 		req.StudentCode,
 		req.MidtermCode,
+		req.TopicCode,
 		FinalCode,
 		GradeCode,
 		req.CreatedBy,
@@ -98,6 +99,7 @@ func (h *Handler) GetEnrollment(ctx context.Context, req *pb.GetEnrollmentReques
 		&entity.Title,
 		&entity.StudentCode,
 		&entity.MidtermCode,
+		&entity.TopicCode,
 		&entity.FinalCode,
 		&entity.GradeCode,
 		&createdAt,
@@ -164,6 +166,10 @@ func (h *Handler) UpdateEnrollment(ctx context.Context, req *pb.UpdateEnrollment
 		updateFields = append(updateFields, "grade_code = ?")
 		args = append(args, *req.GradeCode)
 
+	}
+	if req.TopicCode != nil {
+		updateFields = append(updateFields, "topic_code = ?")
+		args = append(args, *req.TopicCode)
 	}
 
 	if len(updateFields) == 0 {
@@ -259,6 +265,7 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 		"title":        true,
 		"student_code": true,
 		"midterm_code": true,
+		"topic_code":   true,
 		"final_code":   true,
 		"grade_code":   true,
 	}
@@ -319,6 +326,7 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 			&entity.Title,
 			&entity.StudentCode,
 			&entity.MidtermCode,
+			&entity.TopicCode,
 			&entity.FinalCode,
 			&entity.GradeCode,
 			&createdAt,

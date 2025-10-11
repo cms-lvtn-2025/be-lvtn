@@ -20,19 +20,26 @@ func (r *studentResolver) Semester(ctx context.Context, obj *model.Student) (*mo
 	return r.Ctrl.GetSemesterByCode(ctx, obj.SemesterCode)
 }
 
+// Major is the resolver for the major field.
+func (r *teacherResolver) Major(ctx context.Context, obj *model.Teacher) (*model.Major, error) {
+	return r.Ctrl.GetMajorByCode(ctx, obj.MajorCode)
+}
+
+// Semester is the resolver for the semester field.
+func (r *teacherResolver) Semester(ctx context.Context, obj *model.Teacher) (*model.Semester, error) {
+	return r.Ctrl.GetSemesterByCode(ctx, obj.SemesterCode)
+}
+
+// Roles is the resolver for the roles field.
+func (r *teacherResolver) Roles(ctx context.Context, obj *model.Teacher) ([]*model.RoleSystem, error) {
+	return r.Ctrl.GetRole(ctx, obj.ID)
+}
+
 // Student returns generated.StudentResolver implementation.
 func (r *Resolver) Student() generated.StudentResolver { return &studentResolver{r} }
 
-type studentResolver struct{ *Resolver }
+// Teacher returns generated.TeacherResolver implementation.
+func (r *Resolver) Teacher() generated.TeacherResolver { return &teacherResolver{r} }
 
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *studentResolver) Enrollments(ctx context.Context, obj *model.Student) ([]*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
-}
-*/
+type studentResolver struct{ *Resolver }
+type teacherResolver struct{ *Resolver }

@@ -15,6 +15,7 @@ type Enrollment {
     title: String!
     studentCode: String!
     midtermCode: String
+    topicCode: String
     finalCode: String
     gradeCode: String
     createdAt: Time
@@ -32,10 +33,8 @@ type Topic {
     id: ID!
     title: String!
     majorCode: String!
-    enrollmentCode: String!
     semesterCode: String!
     teacherSupervisorCode: String!
-    gradeDefenceCode: String
     status: TopicStatus!
     timeStart: Time!
     timeEnd: Time!
@@ -45,10 +44,9 @@ type Topic {
     updatedBy: String
 
     major: Major
-    enrollment: Enrollment
+    enrollment: [Enrollment]
     semester: Semester
     teacherSupervisor: Teacher
-    gradeDefence: GradeDefence
     files: [File!]
 }
 

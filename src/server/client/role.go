@@ -1,6 +1,9 @@
 package client
 
 import (
+	"context"
+	"fmt"
+	pbCommon "thaily/proto/common"
 	pb "thaily/proto/role"
 
 	"google.golang.org/grpc"
@@ -21,4 +24,27 @@ func NewGRPCRole(addr string) (*GRPCRole, error) {
 
 	client := pb.NewRoleServiceClient(conn)
 	return &GRPCRole{conn: conn, client: client}, nil
+}
+
+func (r *GRPCRole) GetAllRoleByTeacherId(ctx context.Context, teacherId string) (*pb.ListRoleSystemsResponse, error) {
+	if r == nil || r.client == nil {
+		return nil, fmt.Errorf("GRPCRole is nil")
+	}
+	return r.client.ListRoleSystems(ctx, &pb.ListRoleSystemsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: nil,
+			Filters: []*pbCommon.FilterCriteria{
+
+				{Criteria: &pbCommon.FilterCriteria_Condition{
+					Condition: &pbCommon.FilterCondition{
+						Field:    "teacher_code",
+						Operator: pbCommon.FilterOperator_EQUAL,
+						Values:   []string{teacherId},
+					},
+				},
+				},
+			},
+		},
+	})
+
 }

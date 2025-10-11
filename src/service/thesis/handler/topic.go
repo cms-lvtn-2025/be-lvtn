@@ -26,9 +26,7 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 	if req.MajorCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "major_code is required")
 	}
-	if req.EnrollmentCode == "" {
-		return nil, status.Error(codes.InvalidArgument, "enrollment_code is required")
-	}
+
 	if req.SemesterCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
@@ -69,7 +67,6 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 		id,
 		req.Title,
 		req.MajorCode,
-		req.EnrollmentCode,
 		req.SemesterCode,
 		req.TeacherSupervisorCode,
 		StatusStr,
@@ -115,7 +112,6 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 		&entity.Id,
 		&entity.Title,
 		&entity.MajorCode,
-		&entity.EnrollmentCode,
 		&entity.SemesterCode,
 		&entity.TeacherSupervisorCode,
 		&StatusStr,
@@ -185,11 +181,7 @@ func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (
 		args = append(args, *req.MajorCode)
 
 	}
-	if req.EnrollmentCode != nil {
-		updateFields = append(updateFields, "enrollment_code = ?")
-		args = append(args, *req.EnrollmentCode)
 
-	}
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
@@ -373,7 +365,6 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 			&entity.Id,
 			&entity.Title,
 			&entity.MajorCode,
-			&entity.EnrollmentCode,
 			&entity.SemesterCode,
 			&entity.TeacherSupervisorCode,
 			&StatusStr,

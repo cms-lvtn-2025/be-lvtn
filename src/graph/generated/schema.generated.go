@@ -19,6 +19,7 @@ import (
 type QueryResolver interface {
 	GetInfoStudent(ctx context.Context) (*model.Student, error)
 	GetInfoTeacher(ctx context.Context) (*model.Teacher, error)
+	GetListTopic(ctx context.Context) (*model.Topic, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -159,6 +160,71 @@ func (ec *executionContext) fieldContext_Query_getInfoTeacher(_ context.Context,
 				return ec.fieldContext_Teacher_topicsSupervised(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getListTopic(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getListTopic,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Query().GetListTopic(ctx)
+		},
+		nil,
+		ec.marshalNTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getListTopic(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Topic_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Topic_title(ctx, field)
+			case "majorCode":
+				return ec.fieldContext_Topic_majorCode(ctx, field)
+			case "semesterCode":
+				return ec.fieldContext_Topic_semesterCode(ctx, field)
+			case "teacherSupervisorCode":
+				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
+			case "status":
+				return ec.fieldContext_Topic_status(ctx, field)
+			case "timeStart":
+				return ec.fieldContext_Topic_timeStart(ctx, field)
+			case "timeEnd":
+				return ec.fieldContext_Topic_timeEnd(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Topic_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Topic_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Topic_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Topic_updatedBy(ctx, field)
+			case "major":
+				return ec.fieldContext_Topic_major(ctx, field)
+			case "enrollment":
+				return ec.fieldContext_Topic_enrollment(ctx, field)
+			case "semester":
+				return ec.fieldContext_Topic_semester(ctx, field)
+			case "teacherSupervisor":
+				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
+			case "files":
+				return ec.fieldContext_Topic_files(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
 	}
 	return fc, nil
@@ -335,6 +401,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getInfoTeacher(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getListTopic":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getListTopic(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

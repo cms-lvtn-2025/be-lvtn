@@ -9,8 +9,8 @@ mkdir /home/thaily/code/heheheh_be/src/service/council/tmp-council
 !exclude tmp-council
 building...
 running...
-2025/10/11 12:17:57 Database connected successfully
-2025/10/11 12:17:57 CouncilService running on :50052
+2025/10/11 17:31:47 Database connected successfully
+2025/10/11 17:31:47 CouncilService running on :50052
 cleaning...
 deleting /home/thaily/code/heheheh_be/src/service/council/tmp-council
 see you again~

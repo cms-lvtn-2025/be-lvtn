@@ -162,3 +162,28 @@ models:
         resolver: true
       semester:
         resolver: true
+  Teacher:
+    fields:
+      roles:
+        resolver: true
+      major:
+        resolver: true
+      semester:
+        resolver: true
+  Topic:
+    fields:
+      enrollment:
+        resolver: true
+      teacherSupervisor:
+        resolver: true
+  Enrollment:
+    fields:
+      student:
+        resolver: true
+      midterm:
+        resolver: true
+      final:
+        resolver: true
+
+
+

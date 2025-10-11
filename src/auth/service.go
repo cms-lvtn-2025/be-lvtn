@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	pb "thaily/proto/user"
 	"time"
 
 	"thaily/src/config"
@@ -83,24 +82,23 @@ func (s *Service) ExchangeCode(ctx context.Context, code string) (*GoogleUserInf
 
 // GenerateTokenPair tạo access token và refresh token
 // NOTE: User data sẽ được xử lý ở service user sau, giờ chỉ cần lưu session
-func (s *Service) GenerateTokenPair(ctx context.Context, user *pb.ListStudentsResponse, googleUser *GoogleUserInfo, userAgent, ipAddress string) (*TokenPair, error) {
+func (s *Service) GenerateTokenPair(ctx context.Context, ids string, role string, googleUser *GoogleUserInfo, userAgent, ipAddress string) (*TokenPair, error) {
 	// Tạo access token (JWT) với email từ Google
-	ids := ""
-	for _, student := range user.GetStudents() {
-		ids += student.GetSemesterCode() + "-" + student.GetId() + ","
-	}
 
-	accessToken, err := s.createAccessToken(googleUser.Email, googleUser.Name, googleUser.ID, ids)
+	accessToken, err := s.createAccessToken(googleUser.Email, googleUser.Name, googleUser.ID, ids, role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create access token: %w", err)
 	}
 
 	// Tạo refresh token
 	refreshToken := s.generateRefreshToken()
+	fmt.Print("cccccccccccccc", ids, role)
 
 	// Lưu session vào MongoDB (chỉ lưu session info, không lưu user)
 	session := Session{
 		UserID:       googleUser.ID, // Google ID tạm thời, sau sẽ được map với user service
+		ids:          ids,
+		role:         role,
 		Email:        googleUser.Email,
 		RefreshToken: refreshToken,
 		UserAgent:    userAgent,
@@ -108,6 +106,7 @@ func (s *Service) GenerateTokenPair(ctx context.Context, user *pb.ListStudentsRe
 		ExpiresAt:    time.Now().Add(time.Duration(s.config.JWT.RefreshTokenExpiry) * 24 * time.Hour),
 		CreatedAt:    time.Now(),
 	}
+	fmt.Print("ccccccccccccc", session, ids, role)
 
 	collection := s.mongodb.GetCollection("sessions")
 	result, err := collection.InsertOne(ctx, session)
@@ -176,18 +175,28 @@ func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 	if err := collection.FindOne(ctx, bson.M{"_id": sessionID}).Decode(&session); err != nil {
 		return nil, fmt.Errorf("session not found")
 	}
-
-	user, err := s.user.GetUserByEmail(ctx, session.Email)
-	if err != nil {
-		return nil, fmt.Errorf("invalid user email")
-	}
 	ids := ""
-	for _, student := range user.GetStudents() {
-		ids += student.GetSemesterCode() + "-" + student.GetId() + ","
+	if session.role == "student" {
+		user, err := s.user.GetUserByEmail(ctx, session.Email)
+		if err != nil {
+			return nil, fmt.Errorf("invalid user email")
+		}
+
+		for _, student := range user.GetStudents() {
+			ids += student.GetSemesterCode() + "-" + student.GetId() + ","
+		}
+	} else if session.role == "teacher" {
+		teachers, err := s.user.GetTeacherByEmail(ctx, session.Email)
+		if err != nil {
+			return nil, fmt.Errorf("invalid user email")
+		}
+		for _, teacher := range teachers.GetTeachers() {
+			ids += teacher.GetSemesterCode() + "-" + teacher.GetId() + ","
+		}
 	}
 
 	// Tạo access token mới
-	accessToken, err := s.createAccessToken(session.Email, "", claims.UserID, ids)
+	accessToken, err := s.createAccessToken(session.Email, "", claims.UserID, ids, session.role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create access token: %w", err)
 	}
@@ -223,9 +232,10 @@ func (s *Service) Logout(ctx context.Context, refreshToken string) error {
 
 // Private helper methods
 
-func (s *Service) createAccessToken(email, name, googleID string, ids string) (string, error) {
+func (s *Service) createAccessToken(email, name, googleID string, ids string, role string) (string, error) {
 	claims := jwt.MapClaims{
 		"ids":       ids,
+		"role":      role,
 		"email":     email,
 		"name":      name,
 		"google_id": googleID,

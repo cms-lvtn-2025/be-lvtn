@@ -9,8 +9,8 @@ mkdir /home/thaily/code/heheheh_be/src/service/thesis/tmp-thesis
 !exclude tmp-thesis
 building...
 running...
-2025/10/11 12:17:58 Database connected successfully
-2025/10/11 12:17:58 ThesisService running on :50055
+2025/10/11 17:31:48 Database connected successfully
+2025/10/11 17:31:48 ThesisService running on :50055
 cleaning...
 deleting /home/thaily/code/heheheh_be/src/service/thesis/tmp-thesis
 see you again~

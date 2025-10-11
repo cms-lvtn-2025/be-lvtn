@@ -772,14 +772,10 @@ func (ec *executionContext) fieldContext_CouncilSchedule_topic(_ context.Context
 				return ec.fieldContext_Topic_title(ctx, field)
 			case "majorCode":
 				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "enrollmentCode":
-				return ec.fieldContext_Topic_enrollmentCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Topic_semesterCode(ctx, field)
 			case "teacherSupervisorCode":
 				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
-			case "gradeDefenceCode":
-				return ec.fieldContext_Topic_gradeDefenceCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Topic_status(ctx, field)
 			case "timeStart":
@@ -802,8 +798,6 @@ func (ec *executionContext) fieldContext_CouncilSchedule_topic(_ context.Context
 				return ec.fieldContext_Topic_semester(ctx, field)
 			case "teacherSupervisor":
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_Topic_gradeDefence(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
 			}
@@ -1592,13 +1586,6 @@ func (ec *executionContext) marshalODefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodel�
 	}
 
 	return ret
-}
-
-func (ec *executionContext) marshalOGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefence) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._GradeDefence(ctx, sel, v)
 }
 
 // endregion ***************************** type.gotpl *****************************

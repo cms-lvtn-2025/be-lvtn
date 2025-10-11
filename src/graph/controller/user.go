@@ -138,6 +138,7 @@ func (c *Controller) GetInfoStudent(ctx context.Context) (*model.Student, error)
 
 func (c *Controller) GetInfoTeacher(ctx context.Context) (*model.Teacher, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	fmt.Print(claims)
 	if !ok {
 		return nil, fmt.Errorf("claims not found in context")
 	}

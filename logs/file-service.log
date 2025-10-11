@@ -9,8 +9,8 @@ mkdir /home/thaily/code/heheheh_be/src/service/file/tmp-file
 !exclude tmp-file
 building...
 running...
-2025/10/11 12:17:57 Database connected successfully
-2025/10/11 12:17:57 FileService running on :50053
+2025/10/11 17:31:47 Database connected successfully
+2025/10/11 17:31:47 FileService running on :50053
 cleaning...
 deleting /home/thaily/code/heheheh_be/src/service/file/tmp-file
 see you again~

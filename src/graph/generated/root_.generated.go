@@ -32,8 +32,11 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Enrollment() EnrollmentResolver
 	Query() QueryResolver
 	Student() StudentResolver
+	Teacher() TeacherResolver
+	Topic() TopicResolver
 }
 
 type DirectiveRoot struct {
@@ -91,6 +94,7 @@ type ComplexityRoot struct {
 		StudentCode func(childComplexity int) int
 		Title       func(childComplexity int) int
 		Topic       func(childComplexity int) int
+		TopicCode   func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
 		UpdatedBy   func(childComplexity int) int
 	}
@@ -170,6 +174,7 @@ type ComplexityRoot struct {
 	Query struct {
 		GetInfoStudent func(childComplexity int) int
 		GetInfoTeacher func(childComplexity int) int
+		GetListTopic   func(childComplexity int) int
 	}
 
 	RoleSystem struct {
@@ -238,10 +243,7 @@ type ComplexityRoot struct {
 		CreatedAt             func(childComplexity int) int
 		CreatedBy             func(childComplexity int) int
 		Enrollment            func(childComplexity int) int
-		EnrollmentCode        func(childComplexity int) int
 		Files                 func(childComplexity int) int
-		GradeDefence          func(childComplexity int) int
-		GradeDefenceCode      func(childComplexity int) int
 		ID                    func(childComplexity int) int
 		Major                 func(childComplexity int) int
 		MajorCode             func(childComplexity int) int
@@ -563,6 +565,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Enrollment.Topic(childComplexity), true
+
+	case "Enrollment.topicCode":
+		if e.complexity.Enrollment.TopicCode == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.TopicCode(childComplexity), true
 
 	case "Enrollment.updatedAt":
 		if e.complexity.Enrollment.UpdatedAt == nil {
@@ -970,6 +979,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetInfoTeacher(childComplexity), true
 
+	case "Query.getListTopic":
+		if e.complexity.Query.GetListTopic == nil {
+			break
+		}
+
+		return e.complexity.Query.GetListTopic(childComplexity), true
+
 	case "RoleSystem.activate":
 		if e.complexity.RoleSystem.Activate == nil {
 			break
@@ -1341,33 +1357,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Topic.Enrollment(childComplexity), true
 
-	case "Topic.enrollmentCode":
-		if e.complexity.Topic.EnrollmentCode == nil {
-			break
-		}
-
-		return e.complexity.Topic.EnrollmentCode(childComplexity), true
-
 	case "Topic.files":
 		if e.complexity.Topic.Files == nil {
 			break
 		}
 
 		return e.complexity.Topic.Files(childComplexity), true
-
-	case "Topic.gradeDefence":
-		if e.complexity.Topic.GradeDefence == nil {
-			break
-		}
-
-		return e.complexity.Topic.GradeDefence(childComplexity), true
-
-	case "Topic.gradeDefenceCode":
-		if e.complexity.Topic.GradeDefenceCode == nil {
-			break
-		}
-
-		return e.complexity.Topic.GradeDefenceCode(childComplexity), true
 
 	case "Topic.id":
 		if e.complexity.Topic.ID == nil {
@@ -1742,7 +1737,9 @@ enum Role {
 type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
-}`, BuiltIn: false},
+    getListTopic: Topic!
+}
+`, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {
     id: ID!
     title: String!
@@ -1760,6 +1757,7 @@ type Enrollment {
     title: String!
     studentCode: String!
     midtermCode: String
+    topicCode: String
     finalCode: String
     gradeCode: String
     createdAt: Time
@@ -1777,10 +1775,8 @@ type Topic {
     id: ID!
     title: String!
     majorCode: String!
-    enrollmentCode: String!
     semesterCode: String!
     teacherSupervisorCode: String!
-    gradeDefenceCode: String
     status: TopicStatus!
     timeStart: Time!
     timeEnd: Time!
@@ -1790,10 +1786,9 @@ type Topic {
     updatedBy: String
 
     major: Major
-    enrollment: Enrollment
+    enrollment: [Enrollment]
     semester: Semester
     teacherSupervisor: Teacher
-    gradeDefence: GradeDefence
     files: [File!]
 }
 

@@ -530,14 +530,10 @@ func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field g
 				return ec.fieldContext_Topic_title(ctx, field)
 			case "majorCode":
 				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "enrollmentCode":
-				return ec.fieldContext_Topic_enrollmentCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Topic_semesterCode(ctx, field)
 			case "teacherSupervisorCode":
 				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
-			case "gradeDefenceCode":
-				return ec.fieldContext_Topic_gradeDefenceCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Topic_status(ctx, field)
 			case "timeStart":
@@ -560,8 +556,6 @@ func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field g
 				return ec.fieldContext_Topic_semester(ctx, field)
 			case "teacherSupervisor":
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_Topic_gradeDefence(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
 			}
@@ -895,14 +889,10 @@ func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, fiel
 				return ec.fieldContext_Topic_title(ctx, field)
 			case "majorCode":
 				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "enrollmentCode":
-				return ec.fieldContext_Topic_enrollmentCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Topic_semesterCode(ctx, field)
 			case "teacherSupervisorCode":
 				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
-			case "gradeDefenceCode":
-				return ec.fieldContext_Topic_gradeDefenceCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Topic_status(ctx, field)
 			case "timeStart":
@@ -925,8 +915,6 @@ func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, fiel
 				return ec.fieldContext_Topic_semester(ctx, field)
 			case "teacherSupervisor":
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_Topic_gradeDefence(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
 			}

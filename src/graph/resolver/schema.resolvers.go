@@ -18,7 +18,12 @@ func (r *queryResolver) GetInfoStudent(ctx context.Context) (*model.Student, err
 
 // GetInfoTeacher is the resolver for the getInfoTeacher field.
 func (r *queryResolver) GetInfoTeacher(ctx context.Context) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: GetInfoTeacher - getInfoTeacher"))
+	return r.Ctrl.GetInfoTeacher(ctx)
+}
+
+// GetListTopic is the resolver for the getListTopic field.
+func (r *queryResolver) GetListTopic(ctx context.Context) (*model.Topic, error) {
+	panic(fmt.Errorf("not implemented: GetListTopic - getListTopic"))
 }
 
 // Query returns generated.QueryResolver implementation.

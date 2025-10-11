@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"thaily/src/auth"
 	"thaily/src/pkg/response"
@@ -18,6 +19,7 @@ type GoogleLoginResponse struct {
 type GoogleCallbackRequest struct {
 	Code  string `json:"code" binding:"required"`
 	State string `json:"state"`
+	Role  string `json:"role"`
 }
 
 type RefreshTokenRequest struct {
@@ -56,32 +58,71 @@ func (h *APIHandler) GoogleCallback(c *gin.Context) {
 		response.InternalError(c, "Failed to exchange code: "+err.Error())
 		return
 	}
-	user, err := h.UserClient.GetUserByEmail(context.Background(), googleUser.Email)
-	if err != nil && user == nil && len(user.GetStudents()) == 0 {
-		response.InternalError(c, "Failed to get user: "+err.Error())
+	if req.Role == "student" {
+		user, err := h.UserClient.GetUserByEmail(context.Background(), googleUser.Email)
+		if err != nil && user == nil && len(user.GetStudents()) == 0 {
+			response.InternalError(c, "Failed to get user: "+err.Error())
+		}
+		ids := ""
+		for _, user := range user.GetStudents() {
+			ids += user.GetSemesterCode() + "-" + user.GetId() + ","
+		}
+
+		// Generate token pair (access + refresh token)
+
+		// NOTE: Không cần tạo user ngay, sẽ xử lý sau ở user service
+		userAgent := c.Request.UserAgent()
+		ipAddress := c.ClientIP()
+
+		tokenPair, err := authService.GenerateTokenPair(c.Request.Context(), ids, "student", googleUser, userAgent, ipAddress)
+		if err != nil {
+			response.InternalError(c, "Failed to generate tokens: "+err.Error())
+			return
+		}
+
+		// Trả về token và thông tin Google user
+		// NOTE: User data sẽ được xử lý sau ở user service
+		response.SuccessWithMessage(c, "Login successful", gin.H{
+			"google_user":   googleUser,
+			"access_token":  tokenPair.AccessToken,
+			"refresh_token": tokenPair.RefreshToken,
+			"expires_in":    tokenPair.ExpiresIn,
+			"token_type":    tokenPair.TokenType,
+		})
+	} else if req.Role == "teacher" {
+		teachers, err := h.UserClient.GetTeacherByEmail(context.Background(), googleUser.Email)
+		if err != nil && teachers == nil && len(teachers.GetTeachers()) == 0 {
+			response.InternalError(c, "Failed to get user: "+err.Error())
+		}
+		ids := ""
+		fmt.Print(teachers)
+		for _, teacher := range teachers.GetTeachers() {
+			ids += teacher.GetSemesterCode() + "-" + teacher.GetId() + ","
+		}
+		fmt.Println(ids)
+		// Generate token pair (access + refresh token)
+
+		// NOTE: Không cần tạo user ngay, sẽ xử lý sau ở user service
+		userAgent := c.Request.UserAgent()
+		ipAddress := c.ClientIP()
+
+		tokenPair, err := authService.GenerateTokenPair(c.Request.Context(), ids, "teacher", googleUser, userAgent, ipAddress)
+		if err != nil {
+			response.InternalError(c, "Failed to generate tokens: "+err.Error())
+			return
+		}
+
+		// Trả về token và thông tin Google user
+		// NOTE: User data sẽ được xử lý sau ở user service
+		response.SuccessWithMessage(c, "Login successful", gin.H{
+			"google_user":   googleUser,
+			"access_token":  tokenPair.AccessToken,
+			"refresh_token": tokenPair.RefreshToken,
+			"expires_in":    tokenPair.ExpiresIn,
+			"token_type":    tokenPair.TokenType,
+		})
 	}
 
-	// Generate token pair (access + refresh token)
-
-	// NOTE: Không cần tạo user ngay, sẽ xử lý sau ở user service
-	userAgent := c.Request.UserAgent()
-	ipAddress := c.ClientIP()
-
-	tokenPair, err := authService.GenerateTokenPair(c.Request.Context(), user, googleUser, userAgent, ipAddress)
-	if err != nil {
-		response.InternalError(c, "Failed to generate tokens: "+err.Error())
-		return
-	}
-
-	// Trả về token và thông tin Google user
-	// NOTE: User data sẽ được xử lý sau ở user service
-	response.SuccessWithMessage(c, "Login successful", gin.H{
-		"google_user":   googleUser,
-		"access_token":  tokenPair.AccessToken,
-		"refresh_token": tokenPair.RefreshToken,
-		"expires_in":    tokenPair.ExpiresIn,
-		"token_type":    tokenPair.TokenType,
-	})
 }
 
 // RefreshToken làm mới access token bằng refresh token

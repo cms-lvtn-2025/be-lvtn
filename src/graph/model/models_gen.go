@@ -53,6 +53,7 @@ type Enrollment struct {
 	Title       string     `json:"title"`
 	StudentCode string     `json:"studentCode"`
 	MidtermCode *string    `json:"midtermCode,omitempty"`
+	TopicCode   *string    `json:"topicCode,omitempty"`
 	FinalCode   *string    `json:"finalCode,omitempty"`
 	GradeCode   *string    `json:"gradeCode,omitempty"`
 	CreatedAt   *time.Time `json:"createdAt,omitempty"`
@@ -206,10 +207,8 @@ type Topic struct {
 	ID                    string        `json:"id"`
 	Title                 string        `json:"title"`
 	MajorCode             string        `json:"majorCode"`
-	EnrollmentCode        string        `json:"enrollmentCode"`
 	SemesterCode          string        `json:"semesterCode"`
 	TeacherSupervisorCode string        `json:"teacherSupervisorCode"`
-	GradeDefenceCode      *string       `json:"gradeDefenceCode,omitempty"`
 	Status                TopicStatus   `json:"status"`
 	TimeStart             time.Time     `json:"timeStart"`
 	TimeEnd               time.Time     `json:"timeEnd"`
@@ -218,10 +217,9 @@ type Topic struct {
 	CreatedBy             *string       `json:"createdBy,omitempty"`
 	UpdatedBy             *string       `json:"updatedBy,omitempty"`
 	Major                 *Major        `json:"major,omitempty"`
-	Enrollment            *Enrollment   `json:"enrollment,omitempty"`
+	Enrollment            []*Enrollment `json:"enrollment,omitempty"`
 	Semester              *Semester     `json:"semester,omitempty"`
 	TeacherSupervisor     *Teacher      `json:"teacherSupervisor,omitempty"`
-	GradeDefence          *GradeDefence `json:"gradeDefence,omitempty"`
 	Files                 []*File       `json:"files,omitempty"`
 }
 

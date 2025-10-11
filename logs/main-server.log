@@ -36,49 +36,20 @@ watching src/server/client
 building...
 running...
 localhost:50056
-2025/10/11 12:18:05 Connected to Redis at localhost:10002 (DB: 0)
-2025/10/11 12:18:05 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
-2025/10/11 12:18:05 Server starting on http://localhost:8080
-2025/10/11 12:18:05 GraphQL Playground: http://localhost:8080/
-2025/10/11 12:18:05 GraphQL Endpoint: http://localhost:8080/query
-2025/10/11 12:18:05 REST API: http://localhost:8080/api/v1
-[GIN] 2025/10/11 - 12:18:11 |[90;43m 401 [0m|      124.36µs |       127.0.0.1 |[97;46m POST    [0m "/query"
-[GIN] 2025/10/11 - 12:18:27 |[90;43m 401 [0m|      92.707µs |       127.0.0.1 |[97;46m POST    [0m "/query"
-[GIN] 2025/10/11 - 12:18:31 |[97;42m 200 [0m|   41.335853ms |             ::1 |[97;46m POST    [0m "/api/v1/auth/refresh"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:18:40 |[97;42m 200 [0m|    1.703814ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:01 |[97;42m 200 [0m|   43.891408ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:14 |[97;42m 200 [0m|    2.749626ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:15 |[97;42m 200 [0m|    2.235583ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:16 |[97;42m 200 [0m|    3.777321ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:17 |[97;42m 200 [0m|    1.860081ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:18 |[97;42m 200 [0m|    1.884421ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:18 |[97;42m 200 [0m|     2.11451ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:19 |[97;42m 200 [0m|     2.24547ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:20 |[97;42m 200 [0m|    2.046872ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:23 |[97;42m 200 [0m|    1.919373ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:24 |[97;42m 200 [0m|    2.056805ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:25 |[97;42m 200 [0m|    1.920252ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:19:26 |[97;42m 200 [0m|    1.956031ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:20:36 |[97;42m 200 [0m|    2.252825ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:20:37 |[97;42m 200 [0m|    2.674581ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:lyvinhthai321@gmail.com exp:1.760160811e+09 google_id:104865270444088374631 iat:1.760159911e+09 ids:SEM_2025_1-STU_000001,SEM_2024_1-STU_000002, name:]myId: STU_000002 semester: SEM_2024_1
-[GIN] 2025/10/11 - 12:20:39 |[97;42m 200 [0m|    3.521842ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+2025/10/11 17:31:53 Connected to Redis at localhost:10002 (DB: 0)
+2025/10/11 17:31:53 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
+2025/10/11 17:31:53 Server starting on http://localhost:8080
+2025/10/11 17:31:53 GraphQL Playground: http://localhost:8080/
+2025/10/11 17:31:53 GraphQL Endpoint: http://localhost:8080/query
+2025/10/11 17:31:53 REST API: http://localhost:8080/api/v1
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:00 |[97;42m 200 [0m|   18.280798ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:03 |[97;42m 200 [0m|    3.062297ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:04 |[97;42m 200 [0m|    3.204513ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:06 |[97;42m 200 [0m|   15.422458ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:07 |[97;42m 200 [0m|    2.883628ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:08 |[97;42m 200 [0m|    2.846009ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:44 |[97;42m 200 [0m|    2.698414ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:34:08 |[97;42m 200 [0m|    3.738155ms |       127.0.0.1 |[97;46m POST    [0m "/query"
 cleaning...
 deleting /home/thaily/code/heheheh_be/tmp-server
 see you again~

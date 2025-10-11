@@ -118,3 +118,33 @@ func (u *GRPCUser) GetTeacherById(ctx context.Context, id string) (*pb.GetTeache
 		Id: id,
 	})
 }
+
+func (u *GRPCUser) GetTeacherByEmail(ctx context.Context, email string) (*pb.ListTeachersResponse, error) {
+	if u == nil {
+		return nil, fmt.Errorf("GRPCUser is nil")
+	}
+	if u.client == nil {
+		return nil, fmt.Errorf("gRPC client is not initialized")
+	}
+	return u.client.ListTeachers(ctx, &pb.ListTeachersRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: true,
+				Page:       1,
+				PageSize:   20,
+				SortBy:     "semester_code",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "email",
+							Operator: pbCommon.FilterOperator_EQUAL,
+							Values:   []string{email},
+						},
+					},
+				},
+			},
+		},
+	})
+}

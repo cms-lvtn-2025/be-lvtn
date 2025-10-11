@@ -71,4 +71,5 @@ enum Role {
 type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
+    getListTopic: Topic!
 }
