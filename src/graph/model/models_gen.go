@@ -138,6 +138,13 @@ type Midterm struct {
 	UpdatedBy *string       `json:"updatedBy,omitempty"`
 }
 
+type Pagination struct {
+	Order    *bool   `json:"order,omitempty"`
+	Page     *int32  `json:"page,omitempty"`
+	PageSize *int32  `json:"pageSize,omitempty"`
+	Sort     *string `json:"sort,omitempty"`
+}
+
 type Query struct {
 }
 

@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
@@ -22,8 +21,8 @@ func (r *queryResolver) GetInfoTeacher(ctx context.Context) (*model.Teacher, err
 }
 
 // GetListTopic is the resolver for the getListTopic field.
-func (r *queryResolver) GetListTopic(ctx context.Context) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: GetListTopic - getListTopic"))
+func (r *queryResolver) GetListTopic(ctx context.Context, pag model.Pagination) ([]*model.Topic, error) {
+	return r.Ctrl.GetTopics(ctx, pag)
 }
 
 // Query returns generated.QueryResolver implementation.

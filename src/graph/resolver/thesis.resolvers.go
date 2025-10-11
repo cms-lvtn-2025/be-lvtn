@@ -28,12 +28,11 @@ func (r *enrollmentResolver) Final(ctx context.Context, obj *model.Enrollment) (
 
 // Enrollment is the resolver for the enrollment field.
 func (r *topicResolver) Enrollment(ctx context.Context, obj *model.Topic) ([]*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollment - enrollment"))
+	return r.Ctrl.GetEnrollments(ctx, obj.ID)
 }
 
 // TeacherSupervisor is the resolver for the teacherSupervisor field.
 func (r *topicResolver) TeacherSupervisor(ctx context.Context, obj *model.Topic) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: TeacherSupervisor - teacherSupervisor"))
 }
 
 // Enrollment returns generated.EnrollmentResolver implementation.

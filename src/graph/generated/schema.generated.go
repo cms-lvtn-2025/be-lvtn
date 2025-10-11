@@ -19,7 +19,7 @@ import (
 type QueryResolver interface {
 	GetInfoStudent(ctx context.Context) (*model.Student, error)
 	GetInfoTeacher(ctx context.Context) (*model.Teacher, error)
-	GetListTopic(ctx context.Context) (*model.Topic, error)
+	GetListTopic(ctx context.Context, pag model.Pagination) ([]*model.Topic, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -34,6 +34,17 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		return nil, err
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getListTopic_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "pag", ec.unmarshalNPagination2thailyᚋsrcᚋgraphᚋmodelᚐPagination)
+	if err != nil {
+		return nil, err
+	}
+	args["pag"] = arg0
 	return args, nil
 }
 
@@ -172,16 +183,17 @@ func (ec *executionContext) _Query_getListTopic(ctx context.Context, field graph
 		field,
 		ec.fieldContext_Query_getListTopic,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Query().GetListTopic(ctx)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().GetListTopic(ctx, fc.Args["pag"].(model.Pagination))
 		},
 		nil,
-		ec.marshalNTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic,
+		ec.marshalOTopic2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicᚄ,
 		true,
-		true,
+		false,
 	)
 }
 
-func (ec *executionContext) fieldContext_Query_getListTopic(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -226,6 +238,17 @@ func (ec *executionContext) fieldContext_Query_getListTopic(_ context.Context, f
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getListTopic_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -342,6 +365,54 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputPagination(ctx context.Context, obj any) (model.Pagination, error) {
+	var it model.Pagination
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"order", "page", "pageSize", "sort"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "order":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Order = data
+		case "page":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Page = data
+		case "pageSize":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PageSize = data
+		case "sort":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Sort = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -416,16 +487,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "getListTopic":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_getListTopic(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -518,6 +586,11 @@ func (ec *executionContext) unmarshalNMidtermStatus2thailyᚋsrcᚋgraphᚋmodel
 
 func (ec *executionContext) marshalNMidtermStatus2thailyᚋsrcᚋgraphᚋmodelᚐMidtermStatus(ctx context.Context, sel ast.SelectionSet, v model.MidtermStatus) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) unmarshalNPagination2thailyᚋsrcᚋgraphᚋmodelᚐPagination(ctx context.Context, v any) (model.Pagination, error) {
+	res, err := ec.unmarshalInputPagination(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNRoleSystemRole2thailyᚋsrcᚋgraphᚋmodelᚐRoleSystemRole(ctx context.Context, v any) (model.RoleSystemRole, error) {

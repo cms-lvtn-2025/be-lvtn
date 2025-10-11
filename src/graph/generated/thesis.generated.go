@@ -2324,10 +2324,6 @@ func (ec *executionContext) marshalNEnrollment2ᚖthailyᚋsrcᚋgraphᚋmodel�
 	return ec._Enrollment(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTopic2thailyᚋsrcᚋgraphᚋmodelᚐTopic(ctx context.Context, sel ast.SelectionSet, v model.Topic) graphql.Marshaler {
-	return ec._Topic(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic(ctx context.Context, sel ast.SelectionSet, v *model.Topic) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {

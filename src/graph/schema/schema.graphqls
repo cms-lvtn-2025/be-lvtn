@@ -67,9 +67,15 @@ enum Role {
     STUDENT
 }
 
+input Pagination {
+    order: Boolean
+    page: Int
+    pageSize: Int
+    sort: String
+}
 
 type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
-    getListTopic: Topic!
+    getListTopic(pag: Pagination!): [Topic!]
 }

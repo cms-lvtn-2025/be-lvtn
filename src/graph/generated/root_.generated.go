@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"sync/atomic"
+	"thaily/src/graph/model"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -174,7 +175,7 @@ type ComplexityRoot struct {
 	Query struct {
 		GetInfoStudent func(childComplexity int) int
 		GetInfoTeacher func(childComplexity int) int
-		GetListTopic   func(childComplexity int) int
+		GetListTopic   func(childComplexity int, pag model.Pagination) int
 	}
 
 	RoleSystem struct {
@@ -984,7 +985,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Query.GetListTopic(childComplexity), true
+		args, err := ec.field_Query_getListTopic_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListTopic(childComplexity, args["pag"].(model.Pagination)), true
 
 	case "RoleSystem.activate":
 		if e.complexity.RoleSystem.Activate == nil {
@@ -1462,7 +1468,9 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputPagination,
+	)
 	first := true
 
 	switch opCtx.Operation.Operation {
@@ -1733,11 +1741,17 @@ enum Role {
     STUDENT
 }
 
+input Pagination {
+    order: Boolean
+    page: Int
+    pageSize: Int
+    sort: String
+}
 
 type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
-    getListTopic: Topic!
+    getListTopic(pag: Pagination!): [Topic!]
 }
 `, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {
