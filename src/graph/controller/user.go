@@ -183,3 +183,11 @@ func (c *Controller) GetStudentById(ctx context.Context, id string) (*model.Stud
 	}
 	return c.pbStudentToModel(student), nil
 }
+
+func (c *Controller) GetTeacherById(ctx context.Context, id string) (*model.Teacher, error) {
+	teacher, err := c.user.GetTeacherById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return c.pbTeacherToModel(teacher), nil
+}

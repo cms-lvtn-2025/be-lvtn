@@ -67,16 +67,59 @@ enum Role {
     STUDENT
 }
 
-input Pagination {
-    order: Boolean
-    page: Int
-    pageSize: Int
-    sort: String
+enum FilterOperator {
+    EQUAL
+    NOT_EQUAL
+    GREATER_THAN
+    GREATER_THAN_EQUAL
+    LESS_THAN
+    LESS_THAN_EQUAL
+    LIKE
+    IN
+    NOT_IN
+    IS_NULL
+    IS_NOT_NULL
+    BETWEEN
 }
+
+enum LogicalCondition {
+    AND
+    OR
+}
+
+input FilterConditionInput {
+    field: String!
+    operator: FilterOperator!
+    values: [String!]
+}
+
+input FilterGroupInput {
+    logic: LogicalCondition = AND
+    filters: [FilterCriteriaInput!]!
+}
+
+input FilterCriteriaInput {
+    condition: FilterConditionInput
+    group: FilterGroupInput
+}
+
+input PaginationInput {
+    page: Int = 1
+    pageSize: Int = 20
+    sortBy: String
+    descending: Boolean = false
+}
+
+input SearchRequestInput {
+    pagination: PaginationInput
+    filters: [FilterCriteriaInput!]
+}
+
+
 
 type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
-    getListTopic(pag: Pagination!): [Topic!]
-    getListCounil(page: Pagination!): [Council!]
+    getListTopic(search: SearchRequestInput!): [Topic!]
+    getListCouncil(search: SearchRequestInput!): [Council!]
 }

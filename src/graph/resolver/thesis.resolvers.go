@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
@@ -33,7 +32,7 @@ func (r *topicResolver) Enrollment(ctx context.Context, obj *model.Topic) ([]*mo
 
 // TeacherSupervisor is the resolver for the teacherSupervisor field.
 func (r *topicResolver) TeacherSupervisor(ctx context.Context, obj *model.Topic) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: TeacherSupervisor - teacherSupervisor"))
+	return r.Ctrl.GetTeacherById(ctx, obj.TeacherSupervisorCode)
 }
 
 // Enrollment returns generated.EnrollmentResolver implementation.

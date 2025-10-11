@@ -17,6 +17,18 @@ import (
 
 // region    ************************** generated!.gotpl **************************
 
+type CouncilResolver interface {
+	Semester(ctx context.Context, obj *model.Council) (*model.Semester, error)
+	Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error)
+	Schedules(ctx context.Context, obj *model.Council) ([]*model.CouncilSchedule, error)
+}
+type CouncilScheduleResolver interface {
+	Topic(ctx context.Context, obj *model.CouncilSchedule) (*model.Topic, error)
+}
+type DefenceResolver interface {
+	Teacher(ctx context.Context, obj *model.Defence) (*model.Teacher, error)
+}
+
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
@@ -317,7 +329,7 @@ func (ec *executionContext) _Council_semester(ctx context.Context, field graphql
 		field,
 		ec.fieldContext_Council_semester,
 		func(ctx context.Context) (any, error) {
-			return obj.Semester, nil
+			return ec.resolvers.Council().Semester(ctx, obj)
 		},
 		nil,
 		ec.marshalOSemester2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSemester,
@@ -330,8 +342,8 @@ func (ec *executionContext) fieldContext_Council_semester(_ context.Context, fie
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -366,7 +378,7 @@ func (ec *executionContext) _Council_defences(ctx context.Context, field graphql
 		field,
 		ec.fieldContext_Council_defences,
 		func(ctx context.Context) (any, error) {
-			return obj.Defences, nil
+			return ec.resolvers.Council().Defences(ctx, obj)
 		},
 		nil,
 		ec.marshalODefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐDefenceᚄ,
@@ -379,8 +391,8 @@ func (ec *executionContext) fieldContext_Council_defences(_ context.Context, fie
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -411,7 +423,7 @@ func (ec *executionContext) _Council_schedules(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Council_schedules,
 		func(ctx context.Context) (any, error) {
-			return obj.Schedules, nil
+			return ec.resolvers.Council().Schedules(ctx, obj)
 		},
 		nil,
 		ec.marshalOCouncilSchedule2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilScheduleᚄ,
@@ -424,8 +436,8 @@ func (ec *executionContext) fieldContext_Council_schedules(_ context.Context, fi
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -749,7 +761,7 @@ func (ec *executionContext) _CouncilSchedule_topic(ctx context.Context, field gr
 		field,
 		ec.fieldContext_CouncilSchedule_topic,
 		func(ctx context.Context) (any, error) {
-			return obj.Topic, nil
+			return ec.resolvers.CouncilSchedule().Topic(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic,
@@ -762,8 +774,8 @@ func (ec *executionContext) fieldContext_CouncilSchedule_topic(_ context.Context
 	fc = &graphql.FieldContext{
 		Object:     "CouncilSchedule",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "total":
@@ -802,6 +814,8 @@ func (ec *executionContext) fieldContext_CouncilSchedule_topic(_ context.Context
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
+			case "council":
+				return ec.fieldContext_Topic_council(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -1016,7 +1030,7 @@ func (ec *executionContext) _Defence_teacher(ctx context.Context, field graphql.
 		field,
 		ec.fieldContext_Defence_teacher,
 		func(ctx context.Context) (any, error) {
-			return obj.Teacher, nil
+			return ec.resolvers.Defence().Teacher(ctx, obj)
 		},
 		nil,
 		ec.marshalOTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
@@ -1029,8 +1043,8 @@ func (ec *executionContext) fieldContext_Defence_teacher(_ context.Context, fiel
 	fc = &graphql.FieldContext{
 		Object:     "Defence",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1239,22 +1253,22 @@ func (ec *executionContext) _Council(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Council_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "title":
 			out.Values[i] = ec._Council_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "majorCode":
 			out.Values[i] = ec._Council_majorCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "semesterCode":
 			out.Values[i] = ec._Council_semesterCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
 			out.Values[i] = ec._Council_createdAt(ctx, field, obj)
@@ -1267,11 +1281,104 @@ func (ec *executionContext) _Council(ctx context.Context, sel ast.SelectionSet, 
 		case "major":
 			out.Values[i] = ec._Council_major(ctx, field, obj)
 		case "semester":
-			out.Values[i] = ec._Council_semester(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Council_semester(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "defences":
-			out.Values[i] = ec._Council_defences(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Council_defences(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "schedules":
-			out.Values[i] = ec._Council_schedules(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Council_schedules(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1309,7 +1416,7 @@ func (ec *executionContext) _CouncilSchedule(ctx context.Context, sel ast.Select
 		case "id":
 			out.Values[i] = ec._CouncilSchedule_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "councilsCode":
 			out.Values[i] = ec._CouncilSchedule_councilsCode(ctx, field, obj)
@@ -1326,12 +1433,43 @@ func (ec *executionContext) _CouncilSchedule(ctx context.Context, sel ast.Select
 		case "status":
 			out.Values[i] = ec._CouncilSchedule_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "council":
 			out.Values[i] = ec._CouncilSchedule_council(ctx, field, obj)
 		case "topic":
-			out.Values[i] = ec._CouncilSchedule_topic(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CouncilSchedule_topic(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1369,32 +1507,63 @@ func (ec *executionContext) _Defence(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Defence_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "title":
 			out.Values[i] = ec._Defence_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "councilCode":
 			out.Values[i] = ec._Defence_councilCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "teacherCode":
 			out.Values[i] = ec._Defence_teacherCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "position":
 			out.Values[i] = ec._Defence_position(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "council":
 			out.Values[i] = ec._Defence_council(ctx, field, obj)
 		case "teacher":
-			out.Values[i] = ec._Defence_teacher(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Defence_teacher(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

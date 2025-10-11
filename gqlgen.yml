@@ -155,6 +155,9 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
+  Time:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
 
   Student:
     fields:
@@ -183,6 +186,22 @@ models:
       midterm:
         resolver: true
       final:
+        resolver: true
+  Council:
+    fields:
+      semester:
+        resolver: true
+      defences:
+        resolver: true
+      schedules:
+        resolver: true
+  CouncilSchedule:
+    fields:
+      topic:
+        resolver: true
+  Defence:
+    fields:
+      teacher:
         resolver: true
 
 

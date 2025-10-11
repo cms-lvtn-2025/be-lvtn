@@ -48,6 +48,7 @@ type Topic {
     semester: Semester
     teacherSupervisor: Teacher
     files: [File!]
+    council: Council
 }
 
 type Final {

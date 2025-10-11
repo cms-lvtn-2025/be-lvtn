@@ -586,6 +586,8 @@ func (ec *executionContext) fieldContext_Enrollment_topic(_ context.Context, fie
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
+			case "council":
+				return ec.fieldContext_Topic_council(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -1879,6 +1881,61 @@ func (ec *executionContext) fieldContext_Topic_files(_ context.Context, field gr
 	return fc, nil
 }
 
+func (ec *executionContext) _Topic_council(ctx context.Context, field graphql.CollectedField, obj *model.Topic) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Topic_council,
+		func(ctx context.Context) (any, error) {
+			return obj.Council, nil
+		},
+		nil,
+		ec.marshalOCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Topic_council(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Topic",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Council_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Council_title(ctx, field)
+			case "majorCode":
+				return ec.fieldContext_Council_majorCode(ctx, field)
+			case "semesterCode":
+				return ec.fieldContext_Council_semesterCode(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Council_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Council_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Council_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Council_updatedBy(ctx, field)
+			case "major":
+				return ec.fieldContext_Council_major(ctx, field)
+			case "semester":
+				return ec.fieldContext_Council_semester(ctx, field)
+			case "defences":
+				return ec.fieldContext_Council_defences(ctx, field)
+			case "schedules":
+				return ec.fieldContext_Council_schedules(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -2320,6 +2377,8 @@ func (ec *executionContext) _Topic(ctx context.Context, sel ast.SelectionSet, ob
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "files":
 			out.Values[i] = ec._Topic_files(ctx, field, obj)
+		case "council":
+			out.Values[i] = ec._Topic_council(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

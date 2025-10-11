@@ -33,6 +33,9 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Council() CouncilResolver
+	CouncilSchedule() CouncilScheduleResolver
+	Defence() DefenceResolver
 	Enrollment() EnrollmentResolver
 	Query() QueryResolver
 	Student() StudentResolver
@@ -173,10 +176,12 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		GetCouncils    func(childComplexity int, page *int32, pageSize *int32, sortBy *string, descending *bool) int
 		GetInfoStudent func(childComplexity int) int
 		GetInfoTeacher func(childComplexity int) int
-		GetListCounil  func(childComplexity int, page model.Pagination) int
-		GetListTopic   func(childComplexity int, pag model.Pagination) int
+		GetListCouncil func(childComplexity int, search model.SearchRequestInput) int
+		GetListTopic   func(childComplexity int, search model.SearchRequestInput) int
+		GetTopics      func(childComplexity int, page *int32, pageSize *int32, sortBy *string, descending *bool) int
 	}
 
 	RoleSystem struct {
@@ -242,6 +247,7 @@ type ComplexityRoot struct {
 	}
 
 	Topic struct {
+		Council               func(childComplexity int) int
 		CreatedAt             func(childComplexity int) int
 		CreatedBy             func(childComplexity int) int
 		Enrollment            func(childComplexity int) int
@@ -968,6 +974,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Midterm.UpdatedBy(childComplexity), true
 
+	case "Query.getCouncils":
+		if e.complexity.Query.GetCouncils == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getCouncils_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetCouncils(childComplexity, args["page"].(*int32), args["pageSize"].(*int32), args["sortBy"].(*string), args["descending"].(*bool)), true
+
 	case "Query.getInfoStudent":
 		if e.complexity.Query.GetInfoStudent == nil {
 			break
@@ -982,17 +1000,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetInfoTeacher(childComplexity), true
 
-	case "Query.getListCounil":
-		if e.complexity.Query.GetListCounil == nil {
+	case "Query.getListCouncil":
+		if e.complexity.Query.GetListCouncil == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getListCounil_args(ctx, rawArgs)
+		args, err := ec.field_Query_getListCouncil_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetListCounil(childComplexity, args["page"].(model.Pagination)), true
+		return e.complexity.Query.GetListCouncil(childComplexity, args["search"].(model.SearchRequestInput)), true
 
 	case "Query.getListTopic":
 		if e.complexity.Query.GetListTopic == nil {
@@ -1004,7 +1022,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.GetListTopic(childComplexity, args["pag"].(model.Pagination)), true
+		return e.complexity.Query.GetListTopic(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getTopics":
+		if e.complexity.Query.GetTopics == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getTopics_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetTopics(childComplexity, args["page"].(*int32), args["pageSize"].(*int32), args["sortBy"].(*string), args["descending"].(*bool)), true
 
 	case "RoleSystem.activate":
 		if e.complexity.RoleSystem.Activate == nil {
@@ -1356,6 +1386,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Teacher.Username(childComplexity), true
 
+	case "Topic.council":
+		if e.complexity.Topic.Council == nil {
+			break
+		}
+
+		return e.complexity.Topic.Council(childComplexity), true
+
 	case "Topic.createdAt":
 		if e.complexity.Topic.CreatedAt == nil {
 			break
@@ -1490,7 +1527,11 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputPagination,
+		ec.unmarshalInputFilterConditionInput,
+		ec.unmarshalInputFilterCriteriaInput,
+		ec.unmarshalInputFilterGroupInput,
+		ec.unmarshalInputPaginationInput,
+		ec.unmarshalInputSearchRequestInput,
 	)
 	first := true
 
@@ -1762,18 +1803,65 @@ enum Role {
     STUDENT
 }
 
-input Pagination {
-    order: Boolean
-    page: Int
-    pageSize: Int
-    sort: String
+enum FilterOperator {
+    EQUAL
+    NOT_EQUAL
+    GREATER_THAN
+    GREATER_THAN_EQUAL
+    LESS_THAN
+    LESS_THAN_EQUAL
+    LIKE
+    IN
+    NOT_IN
+    IS_NULL
+    IS_NOT_NULL
+    BETWEEN
 }
+
+enum LogicalCondition {
+    AND
+    OR
+}
+
+input FilterConditionInput {
+    field: String!
+    operator: FilterOperator!
+    values: [String!]
+}
+
+input FilterGroupInput {
+    logic: LogicalCondition = AND
+    filters: [FilterCriteriaInput!]!
+}
+
+input FilterCriteriaInput {
+    condition: FilterConditionInput
+    group: FilterGroupInput
+}
+
+input PaginationInput {
+    page: Int = 1
+    pageSize: Int = 20
+    sortBy: String
+    descending: Boolean = false
+}
+
+input SearchRequestInput {
+    pagination: PaginationInput
+    filters: [FilterCriteriaInput!]
+}
+
+
 
 type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
-    getListTopic(pag: Pagination!): [Topic!]
-    getListCounil(page: Pagination!): [Council!]
+    getListTopic(search: SearchRequestInput!): [Topic!]
+    getListCouncil(search: SearchRequestInput!): [Council!]
+
+    # Simple queries for testing without complex filters
+    getTopics(page: Int = 1, pageSize: Int = 20, sortBy: String, descending: Boolean = false): [Topic!]
+    getCouncils(page: Int = 1, pageSize: Int = 20, sortBy: String, descending: Boolean = false): [Council!]
 }
 `, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {
@@ -1826,6 +1914,7 @@ type Topic {
     semester: Semester
     teacherSupervisor: Teacher
     files: [File!]
+    council: Council
 }
 
 type Final {

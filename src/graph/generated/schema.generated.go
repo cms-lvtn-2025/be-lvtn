@@ -19,8 +19,10 @@ import (
 type QueryResolver interface {
 	GetInfoStudent(ctx context.Context) (*model.Student, error)
 	GetInfoTeacher(ctx context.Context) (*model.Teacher, error)
-	GetListTopic(ctx context.Context, pag model.Pagination) ([]*model.Topic, error)
-	GetListCounil(ctx context.Context, page model.Pagination) ([]*model.Council, error)
+	GetListTopic(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error)
+	GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error)
+	GetTopics(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Topic, error)
+	GetCouncils(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Council, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -38,25 +40,77 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getListCounil_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Query_getCouncils_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "page", ec.unmarshalNPagination2thailyᚋsrcᚋgraphᚋmodelᚐPagination)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "page", ec.unmarshalOInt2ᚖint32)
 	if err != nil {
 		return nil, err
 	}
 	args["page"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pageSize", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["pageSize"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "sortBy", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["sortBy"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "descending", ec.unmarshalOBoolean2ᚖbool)
+	if err != nil {
+		return nil, err
+	}
+	args["descending"] = arg3
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getListCouncil_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "search", ec.unmarshalNSearchRequestInput2thailyᚋsrcᚋgraphᚋmodelᚐSearchRequestInput)
+	if err != nil {
+		return nil, err
+	}
+	args["search"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_getListTopic_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "pag", ec.unmarshalNPagination2thailyᚋsrcᚋgraphᚋmodelᚐPagination)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "search", ec.unmarshalNSearchRequestInput2thailyᚋsrcᚋgraphᚋmodelᚐSearchRequestInput)
 	if err != nil {
 		return nil, err
 	}
-	args["pag"] = arg0
+	args["search"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getTopics_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "page", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["page"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pageSize", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["pageSize"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "sortBy", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["sortBy"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "descending", ec.unmarshalOBoolean2ᚖbool)
+	if err != nil {
+		return nil, err
+	}
+	args["descending"] = arg3
 	return args, nil
 }
 
@@ -196,7 +250,7 @@ func (ec *executionContext) _Query_getListTopic(ctx context.Context, field graph
 		ec.fieldContext_Query_getListTopic,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().GetListTopic(ctx, fc.Args["pag"].(model.Pagination))
+			return ec.resolvers.Query().GetListTopic(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
 		ec.marshalOTopic2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicᚄ,
@@ -249,6 +303,8 @@ func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context,
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
+			case "council":
+				return ec.fieldContext_Topic_council(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -267,15 +323,15 @@ func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_getListCounil(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getListCouncil(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Query_getListCounil,
+		ec.fieldContext_Query_getListCouncil,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().GetListCounil(ctx, fc.Args["page"].(model.Pagination))
+			return ec.resolvers.Query().GetListCouncil(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
 		ec.marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ,
@@ -284,7 +340,7 @@ func (ec *executionContext) _Query_getListCounil(ctx context.Context, field grap
 	)
 }
 
-func (ec *executionContext) fieldContext_Query_getListCounil(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getListCouncil(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -327,7 +383,155 @@ func (ec *executionContext) fieldContext_Query_getListCounil(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getListCounil_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_getListCouncil_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getTopics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getTopics,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().GetTopics(ctx, fc.Args["page"].(*int32), fc.Args["pageSize"].(*int32), fc.Args["sortBy"].(*string), fc.Args["descending"].(*bool))
+		},
+		nil,
+		ec.marshalOTopic2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getTopics(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_Topic_total(ctx, field)
+			case "id":
+				return ec.fieldContext_Topic_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Topic_title(ctx, field)
+			case "majorCode":
+				return ec.fieldContext_Topic_majorCode(ctx, field)
+			case "semesterCode":
+				return ec.fieldContext_Topic_semesterCode(ctx, field)
+			case "teacherSupervisorCode":
+				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
+			case "status":
+				return ec.fieldContext_Topic_status(ctx, field)
+			case "timeStart":
+				return ec.fieldContext_Topic_timeStart(ctx, field)
+			case "timeEnd":
+				return ec.fieldContext_Topic_timeEnd(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Topic_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Topic_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Topic_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Topic_updatedBy(ctx, field)
+			case "major":
+				return ec.fieldContext_Topic_major(ctx, field)
+			case "enrollment":
+				return ec.fieldContext_Topic_enrollment(ctx, field)
+			case "semester":
+				return ec.fieldContext_Topic_semester(ctx, field)
+			case "teacherSupervisor":
+				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
+			case "files":
+				return ec.fieldContext_Topic_files(ctx, field)
+			case "council":
+				return ec.fieldContext_Topic_council(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getTopics_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getCouncils(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getCouncils,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().GetCouncils(ctx, fc.Args["page"].(*int32), fc.Args["pageSize"].(*int32), fc.Args["sortBy"].(*string), fc.Args["descending"].(*bool))
+		},
+		nil,
+		ec.marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getCouncils(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Council_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Council_title(ctx, field)
+			case "majorCode":
+				return ec.fieldContext_Council_majorCode(ctx, field)
+			case "semesterCode":
+				return ec.fieldContext_Council_semesterCode(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Council_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Council_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Council_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Council_updatedBy(ctx, field)
+			case "major":
+				return ec.fieldContext_Council_major(ctx, field)
+			case "semester":
+				return ec.fieldContext_Council_semester(ctx, field)
+			case "defences":
+				return ec.fieldContext_Council_defences(ctx, field)
+			case "schedules":
+				return ec.fieldContext_Council_schedules(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getCouncils_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -446,27 +650,143 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputPagination(ctx context.Context, obj any) (model.Pagination, error) {
-	var it model.Pagination
+func (ec *executionContext) unmarshalInputFilterConditionInput(ctx context.Context, obj any) (model.FilterConditionInput, error) {
+	var it model.FilterConditionInput
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"order", "page", "pageSize", "sort"}
+	fieldsInOrder := [...]string{"field", "operator", "values"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "order":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+		case "field":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Order = data
+			it.Field = data
+		case "operator":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operator"))
+			data, err := ec.unmarshalNFilterOperator2thailyᚋsrcᚋgraphᚋmodelᚐFilterOperator(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Operator = data
+		case "values":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("values"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Values = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputFilterCriteriaInput(ctx context.Context, obj any) (model.FilterCriteriaInput, error) {
+	var it model.FilterCriteriaInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"condition", "group"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "condition":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("condition"))
+			data, err := ec.unmarshalOFilterConditionInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterConditionInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Condition = data
+		case "group":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("group"))
+			data, err := ec.unmarshalOFilterGroupInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterGroupInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Group = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputFilterGroupInput(ctx context.Context, obj any) (model.FilterGroupInput, error) {
+	var it model.FilterGroupInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	if _, present := asMap["logic"]; !present {
+		asMap["logic"] = "AND"
+	}
+
+	fieldsInOrder := [...]string{"logic", "filters"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "logic":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("logic"))
+			data, err := ec.unmarshalOLogicalCondition2ᚖthailyᚋsrcᚋgraphᚋmodelᚐLogicalCondition(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Logic = data
+		case "filters":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filters"))
+			data, err := ec.unmarshalNFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterCriteriaInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Filters = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPaginationInput(ctx context.Context, obj any) (model.PaginationInput, error) {
+	var it model.PaginationInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	if _, present := asMap["page"]; !present {
+		asMap["page"] = 1
+	}
+	if _, present := asMap["pageSize"]; !present {
+		asMap["pageSize"] = 20
+	}
+	if _, present := asMap["descending"]; !present {
+		asMap["descending"] = false
+	}
+
+	fieldsInOrder := [...]string{"page", "pageSize", "sortBy", "descending"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
 		case "page":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
 			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
@@ -481,13 +801,54 @@ func (ec *executionContext) unmarshalInputPagination(ctx context.Context, obj an
 				return it, err
 			}
 			it.PageSize = data
-		case "sort":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+		case "sortBy":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Sort = data
+			it.SortBy = data
+		case "descending":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descending"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Descending = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSearchRequestInput(ctx context.Context, obj any) (model.SearchRequestInput, error) {
+	var it model.SearchRequestInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"pagination", "filters"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "pagination":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
+			data, err := ec.unmarshalOPaginationInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐPaginationInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Pagination = data
+		case "filters":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filters"))
+			data, err := ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterCriteriaInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Filters = data
 		}
 	}
 
@@ -584,7 +945,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "getListCounil":
+		case "getListCouncil":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -593,7 +954,45 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getListCounil(ctx, field)
+				res = ec._Query_getListCouncil(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getTopics":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getTopics(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getCouncils":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getCouncils(ctx, field)
 				return res
 			}
 
@@ -668,6 +1067,36 @@ func (ec *executionContext) marshalNFileTable2thailyᚋsrcᚋgraphᚋmodelᚐFil
 	return v
 }
 
+func (ec *executionContext) unmarshalNFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterCriteriaInputᚄ(ctx context.Context, v any) ([]*model.FilterCriteriaInput, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.FilterCriteriaInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFilterCriteriaInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterCriteriaInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNFilterCriteriaInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterCriteriaInput(ctx context.Context, v any) (*model.FilterCriteriaInput, error) {
+	res, err := ec.unmarshalInputFilterCriteriaInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNFilterOperator2thailyᚋsrcᚋgraphᚋmodelᚐFilterOperator(ctx context.Context, v any) (model.FilterOperator, error) {
+	var res model.FilterOperator
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFilterOperator2thailyᚋsrcᚋgraphᚋmodelᚐFilterOperator(ctx context.Context, sel ast.SelectionSet, v model.FilterOperator) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNFinalStatus2thailyᚋsrcᚋgraphᚋmodelᚐFinalStatus(ctx context.Context, v any) (model.FinalStatus, error) {
 	var res model.FinalStatus
 	err := res.UnmarshalGQL(v)
@@ -688,11 +1117,6 @@ func (ec *executionContext) marshalNMidtermStatus2thailyᚋsrcᚋgraphᚋmodel�
 	return v
 }
 
-func (ec *executionContext) unmarshalNPagination2thailyᚋsrcᚋgraphᚋmodelᚐPagination(ctx context.Context, v any) (model.Pagination, error) {
-	res, err := ec.unmarshalInputPagination(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNRoleSystemRole2thailyᚋsrcᚋgraphᚋmodelᚐRoleSystemRole(ctx context.Context, v any) (model.RoleSystemRole, error) {
 	var res model.RoleSystemRole
 	err := res.UnmarshalGQL(v)
@@ -701,6 +1125,11 @@ func (ec *executionContext) unmarshalNRoleSystemRole2thailyᚋsrcᚋgraphᚋmode
 
 func (ec *executionContext) marshalNRoleSystemRole2thailyᚋsrcᚋgraphᚋmodelᚐRoleSystemRole(ctx context.Context, sel ast.SelectionSet, v model.RoleSystemRole) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) unmarshalNSearchRequestInput2thailyᚋsrcᚋgraphᚋmodelᚐSearchRequestInput(ctx context.Context, v any) (model.SearchRequestInput, error) {
+	res, err := ec.unmarshalInputSearchRequestInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
@@ -729,6 +1158,40 @@ func (ec *executionContext) marshalNTopicStatus2thailyᚋsrcᚋgraphᚋmodelᚐT
 	return v
 }
 
+func (ec *executionContext) unmarshalOFilterConditionInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterConditionInput(ctx context.Context, v any) (*model.FilterConditionInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputFilterConditionInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterCriteriaInputᚄ(ctx context.Context, v any) ([]*model.FilterCriteriaInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.FilterCriteriaInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFilterCriteriaInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterCriteriaInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOFilterGroupInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFilterGroupInput(ctx context.Context, v any) (*model.FilterGroupInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputFilterGroupInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOGender2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGender(ctx context.Context, v any) (*model.Gender, error) {
 	if v == nil {
 		return nil, nil
@@ -743,6 +1206,30 @@ func (ec *executionContext) marshalOGender2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGen
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) unmarshalOLogicalCondition2ᚖthailyᚋsrcᚋgraphᚋmodelᚐLogicalCondition(ctx context.Context, v any) (*model.LogicalCondition, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.LogicalCondition)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOLogicalCondition2ᚖthailyᚋsrcᚋgraphᚋmodelᚐLogicalCondition(ctx context.Context, sel ast.SelectionSet, v *model.LogicalCondition) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOPaginationInput2ᚖthailyᚋsrcᚋgraphᚋmodelᚐPaginationInput(ctx context.Context, v any) (*model.PaginationInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPaginationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {

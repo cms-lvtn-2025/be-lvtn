@@ -26,6 +26,12 @@ func NewGRPCthesis(addr string) (*GRPCthesis, error) {
 	return &GRPCthesis{conn: conn, client: client}, nil
 }
 
+func (t *GRPCthesis) GetTopicBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListTopicsResponse, error) {
+	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+		Search: search,
+	})
+}
+
 func (t *GRPCthesis) GetTopicByStudentCode(ctx context.Context, studentCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
 	if t.client == nil {
 		return nil, fmt.Errorf("grpc client not initialized")
@@ -75,6 +81,49 @@ func (t *GRPCthesis) GetTopicByTeacherCode(ctx context.Context, teacerCode strin
 						},
 					},
 				},
+			},
+		},
+	})
+}
+
+func (t *GRPCthesis) GetTopicByMajorCode(ctx context.Context, majorCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
+	if t.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: order,
+				Page:       page,
+				PageSize:   pageSize,
+				SortBy:     sortBy,
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "major_code",
+							Operator: pbCommon.FilterOperator_EQUAL,
+							Values:   []string{majorCode},
+						},
+					},
+				},
+			},
+		},
+	})
+}
+
+func (t *GRPCthesis) GetTopic(ctx context.Context, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
+	if t.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: order,
+				Page:       page,
+				PageSize:   pageSize,
+				SortBy:     sortBy,
 			},
 		},
 	})

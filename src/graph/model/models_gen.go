@@ -90,6 +90,22 @@ type File struct {
 	UpdatedBy *string    `json:"updatedBy,omitempty"`
 }
 
+type FilterConditionInput struct {
+	Field    string         `json:"field"`
+	Operator FilterOperator `json:"operator"`
+	Values   []string       `json:"values,omitempty"`
+}
+
+type FilterCriteriaInput struct {
+	Condition *FilterConditionInput `json:"condition,omitempty"`
+	Group     *FilterGroupInput     `json:"group,omitempty"`
+}
+
+type FilterGroupInput struct {
+	Logic   *LogicalCondition      `json:"logic,omitempty"`
+	Filters []*FilterCriteriaInput `json:"filters"`
+}
+
 type Final struct {
 	ID              string      `json:"id"`
 	Title           string      `json:"title"`
@@ -138,11 +154,11 @@ type Midterm struct {
 	UpdatedBy *string       `json:"updatedBy,omitempty"`
 }
 
-type Pagination struct {
-	Order    *bool   `json:"order,omitempty"`
-	Page     *int32  `json:"page,omitempty"`
-	PageSize *int32  `json:"pageSize,omitempty"`
-	Sort     *string `json:"sort,omitempty"`
+type PaginationInput struct {
+	Page       *int32  `json:"page,omitempty"`
+	PageSize   *int32  `json:"pageSize,omitempty"`
+	SortBy     *string `json:"sortBy,omitempty"`
+	Descending *bool   `json:"descending,omitempty"`
 }
 
 type Query struct {
@@ -161,6 +177,11 @@ type RoleSystem struct {
 	UpdatedBy    *string        `json:"updatedBy,omitempty"`
 	Teacher      *Teacher       `json:"teacher,omitempty"`
 	Semester     *Semester      `json:"semester,omitempty"`
+}
+
+type SearchRequestInput struct {
+	Pagination *PaginationInput       `json:"pagination,omitempty"`
+	Filters    []*FilterCriteriaInput `json:"filters,omitempty"`
 }
 
 type Semester struct {
@@ -229,6 +250,7 @@ type Topic struct {
 	Semester              *Semester     `json:"semester,omitempty"`
 	TeacherSupervisor     *Teacher      `json:"teacherSupervisor,omitempty"`
 	Files                 []*File       `json:"files,omitempty"`
+	Council               *Council      `json:"council,omitempty"`
 }
 
 // Vai trò trong hội đồng bảo vệ
@@ -409,6 +431,81 @@ func (e FileTable) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+type FilterOperator string
+
+const (
+	FilterOperatorEqual            FilterOperator = "EQUAL"
+	FilterOperatorNotEqual         FilterOperator = "NOT_EQUAL"
+	FilterOperatorGreaterThan      FilterOperator = "GREATER_THAN"
+	FilterOperatorGreaterThanEqual FilterOperator = "GREATER_THAN_EQUAL"
+	FilterOperatorLessThan         FilterOperator = "LESS_THAN"
+	FilterOperatorLessThanEqual    FilterOperator = "LESS_THAN_EQUAL"
+	FilterOperatorLike             FilterOperator = "LIKE"
+	FilterOperatorIn               FilterOperator = "IN"
+	FilterOperatorNotIn            FilterOperator = "NOT_IN"
+	FilterOperatorIsNull           FilterOperator = "IS_NULL"
+	FilterOperatorIsNotNull        FilterOperator = "IS_NOT_NULL"
+	FilterOperatorBetween          FilterOperator = "BETWEEN"
+)
+
+var AllFilterOperator = []FilterOperator{
+	FilterOperatorEqual,
+	FilterOperatorNotEqual,
+	FilterOperatorGreaterThan,
+	FilterOperatorGreaterThanEqual,
+	FilterOperatorLessThan,
+	FilterOperatorLessThanEqual,
+	FilterOperatorLike,
+	FilterOperatorIn,
+	FilterOperatorNotIn,
+	FilterOperatorIsNull,
+	FilterOperatorIsNotNull,
+	FilterOperatorBetween,
+}
+
+func (e FilterOperator) IsValid() bool {
+	switch e {
+	case FilterOperatorEqual, FilterOperatorNotEqual, FilterOperatorGreaterThan, FilterOperatorGreaterThanEqual, FilterOperatorLessThan, FilterOperatorLessThanEqual, FilterOperatorLike, FilterOperatorIn, FilterOperatorNotIn, FilterOperatorIsNull, FilterOperatorIsNotNull, FilterOperatorBetween:
+		return true
+	}
+	return false
+}
+
+func (e FilterOperator) String() string {
+	return string(e)
+}
+
+func (e *FilterOperator) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = FilterOperator(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid FilterOperator", str)
+	}
+	return nil
+}
+
+func (e FilterOperator) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *FilterOperator) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e FilterOperator) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
 // Trạng thái đồ án cuối cùng
 type FinalStatus string
 
@@ -522,6 +619,61 @@ func (e *Gender) UnmarshalJSON(b []byte) error {
 }
 
 func (e Gender) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type LogicalCondition string
+
+const (
+	LogicalConditionAnd LogicalCondition = "AND"
+	LogicalConditionOr  LogicalCondition = "OR"
+)
+
+var AllLogicalCondition = []LogicalCondition{
+	LogicalConditionAnd,
+	LogicalConditionOr,
+}
+
+func (e LogicalCondition) IsValid() bool {
+	switch e {
+	case LogicalConditionAnd, LogicalConditionOr:
+		return true
+	}
+	return false
+}
+
+func (e LogicalCondition) String() string {
+	return string(e)
+}
+
+func (e *LogicalCondition) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LogicalCondition(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LogicalCondition", str)
+	}
+	return nil
+}
+
+func (e LogicalCondition) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *LogicalCondition) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e LogicalCondition) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	e.MarshalGQL(&buf)
 	return buf.Bytes(), nil

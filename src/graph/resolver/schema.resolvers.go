@@ -22,13 +22,13 @@ func (r *queryResolver) GetInfoTeacher(ctx context.Context) (*model.Teacher, err
 }
 
 // GetListTopic is the resolver for the getListTopic field.
-func (r *queryResolver) GetListTopic(ctx context.Context, pag model.Pagination) ([]*model.Topic, error) {
-	return r.Ctrl.GetTopics(ctx, pag)
+func (r *queryResolver) GetListTopic(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error) {
+	return r.Ctrl.GetTopics(ctx, search)
 }
 
-// GetListCounil is the resolver for the getListCounil field.
-func (r *queryResolver) GetListCounil(ctx context.Context, page model.Pagination) ([]*model.Council, error) {
-	panic(fmt.Errorf("not implemented: GetListCounil - getListCounil"))
+// GetListCouncil is the resolver for the getListCouncil field.
+func (r *queryResolver) GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
+	panic(fmt.Errorf("not implemented: GetListCouncil - getListCouncil"))
 }
 
 // Query returns generated.QueryResolver implementation.

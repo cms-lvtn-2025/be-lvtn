@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	pbRole "thaily/proto/role"
 	pb "thaily/proto/thesis"
 	"thaily/src/graph/helper"
 	"thaily/src/graph/model"
@@ -251,7 +252,7 @@ func (c *Controller) pbFinalToModel(resp *pb.GetFinalResponse) *model.Final {
 
 }
 
-func (c *Controller) GetTopics(ctx context.Context, pag model.Pagination) ([]*model.Topic, error) {
+func (c *Controller) GetTopics(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
 	if !ok {
 		return nil, fmt.Errorf("not authorized")
@@ -278,33 +279,77 @@ func (c *Controller) GetTopics(ctx context.Context, pag model.Pagination) ([]*mo
 	}
 	var topics *pb.ListTopicsResponse
 	var err error
-	var page int32 = 1
-	var pageSize int32 = 10
-	order := true
-	sort := "created_at"
-	if pag.Page != nil {
-		page = *(pag.Page)
-	}
-	if pag.PageSize != nil {
-		pageSize = *(pag.PageSize)
-	}
-	if pag.Order != nil {
-		order = *pag.Order
-	}
-	if pag.Sort != nil {
-		sort = *pag.Sort
-	}
-
+	var newSearch model.SearchRequestInput
 	if role == "student" {
-		topics, err = c.thesis.GetTopicByStudentCode(ctx, myId, page, pageSize, sort, order)
+		newSearch = model.SearchRequestInput{
+			Pagination: search.Pagination,
+			Filters: append([]*model.FilterCriteriaInput{
+				&model.FilterCriteriaInput{
+					Condition: &model.FilterConditionInput{
+						Field:    "student_code",
+						Operator: model.FilterOperatorEqual,
+						Values:   []string{myId},
+					},
+				},
+			}, search.Filters...),
+		}
+
+		topics, err = c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
 		if err != nil {
 			return nil, err
 		}
 	} else if role == "teacher" {
-		topics, err = c.thesis.GetTopicByTeacherCode(ctx, myId, page, pageSize, sort, order)
+		permissions, err := c.role.GetAllRoleByTeacherId(ctx, myId)
+
+		if err != nil || permissions == nil || len(permissions.GetRoleSystems()) == 0 {
+			return nil, err
+		}
+		permissionMap := make(map[pbRole.RoleType]bool)
+		for _, permission := range permissions.GetRoleSystems() {
+			permissionMap[permission.Role] = true
+		}
+		if permissionMap[pbRole.RoleType_ACADEMIC_AFFAIRS_STAFF] {
+			topics, err = c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(search))
+		} else if permissionMap[pbRole.RoleType_DEPARTMENT_LECTURER] {
+			user, err := c.user.GetUserById(ctx, myId)
+			if err != nil {
+				return nil, err
+			}
+			newSearch = model.SearchRequestInput{
+				Pagination: search.Pagination,
+				Filters: append([]*model.FilterCriteriaInput{
+					&model.FilterCriteriaInput{
+						Condition: &model.FilterConditionInput{
+							Field:    "major_code",
+							Operator: model.FilterOperatorEqual,
+							Values:   []string{user.GetStudent().GetSemesterCode()},
+						},
+					},
+				}, search.Filters...),
+			}
+			topics, err = c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+
+		} else if permissionMap[pbRole.RoleType_SUPERVISOR_LECTURER] {
+			newSearch = model.SearchRequestInput{
+				Pagination: search.Pagination,
+				Filters: append([]*model.FilterCriteriaInput{
+					&model.FilterCriteriaInput{
+						Condition: &model.FilterConditionInput{
+							Field:    "teacher_supervisor_code",
+							Operator: model.FilterOperatorEqual,
+							Values:   []string{myId},
+						},
+					},
+				}, search.Filters...),
+			}
+			topics, err = c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+		} else {
+			return nil, err
+		}
 		if err != nil {
 			return nil, err
 		}
+
 	}
 	return c.pbTopicsToModel(topics), nil
 }

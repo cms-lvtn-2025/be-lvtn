@@ -560,6 +560,8 @@ func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field g
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
+			case "council":
+				return ec.fieldContext_Topic_council(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -921,6 +923,8 @@ func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, fiel
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
+			case "council":
+				return ec.fieldContext_Topic_council(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
