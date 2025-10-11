@@ -31,6 +31,36 @@ func (r *queryResolver) GetListCouncil(ctx context.Context, search model.SearchR
 	panic(fmt.Errorf("not implemented: GetListCouncil - getListCouncil"))
 }
 
+// GetTopics is the resolver for the getTopics field.
+func (r *queryResolver) GetTopics(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Topic, error) {
+	// Build SearchRequestInput from simple parameters
+	search := model.SearchRequestInput{
+		Pagination: &model.PaginationInput{
+			Page:       page,
+			PageSize:   pageSize,
+			SortBy:     sortBy,
+			Descending: descending,
+		},
+		Filters: nil, // No filters for simple query
+	}
+	return r.Ctrl.GetTopics(ctx, search)
+}
+
+// GetCouncils is the resolver for the getCouncils field.
+func (r *queryResolver) GetCouncils(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Council, error) {
+	// Build SearchRequestInput from simple parameters
+	search := model.SearchRequestInput{
+		Pagination: &model.PaginationInput{
+			Page:       page,
+			PageSize:   pageSize,
+			SortBy:     sortBy,
+			Descending: descending,
+		},
+		Filters: nil, // No filters for simple query
+	}
+	return r.Ctrl.GetListCouncil(ctx, search)
+}
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 

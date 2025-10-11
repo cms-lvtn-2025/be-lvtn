@@ -40,27 +40,34 @@ func New(cfg *config.Config) (*Container, error) {
 }
 
 func initClients(cfg *config.Config) (*Clients, error) {
-	academic, err := client.NewGRPCAcadamicClient(fmt.Sprintf("%s:%s", cfg.Services.Academic.Endpont, cfg.Services.Academic.Port))
+
+	// Initialize Redis client
+	redis, err := client.NewRedisClient(cfg.Redis)
+	if err != nil {
+		return nil, fmt.Errorf("redis client: %w", err)
+	}
+
+	academic, err := client.NewGRPCAcadamicClient(fmt.Sprintf("%s:%s", cfg.Services.Academic.Endpont, cfg.Services.Academic.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("academic client: %w", err)
 	}
 
-	council, err := client.NewGRPCCouncil(fmt.Sprintf("%s:%s", cfg.Services.Council.Endpont, cfg.Services.Council.Port))
+	council, err := client.NewGRPCCouncil(fmt.Sprintf("%s:%s", cfg.Services.Council.Endpont, cfg.Services.Council.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("council client: %w", err)
 	}
 
-	file, err := client.NewGRPCfile(fmt.Sprintf("%s:%s", cfg.Services.File.Endpont, cfg.Services.File.Port))
+	file, err := client.NewGRPCfile(fmt.Sprintf("%s:%s", cfg.Services.File.Endpont, cfg.Services.File.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("file client: %w", err)
 	}
 
-	role, err := client.NewGRPCRole(fmt.Sprintf("%s:%s", cfg.Services.Role.Endpont, cfg.Services.Role.Port))
+	role, err := client.NewGRPCRole(fmt.Sprintf("%s:%s", cfg.Services.Role.Endpont, cfg.Services.Role.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("role client: %w", err)
 	}
 
-	thesis, err := client.NewGRPCthesis(fmt.Sprintf("%s:%s", cfg.Services.Thesis.Endpont, cfg.Services.Thesis.Port))
+	thesis, err := client.NewGRPCthesis(fmt.Sprintf("%s:%s", cfg.Services.Thesis.Endpont, cfg.Services.Thesis.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("thesis client: %w", err)
 	}
@@ -73,12 +80,6 @@ func initClients(cfg *config.Config) (*Clients, error) {
 	minio, err := client.NewServiceMinIo(cfg.Services.MinIo)
 	if err != nil {
 		return nil, fmt.Errorf("minio client: %w", err)
-	}
-
-	// Initialize Redis client
-	redis, err := client.NewRedisClient(cfg.Redis)
-	if err != nil {
-		return nil, fmt.Errorf("redis client: %w", err)
 	}
 
 	// Initialize MongoDB client

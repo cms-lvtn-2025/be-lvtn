@@ -6,16 +6,18 @@ import (
 	pbCommon "thaily/proto/common"
 	pb "thaily/proto/role"
 
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GRPCRole struct {
-	conn   *grpc.ClientConn
-	client pb.RoleServiceClient
+	conn        *grpc.ClientConn
+	client      pb.RoleServiceClient
+	redisClient *redis.Client
 }
 
-func NewGRPCRole(addr string) (*GRPCRole, error) {
+func NewGRPCRole(addr string, redis *redis.Client) (*GRPCRole, error) {
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {

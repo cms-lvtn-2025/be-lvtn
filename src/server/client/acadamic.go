@@ -4,16 +4,18 @@ import (
 	"context"
 	pb "thaily/proto/academic"
 
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GRPCAcadamicClient struct {
-	conn   *grpc.ClientConn
-	client pb.AcademicServiceClient
+	conn        *grpc.ClientConn
+	client      pb.AcademicServiceClient
+	redisClient *redis.Client
 }
 
-func NewGRPCAcadamicClient(addr string) (*GRPCAcadamicClient, error) {
+func NewGRPCAcadamicClient(addr string, redis *redis.Client) (*GRPCAcadamicClient, error) {
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {

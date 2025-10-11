@@ -6,13 +6,15 @@ import (
 	pbCommon "thaily/proto/common"
 	pb "thaily/proto/user"
 
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GRPCUser struct {
-	conn   *grpc.ClientConn
-	client pb.UserServiceClient
+	conn        *grpc.ClientConn
+	client      pb.UserServiceClient
+	redisClient *redis.Client
 }
 
 func NewGRPCUser(addr string) (*GRPCUser, error) {

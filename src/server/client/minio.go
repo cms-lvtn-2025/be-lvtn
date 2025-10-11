@@ -8,11 +8,13 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/redis/go-redis/v9"
 )
 
 type ServiceMinIo struct {
-	client *minio.Client
-	config *config.MinioConfig
+	client      *minio.Client
+	config      *config.MinioConfig
+	redisClient *redis.Client
 }
 
 func (s *ServiceMinIo) ensureBucket() error {
