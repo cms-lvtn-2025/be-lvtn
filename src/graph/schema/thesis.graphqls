@@ -30,6 +30,7 @@ type Enrollment {
 }
 
 type Topic {
+    total: Int
     id: ID!
     title: String!
     majorCode: String!
@@ -42,7 +43,6 @@ type Topic {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
     major: Major
     enrollment: [Enrollment]
     semester: Semester

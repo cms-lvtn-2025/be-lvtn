@@ -524,6 +524,8 @@ func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field g
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "total":
+				return ec.fieldContext_Topic_total(ctx, field)
 			case "id":
 				return ec.fieldContext_Topic_id(ctx, field)
 			case "title":
@@ -883,6 +885,8 @@ func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "total":
+				return ec.fieldContext_Topic_total(ctx, field)
 			case "id":
 				return ec.fieldContext_Topic_id(ctx, field)
 			case "title":

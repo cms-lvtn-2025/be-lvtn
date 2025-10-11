@@ -131,7 +131,7 @@ func (t *GRPCthesis) GetEnrollmentByTopicCode(ctx context.Context, topicCode str
 				{
 					Criteria: &pbCommon.FilterCriteria_Condition{
 						Condition: &pbCommon.FilterCondition{
-							Field:    "student_code",
+							Field:    "topic_code",
 							Operator: pbCommon.FilterOperator_EQUAL,
 							Values:   []string{topicCode},
 						},
@@ -140,4 +140,23 @@ func (t *GRPCthesis) GetEnrollmentByTopicCode(ctx context.Context, topicCode str
 			},
 		},
 	})
+}
+
+func (t *GRPCthesis) GetMidtermById(ctx context.Context, midtermCode string) (*pb.GetMidtermResponse, error) {
+	if t.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	return t.client.GetMidterm(ctx, &pb.GetMidtermRequest{
+		Id: midtermCode,
+	})
+}
+
+func (t *GRPCthesis) GetFinalById(ctx context.Context, finalCode string) (*pb.GetFinalResponse, error) {
+	if t.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	return t.client.GetFinal(ctx, &pb.GetFinalRequest{
+		Id: finalCode,
+	})
+
 }

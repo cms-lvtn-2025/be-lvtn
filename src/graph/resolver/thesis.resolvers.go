@@ -13,17 +13,17 @@ import (
 
 // Student is the resolver for the student field.
 func (r *enrollmentResolver) Student(ctx context.Context, obj *model.Enrollment) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: Student - student"))
+	return r.Ctrl.GetStudentById(ctx, obj.StudentCode)
 }
 
 // Midterm is the resolver for the midterm field.
 func (r *enrollmentResolver) Midterm(ctx context.Context, obj *model.Enrollment) (*model.Midterm, error) {
-	panic(fmt.Errorf("not implemented: Midterm - midterm"))
+	return r.Ctrl.GetMidterm(ctx, obj.MidtermCode)
 }
 
 // Final is the resolver for the final field.
 func (r *enrollmentResolver) Final(ctx context.Context, obj *model.Enrollment) (*model.Final, error) {
-	panic(fmt.Errorf("not implemented: Final - final"))
+	return r.Ctrl.GetFinal(ctx, obj.FinalCode)
 }
 
 // Enrollment is the resolver for the enrollment field.
@@ -33,6 +33,7 @@ func (r *topicResolver) Enrollment(ctx context.Context, obj *model.Topic) ([]*mo
 
 // TeacherSupervisor is the resolver for the teacherSupervisor field.
 func (r *topicResolver) TeacherSupervisor(ctx context.Context, obj *model.Topic) (*model.Teacher, error) {
+	panic(fmt.Errorf("not implemented: TeacherSupervisor - teacherSupervisor"))
 }
 
 // Enrollment returns generated.EnrollmentResolver implementation.

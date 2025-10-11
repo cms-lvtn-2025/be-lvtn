@@ -175,6 +175,7 @@ type ComplexityRoot struct {
 	Query struct {
 		GetInfoStudent func(childComplexity int) int
 		GetInfoTeacher func(childComplexity int) int
+		GetListCounil  func(childComplexity int, page model.Pagination) int
 		GetListTopic   func(childComplexity int, pag model.Pagination) int
 	}
 
@@ -256,6 +257,7 @@ type ComplexityRoot struct {
 		TimeEnd               func(childComplexity int) int
 		TimeStart             func(childComplexity int) int
 		Title                 func(childComplexity int) int
+		Total                 func(childComplexity int) int
 		UpdatedAt             func(childComplexity int) int
 		UpdatedBy             func(childComplexity int) int
 	}
@@ -980,6 +982,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetInfoTeacher(childComplexity), true
 
+	case "Query.getListCounil":
+		if e.complexity.Query.GetListCounil == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getListCounil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListCounil(childComplexity, args["page"].(model.Pagination)), true
+
 	case "Query.getListTopic":
 		if e.complexity.Query.GetListTopic == nil {
 			break
@@ -1447,6 +1461,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Topic.Title(childComplexity), true
 
+	case "Topic.total":
+		if e.complexity.Topic.Total == nil {
+			break
+		}
+
+		return e.complexity.Topic.Total(childComplexity), true
+
 	case "Topic.updatedAt":
 		if e.complexity.Topic.UpdatedAt == nil {
 			break
@@ -1752,6 +1773,7 @@ type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
     getListTopic(pag: Pagination!): [Topic!]
+    getListCounil(page: Pagination!): [Council!]
 }
 `, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {
@@ -1786,6 +1808,7 @@ type Enrollment {
 }
 
 type Topic {
+    total: Int
     id: ID!
     title: String!
     majorCode: String!
@@ -1798,7 +1821,6 @@ type Topic {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
     major: Major
     enrollment: [Enrollment]
     semester: Semester

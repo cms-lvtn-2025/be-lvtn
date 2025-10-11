@@ -78,4 +78,5 @@ type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
     getListTopic(pag: Pagination!): [Topic!]
+    getListCounil(page: Pagination!): [Council!]
 }

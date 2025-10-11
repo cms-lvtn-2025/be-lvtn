@@ -9,8 +9,8 @@ import (
 // Session model lưu thông tin phiên đăng nhập trong MongoDB
 type Session struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	ids          string             `bson:"ids" json:"ids"`
-	role         string             `bson:"role" json:"role"`
+	Ids          string             `bson:"ids" json:"ids"`
+	Role         string             `bson:"role" json:"role"`
 	UserID       string             `bson:"user_id" json:"user_id"` // User ID từ service user
 	Email        string             `bson:"email" json:"email"`     // Email để reference
 	RefreshToken string             `bson:"refresh_token" json:"refresh_token"`

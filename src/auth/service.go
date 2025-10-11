@@ -97,8 +97,8 @@ func (s *Service) GenerateTokenPair(ctx context.Context, ids string, role string
 	// Lưu session vào MongoDB (chỉ lưu session info, không lưu user)
 	session := Session{
 		UserID:       googleUser.ID, // Google ID tạm thời, sau sẽ được map với user service
-		ids:          ids,
-		role:         role,
+		Ids:          ids,
+		Role:         role,
 		Email:        googleUser.Email,
 		RefreshToken: refreshToken,
 		UserAgent:    userAgent,
@@ -176,7 +176,7 @@ func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		return nil, fmt.Errorf("session not found")
 	}
 	ids := ""
-	if session.role == "student" {
+	if session.Role == "student" {
 		user, err := s.user.GetUserByEmail(ctx, session.Email)
 		if err != nil {
 			return nil, fmt.Errorf("invalid user email")
@@ -185,7 +185,7 @@ func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		for _, student := range user.GetStudents() {
 			ids += student.GetSemesterCode() + "-" + student.GetId() + ","
 		}
-	} else if session.role == "teacher" {
+	} else if session.Role == "teacher" {
 		teachers, err := s.user.GetTeacherByEmail(ctx, session.Email)
 		if err != nil {
 			return nil, fmt.Errorf("invalid user email")
@@ -196,7 +196,7 @@ func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 	}
 
 	// Tạo access token mới
-	accessToken, err := s.createAccessToken(session.Email, "", claims.UserID, ids, session.role)
+	accessToken, err := s.createAccessToken(session.Email, "", claims.UserID, ids, session.Role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create access token: %w", err)
 	}

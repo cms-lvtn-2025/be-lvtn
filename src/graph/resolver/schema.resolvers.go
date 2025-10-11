@@ -6,6 +6,7 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
@@ -23,6 +24,11 @@ func (r *queryResolver) GetInfoTeacher(ctx context.Context) (*model.Teacher, err
 // GetListTopic is the resolver for the getListTopic field.
 func (r *queryResolver) GetListTopic(ctx context.Context, pag model.Pagination) ([]*model.Topic, error) {
 	return r.Ctrl.GetTopics(ctx, pag)
+}
+
+// GetListCounil is the resolver for the getListCounil field.
+func (r *queryResolver) GetListCounil(ctx context.Context, page model.Pagination) ([]*model.Council, error) {
+	panic(fmt.Errorf("not implemented: GetListCounil - getListCounil"))
 }
 
 // Query returns generated.QueryResolver implementation.

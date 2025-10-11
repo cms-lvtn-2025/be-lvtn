@@ -36,20 +36,182 @@ watching src/server/client
 building...
 running...
 localhost:50056
-2025/10/11 17:31:53 Connected to Redis at localhost:10002 (DB: 0)
-2025/10/11 17:31:53 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
-2025/10/11 17:31:53 Server starting on http://localhost:8080
-2025/10/11 17:31:53 GraphQL Playground: http://localhost:8080/
-2025/10/11 17:31:53 GraphQL Endpoint: http://localhost:8080/query
-2025/10/11 17:31:53 REST API: http://localhost:8080/api/v1
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:00 |[97;42m 200 [0m|   18.280798ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:03 |[97;42m 200 [0m|    3.062297ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:04 |[97;42m 200 [0m|    3.204513ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:06 |[97;42m 200 [0m|   15.422458ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:07 |[97;42m 200 [0m|    2.883628ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:08 |[97;42m 200 [0m|    2.846009ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:32:44 |[97;42m 200 [0m|    2.698414ms |       127.0.0.1 |[97;46m POST    [0m "/query"
-map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760179315e+09 google_id:107813609512146799072 iat:1.760178415e+09 ids:SEM_2025_1-TCH_00002,SEM_2024_1-TCH_00001, name:THÁI LÝ VĨNH role:teacher][GIN] 2025/10/11 - 17:34:08 |[97;42m 200 [0m|    3.738155ms |       127.0.0.1 |[97;46m POST    [0m "/query"
+2025/10/11 20:23:53 Connected to Redis at localhost:10002 (DB: 0)
+2025/10/11 20:23:53 Connected to MongoDB at mongodb://thaily:Th%40i2004@localhost:10000/thesis_db?authSource=admin (Database: thesis_db)
+2025/10/11 20:23:53 Server starting on http://localhost:8080
+2025/10/11 20:23:53 GraphQL Playground: http://localhost:8080/
+2025/10/11 20:23:53 GraphQL Endpoint: http://localhost:8080/query
+2025/10/11 20:23:53 REST API: http://localhost:8080/api/v1
+[GIN] 2025/10/11 - 20:23:55 |[90;43m 401 [0m|     114.481µs |       127.0.0.1 |[97;46m POST    [0m "/query"
+[GIN] 2025/10/11 - 20:24:11 |[97;42m 200 [0m|    1.180346ms |             ::1 |[97;46m POST    [0m "/api/v1/auth/refresh"
+runtime error: index out of range [1] with length 1
+
+goroutine 97 [running]:
+runtime/debug.Stack()
+	/snap/go/current/src/runtime/debug/stack.go:26 +0x5e
+runtime/debug.PrintStack()
+	/snap/go/current/src/runtime/debug/stack.go:18 +0x13
+github.com/99designs/gqlgen/graphql.DefaultRecover({0x0?, 0x0?}, {0x15ff480?, 0xc000048978?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/recovery.go:17 +0x6a
+github.com/99designs/gqlgen/graphql.(*OperationContext).Recover(0xc000448288?, {0x195ad48, 0xc000625b90}, {0x15ff480?, 0xc000048978?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/context_operation.go:125 +0x38
+github.com/99designs/gqlgen/graphql.resolveField[...].func1()
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:101 +0x6d
+panic({0x15ff480?, 0xc000048978?})
+	/snap/go/current/src/runtime/panic.go:783 +0x132
+thaily/src/graph/controller.(*Controller).GetTopics(0xc000580690, {0x195ad48, 0xc000625b90}, {0xc00052527e?, 0xc000525290?, 0xc000525294?, 0xc000521ee0?})
+	/home/thaily/code/heheheh_be/src/graph/controller/thesis.go:142 +0x48e
+thaily/src/graph/resolver.(*queryResolver).GetListTopic(0xc000410020?, {0x195ad48?, 0xc000625b90?}, {0xc00052527e?, 0xc000525290?, 0xc000525294?, 0xc000521ee0?})
+	/home/thaily/code/heheheh_be/src/graph/resolver/schema.resolvers.go:25 +0x37
+thaily/src/graph/generated.(*executionContext)._Query_getListTopic.func1({0x195ad48, 0xc000625b90})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:187 +0xd2
+github.com/99designs/gqlgen/graphql.resolveField[...].func2()
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:109 +0x45
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func4({0x195ad48?, 0xc000625b90?}, 0xc0001b77a0?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:73 +0x22
+github.com/99designs/gqlgen/graphql.resolveField[...]({0x195ad48, 0xc0006259b0}, 0xc0003a8ea0, {0xc00042c900, {0xc000426e40, 0xc, 0xc}, 0x0}, 0xc000448800, 0xc000521e50, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:116 +0x28b
+github.com/99designs/gqlgen/graphql.ResolveField[...]({0x195ad48?, 0xc0006259b0?}, 0xc?, {0xc00042c900?, {0xc000426e40, 0xc, 0xc}, 0x0}, 0xc000448800, 0xc000521e50, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:21 +0x165
+thaily/src/graph/generated.(*executionContext)._Query_getListTopic(0xc0002ac3e0, {0x195ad48, 0xc0006259b0}, {0xc00042c900, {0xc000426e40, 0xc, 0xc}, 0x0})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:180 +0x131
+thaily/src/graph/generated.(*executionContext)._Query.func7({0x195ad48?, 0xc0006259b0?}, 0xc0004488e8?)
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:496 +0x89
+thaily/src/graph/generated.(*executionContext)._Query.func8.1({0x195ad48?, 0xc0006259b0?})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:502 +0x25
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func3({0x195ad48?, 0xc0006259b0?}, 0x10?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:70 +0x22
+thaily/src/graph/generated.(*executionContext)._Query.func8({0x195ad48, 0xc0006259b0})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:501 +0xa2
+thaily/src/graph/generated.(*executionContext)._Query.func9({0x1599320?, 0x1239a01?})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:505 +0x1f
+github.com/99designs/gqlgen/graphql.(*FieldSet).Dispatch(0xc00061e9b0, {0x195ad48?, 0xc000625980?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/fieldset.go:41 +0xa2
+thaily/src/graph/generated.(*executionContext)._Query(0xc0002ac3e0, {0x195ad48, 0xc000625920}, {0xc000521bd0, 0x1, 0x1})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:518 +0xe6f
+thaily/src/graph/generated.(*executableSchema).Exec.func1({0x195ad48, 0xc0006258f0})
+	/home/thaily/code/heheheh_be/src/graph/generated/root_.generated.go:1484 +0x230
+github.com/99designs/gqlgen/graphql/executor.(*Executor).DispatchOperation.func1.1.1({0x195ad48, 0xc0006258f0})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/executor.go:137 +0x25
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func2({0x195ad48?, 0xc0006258f0?}, 0x147ff20?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:67 +0x22
+github.com/99designs/gqlgen/graphql/executor.(*Executor).DispatchOperation.func1.1({0x195ad48, 0xc000625830})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/executor.go:136 +0x104
+github.com/99designs/gqlgen/graphql/handler/transport.POST.Do({0x0?, 0xe0?}, {0x7dce4cf7eab0, 0xc0001c6300}, 0xc0001f4f00, {0x19592d0, 0xc0002980b0})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/handler/transport/http_post.go:124 +0xaa2
+github.com/99designs/gqlgen/graphql/handler.(*Server).ServeHTTP(0xc0001391a0, {0x7dce4cf7eab0, 0xc0001c6300}, 0xc0001f4f00)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/handler/server.go:166 +0x225
+thaily/src/router.setupGraphQL.WrapH.func4(0xc0001c6300?)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/utils.go:49 +0x4b
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6300)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+thaily/src/router.setupGraphQL.graphqlAuthMiddleware.func3(0xc0001c6300)
+	/home/thaily/code/heheheh_be/src/router/router.go:121 +0x21c
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6300)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.CustomRecoveryWithWriter.func1(0xc000021778?)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/recovery.go:92 +0x51
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6300)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc0001c6300)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/logger.go:249 +0xca
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6300)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc0002821a0, 0xc0001c6300)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/gin.go:689 +0x435
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc0002821a0, {0x1959540, 0xc0001d4780}, 0xc00062c640)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/gin.go:643 +0x1ad
+net/http.serverHandler.ServeHTTP({0x1956098?}, {0x1959540?, 0xc0001d4780?}, 0x1?)
+	/snap/go/current/src/net/http/server.go:3340 +0x8e
+net/http.(*conn).serve(0xc000150480, {0x195ad48, 0xc000580b10})
+	/snap/go/current/src/net/http/server.go:2109 +0x665
+created by net/http.(*Server).Serve in goroutine 1
+	/snap/go/current/src/net/http/server.go:3493 +0x485
+[GIN] 2025/10/11 - 20:24:19 |[97;42m 200 [0m|     936.956µs |       127.0.0.1 |[97;46m POST    [0m "/query"
+runtime error: index out of range [1] with length 1
+
+map[email:thai.lydznhatlop2k4@hcmut.edu.vn exp:1.760189951e+09 google_id:107813609512146799072 iat:1.760189051e+09 ids: name: role:]goroutine 280 [running]:
+runtime/debug.Stack()
+	/snap/go/current/src/runtime/debug/stack.go:26 +0x5e
+runtime/debug.PrintStack()
+	/snap/go/current/src/runtime/debug/stack.go:18 +0x13
+github.com/99designs/gqlgen/graphql.DefaultRecover({0xc0003c6380?, 0x513cfe?}, {0x15ff480?, 0xc00062e300?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/recovery.go:17 +0x6a
+github.com/99designs/gqlgen/graphql.(*OperationContext).Recover(0xc0003c6328?, {0x195ad48, 0xc0000c3c80}, {0x15ff480?, 0xc00062e300?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/context_operation.go:125 +0x38
+github.com/99designs/gqlgen/graphql.resolveField[...].func1()
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:101 +0x6d
+panic({0x15ff480?, 0xc00062e300?})
+	/snap/go/current/src/runtime/panic.go:783 +0x132
+thaily/src/graph/controller.(*Controller).GetInfoTeacher(0xc000580690, {0x195ad48, 0xc0000c3c80})
+	/home/thaily/code/heheheh_be/src/graph/controller/user.go:155 +0x39b
+thaily/src/graph/resolver.(*queryResolver).GetInfoTeacher(0xc000410020?, {0x195ad48?, 0xc0000c3c80?})
+	/home/thaily/code/heheheh_be/src/graph/resolver/schema.resolvers.go:20 +0x25
+thaily/src/graph/generated.(*executionContext)._Query_getInfoTeacher.func1({0x195ad48, 0xc0000c3c80})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:127 +0x44
+github.com/99designs/gqlgen/graphql.resolveField[...].func2()
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:109 +0x45
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func4({0x195ad48?, 0xc0000c3c80?}, 0xc0001fa5b0?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:73 +0x22
+github.com/99designs/gqlgen/graphql.resolveField[...]({0x195ad48, 0xc0000c3c50}, 0xc0001b9680, {0xc000150cf0, {0xc0001e0e60, 0xa, 0xa}, 0x0}, 0xc0003c6800, 0xc0004847f0, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:116 +0x285
+github.com/99designs/gqlgen/graphql.ResolveField[...]({0x195ad48?, 0xc0000c3c50?}, 0xa?, {0xc000150cf0?, {0xc0001e0e60, 0xa, 0xa}, 0x0}, 0xc0003c6800, 0xc0004847f0, ...)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/resolve_field.go:21 +0x165
+thaily/src/graph/generated.(*executionContext)._Query_getInfoTeacher(0xc00043a400, {0x195ad48, 0xc0000c3c50}, {0xc000150cf0, {0xc0001e0e60, 0xa, 0xa}, 0x0})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:121 +0x131
+thaily/src/graph/generated.(*executionContext)._Query.func4({0x195ad48?, 0xc0000c3c50?}, 0xc0001a0910)
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:474 +0x91
+thaily/src/graph/generated.(*executionContext)._Query.func5.1({0x195ad48?, 0xc0000c3c50?})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:483 +0x25
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func3({0x195ad48?, 0xc0000c3c50?}, 0x10?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:70 +0x22
+thaily/src/graph/generated.(*executionContext)._Query.func5({0x195ad48, 0xc0000c3c50})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:482 +0xa2
+thaily/src/graph/generated.(*executionContext)._Query.func6({0x1599320?, 0x1239a01?})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:486 +0x1f
+github.com/99designs/gqlgen/graphql.(*FieldSet).Dispatch(0xc0001a0910, {0x195ad48?, 0xc0000c3c20?})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/fieldset.go:41 +0xa2
+thaily/src/graph/generated.(*executionContext)._Query(0xc00043a400, {0x195ad48, 0xc0000c3bc0}, {0xc000484590, 0x1, 0x1})
+	/home/thaily/code/heheheh_be/src/graph/generated/schema.generated.go:518 +0xe6f
+thaily/src/graph/generated.(*executableSchema).Exec.func1({0x195ad48, 0xc0000c3b90})
+	/home/thaily/code/heheheh_be/src/graph/generated/root_.generated.go:1484 +0x230
+github.com/99designs/gqlgen/graphql/executor.(*Executor).DispatchOperation.func1.1.1({0x195ad48, 0xc0000c3b90})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/executor.go:137 +0x25
+github.com/99designs/gqlgen/graphql/executor.processExtensions.func2({0x195ad48?, 0xc0000c3b90?}, 0x147ff20?)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/extensions.go:67 +0x22
+github.com/99designs/gqlgen/graphql/executor.(*Executor).DispatchOperation.func1.1({0x195ad48, 0xc0000c3ad0})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/executor/executor.go:136 +0x104
+github.com/99designs/gqlgen/graphql/handler/transport.POST.Do({0x0?, 0xe0?}, {0x7dce4cf7eab0, 0xc0001c6d00}, 0xc0003b43c0, {0x19592d0, 0xc0002980b0})
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/handler/transport/http_post.go:124 +0xaa2
+github.com/99designs/gqlgen/graphql/handler.(*Server).ServeHTTP(0xc0001391a0, {0x7dce4cf7eab0, 0xc0001c6d00}, 0xc0003b43c0)
+	/home/thaily/go/pkg/mod/github.com/99designs/gqlgen@v0.17.81/graphql/handler/server.go:166 +0x225
+thaily/src/router.setupGraphQL.WrapH.func4(0xc0001c6d00?)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/utils.go:49 +0x4b
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6d00)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+thaily/src/router.setupGraphQL.graphqlAuthMiddleware.func3(0xc0001c6d00)
+	/home/thaily/code/heheheh_be/src/router/router.go:121 +0x21c
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6d00)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.CustomRecoveryWithWriter.func1(0xc000202778?)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/recovery.go:92 +0x51
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6d00)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc0001c6d00)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/logger.go:249 +0xca
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6d00)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/context.go:192 +0x4e
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc0002821a0, 0xc0001c6d00)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/gin.go:689 +0x435
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc0002821a0, {0x1959540, 0xc0001d43c0}, 0xc0001f43c0)
+	/home/thaily/go/pkg/mod/github.com/gin-gonic/gin@v1.11.0/gin.go:643 +0x1ad
+net/http.serverHandler.ServeHTTP({0x1956098?}, {0x1959540?, 0xc0001d43c0?}, 0x1?)
+	/snap/go/current/src/net/http/server.go:3340 +0x8e
+net/http.(*conn).serve(0xc0003ac870, {0x195ad48, 0xc000580b10})
+	/snap/go/current/src/net/http/server.go:2109 +0x665
+created by net/http.(*Server).Serve in goroutine 1
+	/snap/go/current/src/net/http/server.go:3493 +0x485
+[GIN] 2025/10/11 - 20:26:03 |[97;42m 200 [0m|     589.898µs |       127.0.0.1 |[97;46m POST    [0m "/query"
 cleaning...
 deleting /home/thaily/code/heheheh_be/tmp-server
 see you again~

@@ -302,7 +302,7 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, student_code, midterm_code, final_code, grade_code, created_at, updated_at, created_by, updated_by
+		SELECT id, title, student_code, midterm_code, topic_code, final_code, grade_code, created_at, updated_at, created_by, updated_by
 		FROM Enrollment
 		%s
 		ORDER BY %s %s

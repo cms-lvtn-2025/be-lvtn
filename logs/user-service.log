@@ -9,8 +9,5 @@ mkdir /home/thaily/code/heheheh_be/src/service/user/tmp-user
 !exclude tmp-user
 building...
 running...
-2025/10/11 17:31:45 Database connected successfully
-2025/10/11 17:31:45 UserService running on :50056
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/user/tmp-user
-see you again~
+2025/10/11 20:44:34 Database connected successfully
+2025/10/11 20:44:34 UserService running on :50056

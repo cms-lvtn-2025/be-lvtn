@@ -59,8 +59,8 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 
 	// Insert into database
 	query := `
-		INSERT INTO Topic (id, title, major_code, enrollment_code, semester_code, teacher_supervisor_code, status, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Topic (id, title, major_code, semester_code, teacher_supervisor_code, status,time_start, time_end, created_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,? NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -69,6 +69,8 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 		req.MajorCode,
 		req.SemesterCode,
 		req.TeacherSupervisorCode,
+		req.TimeStart,
+		req.TimeEnd,
 		StatusStr,
 		req.CreatedBy,
 	)
@@ -98,13 +100,13 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 	}
 
 	query := `
-		SELECT id, title, major_code, enrollment_code, semester_code, teacher_supervisor_code, status, created_at, updated_at, created_by, updated_by
+		SELECT id, title, major_code, semester_code, teacher_supervisor_code, status, time_start, time_end, created_at, updated_at, created_by, updated_by
 		FROM Topic
 		WHERE id = ?
 	`
 
 	var entity pb.Topic
-	var createdAt, updatedAt sql.NullTime
+	var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
 
@@ -115,6 +117,8 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 		&entity.SemesterCode,
 		&entity.TeacherSupervisorCode,
 		&StatusStr,
+		&timeStart,
+		&timeEnd,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -153,6 +157,12 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 	if updatedBy.Valid {
 		entity.UpdatedBy = updatedBy.String
 	}
+	if timeStart.Valid {
+		entity.TimeStart = timestamppb.New(timeStart.Time)
+	}
+	if timeEnd.Valid {
+		entity.TimeEnd = timestamppb.New(timeEnd.Time)
+	}
 
 	return &pb.GetTopicResponse{
 		Topic: &entity,
@@ -190,7 +200,14 @@ func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (
 	if req.TeacherSupervisorCode != nil {
 		updateFields = append(updateFields, "teacher_supervisor_code = ?")
 		args = append(args, *req.TeacherSupervisorCode)
-
+	}
+	if req.TimeStart != nil {
+		updateFields = append(updateFields, "time_start = ?")
+		args = append(args, *req.TimeStart)
+	}
+	if req.TimeEnd != nil {
+		updateFields = append(updateFields, "time_end = ?")
+		args = append(args, *req.TimeEnd)
 	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
@@ -303,7 +320,6 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	whiteMap := map[string]bool{
 		"title":                   true,
 		"major_code":              true,
-		"enrollment_code":         true,
 		"semester_code":           true,
 		"teacher_supervisor_code": true,
 		"status":                  true,
@@ -341,7 +357,7 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, major_code, enrollment_code, semester_code, teacher_supervisor_code, status, created_at, updated_at, created_by, updated_by
+		SELECT id, title, major_code, semester_code, teacher_supervisor_code, status, time_start, time_end, created_at, updated_at, created_by, updated_by
 		FROM Topic
 		%s
 		ORDER BY %s %s
@@ -357,7 +373,7 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	entities := []*pb.Topic{}
 	for rows.Next() {
 		var entity pb.Topic
-		var createdAt, updatedAt sql.NullTime
+		var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
 		var updatedBy sql.NullString
 		var StatusStr string
 
@@ -368,6 +384,8 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 			&entity.SemesterCode,
 			&entity.TeacherSupervisorCode,
 			&StatusStr,
+			&timeStart,
+			&timeEnd,
 			&createdAt,
 			&updatedAt,
 			&entity.CreatedBy,
@@ -401,6 +419,12 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 		}
 		if updatedBy.Valid {
 			entity.UpdatedBy = updatedBy.String
+		}
+		if timeStart.Valid {
+			entity.TimeStart = timestamppb.New(timeStart.Time)
+		}
+		if timeEnd.Valid {
+			entity.TimeEnd = timestamppb.New(timeEnd.Time)
 		}
 
 		entities = append(entities, &entity)

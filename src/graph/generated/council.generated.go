@@ -766,6 +766,8 @@ func (ec *executionContext) fieldContext_CouncilSchedule_topic(_ context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "total":
+				return ec.fieldContext_Topic_total(ctx, field)
 			case "id":
 				return ec.fieldContext_Topic_id(ctx, field)
 			case "title":
@@ -1467,6 +1469,16 @@ func (ec *executionContext) _GradeDefence(ctx context.Context, sel ast.Selection
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil(ctx context.Context, sel ast.SelectionSet, v *model.Council) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Council(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNCouncilSchedule2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilSchedule(ctx context.Context, sel ast.SelectionSet, v *model.CouncilSchedule) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -1485,6 +1497,53 @@ func (ec *executionContext) marshalNDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDe
 		return graphql.Null
 	}
 	return ec._Defence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Council) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil(ctx context.Context, sel ast.SelectionSet, v *model.Council) graphql.Marshaler {

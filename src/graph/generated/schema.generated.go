@@ -20,6 +20,7 @@ type QueryResolver interface {
 	GetInfoStudent(ctx context.Context) (*model.Student, error)
 	GetInfoTeacher(ctx context.Context) (*model.Teacher, error)
 	GetListTopic(ctx context.Context, pag model.Pagination) ([]*model.Topic, error)
+	GetListCounil(ctx context.Context, page model.Pagination) ([]*model.Council, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -34,6 +35,17 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		return nil, err
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getListCounil_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "page", ec.unmarshalNPagination2thailyᚋsrcᚋgraphᚋmodelᚐPagination)
+	if err != nil {
+		return nil, err
+	}
+	args["page"] = arg0
 	return args, nil
 }
 
@@ -201,6 +213,8 @@ func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "total":
+				return ec.fieldContext_Topic_total(ctx, field)
 			case "id":
 				return ec.fieldContext_Topic_id(ctx, field)
 			case "title":
@@ -247,6 +261,73 @@ func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_getListTopic_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getListCounil(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getListCounil,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().GetListCounil(ctx, fc.Args["page"].(model.Pagination))
+		},
+		nil,
+		ec.marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getListCounil(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Council_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Council_title(ctx, field)
+			case "majorCode":
+				return ec.fieldContext_Council_majorCode(ctx, field)
+			case "semesterCode":
+				return ec.fieldContext_Council_semesterCode(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Council_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Council_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Council_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Council_updatedBy(ctx, field)
+			case "major":
+				return ec.fieldContext_Council_major(ctx, field)
+			case "semester":
+				return ec.fieldContext_Council_semester(ctx, field)
+			case "defences":
+				return ec.fieldContext_Council_defences(ctx, field)
+			case "schedules":
+				return ec.fieldContext_Council_schedules(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getListCounil_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -494,6 +575,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getListTopic(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getListCounil":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getListCounil(ctx, field)
 				return res
 			}
 

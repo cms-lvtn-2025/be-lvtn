@@ -175,3 +175,11 @@ func (c *Controller) GetInfoTeacher(ctx context.Context) (*model.Teacher, error)
 	// convert timestamp
 	return c.pbTeacherToModel(teacher), nil
 }
+
+func (c *Controller) GetStudentById(ctx context.Context, id string) (*model.Student, error) {
+	student, err := c.user.GetUserById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return c.pbStudentToModel(student), nil
+}
