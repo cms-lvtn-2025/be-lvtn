@@ -197,14 +197,21 @@ models:
         resolver: true
       schedules:
         resolver: true
+      major:
+        resolver: true
   CouncilSchedule:
     fields:
       topic:
+        resolver: true
+      council:
         resolver: true
   Defence:
     fields:
       teacher:
         resolver: true
+      council:
+        resolver: true
+
 
 
 

@@ -181,6 +181,7 @@ type ComplexityRoot struct {
 		GetListCouncil    func(childComplexity int, search model.SearchRequestInput) int
 		GetListDefence    func(childComplexity int, search model.SearchRequestInput) int
 		GetListEnrollment func(childComplexity int, search model.SearchRequestInput) int
+		GetListSchedule   func(childComplexity int, search model.SearchRequestInput) int
 		GetListSemester   func(childComplexity int, search model.SearchRequestInput) int
 		GetListTopic      func(childComplexity int, search model.SearchRequestInput) int
 	}
@@ -1024,6 +1025,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.GetListEnrollment(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getListSchedule":
+		if e.complexity.Query.GetListSchedule == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getListSchedule_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListSchedule(childComplexity, args["search"].(model.SearchRequestInput)), true
 
 	case "Query.getListSemester":
 		if e.complexity.Query.GetListSemester == nil {
@@ -1874,6 +1887,7 @@ type Query {
     getListSemester(search: SearchRequestInput!): [Semester!]
     getListCouncil(search: SearchRequestInput!): [Council!]
     getListDefence(search: SearchRequestInput!): [Defence!]
+    getListSchedule(search: SearchRequestInput!): [CouncilSchedule!]
 }
 `, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {

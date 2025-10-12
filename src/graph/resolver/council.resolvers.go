@@ -11,6 +11,11 @@ import (
 	"thaily/src/graph/model"
 )
 
+// Major is the resolver for the major field.
+func (r *councilResolver) Major(ctx context.Context, obj *model.Council) (*model.Major, error) {
+	panic(fmt.Errorf("not implemented: Major - major"))
+}
+
 // Semester is the resolver for the semester field.
 func (r *councilResolver) Semester(ctx context.Context, obj *model.Council) (*model.Semester, error) {
 	panic(fmt.Errorf("not implemented: Semester - semester"))
@@ -26,9 +31,19 @@ func (r *councilResolver) Schedules(ctx context.Context, obj *model.Council) ([]
 	panic(fmt.Errorf("not implemented: Schedules - schedules"))
 }
 
+// Council is the resolver for the council field.
+func (r *councilScheduleResolver) Council(ctx context.Context, obj *model.CouncilSchedule) (*model.Council, error) {
+	panic(fmt.Errorf("not implemented: Council - council"))
+}
+
 // Topic is the resolver for the topic field.
 func (r *councilScheduleResolver) Topic(ctx context.Context, obj *model.CouncilSchedule) (*model.Topic, error) {
 	panic(fmt.Errorf("not implemented: Topic - topic"))
+}
+
+// Council is the resolver for the council field.
+func (r *defenceResolver) Council(ctx context.Context, obj *model.Defence) (*model.Council, error) {
+	panic(fmt.Errorf("not implemented: Council - council"))
 }
 
 // Teacher is the resolver for the teacher field.

@@ -46,6 +46,11 @@ func (r *queryResolver) GetListDefence(ctx context.Context, search model.SearchR
 	panic(fmt.Errorf("not implemented: GetListDefence - getListDefence"))
 }
 
+// GetListSchedule is the resolver for the getListSchedule field.
+func (r *queryResolver) GetListSchedule(ctx context.Context, search model.SearchRequestInput) ([]*model.CouncilSchedule, error) {
+	panic(fmt.Errorf("not implemented: GetListSchedule - getListSchedule"))
+}
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
