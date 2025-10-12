@@ -848,8 +848,8 @@ func (ec *executionContext) fieldContext_CouncilSchedule_topic(_ context.Context
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "council":
-				return ec.fieldContext_Topic_council(ctx, field)
+			case "schedule":
+				return ec.fieldContext_Topic_schedule(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -1898,6 +1898,13 @@ func (ec *executionContext) marshalOCouncilSchedule2ᚕᚖthailyᚋsrcᚋgraph�
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOCouncilSchedule2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilSchedule(ctx context.Context, sel ast.SelectionSet, v *model.CouncilSchedule) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CouncilSchedule(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalODefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐDefenceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Defence) graphql.Marshaler {

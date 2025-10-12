@@ -179,6 +179,8 @@ models:
         resolver: true
       teacherSupervisor:
         resolver: true
+      schedule:
+        resolver: true
   Enrollment:
     fields:
       student:

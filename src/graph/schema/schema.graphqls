@@ -125,5 +125,4 @@ type Query {
     getListSemester(search: SearchRequestInput!): [Semester!]
     getListCouncil(search: SearchRequestInput!): [Council!]
     getListDefence(search: SearchRequestInput!): [Defence!]
-    getListSchedule(search: SearchRequestInput!): [CouncilSchedule!]
 }

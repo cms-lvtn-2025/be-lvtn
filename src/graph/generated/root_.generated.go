@@ -182,7 +182,6 @@ type ComplexityRoot struct {
 		GetListCouncil    func(childComplexity int, search model.SearchRequestInput) int
 		GetListDefence    func(childComplexity int, search model.SearchRequestInput) int
 		GetListEnrollment func(childComplexity int, search model.SearchRequestInput) int
-		GetListSchedule   func(childComplexity int, search model.SearchRequestInput) int
 		GetListSemester   func(childComplexity int, search model.SearchRequestInput) int
 		GetListTopic      func(childComplexity int, search model.SearchRequestInput) int
 	}
@@ -250,7 +249,6 @@ type ComplexityRoot struct {
 	}
 
 	Topic struct {
-		Council               func(childComplexity int) int
 		CreatedAt             func(childComplexity int) int
 		CreatedBy             func(childComplexity int) int
 		Enrollment            func(childComplexity int) int
@@ -258,6 +256,7 @@ type ComplexityRoot struct {
 		ID                    func(childComplexity int) int
 		Major                 func(childComplexity int) int
 		MajorCode             func(childComplexity int) int
+		Schedule              func(childComplexity int) int
 		Semester              func(childComplexity int) int
 		SemesterCode          func(childComplexity int) int
 		Status                func(childComplexity int) int
@@ -1034,18 +1033,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetListEnrollment(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "Query.getListSchedule":
-		if e.complexity.Query.GetListSchedule == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getListSchedule_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetListSchedule(childComplexity, args["search"].(model.SearchRequestInput)), true
-
 	case "Query.getListSemester":
 		if e.complexity.Query.GetListSemester == nil {
 			break
@@ -1420,13 +1407,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Teacher.Username(childComplexity), true
 
-	case "Topic.council":
-		if e.complexity.Topic.Council == nil {
-			break
-		}
-
-		return e.complexity.Topic.Council(childComplexity), true
-
 	case "Topic.createdAt":
 		if e.complexity.Topic.CreatedAt == nil {
 			break
@@ -1475,6 +1455,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Topic.MajorCode(childComplexity), true
+
+	case "Topic.schedule":
+		if e.complexity.Topic.Schedule == nil {
+			break
+		}
+
+		return e.complexity.Topic.Schedule(childComplexity), true
 
 	case "Topic.semester":
 		if e.complexity.Topic.Semester == nil {
@@ -1896,7 +1883,6 @@ type Query {
     getListSemester(search: SearchRequestInput!): [Semester!]
     getListCouncil(search: SearchRequestInput!): [Council!]
     getListDefence(search: SearchRequestInput!): [Defence!]
-    getListSchedule(search: SearchRequestInput!): [CouncilSchedule!]
 }
 `, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {
@@ -1949,7 +1935,7 @@ type Topic {
     semester: Semester
     teacherSupervisor: Teacher
     files: [File!]
-    council: Council
+    schedule: CouncilSchedule
 }
 
 type Final {

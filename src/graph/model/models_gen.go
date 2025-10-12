@@ -233,25 +233,25 @@ type Teacher struct {
 }
 
 type Topic struct {
-	Total                 *int32        `json:"total,omitempty"`
-	ID                    string        `json:"id"`
-	Title                 string        `json:"title"`
-	MajorCode             string        `json:"majorCode"`
-	SemesterCode          string        `json:"semesterCode"`
-	TeacherSupervisorCode string        `json:"teacherSupervisorCode"`
-	Status                TopicStatus   `json:"status"`
-	TimeStart             time.Time     `json:"timeStart"`
-	TimeEnd               time.Time     `json:"timeEnd"`
-	CreatedAt             *time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt             *time.Time    `json:"updatedAt,omitempty"`
-	CreatedBy             *string       `json:"createdBy,omitempty"`
-	UpdatedBy             *string       `json:"updatedBy,omitempty"`
-	Major                 *Major        `json:"major,omitempty"`
-	Enrollment            []*Enrollment `json:"enrollment,omitempty"`
-	Semester              *Semester     `json:"semester,omitempty"`
-	TeacherSupervisor     *Teacher      `json:"teacherSupervisor,omitempty"`
-	Files                 []*File       `json:"files,omitempty"`
-	Council               *Council      `json:"council,omitempty"`
+	Total                 *int32           `json:"total,omitempty"`
+	ID                    string           `json:"id"`
+	Title                 string           `json:"title"`
+	MajorCode             string           `json:"majorCode"`
+	SemesterCode          string           `json:"semesterCode"`
+	TeacherSupervisorCode string           `json:"teacherSupervisorCode"`
+	Status                TopicStatus      `json:"status"`
+	TimeStart             time.Time        `json:"timeStart"`
+	TimeEnd               time.Time        `json:"timeEnd"`
+	CreatedAt             *time.Time       `json:"createdAt,omitempty"`
+	UpdatedAt             *time.Time       `json:"updatedAt,omitempty"`
+	CreatedBy             *string          `json:"createdBy,omitempty"`
+	UpdatedBy             *string          `json:"updatedBy,omitempty"`
+	Major                 *Major           `json:"major,omitempty"`
+	Enrollment            []*Enrollment    `json:"enrollment,omitempty"`
+	Semester              *Semester        `json:"semester,omitempty"`
+	TeacherSupervisor     *Teacher         `json:"teacherSupervisor,omitempty"`
+	Files                 []*File          `json:"files,omitempty"`
+	Schedule              *CouncilSchedule `json:"schedule,omitempty"`
 }
 
 // Vai trò trong hội đồng bảo vệ

@@ -1049,8 +1049,8 @@ func (ec *executionContext) fieldContext_Teacher_topicsSupervised(_ context.Cont
 				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "council":
-				return ec.fieldContext_Topic_council(ctx, field)
+			case "schedule":
+				return ec.fieldContext_Topic_schedule(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},

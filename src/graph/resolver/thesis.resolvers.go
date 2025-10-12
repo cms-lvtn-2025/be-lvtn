@@ -40,6 +40,11 @@ func (r *topicResolver) TeacherSupervisor(ctx context.Context, obj *model.Topic)
 	return r.Ctrl.GetTeacherById(ctx, obj.TeacherSupervisorCode)
 }
 
+// Schedule is the resolver for the schedule field.
+func (r *topicResolver) Schedule(ctx context.Context, obj *model.Topic) (*model.CouncilSchedule, error) {
+	return r.Ctrl.GetScheduleByTopicCodeForTopic(ctx, obj.ID)
+}
+
 // Enrollment returns generated.EnrollmentResolver implementation.
 func (r *Resolver) Enrollment() generated.EnrollmentResolver { return &enrollmentResolver{r} }
 

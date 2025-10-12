@@ -168,6 +168,45 @@ func (c *Controller) pbSchedulesToModel(resp *pb.ListCouncilSchedulesResponse) [
 	return result
 }
 
+func (c *Controller) pbScheduleToModel(schedule *pb.CouncilSchedule) *model.CouncilSchedule {
+	var result *model.CouncilSchedule
+	var createdAt, updatedAt, timeEnd, timeStart *time.Time
+	var councilCode, topicCode *string
+	if schedule.CreatedAt != nil {
+		t := schedule.CreatedAt.AsTime()
+		createdAt = &t
+	}
+	if schedule.UpdatedAt != nil {
+		t := schedule.UpdatedAt.AsTime()
+		updatedAt = &t
+	}
+	if schedule.TimeStart != nil {
+		t := schedule.TimeStart.AsTime()
+		timeStart = &t
+	}
+	if schedule.TimeEnd != nil {
+		t := schedule.TimeEnd.AsTime()
+		timeEnd = &t
+	}
+	if schedule.CouncilsCode != "" {
+		councilCode = &schedule.CouncilsCode
+	}
+	if schedule.TopicCode != "" {
+		topicCode = &schedule.TopicCode
+	}
+	result = &model.CouncilSchedule{
+		ID:           schedule.Id,
+		Status:       schedule.Status,
+		TimeStart:    timeStart,
+		TimeEnd:      timeEnd,
+		TopicCode:    topicCode,
+		CouncilsCode: councilCode,
+		CreatedAt:    createdAt,
+		UpdatedAt:    updatedAt,
+	}
+	return result
+}
+
 func (c *Controller) GetCouncils(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
 	if !ok {
@@ -302,18 +341,6 @@ func (c *Controller) GetDefencesByCouncilCode(ctx context.Context, councilCode s
 	return c.pbDefencesToModel(defences), nil
 }
 
-func (c *Controller) GetSchedulesByCouncilCode(ctx context.Context, councilCode string) ([]*model.CouncilSchedule, error) {
-	_, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
-	if !ok {
-		return nil, fmt.Errorf("not authorized")
-	}
-	schedules, err := c.council.GetSchedulesByCouncilCode(ctx, councilCode)
-	if err != nil {
-		return nil, err
-	}
-	return c.pbSchedulesToModel(schedules), nil
-}
-
 func (c *Controller) GetDefences(ctx context.Context, search model.SearchRequestInput) ([]*model.Defence, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
 	if !ok {
@@ -355,4 +382,36 @@ func (c *Controller) GetDefences(ctx context.Context, search model.SearchRequest
 		return nil, err
 	}
 	return c.pbDefencesToModel(defences), nil
+}
+
+func (c *Controller) GetSchedulesByCouncilCode(ctx context.Context, councilCode string) ([]*model.CouncilSchedule, error) {
+	_, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	schedules, err := c.council.GetSchedulesByCouncilCode(ctx, councilCode)
+	if err != nil {
+		return nil, err
+	}
+	return c.pbSchedulesToModel(schedules), nil
+}
+
+func (c *Controller) GetScheduleByTopicCodeForTopic(ctx context.Context, topicCode string) (*model.CouncilSchedule, error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	role, ok := claims["role"].(string)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if role != "student" {
+		return nil, fmt.Errorf("student role not allowed")
+	}
+
+	schedule, err := c.council.GetScheduleByTopicCode(ctx, topicCode)
+	if err != nil {
+		return nil, err
+	}
+	return c.pbScheduleToModel(schedule.GetCouncilSchedules()[0]), nil
 }
