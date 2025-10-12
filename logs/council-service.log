@@ -9,9 +9,12 @@ mkdir /home/thaily/code/heheheh_be/src/service/council/tmp-council
 !exclude tmp-council
 building...
 running...
-2025/10/12 19:28:05 Database connected successfully with connection pool:
-2025/10/12 19:28:05   - MaxOpenConns: 20
-2025/10/12 19:28:05   - MaxIdleConns: 10
-2025/10/12 19:28:05   - ConnMaxLifetime: 5m0s
-2025/10/12 19:28:05   - ConnMaxIdleTime: 2m0s
-2025/10/12 19:28:05 CouncilService running on :50052
+2025/10/12 22:48:10 Database connected successfully with connection pool:
+2025/10/12 22:48:10   - MaxOpenConns: 20
+2025/10/12 22:48:10   - MaxIdleConns: 10
+2025/10/12 22:48:10   - ConnMaxLifetime: 5m0s
+2025/10/12 22:48:10   - ConnMaxIdleTime: 2m0s
+2025/10/12 22:48:10 CouncilService running on :50052
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/council/tmp-council
+see you again~

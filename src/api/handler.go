@@ -94,9 +94,24 @@ func (h *APIHandler) RegisterRoutes(r *gin.RouterGroup) {
 	// File routes
 	files := r.Group("/files")
 	{
-		// Upload cần authentication
-		files.POST("/upload", AuthMiddleware(h.Config.JWT), h.UploadFile)
-		// Get file có thể public hoặc private tùy logic
-		files.GET("/:id", OptionalAuthMiddleware(h.Config.JWT), h.GetFile)
+		// Upload endpoints - require authentication
+		files.POST("/upload/template", AuthMiddleware(h.Config.JWT), h.UploadTemplateFile)
+		files.POST("/upload/list-student", AuthMiddleware(h.Config.JWT), h.UploadListStudentFile)
+		files.POST("/upload/list-teacher", AuthMiddleware(h.Config.JWT), h.UploadListTeacherFile)
+		files.POST("/upload/final", AuthMiddleware(h.Config.JWT), h.UploadFinalFile)
+
+		// Get file info
+		files.GET("/:id", AuthMiddleware(h.Config.JWT), h.GetFile)
+		// Get presigned download URL
+		files.GET("/:id/url", AuthMiddleware(h.Config.JWT), h.GetFileURL)
+		// Get blob URL with temporary token
+		files.GET("/:id/blob-url", AuthMiddleware(h.Config.JWT), h.GetBlobURL)
+		// Delete file
+		files.DELETE("/:id", AuthMiddleware(h.Config.JWT), h.DeleteFile)
+		// List files
+		files.GET("", AuthMiddleware(h.Config.JWT), h.ListFiles)
+
+		// Public blob endpoint - uses token in query string
+		files.GET("/blob", h.GetFileBlob)
 	}
 }

@@ -116,3 +116,11 @@ func (f *GRPCfile) GetFileById(ctx context.Context, fileCode string) (*pb.GetFil
 
 	return resp, nil
 }
+
+// CreateFile
+func (f *GRPCfile) CreateFile(ctx context.Context, request *pb.CreateFileRequest) (*pb.CreateFileResponse, error) {
+	if f.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	return f.client.CreateFile(ctx, request)
+}

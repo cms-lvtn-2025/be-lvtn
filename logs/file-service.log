@@ -9,9 +9,12 @@ mkdir /home/thaily/code/heheheh_be/src/service/file/tmp-file
 !exclude tmp-file
 building...
 running...
-2025/10/12 19:28:05 Database connected successfully with connection pool:
-2025/10/12 19:28:05   - MaxOpenConns: 20
-2025/10/12 19:28:05   - MaxIdleConns: 10
-2025/10/12 19:28:05   - ConnMaxLifetime: 5m0s
-2025/10/12 19:28:05   - ConnMaxIdleTime: 2m0s
-2025/10/12 19:28:05 FileService running on :50053
+2025/10/12 22:48:11 Database connected successfully with connection pool:
+2025/10/12 22:48:11   - MaxOpenConns: 20
+2025/10/12 22:48:11   - MaxIdleConns: 10
+2025/10/12 22:48:11   - ConnMaxLifetime: 5m0s
+2025/10/12 22:48:11   - ConnMaxIdleTime: 2m0s
+2025/10/12 22:48:11 FileService running on :50053
+FILE_PENDINGchay vao dayd073f3e2-891c-466e-b2d2-2f07dc1efae6FILE_PENDINGchay vao dayd78aecc3-0e2b-45ee-b356-fc6a9869ee94FILE_PENDINGchay vao day12e94d29-693d-4af5-b608-30feb815f01cFILE_PENDINGchay vao day6f64dd34-6cbc-4a46-b2fe-57580c2b6810FILE_PENDINGchay vao day0675a04a-a5f9-46de-b759-de0a23c3d875FILE_PENDINGchay vao dayb694b953-d012-4465-9648-00e74b28f04dFILE_PENDINGchay vao dayda353ec3-6469-432d-a3ab-c526d4e4536dchay vao day12e94d29-693d-4af5-b608-30feb815f01cchay vao day12e94d29-693d-4af5-b608-30feb815f01cchay vao day12e94d29-693d-4af5-b608-30feb815f01cchay vao day12e94d29-693d-4af5-b608-30feb815f01ccleaning...
+deleting /home/thaily/code/heheheh_be/src/service/file/tmp-file
+see you again~

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"thaily/src/config"
 	"thaily/src/graph/helper"
@@ -22,9 +23,9 @@ func AuthMiddleware(cfg config.JWTConfig) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		fmt.Println(claims)
 		// Set claims vào context
-		c.Set("claims", claims)
+		c.Set(helper.Auth, claims)
 		c.Next()
 	}
 }

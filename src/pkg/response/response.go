@@ -50,3 +50,7 @@ func InternalError(c *gin.Context, err string) {
 func NotFound(c *gin.Context, err string) {
 	Error(c, http.StatusNotFound, err)
 }
+
+func Forbidden(c *gin.Context, err string) {
+	Error(c, http.StatusForbidden, err)
+}

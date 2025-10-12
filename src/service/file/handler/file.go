@@ -42,15 +42,16 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 	StatusValue := pb.FileStatus_FILE_PENDING
 
 	StatusValue = req.Status
-	StatusStr := "file_pending"
+	StatusStr := "pending"
 	switch StatusValue {
 	case pb.FileStatus_FILE_PENDING:
-		StatusStr = "file_pending"
+		StatusStr = "pending"
 	case pb.FileStatus_APPROVED:
 		StatusStr = "approved"
 	case pb.FileStatus_REJECTED:
 		StatusStr = "rejected"
 	}
+	fmt.Print(StatusValue)
 	// Convert Table enum to string
 	TableValue := pb.TableType_TOPIC
 
@@ -68,10 +69,8 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 	}
 
 	// Insert into database
-	query := `
-		INSERT INTO File (id, title, file, status, table, option, table_id, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
-	`
+	query := "INSERT INTO `File` (id, title, file, status, `table`, `option`, table_id, created_by, created_at, updated_at) " +
+		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 
 	_, err := h.execQuery(ctx, query,
 		id,
@@ -107,12 +106,12 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
-
+	fmt.Print("chay vao day", req.Id)
 	query := `
-		SELECT id, title, file, status, table, option, table_id, created_at, updated_at, created_by, updated_by
-		FROM File
-		WHERE id = ?
-	`
+	SELECT id, title, file, status, ` + "`table`, `option`" + `, table_id, created_at, updated_at, created_by, updated_by
+	FROM File
+	WHERE id = ?
+`
 
 	var entity pb.File
 	var createdAt, updatedAt sql.NullTime
@@ -143,7 +142,7 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 
 	// Convert Status string to enum
 	switch StatusStr {
-	case "file_pending":
+	case "pending", "file_pending": // Support both for backward compatibility
 		entity.Status = pb.FileStatus_FILE_PENDING
 	case "approved":
 		entity.Status = pb.FileStatus_APPROVED
@@ -205,10 +204,10 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
-		StatusStr := "file_pending"
+		StatusStr := "pending"
 		switch *req.Status {
 		case pb.FileStatus_FILE_PENDING:
-			StatusStr = "file_pending"
+			StatusStr = "pending"
 		case pb.FileStatus_APPROVED:
 			StatusStr = "approved"
 		case pb.FileStatus_REJECTED:
@@ -414,7 +413,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 
 		// Convert Status string to enum
 		switch StatusStr {
-		case "file_pending":
+		case "pending", "file_pending": // Support both for backward compatibility
 			entity.Status = pb.FileStatus_FILE_PENDING
 		case "approved":
 			entity.Status = pb.FileStatus_APPROVED
