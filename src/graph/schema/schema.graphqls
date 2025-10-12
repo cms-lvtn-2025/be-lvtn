@@ -121,5 +121,8 @@ type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
     getListTopic(search: SearchRequestInput!): [Topic!]
+    getListEnrollment(search: SearchRequestInput!): [Enrollment!]
+    getListSemester(search: SearchRequestInput!): [Semester!]
     getListCouncil(search: SearchRequestInput!): [Council!]
+    getListDefence(search: SearchRequestInput!): [Defence!]
 }

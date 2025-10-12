@@ -2,8 +2,6 @@ package client
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -14,7 +12,6 @@ import (
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/protobuf/proto"
 )
 
 type GRPCthesis struct {
@@ -52,153 +49,49 @@ func NewGRPCthesis(addr string, redisClient *redis.Client) (*GRPCthesis, error) 
 	}, nil
 }
 
-// generateCacheKey creates a unique cache key from prefix and parameters
-func generateCacheKey(prefix string, params interface{}) string {
-	data, _ := json.Marshal(params)
-	hash := sha256.Sum256(data)
-	return fmt.Sprintf("%s%x", prefix, hash[:16])
-}
-
-// getCachedProto retrieves cached protobuf message from Redis
-func (t *GRPCthesis) getCachedProto(ctx context.Context, key string, dest proto.Message) (bool, error) {
-	if t.redisClient == nil {
-		return false, nil
-	}
-
-	data, err := t.redisClient.Get(ctx, key).Bytes()
-	if err == redis.Nil {
-		return false, nil // Cache miss
-	}
-	if err != nil {
-		log.Printf("Redis get error for key %s: %v", key, err)
-		return false, nil // Don't fail on cache errors
-	}
-
-	if err := proto.Unmarshal(data, dest); err != nil {
-		log.Printf("Proto unmarshal error for key %s: %v", key, err)
-		return false, nil
-	}
-
-	return true, nil
-}
-
-// setCachedProto stores protobuf message in Redis
-func (t *GRPCthesis) setCachedProto(ctx context.Context, key string, msg proto.Message, ttl time.Duration) {
-	if t.redisClient == nil {
-		return
-	}
-
-	data, err := proto.Marshal(msg)
-	if err != nil {
-		log.Printf("Proto marshal error for key %s: %v", key, err)
-		return
-	}
-
-	if err := t.redisClient.Set(ctx, key, data, ttl).Err(); err != nil {
-		log.Printf("Redis set error for key %s: %v", key, err)
-	}
-}
-
 // InvalidateTopicCache invalidates topic-related cache
 func (t *GRPCthesis) InvalidateTopicCache(ctx context.Context, topicCode string) error {
-	if t.redisClient == nil {
-		return nil
-	}
-
-	// Delete all keys matching the pattern
 	pattern := fmt.Sprintf("%s*%s*", topicCachePrefix, topicCode)
-	iter := t.redisClient.Scan(ctx, 0, pattern, 0).Iterator()
-	for iter.Next(ctx) {
-		if err := t.redisClient.Del(ctx, iter.Val()).Err(); err != nil {
-			log.Printf("Failed to delete cache key %s: %v", iter.Val(), err)
-		}
-	}
-	return iter.Err()
+	return InvalidateCacheByPattern(ctx, t.redisClient, pattern)
 }
 
 // InvalidateEnrollmentCache invalidates enrollment-related cache
 func (t *GRPCthesis) InvalidateEnrollmentCache(ctx context.Context, topicCode string) error {
-	if t.redisClient == nil {
-		return nil
-	}
-
 	pattern := fmt.Sprintf("%s*%s*", enrollmentCachePrefix, topicCode)
-	iter := t.redisClient.Scan(ctx, 0, pattern, 0).Iterator()
-	for iter.Next(ctx) {
-		if err := t.redisClient.Del(ctx, iter.Val()).Err(); err != nil {
-			log.Printf("Failed to delete cache key %s: %v", iter.Val(), err)
-		}
-	}
-	return iter.Err()
+	return InvalidateCacheByPattern(ctx, t.redisClient, pattern)
 }
 
 // InvalidateMidtermCache invalidates midterm cache by ID
 func (t *GRPCthesis) InvalidateMidtermCache(ctx context.Context, midtermCode string) error {
-	if t.redisClient == nil {
-		return nil
-	}
-
 	cacheKey := fmt.Sprintf("%s%s", midtermCachePrefix, midtermCode)
-	if err := t.redisClient.Del(ctx, cacheKey).Err(); err != nil {
-		log.Printf("Failed to delete midterm cache key %s: %v", cacheKey, err)
-		return err
-	}
-	return nil
+	return InvalidateCacheByKey(ctx, t.redisClient, cacheKey)
 }
 
 // InvalidateFinalCache invalidates final cache by ID
 func (t *GRPCthesis) InvalidateFinalCache(ctx context.Context, finalCode string) error {
-	if t.redisClient == nil {
-		return nil
-	}
-
 	cacheKey := fmt.Sprintf("%s%s", finalCachePrefix, finalCode)
-	if err := t.redisClient.Del(ctx, cacheKey).Err(); err != nil {
-		log.Printf("Failed to delete final cache key %s: %v", cacheKey, err)
-		return err
-	}
-	return nil
+	return InvalidateCacheByKey(ctx, t.redisClient, cacheKey)
 }
 
 // InvalidateAllTopicCache invalidates all topic-related caches
 func (t *GRPCthesis) InvalidateAllTopicCache(ctx context.Context) error {
-	if t.redisClient == nil {
-		return nil
-	}
-
 	pattern := fmt.Sprintf("%s*", topicCachePrefix)
-	iter := t.redisClient.Scan(ctx, 0, pattern, 0).Iterator()
-	for iter.Next(ctx) {
-		if err := t.redisClient.Del(ctx, iter.Val()).Err(); err != nil {
-			log.Printf("Failed to delete cache key %s: %v", iter.Val(), err)
-		}
-	}
-	return iter.Err()
+	return InvalidateCacheByPattern(ctx, t.redisClient, pattern)
 }
 
 // InvalidateAllEnrollmentCache invalidates all enrollment-related caches
 func (t *GRPCthesis) InvalidateAllEnrollmentCache(ctx context.Context) error {
-	if t.redisClient == nil {
-		return nil
-	}
-
 	pattern := fmt.Sprintf("%s*", enrollmentCachePrefix)
-	iter := t.redisClient.Scan(ctx, 0, pattern, 0).Iterator()
-	for iter.Next(ctx) {
-		if err := t.redisClient.Del(ctx, iter.Val()).Err(); err != nil {
-			log.Printf("Failed to delete cache key %s: %v", iter.Val(), err)
-		}
-	}
-	return iter.Err()
+	return InvalidateCacheByPattern(ctx, t.redisClient, pattern)
 }
 
 func (t *GRPCthesis) GetTopicBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListTopicsResponse, error) {
 
 	// Generate cache key based on search parameters
-	cacheKey := generateCacheKey(topicCachePrefix, search)
+	cacheKey := GenerateCacheKey(topicCachePrefix, search)
 	// Try to get from cache
 	var cached pb.ListTopicsResponse
-	if hit, _ := t.getCachedProto(ctx, cacheKey, &cached); hit {
+	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for topic search")
 		return &cached, nil
 	}
@@ -215,142 +108,160 @@ func (t *GRPCthesis) GetTopicBySearch(ctx context.Context, search *pbCommon.Sear
 	}
 
 	// Store in cache
-	t.setCachedProto(ctx, cacheKey, resp, topicCacheTTL)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, topicCacheTTL)
 
 	return resp, nil
 }
 
-func (t *GRPCthesis) GetTopicByStudentCode(ctx context.Context, studentCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
-	if t.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
+func (t *GRPCthesis) GetTopicById(ctx context.Context, id string) (*pb.GetTopicResponse, error) {
+	cacheKey := fmt.Sprintf("%s%s", topicCachePrefix, id)
+	var cached pb.GetTopicResponse
+	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for topic search")
+		return &cached, nil
 	}
-	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: order,
-				Page:       page,
-				PageSize:   pageSize,
-				SortBy:     sortBy,
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "studentCode",
-							Operator: pbCommon.FilterOperator_EQUAL,
-							Values:   []string{studentCode},
-						},
-					},
-				},
-			},
-		},
+	log.Printf("Cache MISS for topic search")
+	topic, err := t.client.GetTopic(ctx, &pb.GetTopicRequest{
+		Id: id,
 	})
+	if err != nil {
+		return nil, err
+	}
+	SetCachedProto(ctx, t.redisClient, cacheKey, topic, topicCacheTTL)
+	return topic, nil
 }
 
-func (t *GRPCthesis) GetTopicByTeacherCode(ctx context.Context, teacerCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
-	if t.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
-	}
-	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: order,
-				Page:       page,
-				PageSize:   pageSize,
-				SortBy:     sortBy,
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "teacher_supervisor_code",
-							Operator: pbCommon.FilterOperator_EQUAL,
-							Values:   []string{teacerCode},
-						},
-					},
-				},
-			},
-		},
-	})
-}
+//func (t *GRPCthesis) GetTopicByStudentCode(ctx context.Context, studentCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
+//	if t.client == nil {
+//		return nil, fmt.Errorf("grpc client not initialized")
+//	}
+//	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+//		Search: &pbCommon.SearchRequest{
+//			Pagination: &pbCommon.Pagination{
+//				Descending: order,
+//				Page:       page,
+//				PageSize:   pageSize,
+//				SortBy:     sortBy,
+//			},
+//			Filters: []*pbCommon.FilterCriteria{
+//				{
+//					Criteria: &pbCommon.FilterCriteria_Condition{
+//						Condition: &pbCommon.FilterCondition{
+//							Field:    "studentCode",
+//							Operator: pbCommon.FilterOperator_EQUAL,
+//							Values:   []string{studentCode},
+//						},
+//					},
+//				},
+//			},
+//		},
+//	})
+//}
 
-func (t *GRPCthesis) GetTopicByMajorCode(ctx context.Context, majorCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
-	if t.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
-	}
-	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: order,
-				Page:       page,
-				PageSize:   pageSize,
-				SortBy:     sortBy,
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "major_code",
-							Operator: pbCommon.FilterOperator_EQUAL,
-							Values:   []string{majorCode},
-						},
-					},
-				},
-			},
-		},
-	})
-}
+//func (t *GRPCthesis) GetTopicByTeacherCode(ctx context.Context, teacerCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
+//	if t.client == nil {
+//		return nil, fmt.Errorf("grpc client not initialized")
+//	}
+//	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+//		Search: &pbCommon.SearchRequest{
+//			Pagination: &pbCommon.Pagination{
+//				Descending: order,
+//				Page:       page,
+//				PageSize:   pageSize,
+//				SortBy:     sortBy,
+//			},
+//			Filters: []*pbCommon.FilterCriteria{
+//				{
+//					Criteria: &pbCommon.FilterCriteria_Condition{
+//						Condition: &pbCommon.FilterCondition{
+//							Field:    "teacher_supervisor_code",
+//							Operator: pbCommon.FilterOperator_EQUAL,
+//							Values:   []string{teacerCode},
+//						},
+//					},
+//				},
+//			},
+//		},
+//	})
+//}
 
-func (t *GRPCthesis) GetTopic(ctx context.Context, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
-	if t.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
-	}
-	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: order,
-				Page:       page,
-				PageSize:   pageSize,
-				SortBy:     sortBy,
-			},
-		},
-	})
-}
+//func (t *GRPCthesis) GetTopicByMajorCode(ctx context.Context, majorCode string, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
+//	if t.client == nil {
+//		return nil, fmt.Errorf("grpc client not initialized")
+//	}
+//	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+//		Search: &pbCommon.SearchRequest{
+//			Pagination: &pbCommon.Pagination{
+//				Descending: order,
+//				Page:       page,
+//				PageSize:   pageSize,
+//				SortBy:     sortBy,
+//			},
+//			Filters: []*pbCommon.FilterCriteria{
+//				{
+//					Criteria: &pbCommon.FilterCriteria_Condition{
+//						Condition: &pbCommon.FilterCondition{
+//							Field:    "major_code",
+//							Operator: pbCommon.FilterOperator_EQUAL,
+//							Values:   []string{majorCode},
+//						},
+//					},
+//				},
+//			},
+//		},
+//	})
+//}
 
-func (t *GRPCthesis) GetEnrolmentByTopicCodeAndStudentCode(ctx context.Context, topicCode string, studentCode string) (*pb.ListEnrollmentsResponse, error) {
-	if t.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
-	}
-	return t.client.ListEnrollments(ctx, &pb.ListEnrollmentsRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: true,
-				Page:       1,
-				PageSize:   1000,
-				SortBy:     "created_at",
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "student_code",
-							Operator: pbCommon.FilterOperator_EQUAL,
-							Values:   []string{studentCode},
-						},
-					},
-				}, {
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "topic_code",
-							Operator: pbCommon.FilterOperator_EQUAL,
-							Values:   []string{topicCode},
-						},
-					},
-				},
-			},
-		},
-	})
-}
+//func (t *GRPCthesis) GetTopic(ctx context.Context, page int32, pageSize int32, sortBy string, order bool) (*pb.ListTopicsResponse, error) {
+//	if t.client == nil {
+//		return nil, fmt.Errorf("grpc client not initialized")
+//	}
+//	return t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+//		Search: &pbCommon.SearchRequest{
+//			Pagination: &pbCommon.Pagination{
+//				Descending: order,
+//				Page:       page,
+//				PageSize:   pageSize,
+//				SortBy:     sortBy,
+//			},
+//		},
+//	})
+//}
+
+//func (t *GRPCthesis) GetEnrolmentByTopicCodeAndStudentCode(ctx context.Context, topicCode string, studentCode string) (*pb.ListEnrollmentsResponse, error) {
+//	if t.client == nil {
+//		return nil, fmt.Errorf("grpc client not initialized")
+//	}
+//	return t.client.ListEnrollments(ctx, &pb.ListEnrollmentsRequest{
+//		Search: &pbCommon.SearchRequest{
+//			Pagination: &pbCommon.Pagination{
+//				Descending: true,
+//				Page:       1,
+//				PageSize:   1000,
+//				SortBy:     "created_at",
+//			},
+//			Filters: []*pbCommon.FilterCriteria{
+//				{
+//					Criteria: &pbCommon.FilterCriteria_Condition{
+//						Condition: &pbCommon.FilterCondition{
+//							Field:    "student_code",
+//							Operator: pbCommon.FilterOperator_EQUAL,
+//							Values:   []string{studentCode},
+//						},
+//					},
+//				}, {
+//					Criteria: &pbCommon.FilterCriteria_Condition{
+//						Condition: &pbCommon.FilterCondition{
+//							Field:    "topic_code",
+//							Operator: pbCommon.FilterOperator_EQUAL,
+//							Values:   []string{topicCode},
+//						},
+//					},
+//				},
+//			},
+//		},
+//	})
+//}
 
 func (t *GRPCthesis) GetEnrollmentByTopicCode(ctx context.Context, topicCode string) (*pb.ListEnrollmentsResponse, error) {
 	if t.client == nil {
@@ -358,13 +269,13 @@ func (t *GRPCthesis) GetEnrollmentByTopicCode(ctx context.Context, topicCode str
 	}
 
 	// Generate cache key
-	cacheKey := generateCacheKey(enrollmentCachePrefix, map[string]interface{}{
+	cacheKey := GenerateCacheKey(enrollmentCachePrefix, map[string]interface{}{
 		"topicCode": topicCode,
 	})
 
 	// Try to get from cache
 	var cached pb.ListEnrollmentsResponse
-	if hit, _ := t.getCachedProto(ctx, cacheKey, &cached); hit {
+	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for enrollments of topic: %s", topicCode)
 		return &cached, nil
 	}
@@ -399,7 +310,7 @@ func (t *GRPCthesis) GetEnrollmentByTopicCode(ctx context.Context, topicCode str
 	}
 
 	// Store in cache
-	t.setCachedProto(ctx, cacheKey, resp, enrollmentCacheTTL)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, enrollmentCacheTTL)
 
 	return resp, nil
 }
@@ -414,7 +325,7 @@ func (t *GRPCthesis) GetMidtermById(ctx context.Context, midtermCode string) (*p
 
 	// Try to get from cache
 	var cached pb.GetMidtermResponse
-	if hit, _ := t.getCachedProto(ctx, cacheKey, &cached); hit {
+	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for midterm: %s", midtermCode)
 		return &cached, nil
 	}
@@ -431,7 +342,7 @@ func (t *GRPCthesis) GetMidtermById(ctx context.Context, midtermCode string) (*p
 	}
 
 	// Store in cache
-	t.setCachedProto(ctx, cacheKey, resp, midtermCacheTTL)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, midtermCacheTTL)
 
 	return resp, nil
 }
@@ -446,7 +357,7 @@ func (t *GRPCthesis) GetFinalById(ctx context.Context, finalCode string) (*pb.Ge
 
 	// Try to get from cache
 	var cached pb.GetFinalResponse
-	if hit, _ := t.getCachedProto(ctx, cacheKey, &cached); hit {
+	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for final: %s", finalCode)
 		return &cached, nil
 	}
@@ -463,7 +374,35 @@ func (t *GRPCthesis) GetFinalById(ctx context.Context, finalCode string) (*pb.Ge
 	}
 
 	// Store in cache
-	t.setCachedProto(ctx, cacheKey, resp, finalCacheTTL)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, finalCacheTTL)
+
+	return resp, nil
+}
+
+func (t *GRPCthesis) GetEnrollmentBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListEnrollmentsResponse, error) {
+
+	// Generate cache key based on search parameters
+	cacheKey := GenerateCacheKey(enrollmentCachePrefix, search)
+	// Try to get from cache
+	var cached pb.ListEnrollmentsResponse
+	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for topic search")
+		return &cached, nil
+	}
+
+	log.Printf("Cache MISS for topic search")
+
+	// Cache miss - fetch from database
+	resp, err := t.client.ListEnrollments(ctx, &pb.ListEnrollmentsRequest{
+		Search: search,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Store in cache
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, enrollmentCacheTTL)
 
 	return resp, nil
 }

@@ -15,3 +15,6 @@ running...
 2025/10/12 00:44:54   - ConnMaxLifetime: 5m0s
 2025/10/12 00:44:54   - ConnMaxIdleTime: 2m0s
 2025/10/12 00:44:54 CouncilService running on :50052
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/council/tmp-council
+see you again~

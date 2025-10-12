@@ -187,6 +187,8 @@ models:
         resolver: true
       final:
         resolver: true
+      topic:
+        resolver: true
   Council:
     fields:
       semester:

@@ -20,9 +20,10 @@ type QueryResolver interface {
 	GetInfoStudent(ctx context.Context) (*model.Student, error)
 	GetInfoTeacher(ctx context.Context) (*model.Teacher, error)
 	GetListTopic(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error)
+	GetListEnrollment(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error)
+	GetListSemester(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error)
 	GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error)
-	GetTopics(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Topic, error)
-	GetCouncils(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Council, error)
+	GetListDefence(ctx context.Context, search model.SearchRequestInput) ([]*model.Defence, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -40,33 +41,40 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getCouncils_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Query_getListCouncil_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "page", ec.unmarshalOInt2ᚖint32)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "search", ec.unmarshalNSearchRequestInput2thailyᚋsrcᚋgraphᚋmodelᚐSearchRequestInput)
 	if err != nil {
 		return nil, err
 	}
-	args["page"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pageSize", ec.unmarshalOInt2ᚖint32)
-	if err != nil {
-		return nil, err
-	}
-	args["pageSize"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "sortBy", ec.unmarshalOString2ᚖstring)
-	if err != nil {
-		return nil, err
-	}
-	args["sortBy"] = arg2
-	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "descending", ec.unmarshalOBoolean2ᚖbool)
-	if err != nil {
-		return nil, err
-	}
-	args["descending"] = arg3
+	args["search"] = arg0
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getListCouncil_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Query_getListDefence_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "search", ec.unmarshalNSearchRequestInput2thailyᚋsrcᚋgraphᚋmodelᚐSearchRequestInput)
+	if err != nil {
+		return nil, err
+	}
+	args["search"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getListEnrollment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "search", ec.unmarshalNSearchRequestInput2thailyᚋsrcᚋgraphᚋmodelᚐSearchRequestInput)
+	if err != nil {
+		return nil, err
+	}
+	args["search"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getListSemester_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "search", ec.unmarshalNSearchRequestInput2thailyᚋsrcᚋgraphᚋmodelᚐSearchRequestInput)
@@ -85,32 +93,6 @@ func (ec *executionContext) field_Query_getListTopic_args(ctx context.Context, r
 		return nil, err
 	}
 	args["search"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_getTopics_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "page", ec.unmarshalOInt2ᚖint32)
-	if err != nil {
-		return nil, err
-	}
-	args["page"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pageSize", ec.unmarshalOInt2ᚖint32)
-	if err != nil {
-		return nil, err
-	}
-	args["pageSize"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "sortBy", ec.unmarshalOString2ᚖstring)
-	if err != nil {
-		return nil, err
-	}
-	args["sortBy"] = arg2
-	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "descending", ec.unmarshalOBoolean2ᚖbool)
-	if err != nil {
-		return nil, err
-	}
-	args["descending"] = arg3
 	return args, nil
 }
 
@@ -323,6 +305,140 @@ func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_getListEnrollment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getListEnrollment,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().GetListEnrollment(ctx, fc.Args["search"].(model.SearchRequestInput))
+		},
+		nil,
+		ec.marshalOEnrollment2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollmentᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getListEnrollment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Enrollment_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Enrollment_title(ctx, field)
+			case "studentCode":
+				return ec.fieldContext_Enrollment_studentCode(ctx, field)
+			case "midtermCode":
+				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
+			case "topicCode":
+				return ec.fieldContext_Enrollment_topicCode(ctx, field)
+			case "finalCode":
+				return ec.fieldContext_Enrollment_finalCode(ctx, field)
+			case "gradeCode":
+				return ec.fieldContext_Enrollment_gradeCode(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Enrollment_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Enrollment_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Enrollment_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Enrollment_updatedBy(ctx, field)
+			case "student":
+				return ec.fieldContext_Enrollment_student(ctx, field)
+			case "midterm":
+				return ec.fieldContext_Enrollment_midterm(ctx, field)
+			case "final":
+				return ec.fieldContext_Enrollment_final(ctx, field)
+			case "topic":
+				return ec.fieldContext_Enrollment_topic(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getListEnrollment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getListSemester(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getListSemester,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().GetListSemester(ctx, fc.Args["search"].(model.SearchRequestInput))
+		},
+		nil,
+		ec.marshalOSemester2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐSemesterᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getListSemester(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Semester_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Semester_title(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Semester_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Semester_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Semester_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Semester_updatedBy(ctx, field)
+			case "students":
+				return ec.fieldContext_Semester_students(ctx, field)
+			case "teachers":
+				return ec.fieldContext_Semester_teachers(ctx, field)
+			case "topics":
+				return ec.fieldContext_Semester_topics(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Semester", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getListSemester_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_getListCouncil(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -390,24 +506,24 @@ func (ec *executionContext) fieldContext_Query_getListCouncil(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_getTopics(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getListDefence(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Query_getTopics,
+		ec.fieldContext_Query_getListDefence,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().GetTopics(ctx, fc.Args["page"].(*int32), fc.Args["pageSize"].(*int32), fc.Args["sortBy"].(*string), fc.Args["descending"].(*bool))
+			return ec.resolvers.Query().GetListDefence(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalOTopic2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicᚄ,
+		ec.marshalODefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐDefenceᚄ,
 		true,
 		false,
 	)
 }
 
-func (ec *executionContext) fieldContext_Query_getTopics(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getListDefence(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -415,46 +531,22 @@ func (ec *executionContext) fieldContext_Query_getTopics(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "total":
-				return ec.fieldContext_Topic_total(ctx, field)
 			case "id":
-				return ec.fieldContext_Topic_id(ctx, field)
+				return ec.fieldContext_Defence_id(ctx, field)
 			case "title":
-				return ec.fieldContext_Topic_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "teacherSupervisorCode":
-				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
-			case "status":
-				return ec.fieldContext_Topic_status(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_Topic_timeStart(ctx, field)
-			case "timeEnd":
-				return ec.fieldContext_Topic_timeEnd(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Topic_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Topic_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Topic_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Topic_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Topic_major(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_Topic_enrollment(ctx, field)
-			case "semester":
-				return ec.fieldContext_Topic_semester(ctx, field)
-			case "teacherSupervisor":
-				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
-			case "files":
-				return ec.fieldContext_Topic_files(ctx, field)
+				return ec.fieldContext_Defence_title(ctx, field)
+			case "councilCode":
+				return ec.fieldContext_Defence_councilCode(ctx, field)
+			case "teacherCode":
+				return ec.fieldContext_Defence_teacherCode(ctx, field)
+			case "position":
+				return ec.fieldContext_Defence_position(ctx, field)
 			case "council":
-				return ec.fieldContext_Topic_council(ctx, field)
+				return ec.fieldContext_Defence_council(ctx, field)
+			case "teacher":
+				return ec.fieldContext_Defence_teacher(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Defence", field.Name)
 		},
 	}
 	defer func() {
@@ -464,74 +556,7 @@ func (ec *executionContext) fieldContext_Query_getTopics(ctx context.Context, fi
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getTopics_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_getCouncils(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Query_getCouncils,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().GetCouncils(ctx, fc.Args["page"].(*int32), fc.Args["pageSize"].(*int32), fc.Args["sortBy"].(*string), fc.Args["descending"].(*bool))
-		},
-		nil,
-		ec.marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Query_getCouncils(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Council_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Council_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Council_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Council_semesterCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Council_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Council_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Council_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Council_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Council_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Council_semester(ctx, field)
-			case "defences":
-				return ec.fieldContext_Council_defences(ctx, field)
-			case "schedules":
-				return ec.fieldContext_Council_schedules(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getCouncils_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_getListDefence_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -945,6 +970,44 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getListEnrollment":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getListEnrollment(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getListSemester":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getListSemester(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "getListCouncil":
 			field := field
 
@@ -964,7 +1027,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "getTopics":
+		case "getListDefence":
 			field := field
 
 			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
@@ -973,26 +1036,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getTopics(ctx, field)
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "getCouncils":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_getCouncils(ctx, field)
+				res = ec._Query_getListDefence(ctx, field)
 				return res
 			}
 

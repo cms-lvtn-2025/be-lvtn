@@ -176,12 +176,13 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetCouncils    func(childComplexity int, page *int32, pageSize *int32, sortBy *string, descending *bool) int
-		GetInfoStudent func(childComplexity int) int
-		GetInfoTeacher func(childComplexity int) int
-		GetListCouncil func(childComplexity int, search model.SearchRequestInput) int
-		GetListTopic   func(childComplexity int, search model.SearchRequestInput) int
-		GetTopics      func(childComplexity int, page *int32, pageSize *int32, sortBy *string, descending *bool) int
+		GetInfoStudent    func(childComplexity int) int
+		GetInfoTeacher    func(childComplexity int) int
+		GetListCouncil    func(childComplexity int, search model.SearchRequestInput) int
+		GetListDefence    func(childComplexity int, search model.SearchRequestInput) int
+		GetListEnrollment func(childComplexity int, search model.SearchRequestInput) int
+		GetListSemester   func(childComplexity int, search model.SearchRequestInput) int
+		GetListTopic      func(childComplexity int, search model.SearchRequestInput) int
 	}
 
 	RoleSystem struct {
@@ -974,18 +975,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Midterm.UpdatedBy(childComplexity), true
 
-	case "Query.getCouncils":
-		if e.complexity.Query.GetCouncils == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getCouncils_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetCouncils(childComplexity, args["page"].(*int32), args["pageSize"].(*int32), args["sortBy"].(*string), args["descending"].(*bool)), true
-
 	case "Query.getInfoStudent":
 		if e.complexity.Query.GetInfoStudent == nil {
 			break
@@ -1012,6 +1001,42 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetListCouncil(childComplexity, args["search"].(model.SearchRequestInput)), true
 
+	case "Query.getListDefence":
+		if e.complexity.Query.GetListDefence == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getListDefence_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListDefence(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getListEnrollment":
+		if e.complexity.Query.GetListEnrollment == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getListEnrollment_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListEnrollment(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getListSemester":
+		if e.complexity.Query.GetListSemester == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getListSemester_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListSemester(childComplexity, args["search"].(model.SearchRequestInput)), true
+
 	case "Query.getListTopic":
 		if e.complexity.Query.GetListTopic == nil {
 			break
@@ -1023,18 +1048,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.GetListTopic(childComplexity, args["search"].(model.SearchRequestInput)), true
-
-	case "Query.getTopics":
-		if e.complexity.Query.GetTopics == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getTopics_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetTopics(childComplexity, args["page"].(*int32), args["pageSize"].(*int32), args["sortBy"].(*string), args["descending"].(*bool)), true
 
 	case "RoleSystem.activate":
 		if e.complexity.RoleSystem.Activate == nil {
@@ -1857,11 +1870,10 @@ type Query {
     getInfoStudent: Student!
     getInfoTeacher: Teacher!
     getListTopic(search: SearchRequestInput!): [Topic!]
+    getListEnrollment(search: SearchRequestInput!): [Enrollment!]
+    getListSemester(search: SearchRequestInput!): [Semester!]
     getListCouncil(search: SearchRequestInput!): [Council!]
-
-    # Simple queries for testing without complex filters
-    getTopics(page: Int = 1, pageSize: Int = 20, sortBy: String, descending: Boolean = false): [Topic!]
-    getCouncils(page: Int = 1, pageSize: Int = 20, sortBy: String, descending: Boolean = false): [Council!]
+    getListDefence(search: SearchRequestInput!): [Defence!]
 }
 `, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {

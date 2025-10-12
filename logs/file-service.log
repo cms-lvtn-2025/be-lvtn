@@ -15,3 +15,6 @@ running...
 2025/10/12 00:44:55   - ConnMaxLifetime: 5m0s
 2025/10/12 00:44:55   - ConnMaxIdleTime: 2m0s
 2025/10/12 00:44:55 FileService running on :50053
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/file/tmp-file
+see you again~

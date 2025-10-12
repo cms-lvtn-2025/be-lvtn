@@ -25,9 +25,14 @@ func (r *enrollmentResolver) Final(ctx context.Context, obj *model.Enrollment) (
 	return r.Ctrl.GetFinal(ctx, obj.FinalCode)
 }
 
+// Topic is the resolver for the topic field.
+func (r *enrollmentResolver) Topic(ctx context.Context, obj *model.Enrollment) (*model.Topic, error) {
+	return r.Ctrl.GetTopicById(ctx, obj.TopicCode)
+}
+
 // Enrollment is the resolver for the enrollment field.
 func (r *topicResolver) Enrollment(ctx context.Context, obj *model.Topic) ([]*model.Enrollment, error) {
-	return r.Ctrl.GetEnrollments(ctx, obj.ID)
+	return r.Ctrl.GetEnrollmentsChild(ctx, obj.ID)
 }
 
 // TeacherSupervisor is the resolver for the teacherSupervisor field.

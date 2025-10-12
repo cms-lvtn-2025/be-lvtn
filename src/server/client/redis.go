@@ -2,12 +2,15 @@ package client
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"log"
 	"thaily/src/config"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"google.golang.org/protobuf/proto"
 )
 
 type RedisClient struct {
@@ -86,4 +89,79 @@ func NewRedisClient(cfg config.RedisConfig) (*RedisClient, error) {
 		client: client,
 		config: &cfg,
 	}, nil
+}
+
+// generateCacheKey creates a unique cache key from prefix and parameters
+func GenerateCacheKey(prefix string, params interface{}) string {
+	data, _ := json.Marshal(params)
+	hash := sha256.Sum256(data)
+	return fmt.Sprintf("%s%x", prefix, hash[:16])
+}
+
+// GetCachedProto retrieves cached protobuf message from Redis
+func GetCachedProto(ctx context.Context, redisClient *redis.Client, key string, dest proto.Message) (bool, error) {
+	if redisClient == nil {
+		return false, nil
+	}
+
+	data, err := redisClient.Get(ctx, key).Bytes()
+	if err == redis.Nil {
+		return false, nil // Cache miss
+	}
+	if err != nil {
+		log.Printf("Redis get error for key %s: %v", key, err)
+		return false, nil // Don't fail on cache errors
+	}
+
+	if err := proto.Unmarshal(data, dest); err != nil {
+		log.Printf("Proto unmarshal error for key %s: %v", key, err)
+		return false, nil
+	}
+
+	return true, nil
+}
+
+// SetCachedProto stores protobuf message in Redis
+func SetCachedProto(ctx context.Context, redisClient *redis.Client, key string, msg proto.Message, ttl time.Duration) {
+	if redisClient == nil {
+		return
+	}
+
+	data, err := proto.Marshal(msg)
+	if err != nil {
+		log.Printf("Proto marshal error for key %s: %v", key, err)
+		return
+	}
+
+	if err := redisClient.Set(ctx, key, data, ttl).Err(); err != nil {
+		log.Printf("Redis set error for key %s: %v", key, err)
+	}
+}
+
+// InvalidateCacheByPattern invalidates cache keys matching a pattern
+func InvalidateCacheByPattern(ctx context.Context, redisClient *redis.Client, pattern string) error {
+	if redisClient == nil {
+		return nil
+	}
+
+	iter := redisClient.Scan(ctx, 0, pattern, 0).Iterator()
+	for iter.Next(ctx) {
+		if err := redisClient.Del(ctx, iter.Val()).Err(); err != nil {
+			log.Printf("Failed to delete cache key %s: %v", iter.Val(), err)
+		}
+	}
+	return iter.Err()
+}
+
+// InvalidateCacheByKey invalidates a specific cache key
+func InvalidateCacheByKey(ctx context.Context, redisClient *redis.Client, key string) error {
+	if redisClient == nil {
+		return nil
+	}
+
+	if err := redisClient.Del(ctx, key).Err(); err != nil {
+		log.Printf("Failed to delete cache key %s: %v", key, err)
+		return err
+	}
+	return nil
 }

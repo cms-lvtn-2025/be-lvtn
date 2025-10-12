@@ -15,3 +15,6 @@ running...
 2025/10/12 00:44:56   - ConnMaxLifetime: 5m0s
 2025/10/12 00:44:56   - ConnMaxIdleTime: 2m0s
 2025/10/12 00:44:56 RoleService running on :50054
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/role/tmp-role
+see you again~

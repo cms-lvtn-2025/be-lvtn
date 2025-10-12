@@ -78,6 +78,61 @@ func (c *Controller) pbTopicsToModel(resp *pb.ListTopicsResponse) []*model.Topic
 	return result
 }
 
+func (c *Controller) pbTopicToModel(resp *pb.GetTopicResponse) *model.Topic {
+	if resp == nil {
+		return nil
+	}
+	topic := resp.GetTopic()
+	var status model.TopicStatus
+	switch topic.GetStatus() {
+	case pb.TopicStatus_TOPIC_PENDING:
+		status = model.TopicStatusPending
+	case pb.TopicStatus_APPROVED:
+		status = model.TopicStatusApproved
+	case pb.TopicStatus_IN_PROGRESS:
+		status = model.TopicStatusInProgress
+	case pb.TopicStatus_REJECTED:
+		status = model.TopicStatusRejected
+	case pb.TopicStatus_TOPIC_COMPLETED:
+		status = model.TopicStatusCompleted
+	default:
+		status = model.TopicStatusPending
+
+	}
+	var createdAt, updatedAt *time.Time
+	if topic.GetCreatedAt() != nil {
+		t := topic.GetCreatedAt().AsTime()
+		createdAt = &t
+	}
+	if topic.GetUpdatedAt() != nil {
+		t := topic.GetUpdatedAt().AsTime()
+		updatedAt = &t
+	}
+
+	// handle optional fields
+	var createdBy, updatedBy *string
+	if topic.CreatedBy != "" {
+		createdBy = &topic.CreatedBy
+	}
+	if topic.UpdatedBy != "" {
+		updatedBy = &topic.UpdatedBy
+	}
+	return &model.Topic{
+		ID:                    topic.GetId(),
+		Title:                 topic.GetTitle(),
+		MajorCode:             topic.GetMajorCode(),
+		Status:                status,
+		CreatedAt:             createdAt,
+		UpdatedAt:             updatedAt,
+		SemesterCode:          topic.GetSemesterCode(),
+		TeacherSupervisorCode: topic.GetTeacherSupervisorCode(),
+		TimeEnd:               topic.TimeEnd.AsTime(),
+		TimeStart:             topic.TimeStart.AsTime(),
+		CreatedBy:             createdBy,
+		UpdatedBy:             updatedBy,
+	}
+}
+
 func (c *Controller) pbEnrollmentsToModel(resp *pb.ListEnrollmentsResponse) []*model.Enrollment {
 	if resp == nil {
 		return nil
@@ -278,27 +333,13 @@ func (c *Controller) GetTopics(ctx context.Context, search model.SearchRequestIn
 		return nil, fmt.Errorf("no teacher found for semester %s", semester)
 	}
 	var topics *pb.ListTopicsResponse
-	var err error
-	var newSearch model.SearchRequestInput
-	if role == "student" {
-		newSearch = model.SearchRequestInput{
-			Pagination: search.Pagination,
-			Filters: append([]*model.FilterCriteriaInput{
-				&model.FilterCriteriaInput{
-					Condition: &model.FilterConditionInput{
-						Field:    "student_code",
-						Operator: model.FilterOperatorEqual,
-						Values:   []string{myId},
-					},
-				},
-			}, search.Filters...),
-		}
 
-		topics, err = c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
-		if err != nil {
-			return nil, err
-		}
+	if role == "student" {
+		return nil, fmt.Errorf("student role not allowed")
 	} else if role == "teacher" {
+		var err error
+		var newSearch model.SearchRequestInput
+
 		permissions, err := c.role.GetAllRoleByTeacherId(ctx, myId)
 
 		if err != nil || permissions == nil || len(permissions.GetRoleSystems()) == 0 {
@@ -354,7 +395,31 @@ func (c *Controller) GetTopics(ctx context.Context, search model.SearchRequestIn
 	return c.pbTopicsToModel(topics), nil
 }
 
-func (c *Controller) GetEnrollments(ctx context.Context, topicCode string) ([]*model.Enrollment, error) {
+func (c *Controller) GetTopicById(ctx context.Context, id *string) (*model.Topic, error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	role, ok := claims["role"].(string)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if id == nil {
+		return nil, nil
+	}
+	if role == "student" {
+		topic, err := c.thesis.GetTopicById(ctx, *id)
+		if err != nil {
+			return nil, err
+		}
+		return c.pbTopicToModel(topic), nil
+	} else {
+		return nil, fmt.Errorf("no teacher found for student role %s", role)
+	}
+	return nil, nil
+}
+
+func (c *Controller) GetEnrollmentsChild(ctx context.Context, topicCode string) ([]*model.Enrollment, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
 	if !ok {
 		return nil, fmt.Errorf("not authorized")
@@ -382,17 +447,66 @@ func (c *Controller) GetEnrollments(ctx context.Context, topicCode string) ([]*m
 	var enrolls *pb.ListEnrollmentsResponse
 	var err error
 	if role == "student" {
-		enrolls, err = c.thesis.GetEnrolmentByTopicCodeAndStudentCode(ctx, topicCode, myId)
-		if err != nil {
-			return nil, err
-		}
+		return nil, fmt.Errorf("student role not allowed")
 	} else if role == "teacher" {
 		enrolls, err = c.thesis.GetEnrollmentByTopicCode(ctx, topicCode)
 		if err != nil {
 			return nil, err
 		}
 	}
-	
+
+	return c.pbEnrollmentsToModel(enrolls), nil
+}
+
+func (c *Controller) GetEnrollments(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	role, ok := claims["role"].(string)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	semester, ok := ctx.Value("semester").(string)
+
+	idsArr := strings.Split(claims["ids"].(string), ",")
+	myId := ""
+	if semester == "" {
+		myId = strings.Split(idsArr[0], "-")[1]
+	} else {
+		for _, id := range idsArr {
+			if strings.HasPrefix(id, semester+"-") {
+				myId = strings.Split(id, "-")[1]
+			}
+		}
+	}
+	if myId == "" {
+		return nil, fmt.Errorf("no teacher found for semester %s", semester)
+	}
+	var enrolls *pb.ListEnrollmentsResponse
+	if role == "student" {
+		var err error
+		var newSearch model.SearchRequestInput
+		newSearch = model.SearchRequestInput{
+			Pagination: search.Pagination,
+			Filters: append([]*model.FilterCriteriaInput{
+				&model.FilterCriteriaInput{
+					Condition: &model.FilterConditionInput{
+						Field:    "student_code",
+						Operator: model.FilterOperatorEqual,
+						Values:   []string{myId},
+					},
+				},
+			}, search.Filters...),
+		}
+		enrolls, err = c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+		if err != nil {
+			return nil, err
+		}
+	} else if role == "teacher" {
+		return nil, fmt.Errorf("teacher role not allowed")
+	}
+
 	return c.pbEnrollmentsToModel(enrolls), nil
 }
 

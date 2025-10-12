@@ -1,6 +1,12 @@
 package client
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	pbCommon "thaily/proto/common"
 	pb "thaily/proto/council"
 
 	"github.com/redis/go-redis/v9"
@@ -14,7 +20,15 @@ type GRPCCouncil struct {
 	redisClient *redis.Client
 }
 
-func NewGRPCCouncil(addr string, redis *redis.Client) (*GRPCCouncil, error) {
+const (
+	// Cache TTL configurations for Council
+	councilCacheTTL = 5 * time.Minute
+
+	// Cache key prefixes for Council
+	councilCachePrefix = "council:council:"
+)
+
+func NewGRPCCouncil(addr string, redisClient *redis.Client) (*GRPCCouncil, error) {
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
@@ -22,5 +36,83 @@ func NewGRPCCouncil(addr string, redis *redis.Client) (*GRPCCouncil, error) {
 	}
 
 	client := pb.NewCouncilServiceClient(conn)
-	return &GRPCCouncil{conn: conn, client: client}, nil
+	return &GRPCCouncil{
+		conn:        conn,
+		client:      client,
+		redisClient: redisClient,
+	}, nil
+}
+
+// InvalidateCouncilCache invalidates council-related cache
+func (c *GRPCCouncil) InvalidateCouncilCache(ctx context.Context, councilCode string) error {
+	pattern := fmt.Sprintf("%s*%s*", councilCachePrefix, councilCode)
+	return InvalidateCacheByPattern(ctx, c.redisClient, pattern)
+}
+
+// InvalidateAllCouncilCache invalidates all council-related caches
+func (c *GRPCCouncil) InvalidateAllCouncilCache(ctx context.Context) error {
+	pattern := fmt.Sprintf("%s*", councilCachePrefix)
+	return InvalidateCacheByPattern(ctx, c.redisClient, pattern)
+}
+
+// GetCouncilBySearch retrieves councils by search with caching
+func (c *GRPCCouncil) GetCouncilBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListCouncilsResponse, error) {
+	// Generate cache key based on search parameters
+	cacheKey := GenerateCacheKey(councilCachePrefix, search)
+
+	// Try to get from cache
+	var cached pb.ListCouncilsResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for council search")
+		return &cached, nil
+	}
+
+	log.Printf("Cache MISS for council search")
+
+	// Cache miss - fetch from database
+	resp, err := c.client.ListCouncils(ctx, &pb.ListCouncilsRequest{
+		Search: search,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Store in cache
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
+
+	return resp, nil
+}
+
+// GetCouncilById retrieves a council by ID with caching
+func (c *GRPCCouncil) GetCouncilById(ctx context.Context, councilCode string) (*pb.GetCouncilResponse, error) {
+	if c.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+
+	// Generate cache key
+	cacheKey := fmt.Sprintf("%s%s", councilCachePrefix, councilCode)
+
+	// Try to get from cache
+	var cached pb.GetCouncilResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for council: %s", councilCode)
+		return &cached, nil
+	}
+
+	log.Printf("Cache MISS for council: %s", councilCode)
+
+	// Cache miss - fetch from database
+	resp, err := c.client.GetCouncil(ctx, &pb.GetCouncilRequest{
+		Id: councilCode,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Store in cache
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
+
+	return resp, nil
 }

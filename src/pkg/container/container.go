@@ -72,7 +72,7 @@ func initClients(cfg *config.Config) (*Clients, error) {
 		return nil, fmt.Errorf("thesis client: %w", err)
 	}
 
-	user, err := client.NewGRPCUser(fmt.Sprintf("%s:%s", cfg.Services.User.Endpont, cfg.Services.User.Port))
+	user, err := client.NewGRPCUser(fmt.Sprintf("%s:%s", cfg.Services.User.Endpont, cfg.Services.User.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("user client: %w", err)
 	}

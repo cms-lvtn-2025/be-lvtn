@@ -15,3 +15,6 @@ running...
 2025/10/12 00:44:56   - ConnMaxLifetime: 5m0s
 2025/10/12 00:44:56   - ConnMaxIdleTime: 2m0s
 2025/10/12 00:44:56 ThesisService running on :50055
+cleaning...
+deleting /home/thaily/code/heheheh_be/src/service/thesis/tmp-thesis
+see you again~

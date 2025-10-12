@@ -26,39 +26,24 @@ func (r *queryResolver) GetListTopic(ctx context.Context, search model.SearchReq
 	return r.Ctrl.GetTopics(ctx, search)
 }
 
+// GetListEnrollment is the resolver for the getListEnrollment field.
+func (r *queryResolver) GetListEnrollment(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error) {
+	return r.Ctrl.GetEnrollments(ctx, search)
+}
+
+// GetListSemester is the resolver for the getListSemester field.
+func (r *queryResolver) GetListSemester(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error) {
+	return r.Ctrl.GetSemesters(ctx, search)
+}
+
 // GetListCouncil is the resolver for the getListCouncil field.
 func (r *queryResolver) GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
 	panic(fmt.Errorf("not implemented: GetListCouncil - getListCouncil"))
 }
 
-// GetTopics is the resolver for the getTopics field.
-func (r *queryResolver) GetTopics(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Topic, error) {
-	// Build SearchRequestInput from simple parameters
-	search := model.SearchRequestInput{
-		Pagination: &model.PaginationInput{
-			Page:       page,
-			PageSize:   pageSize,
-			SortBy:     sortBy,
-			Descending: descending,
-		},
-		Filters: nil, // No filters for simple query
-	}
-	return r.Ctrl.GetTopics(ctx, search)
-}
-
-// GetCouncils is the resolver for the getCouncils field.
-func (r *queryResolver) GetCouncils(ctx context.Context, page *int32, pageSize *int32, sortBy *string, descending *bool) ([]*model.Council, error) {
-	// Build SearchRequestInput from simple parameters
-	search := model.SearchRequestInput{
-		Pagination: &model.PaginationInput{
-			Page:       page,
-			PageSize:   pageSize,
-			SortBy:     sortBy,
-			Descending: descending,
-		},
-		Filters: nil, // No filters for simple query
-	}
-	return r.Ctrl.GetListCouncil(ctx, search)
+// GetListDefence is the resolver for the getListDefence field.
+func (r *queryResolver) GetListDefence(ctx context.Context, search model.SearchRequestInput) ([]*model.Defence, error) {
+	panic(fmt.Errorf("not implemented: GetListDefence - getListDefence"))
 }
 
 // Query returns generated.QueryResolver implementation.
