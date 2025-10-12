@@ -360,6 +360,8 @@ func (ec *executionContext) fieldContext_Query_getListEnrollment(ctx context.Con
 				return ec.fieldContext_Enrollment_final(ctx, field)
 			case "topic":
 				return ec.fieldContext_Enrollment_topic(ctx, field)
+			case "gradeDefence":
+				return ec.fieldContext_Enrollment_gradeDefence(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},

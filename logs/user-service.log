@@ -9,12 +9,9 @@ mkdir /home/thaily/code/heheheh_be/src/service/user/tmp-user
 !exclude tmp-user
 building...
 running...
-2025/10/12 00:44:53 Database connected successfully with connection pool:
-2025/10/12 00:44:53   - MaxOpenConns: 20
-2025/10/12 00:44:53   - MaxIdleConns: 10
-2025/10/12 00:44:53   - ConnMaxLifetime: 5m0s
-2025/10/12 00:44:53   - ConnMaxIdleTime: 2m0s
-2025/10/12 00:44:53 UserService running on :50056
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/user/tmp-user
-see you again~
+2025/10/12 19:28:03 Database connected successfully with connection pool:
+2025/10/12 19:28:03   - MaxOpenConns: 20
+2025/10/12 19:28:03   - MaxIdleConns: 10
+2025/10/12 19:28:03   - ConnMaxLifetime: 5m0s
+2025/10/12 19:28:03   - ConnMaxIdleTime: 2m0s
+2025/10/12 19:28:03 UserService running on :50056

@@ -9,12 +9,9 @@ mkdir /home/thaily/code/heheheh_be/src/service/file/tmp-file
 !exclude tmp-file
 building...
 running...
-2025/10/12 00:44:55 Database connected successfully with connection pool:
-2025/10/12 00:44:55   - MaxOpenConns: 20
-2025/10/12 00:44:55   - MaxIdleConns: 10
-2025/10/12 00:44:55   - ConnMaxLifetime: 5m0s
-2025/10/12 00:44:55   - ConnMaxIdleTime: 2m0s
-2025/10/12 00:44:55 FileService running on :50053
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/file/tmp-file
-see you again~
+2025/10/12 19:28:05 Database connected successfully with connection pool:
+2025/10/12 19:28:05   - MaxOpenConns: 20
+2025/10/12 19:28:05   - MaxIdleConns: 10
+2025/10/12 19:28:05   - ConnMaxLifetime: 5m0s
+2025/10/12 19:28:05   - ConnMaxIdleTime: 2m0s
+2025/10/12 19:28:05 FileService running on :50053

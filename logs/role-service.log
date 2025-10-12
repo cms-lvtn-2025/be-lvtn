@@ -9,12 +9,9 @@ mkdir /home/thaily/code/heheheh_be/src/service/role/tmp-role
 !exclude tmp-role
 building...
 running...
-2025/10/12 00:44:56 Database connected successfully with connection pool:
-2025/10/12 00:44:56   - MaxOpenConns: 20
-2025/10/12 00:44:56   - MaxIdleConns: 10
-2025/10/12 00:44:56   - ConnMaxLifetime: 5m0s
-2025/10/12 00:44:56   - ConnMaxIdleTime: 2m0s
-2025/10/12 00:44:56 RoleService running on :50054
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/role/tmp-role
-see you again~
+2025/10/12 19:28:06 Database connected successfully with connection pool:
+2025/10/12 19:28:06   - MaxOpenConns: 20
+2025/10/12 19:28:06   - MaxIdleConns: 10
+2025/10/12 19:28:06   - ConnMaxLifetime: 5m0s
+2025/10/12 19:28:06   - ConnMaxIdleTime: 2m0s
+2025/10/12 19:28:06 RoleService running on :50054

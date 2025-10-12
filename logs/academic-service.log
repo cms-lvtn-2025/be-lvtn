@@ -9,12 +9,9 @@ mkdir /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
 !exclude tmp-academic
 building...
 running...
-2025/10/12 00:44:54 Database connected successfully with connection pool:
-2025/10/12 00:44:54   - MaxOpenConns: 20
-2025/10/12 00:44:54   - MaxIdleConns: 10
-2025/10/12 00:44:54   - ConnMaxLifetime: 5m0s
-2025/10/12 00:44:54   - ConnMaxIdleTime: 2m0s
-2025/10/12 00:44:54 AcademicService running on :50051
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
-see you again~
+2025/10/12 19:28:03 Database connected successfully with connection pool:
+2025/10/12 19:28:03   - MaxOpenConns: 20
+2025/10/12 19:28:03   - MaxIdleConns: 10
+2025/10/12 19:28:03   - ConnMaxLifetime: 5m0s
+2025/10/12 19:28:03   - ConnMaxIdleTime: 2m0s
+2025/10/12 19:28:03 AcademicService running on :50051

@@ -50,21 +50,22 @@ type Defence struct {
 }
 
 type Enrollment struct {
-	ID          string     `json:"id"`
-	Title       string     `json:"title"`
-	StudentCode string     `json:"studentCode"`
-	MidtermCode *string    `json:"midtermCode,omitempty"`
-	TopicCode   *string    `json:"topicCode,omitempty"`
-	FinalCode   *string    `json:"finalCode,omitempty"`
-	GradeCode   *string    `json:"gradeCode,omitempty"`
-	CreatedAt   *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
-	CreatedBy   *string    `json:"createdBy,omitempty"`
-	UpdatedBy   *string    `json:"updatedBy,omitempty"`
-	Student     *Student   `json:"student,omitempty"`
-	Midterm     *Midterm   `json:"midterm,omitempty"`
-	Final       *Final     `json:"final,omitempty"`
-	Topic       *Topic     `json:"topic,omitempty"`
+	ID           string        `json:"id"`
+	Title        string        `json:"title"`
+	StudentCode  string        `json:"studentCode"`
+	MidtermCode  *string       `json:"midtermCode,omitempty"`
+	TopicCode    *string       `json:"topicCode,omitempty"`
+	FinalCode    *string       `json:"finalCode,omitempty"`
+	GradeCode    *string       `json:"gradeCode,omitempty"`
+	CreatedAt    *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy    *string       `json:"createdBy,omitempty"`
+	UpdatedBy    *string       `json:"updatedBy,omitempty"`
+	Student      *Student      `json:"student,omitempty"`
+	Midterm      *Midterm      `json:"midterm,omitempty"`
+	Final        *Final        `json:"final,omitempty"`
+	Topic        *Topic        `json:"topic,omitempty"`
+	GradeDefence *GradeDefence `json:"gradeDefence,omitempty"`
 }
 
 type Faculty struct {

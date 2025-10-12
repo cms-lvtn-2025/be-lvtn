@@ -3,18 +3,14 @@
  / /\  | | | |_) 
 /_/--\ |_| |_| \_ v1.62.0, built with Go go1.24.6
 
-mkdir /home/thaily/code/heheheh_be/src/service/thesis/tmp-thesis
 !exclude handler
 !exclude log
 !exclude tmp-thesis
 building...
 running...
-2025/10/12 00:44:56 Database connected successfully with connection pool:
-2025/10/12 00:44:56   - MaxOpenConns: 20
-2025/10/12 00:44:56   - MaxIdleConns: 10
-2025/10/12 00:44:56   - ConnMaxLifetime: 5m0s
-2025/10/12 00:44:56   - ConnMaxIdleTime: 2m0s
-2025/10/12 00:44:56 ThesisService running on :50055
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/thesis/tmp-thesis
-see you again~
+2025/10/12 19:28:05 Database connected successfully with connection pool:
+2025/10/12 19:28:05   - MaxOpenConns: 20
+2025/10/12 19:28:05   - MaxIdleConns: 10
+2025/10/12 19:28:05   - ConnMaxLifetime: 5m0s
+2025/10/12 19:28:05   - ConnMaxIdleTime: 2m0s
+2025/10/12 19:28:05 Failed to listen: listen tcp :50055: bind: address already in use

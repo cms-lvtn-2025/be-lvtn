@@ -207,6 +207,36 @@ func (c *Controller) pbScheduleToModel(schedule *pb.CouncilSchedule) *model.Coun
 	return result
 }
 
+func (c *Controller) pbGradeToModel(resp *pb.GetGradeDefenceResponse) *model.GradeDefence {
+	if resp == nil {
+		return nil
+	}
+	grade := resp.GetGradeDefence()
+	var createdAt, updatedAt *time.Time
+	var councilGrade, secretaryGrade *int32
+	if grade.CreatedAt != nil {
+		t := grade.CreatedAt.AsTime()
+		createdAt = &t
+	}
+	if grade.UpdatedAt != nil {
+		t := grade.UpdatedAt.AsTime()
+		updatedAt = &t
+	}
+	if grade.GetCouncil() != -1 {
+		councilGrade = &grade.Council
+	}
+	if grade.GetSecretary() != -1 {
+		secretaryGrade = &grade.Secretary
+	}
+	return &model.GradeDefence{
+		ID:        grade.Id,
+		Council:   councilGrade,
+		Secretary: secretaryGrade,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+	}
+}
+
 func (c *Controller) GetCouncils(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
 	if !ok {
@@ -413,5 +443,23 @@ func (c *Controller) GetScheduleByTopicCodeForTopic(ctx context.Context, topicCo
 	if err != nil {
 		return nil, err
 	}
+	if len(schedule.GetCouncilSchedules()) == 0 {
+		return nil, nil
+	}
 	return c.pbScheduleToModel(schedule.GetCouncilSchedules()[0]), nil
+}
+
+func (c *Controller) GetGradeByIdForEnrollment(ctx context.Context, id *string) (*model.GradeDefence, error) {
+	_, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if id == nil {
+		return nil, nil
+	}
+	grade, err := c.council.GetGradeById(ctx, *id)
+	if err != nil {
+		return nil, err
+	}
+	return c.pbGradeToModel(grade), nil
 }

@@ -1954,4 +1954,11 @@ func (ec *executionContext) marshalODefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodel�
 	return ret
 }
 
+func (ec *executionContext) marshalOGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefence) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._GradeDefence(ctx, sel, v)
+}
+
 // endregion ***************************** type.gotpl *****************************

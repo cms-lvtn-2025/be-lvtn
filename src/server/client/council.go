@@ -25,12 +25,14 @@ const (
 	councilCacheTTL  = 5 * time.Minute
 	defenceCacheTTL  = 5 * time.Minute
 	scheduleCacheTTL = 5 * time.Minute
+	gradeCacheTTL    = 5 * time.Minute
 
 	// Cache key prefixes for Council
 	councilCachePrefix             = "council:council:"
 	defenceCouncilCodeCachePrefix  = "defence:council:"
 	scheduleCouncilCodeCachePrefix = "schedule:council:"
 	scheduleTopicCodeCachePrefix   = "schedule:topic:"
+	gradeByIdCachePrefix           = "grade:id"
 )
 
 func NewGRPCCouncil(addr string, redisClient *redis.Client) (*GRPCCouncil, error) {
@@ -236,7 +238,7 @@ func (c *GRPCCouncil) GetScheduleByTopicCode(ctx context.Context, topicCode stri
 				Descending: true,
 				Page:       1,
 				PageSize:   100,
-				SortBy:     "created_by",
+				SortBy:     "status",
 			},
 			Filters: []*pbCommon.FilterCriteria{
 				{
@@ -254,7 +256,29 @@ func (c *GRPCCouncil) GetScheduleByTopicCode(ctx context.Context, topicCode stri
 	if err != nil {
 		return nil, err
 	}
-	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, scheduleCacheTTL)
 	return resp, nil
+
+}
+
+func (c *GRPCCouncil) GetGradeById(ctx context.Context, id string) (*pb.GetGradeDefenceResponse, error) {
+	if c.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	cacheKey := fmt.Sprintf("%s%s", gradeByIdCachePrefix, id)
+	var cached pb.GetGradeDefenceResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for council: %s", id)
+		return &cached, nil
+	}
+	log.Printf("Cache MISS for council: %s", id)
+	grade, err := c.client.GetGradeDefence(ctx, &pb.GetGradeDefenceRequest{
+		Id: id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	SetCachedProto(ctx, c.redisClient, cacheKey, grade, gradeCacheTTL)
+	return grade, nil
 
 }

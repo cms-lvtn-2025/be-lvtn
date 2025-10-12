@@ -87,21 +87,22 @@ type ComplexityRoot struct {
 	}
 
 	Enrollment struct {
-		CreatedAt   func(childComplexity int) int
-		CreatedBy   func(childComplexity int) int
-		Final       func(childComplexity int) int
-		FinalCode   func(childComplexity int) int
-		GradeCode   func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Midterm     func(childComplexity int) int
-		MidtermCode func(childComplexity int) int
-		Student     func(childComplexity int) int
-		StudentCode func(childComplexity int) int
-		Title       func(childComplexity int) int
-		Topic       func(childComplexity int) int
-		TopicCode   func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
-		UpdatedBy   func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		CreatedBy    func(childComplexity int) int
+		Final        func(childComplexity int) int
+		FinalCode    func(childComplexity int) int
+		GradeCode    func(childComplexity int) int
+		GradeDefence func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Midterm      func(childComplexity int) int
+		MidtermCode  func(childComplexity int) int
+		Student      func(childComplexity int) int
+		StudentCode  func(childComplexity int) int
+		Title        func(childComplexity int) int
+		Topic        func(childComplexity int) int
+		TopicCode    func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		UpdatedBy    func(childComplexity int) int
 	}
 
 	Faculty struct {
@@ -534,6 +535,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Enrollment.GradeCode(childComplexity), true
+
+	case "Enrollment.gradeDefence":
+		if e.complexity.Enrollment.GradeDefence == nil {
+			break
+		}
+
+		return e.complexity.Enrollment.GradeDefence(childComplexity), true
 
 	case "Enrollment.id":
 		if e.complexity.Enrollment.ID == nil {
@@ -1914,6 +1922,7 @@ type Enrollment {
     midterm: Midterm
     final: Final
     topic: Topic
+    gradeDefence: GradeDefence
 }
 
 type Topic {
@@ -1936,6 +1945,7 @@ type Topic {
     teacherSupervisor: Teacher
     files: [File!]
     schedule: CouncilSchedule
+
 }
 
 type Final {

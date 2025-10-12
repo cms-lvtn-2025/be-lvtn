@@ -30,6 +30,11 @@ func (r *enrollmentResolver) Topic(ctx context.Context, obj *model.Enrollment) (
 	return r.Ctrl.GetTopicById(ctx, obj.TopicCode)
 }
 
+// GradeDefence is the resolver for the gradeDefence field.
+func (r *enrollmentResolver) GradeDefence(ctx context.Context, obj *model.Enrollment) (*model.GradeDefence, error) {
+	return r.Ctrl.GetGradeByIdForEnrollment(ctx, obj.GradeCode)
+}
+
 // Enrollment is the resolver for the enrollment field.
 func (r *topicResolver) Enrollment(ctx context.Context, obj *model.Topic) ([]*model.Enrollment, error) {
 	return r.Ctrl.GetEnrollmentsChild(ctx, obj.ID)

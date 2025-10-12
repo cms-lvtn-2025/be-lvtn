@@ -539,6 +539,8 @@ func (ec *executionContext) fieldContext_Student_enrollments(_ context.Context, 
 				return ec.fieldContext_Enrollment_final(ctx, field)
 			case "topic":
 				return ec.fieldContext_Enrollment_topic(ctx, field)
+			case "gradeDefence":
+				return ec.fieldContext_Enrollment_gradeDefence(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},

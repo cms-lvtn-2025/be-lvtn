@@ -22,6 +22,7 @@ type EnrollmentResolver interface {
 	Midterm(ctx context.Context, obj *model.Enrollment) (*model.Midterm, error)
 	Final(ctx context.Context, obj *model.Enrollment) (*model.Final, error)
 	Topic(ctx context.Context, obj *model.Enrollment) (*model.Topic, error)
+	GradeDefence(ctx context.Context, obj *model.Enrollment) (*model.GradeDefence, error)
 }
 type TopicResolver interface {
 	Enrollment(ctx context.Context, obj *model.Topic) ([]*model.Enrollment, error)
@@ -593,6 +594,47 @@ func (ec *executionContext) fieldContext_Enrollment_topic(_ context.Context, fie
 				return ec.fieldContext_Topic_schedule(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Enrollment_gradeDefence(ctx context.Context, field graphql.CollectedField, obj *model.Enrollment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Enrollment_gradeDefence,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Enrollment().GradeDefence(ctx, obj)
+		},
+		nil,
+		ec.marshalOGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Enrollment_gradeDefence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Enrollment",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GradeDefence_id(ctx, field)
+			case "council":
+				return ec.fieldContext_GradeDefence_council(ctx, field)
+			case "secretary":
+				return ec.fieldContext_GradeDefence_secretary(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_GradeDefence_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_GradeDefence_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GradeDefence", field.Name)
 		},
 	}
 	return fc, nil
@@ -1716,6 +1758,8 @@ func (ec *executionContext) fieldContext_Topic_enrollment(_ context.Context, fie
 				return ec.fieldContext_Enrollment_final(ctx, field)
 			case "topic":
 				return ec.fieldContext_Enrollment_topic(ctx, field)
+			case "gradeDefence":
+				return ec.fieldContext_Enrollment_gradeDefence(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},
@@ -2098,6 +2142,39 @@ func (ec *executionContext) _Enrollment(ctx context.Context, sel ast.SelectionSe
 					}
 				}()
 				res = ec._Enrollment_topic(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "gradeDefence":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Enrollment_gradeDefence(ctx, field, obj)
 				return res
 			}
 

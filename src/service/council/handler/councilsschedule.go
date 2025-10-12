@@ -34,7 +34,7 @@ func (h *Handler) CreateCouncilSchedule(ctx context.Context, req *pb.CreateCounc
 
 	// Insert into database
 	query := `
-		INSERT INTO CouncilSchedule (id, councils_code, topic_code, status, created_by, created_at, updated_at)
+		INSERT INTO Councils_schedule (id, councils_code, topic_code, status, created_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
@@ -72,7 +72,7 @@ func (h *Handler) GetCouncilSchedule(ctx context.Context, req *pb.GetCouncilSche
 
 	query := `
 		SELECT id, councils_code, topic_code, status, created_at, updated_at, created_by, updated_by
-		FROM CouncilSchedule
+		FROM Councils_schedule
 		WHERE id = ?
 	`
 
@@ -154,7 +154,7 @@ func (h *Handler) UpdateCouncilSchedule(ctx context.Context, req *pb.UpdateCounc
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
-		UPDATE CouncilSchedule
+		UPDATE Councils_schedule
 		SET %s
 		WHERE id = ?
 	`, strings.Join(updateFields, ", "))
@@ -181,7 +181,7 @@ func (h *Handler) DeleteCouncilSchedule(ctx context.Context, req *pb.DeleteCounc
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM CouncilSchedule WHERE id = ?`
+	query := `DELETE FROM Councils_schedule WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -234,6 +234,7 @@ func (h *Handler) ListCouncilSchedules(ctx context.Context, req *pb.ListCouncilS
 		"councils_code": true,
 		"topic_code":    true,
 		"status":        true,
+		"created_at":    true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -258,7 +259,7 @@ func (h *Handler) ListCouncilSchedules(ctx context.Context, req *pb.ListCouncilS
 	}
 
 	// Get total count
-	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM CouncilSchedule %s", whereClause)
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Councils_schedule %s", whereClause)
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
@@ -269,7 +270,7 @@ func (h *Handler) ListCouncilSchedules(ctx context.Context, req *pb.ListCouncilS
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
 		SELECT id, councils_code, topic_code, status, created_at, updated_at, created_by, updated_by
-		FROM CouncilSchedule
+		FROM Councils_schedule
 		%s
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?

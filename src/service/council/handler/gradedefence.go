@@ -28,7 +28,7 @@ func (h *Handler) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDef
 
 	// Insert into database
 	query := `
-		INSERT INTO GradeDefence (id, council, secretary, created_by, created_at, updated_at)
+		INSERT INTO Grade_defence (id, council, secretary, created_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, NOW(), NOW())
 	`
 
@@ -65,7 +65,7 @@ func (h *Handler) GetGradeDefence(ctx context.Context, req *pb.GetGradeDefenceRe
 
 	query := `
 		SELECT id, council, secretary, created_at, updated_at, created_by, updated_by
-		FROM GradeDefence
+		FROM Grade_defence
 		WHERE id = ?
 	`
 
@@ -141,14 +141,14 @@ func (h *Handler) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDef
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
-		UPDATE GradeDefence
+		UPDATE Grade_defence
 		SET %s
 		WHERE id = ?
 	`, strings.Join(updateFields, ", "))
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update gradedefence: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to UPDATE Grade_defence: %v", err)
 	}
 
 	result, err := h.GetGradeDefence(ctx, &pb.GetGradeDefenceRequest{Id: req.Id})
@@ -168,7 +168,7 @@ func (h *Handler) DeleteGradeDefence(ctx context.Context, req *pb.DeleteGradeDef
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM GradeDefence WHERE id = ?`
+	query := `DELETE FROM Grade_defence WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -244,7 +244,7 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 	}
 
 	// Get total count
-	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM GradeDefence %s", whereClause)
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Grade_defence %s", whereClause)
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
@@ -255,7 +255,7 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
 		SELECT id, council, secretary, created_at, updated_at, created_by, updated_by
-		FROM GradeDefence
+		FROM Grade_defence
 		%s
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?
