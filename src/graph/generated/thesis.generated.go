@@ -1906,6 +1906,8 @@ func (ec *executionContext) fieldContext_Topic_council(_ context.Context, field 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "total":
+				return ec.fieldContext_Council_total(ctx, field)
 			case "id":
 				return ec.fieldContext_Council_id(ctx, field)
 			case "title":

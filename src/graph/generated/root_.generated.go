@@ -58,6 +58,7 @@ type ComplexityRoot struct {
 		Semester     func(childComplexity int) int
 		SemesterCode func(childComplexity int) int
 		Title        func(childComplexity int) int
+		Total        func(childComplexity int) int
 		UpdatedAt    func(childComplexity int) int
 		UpdatedBy    func(childComplexity int) int
 	}
@@ -359,6 +360,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Council.Title(childComplexity), true
+
+	case "Council.total":
+		if e.complexity.Council.Total == nil {
+			break
+		}
+
+		return e.complexity.Council.Total(childComplexity), true
 
 	case "Council.updatedAt":
 		if e.complexity.Council.UpdatedAt == nil {
@@ -1680,6 +1688,7 @@ type Semester {
 }
 `, BuiltIn: false},
 	{Name: "../schema/council.graphqls", Input: `type Council {
+    total: Int
     id: ID!
     title: String!
     majorCode: String!

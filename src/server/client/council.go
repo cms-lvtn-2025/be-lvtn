@@ -22,10 +22,13 @@ type GRPCCouncil struct {
 
 const (
 	// Cache TTL configurations for Council
-	councilCacheTTL = 5 * time.Minute
-
+	councilCacheTTL  = 5 * time.Minute
+	defenceCacheTTL  = 5 * time.Minute
+	scheduleCacheTTL = 5 * time.Minute
 	// Cache key prefixes for Council
-	councilCachePrefix = "council:council:"
+	councilCachePrefix             = "council:council:"
+	defenceCouncilCodeCachePrefix  = "defence:council:"
+	scheduleCouncilCodeCachePrefix = "schedule:council:"
 )
 
 func NewGRPCCouncil(addr string, redisClient *redis.Client) (*GRPCCouncil, error) {
@@ -115,4 +118,101 @@ func (c *GRPCCouncil) GetCouncilById(ctx context.Context, councilCode string) (*
 	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
 
 	return resp, nil
+}
+
+func (c *GRPCCouncil) GetDefencesBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListDefencesResponse, error) {
+	cacheKey := GenerateCacheKey(councilCachePrefix, search)
+	var cached pb.ListDefencesResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for council search")
+		return &cached, nil
+	}
+	log.Printf("Cache MISS for council search")
+	resp, err := c.client.ListDefences(ctx, &pb.ListDefencesRequest{
+		Search: search,
+	})
+	if err != nil {
+		return nil, err
+	}
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
+	return resp, nil
+}
+
+func (c *GRPCCouncil) GetDefencesByCouncilCode(ctx context.Context, councilCode string) (*pb.ListDefencesResponse, error) {
+	if c.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	cacheKey := fmt.Sprintf("%s%s", defenceCouncilCodeCachePrefix, councilCode)
+	var cached pb.ListDefencesResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for council: %s", councilCode)
+		return &cached, nil
+	}
+	log.Printf("Cache MISS for council: %s", councilCode)
+	resp, err := c.client.ListDefences(ctx, &pb.ListDefencesRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: true,
+				Page:       1,
+				PageSize:   100,
+				SortBy:     "created_by",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "council_code",
+							Operator: pbCommon.FilterOperator_EQUAL,
+							Values:   []string{councilCode},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, defenceCacheTTL)
+	return resp, nil
+}
+
+func (c *GRPCCouncil) GetSchedulesByCouncilCode(ctx context.Context, councilCode string) (*pb.ListCouncilSchedulesResponse, error) {
+	if c.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	cacheKey := fmt.Sprintf("%s%s", scheduleCouncilCodeCachePrefix, councilCode)
+	var cached pb.ListCouncilSchedulesResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for council: %s", councilCode)
+		return &cached, nil
+	}
+	log.Printf("Cache MISS for council: %s", councilCode)
+	resp, err := c.client.ListCouncilSchedules(ctx, &pb.ListCouncilSchedulesRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: true,
+				Page:       1,
+				PageSize:   100,
+				SortBy:     "created_by",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "council_code",
+							Operator: pbCommon.FilterOperator_EQUAL,
+							Values:   []string{councilCode},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
+	return resp, nil
+
 }

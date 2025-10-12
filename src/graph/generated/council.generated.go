@@ -44,6 +44,35 @@ type DefenceResolver interface {
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _Council_total(ctx context.Context, field graphql.CollectedField, obj *model.Council) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Council_total,
+		func(ctx context.Context) (any, error) {
+			return obj.Total, nil
+		},
+		nil,
+		ec.marshalOInt2ᚖint32,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Council_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Council",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Council_id(ctx context.Context, field graphql.CollectedField, obj *model.Council) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -726,6 +755,8 @@ func (ec *executionContext) fieldContext_CouncilSchedule_council(_ context.Conte
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "total":
+				return ec.fieldContext_Council_total(ctx, field)
 			case "id":
 				return ec.fieldContext_Council_id(ctx, field)
 			case "title":
@@ -995,6 +1026,8 @@ func (ec *executionContext) fieldContext_Defence_council(_ context.Context, fiel
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "total":
+				return ec.fieldContext_Council_total(ctx, field)
 			case "id":
 				return ec.fieldContext_Council_id(ctx, field)
 			case "title":
@@ -1253,6 +1286,8 @@ func (ec *executionContext) _Council(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Council")
+		case "total":
+			out.Values[i] = ec._Council_total(ctx, field, obj)
 		case "id":
 			out.Values[i] = ec._Council_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

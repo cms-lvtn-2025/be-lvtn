@@ -11,6 +11,7 @@ import (
 )
 
 type Council struct {
+	Total        *int32             `json:"total,omitempty"`
 	ID           string             `json:"id"`
 	Title        string             `json:"title"`
 	MajorCode    string             `json:"majorCode"`

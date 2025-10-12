@@ -419,6 +419,28 @@ func (c *Controller) GetTopicById(ctx context.Context, id *string) (*model.Topic
 	return nil, nil
 }
 
+func (c *Controller) GetTopicByIdForSchedule(ctx context.Context, id *string) (*model.Topic, error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	role, ok := claims["role"].(string)
+	if !ok {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if id == nil {
+		return nil, nil
+	}
+	if role != "teacher" {
+		return nil, fmt.Errorf("no teacher found for student role %s", role)
+	}
+	topic, err := c.thesis.GetTopicById(ctx, *id)
+	if err != nil {
+		return nil, err
+	}
+	return c.pbTopicToModel(topic), nil
+}
+
 func (c *Controller) GetEnrollmentsChild(ctx context.Context, topicCode string) ([]*model.Enrollment, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
 	if !ok {

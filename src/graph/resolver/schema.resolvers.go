@@ -38,12 +38,12 @@ func (r *queryResolver) GetListSemester(ctx context.Context, search model.Search
 
 // GetListCouncil is the resolver for the getListCouncil field.
 func (r *queryResolver) GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
-	panic(fmt.Errorf("not implemented: GetListCouncil - getListCouncil"))
+	return r.Ctrl.GetCouncils(ctx, search)
 }
 
 // GetListDefence is the resolver for the getListDefence field.
 func (r *queryResolver) GetListDefence(ctx context.Context, search model.SearchRequestInput) ([]*model.Defence, error) {
-	panic(fmt.Errorf("not implemented: GetListDefence - getListDefence"))
+	return r.Ctrl.GetDefences(ctx, search)
 }
 
 // GetListSchedule is the resolver for the getListSchedule field.

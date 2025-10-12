@@ -1,4 +1,5 @@
 type Council {
+    total: Int
     id: ID!
     title: String!
     majorCode: String!
