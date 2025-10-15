@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateDefence creates a new Defence record
 func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceRequest) (*pb.CreateDefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -29,15 +31,15 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 	if req.TeacherCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "teacher_code is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-
+	
 	// Convert Position enum to string
 	PositionValue := pb.DefencePosition_PRESIDENT
-
+	
 	PositionValue = req.Position
 	PositionStr := "president"
 	switch PositionValue {
@@ -50,7 +52,7 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 	case pb.DefencePosition_MEMBER:
 		PositionStr = "member"
 	}
-
+	
 	// Insert into database
 	query := `
 		INSERT INTO Defence (id, title, council_code, teacher_code, position, created_by, created_at, updated_at)
@@ -82,6 +84,18 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetDefence retrieves a Defence by ID
 func (h *Handler) GetDefence(ctx context.Context, req *pb.GetDefenceRequest) (*pb.GetDefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -100,7 +114,7 @@ func (h *Handler) GetDefence(ctx context.Context, req *pb.GetDefenceRequest) (*p
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var PositionStr string
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -133,7 +147,7 @@ func (h *Handler) GetDefence(ctx context.Context, req *pb.GetDefenceRequest) (*p
 	default:
 		entity.Position = pb.DefencePosition_PRESIDENT
 	}
-
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -148,6 +162,18 @@ func (h *Handler) GetDefence(ctx context.Context, req *pb.GetDefenceRequest) (*p
 		Defence: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateDefence updates an existing Defence
 func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceRequest) (*pb.UpdateDefenceResponse, error) {
@@ -164,17 +190,17 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
+		
 	}
 	if req.CouncilCode != nil {
 		updateFields = append(updateFields, "council_code = ?")
 		args = append(args, *req.CouncilCode)
-
+		
 	}
 	if req.TeacherCode != nil {
 		updateFields = append(updateFields, "teacher_code = ?")
 		args = append(args, *req.TeacherCode)
-
+		
 	}
 	if req.Position != nil {
 		updateFields = append(updateFields, "position = ?")
@@ -190,9 +216,9 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 			PositionStr = "member"
 		}
 		args = append(args, PositionStr)
-
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -225,6 +251,18 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteDefence deletes a Defence by ID
 func (h *Handler) DeleteDefence(ctx context.Context, req *pb.DeleteDefenceRequest) (*pb.DeleteDefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -253,6 +291,18 @@ func (h *Handler) DeleteDefence(ctx context.Context, req *pb.DeleteDefenceReques
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListDefences lists Defences with pagination and filtering
 func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest) (*pb.ListDefencesResponse, error) {
@@ -283,10 +333,11 @@ func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title":        true,
+		"title": true,
 		"council_code": true,
 		"teacher_code": true,
-		"position":     true,
+		"position": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -340,7 +391,7 @@ func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest)
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var PositionStr string
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -369,7 +420,7 @@ func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest)
 		default:
 			entity.Position = pb.DefencePosition_PRESIDENT
 		}
-
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -394,3 +445,5 @@ func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest)
 		PageSize: pageSize,
 	}, nil
 }
+
+

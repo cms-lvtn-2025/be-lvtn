@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateMajor creates a new Major record
 func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (*pb.CreateMajorResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -26,12 +28,13 @@ func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (
 	if req.FacultyCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "faculty_code is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-
+	
+	
 	// Insert into database
 	query := `
 		INSERT INTO Major (id, title, faculty_code, created_by, created_at, updated_at)
@@ -61,6 +64,18 @@ func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetMajor retrieves a Major by ID
 func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.GetMajorResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -78,7 +93,7 @@ func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.Ge
 	var entity pb.Major
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -96,6 +111,7 @@ func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.Ge
 		return nil, status.Errorf(codes.Internal, "failed to get major: %v", err)
 	}
 
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -110,6 +126,18 @@ func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.Ge
 		Major: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateMajor updates an existing Major
 func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (*pb.UpdateMajorResponse, error) {
@@ -126,14 +154,14 @@ func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
+		
 	}
 	if req.FacultyCode != nil {
 		updateFields = append(updateFields, "faculty_code = ?")
 		args = append(args, *req.FacultyCode)
-
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -166,6 +194,18 @@ func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteMajor deletes a Major by ID
 func (h *Handler) DeleteMajor(ctx context.Context, req *pb.DeleteMajorRequest) (*pb.DeleteMajorResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -194,6 +234,18 @@ func (h *Handler) DeleteMajor(ctx context.Context, req *pb.DeleteMajorRequest) (
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListMajors lists Majors with pagination and filtering
 func (h *Handler) ListMajors(ctx context.Context, req *pb.ListMajorsRequest) (*pb.ListMajorsResponse, error) {
@@ -224,8 +276,9 @@ func (h *Handler) ListMajors(ctx context.Context, req *pb.ListMajorsRequest) (*p
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title":        true,
+		"title": true,
 		"faculty_code": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -278,7 +331,7 @@ func (h *Handler) ListMajors(ctx context.Context, req *pb.ListMajorsRequest) (*p
 		var entity pb.Major
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -292,6 +345,7 @@ func (h *Handler) ListMajors(ctx context.Context, req *pb.ListMajorsRequest) (*p
 			return nil, status.Errorf(codes.Internal, "failed to scan major: %v", err)
 		}
 
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -310,9 +364,11 @@ func (h *Handler) ListMajors(ctx context.Context, req *pb.ListMajorsRequest) (*p
 	}
 
 	return &pb.ListMajorsResponse{
-		Majors:   entities,
+		Majors: entities,
 		Total:    total,
 		Page:     page,
 		PageSize: pageSize,
 	}, nil
 }
+
+

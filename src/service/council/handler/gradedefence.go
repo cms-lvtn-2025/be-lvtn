@@ -15,27 +15,46 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateGradeDefence creates a new GradeDefence record
 func (h *Handler) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDefenceRequest) (*pb.CreateGradeDefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-
+	if req.DefenceCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "defence_code is required")
+	}
+	if req.EnrollmentCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "enrollment_code is required")
+	}
+	
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-
+	Note := ""
+	if req.Note != nil {
+		Note = *req.Note
+	}
+	TotalScore := int32(0)
+	if req.TotalScore != nil {
+		TotalScore = *req.TotalScore
+	}
+	
+	
 	// Insert into database
 	query := `
-		INSERT INTO Grade_defence (id, council, secretary, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO GradeDefence (id, defence_code, enrollment_code, note, total_score, created_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Council,
-		req.Secretary,
+		req.DefenceCode,
+		req.EnrollmentCode,
+		Note,
+		TotalScore,
 		req.CreatedBy,
 	)
 
@@ -55,6 +74,18 @@ func (h *Handler) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDef
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetGradeDefence retrieves a GradeDefence by ID
 func (h *Handler) GetGradeDefence(ctx context.Context, req *pb.GetGradeDefenceRequest) (*pb.GetGradeDefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -64,19 +95,21 @@ func (h *Handler) GetGradeDefence(ctx context.Context, req *pb.GetGradeDefenceRe
 	}
 
 	query := `
-		SELECT id, council, secretary, created_at, updated_at, created_by, updated_by
-		FROM Grade_defence
+		SELECT id, defence_code, enrollment_code, note, total_score, created_at, updated_at, created_by, updated_by
+		FROM GradeDefence
 		WHERE id = ?
 	`
 
 	var entity pb.GradeDefence
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
-		&entity.Council,
-		&entity.Secretary,
+		&entity.DefenceCode,
+		&entity.EnrollmentCode,
+		&entity.Note,
+		&entity.TotalScore,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -90,6 +123,7 @@ func (h *Handler) GetGradeDefence(ctx context.Context, req *pb.GetGradeDefenceRe
 		return nil, status.Errorf(codes.Internal, "failed to get gradedefence: %v", err)
 	}
 
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -105,6 +139,18 @@ func (h *Handler) GetGradeDefence(ctx context.Context, req *pb.GetGradeDefenceRe
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // UpdateGradeDefence updates an existing GradeDefence
 func (h *Handler) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDefenceRequest) (*pb.UpdateGradeDefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -117,17 +163,27 @@ func (h *Handler) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDef
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Council != nil {
-		updateFields = append(updateFields, "council = ?")
-		args = append(args, *req.Council)
-
+	if req.DefenceCode != nil {
+		updateFields = append(updateFields, "defence_code = ?")
+		args = append(args, *req.DefenceCode)
+		
 	}
-	if req.Secretary != nil {
-		updateFields = append(updateFields, "secretary = ?")
-		args = append(args, *req.Secretary)
-
+	if req.EnrollmentCode != nil {
+		updateFields = append(updateFields, "enrollment_code = ?")
+		args = append(args, *req.EnrollmentCode)
+		
 	}
-
+	if req.Note != nil {
+		updateFields = append(updateFields, "note = ?")
+		args = append(args, *req.Note)
+		
+	}
+	if req.TotalScore != nil {
+		updateFields = append(updateFields, "total_score = ?")
+		args = append(args, *req.TotalScore)
+		
+	}
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -141,14 +197,14 @@ func (h *Handler) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDef
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
-		UPDATE Grade_defence
+		UPDATE GradeDefence
 		SET %s
 		WHERE id = ?
 	`, strings.Join(updateFields, ", "))
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to UPDATE Grade_defence: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to update gradedefence: %v", err)
 	}
 
 	result, err := h.GetGradeDefence(ctx, &pb.GetGradeDefenceRequest{Id: req.Id})
@@ -160,6 +216,18 @@ func (h *Handler) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDef
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteGradeDefence deletes a GradeDefence by ID
 func (h *Handler) DeleteGradeDefence(ctx context.Context, req *pb.DeleteGradeDefenceRequest) (*pb.DeleteGradeDefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -168,7 +236,7 @@ func (h *Handler) DeleteGradeDefence(ctx context.Context, req *pb.DeleteGradeDef
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Grade_defence WHERE id = ?`
+	query := `DELETE FROM GradeDefence WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -188,6 +256,18 @@ func (h *Handler) DeleteGradeDefence(ctx context.Context, req *pb.DeleteGradeDef
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListGradeDefences lists GradeDefences with pagination and filtering
 func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefencesRequest) (*pb.ListGradeDefencesResponse, error) {
@@ -218,8 +298,11 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"council":   true,
-		"secretary": true,
+		"defence_code": true,
+		"enrollment_code": true,
+		"note": true,
+		"total_score": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -244,7 +327,7 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 	}
 
 	// Get total count
-	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Grade_defence %s", whereClause)
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM GradeDefence %s", whereClause)
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
@@ -254,8 +337,8 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, council, secretary, created_at, updated_at, created_by, updated_by
-		FROM Grade_defence
+		SELECT id, defence_code, enrollment_code, note, total_score, created_at, updated_at, created_by, updated_by
+		FROM GradeDefence
 		%s
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?
@@ -272,11 +355,13 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 		var entity pb.GradeDefence
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-
+		
 		err := rows.Scan(
 			&entity.Id,
-			&entity.Council,
-			&entity.Secretary,
+			&entity.DefenceCode,
+			&entity.EnrollmentCode,
+			&entity.Note,
+			&entity.TotalScore,
 			&createdAt,
 			&updatedAt,
 			&entity.CreatedBy,
@@ -286,6 +371,7 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 			return nil, status.Errorf(codes.Internal, "failed to scan gradedefence: %v", err)
 		}
 
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -305,8 +391,10 @@ func (h *Handler) ListGradeDefences(ctx context.Context, req *pb.ListGradeDefenc
 
 	return &pb.ListGradeDefencesResponse{
 		GradeDefences: entities,
-		Total:         total,
-		Page:          page,
-		PageSize:      pageSize,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
 	}, nil
 }
+
+

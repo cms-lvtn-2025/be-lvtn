@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateFile creates a new File record
 func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*pb.CreateFileResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -32,29 +34,28 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 	if req.TableId == "" {
 		return nil, status.Error(codes.InvalidArgument, "table_id is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-
+	
 	// Convert Status enum to string
 	StatusValue := pb.FileStatus_FILE_PENDING
-
+	
 	StatusValue = req.Status
-	StatusStr := "pending"
+	StatusStr := "file_pending"
 	switch StatusValue {
 	case pb.FileStatus_FILE_PENDING:
-		StatusStr = "pending"
+		StatusStr = "file_pending"
 	case pb.FileStatus_APPROVED:
 		StatusStr = "approved"
 	case pb.FileStatus_REJECTED:
 		StatusStr = "rejected"
 	}
-	fmt.Print(StatusValue)
 	// Convert Table enum to string
 	TableValue := pb.TableType_TOPIC
-
+	
 	TableValue = req.Table
 	TableStr := "topic"
 	switch TableValue {
@@ -67,10 +68,12 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 	case pb.TableType_ORDER:
 		TableStr = "order"
 	}
-
+	
 	// Insert into database
-	query := "INSERT INTO `File` (id, title, file, status, `table`, `option`, table_id, created_by, created_at, updated_at) " +
-		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
+	query := `
+		INSERT INTO File (id, title, file, status, table, option, table_id, created_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
@@ -99,6 +102,18 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetFile retrieves a File by ID
 func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetFileResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -106,19 +121,19 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
-	fmt.Print("chay vao day", req.Id)
+
 	query := `
-	SELECT id, title, file, status, ` + "`table`, `option`" + `, table_id, created_at, updated_at, created_by, updated_by
-	FROM File
-	WHERE id = ?
-`
+		SELECT id, title, file, status, table, option, table_id, created_at, updated_at, created_by, updated_by
+		FROM File
+		WHERE id = ?
+	`
 
 	var entity pb.File
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
 	var TableStr string
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -142,7 +157,7 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 
 	// Convert Status string to enum
 	switch StatusStr {
-	case "pending", "file_pending": // Support both for backward compatibility
+	case "file_pending":
 		entity.Status = pb.FileStatus_FILE_PENDING
 	case "approved":
 		entity.Status = pb.FileStatus_APPROVED
@@ -164,7 +179,7 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 	default:
 		entity.Table = pb.TableType_TOPIC
 	}
-
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -179,6 +194,18 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 		File: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateFile updates an existing File
 func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*pb.UpdateFileResponse, error) {
@@ -195,26 +222,26 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
+		
 	}
 	if req.File != nil {
 		updateFields = append(updateFields, "file = ?")
 		args = append(args, *req.File)
-
+		
 	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
-		StatusStr := "pending"
+		StatusStr := "file_pending"
 		switch *req.Status {
 		case pb.FileStatus_FILE_PENDING:
-			StatusStr = "pending"
+			StatusStr = "file_pending"
 		case pb.FileStatus_APPROVED:
 			StatusStr = "approved"
 		case pb.FileStatus_REJECTED:
 			StatusStr = "rejected"
 		}
 		args = append(args, StatusStr)
-
+		
 	}
 	if req.Table != nil {
 		updateFields = append(updateFields, "table = ?")
@@ -230,19 +257,19 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 			TableStr = "order"
 		}
 		args = append(args, TableStr)
-
+		
 	}
 	if req.Option != nil {
 		updateFields = append(updateFields, "option = ?")
 		args = append(args, *req.Option)
-
+		
 	}
 	if req.TableId != nil {
 		updateFields = append(updateFields, "table_id = ?")
 		args = append(args, *req.TableId)
-
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -275,6 +302,18 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteFile deletes a File by ID
 func (h *Handler) DeleteFile(ctx context.Context, req *pb.DeleteFileRequest) (*pb.DeleteFileResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -303,6 +342,18 @@ func (h *Handler) DeleteFile(ctx context.Context, req *pb.DeleteFileRequest) (*p
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListFiles lists Files with pagination and filtering
 func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.ListFilesResponse, error) {
@@ -333,12 +384,13 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title":    true,
-		"file":     true,
-		"status":   true,
-		"table":    true,
-		"option":   true,
+		"title": true,
+		"file": true,
+		"status": true,
+		"table": true,
+		"option": true,
 		"table_id": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -393,7 +445,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 		var updatedBy sql.NullString
 		var StatusStr string
 		var TableStr string
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -413,7 +465,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 
 		// Convert Status string to enum
 		switch StatusStr {
-		case "pending", "file_pending": // Support both for backward compatibility
+		case "file_pending":
 			entity.Status = pb.FileStatus_FILE_PENDING
 		case "approved":
 			entity.Status = pb.FileStatus_APPROVED
@@ -435,7 +487,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 		default:
 			entity.Table = pb.TableType_TOPIC
 		}
-
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -454,9 +506,11 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 	}
 
 	return &pb.ListFilesResponse{
-		Files:    entities,
+		Files: entities,
 		Total:    total,
 		Page:     page,
 		PageSize: pageSize,
 	}, nil
 }
+
+

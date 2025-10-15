@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateSemester creates a new Semester record
 func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequest) (*pb.CreateSemesterResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -23,12 +25,13 @@ func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequ
 	if req.Title == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-
+	
+	
 	// Insert into database
 	query := `
 		INSERT INTO Semester (id, title, created_by, created_at, updated_at)
@@ -57,6 +60,18 @@ func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequ
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetSemester retrieves a Semester by ID
 func (h *Handler) GetSemester(ctx context.Context, req *pb.GetSemesterRequest) (*pb.GetSemesterResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -74,7 +89,7 @@ func (h *Handler) GetSemester(ctx context.Context, req *pb.GetSemesterRequest) (
 	var entity pb.Semester
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -91,6 +106,7 @@ func (h *Handler) GetSemester(ctx context.Context, req *pb.GetSemesterRequest) (
 		return nil, status.Errorf(codes.Internal, "failed to get semester: %v", err)
 	}
 
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -105,6 +121,18 @@ func (h *Handler) GetSemester(ctx context.Context, req *pb.GetSemesterRequest) (
 		Semester: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateSemester updates an existing Semester
 func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequest) (*pb.UpdateSemesterResponse, error) {
@@ -121,9 +149,9 @@ func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequ
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -156,6 +184,18 @@ func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequ
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteSemester deletes a Semester by ID
 func (h *Handler) DeleteSemester(ctx context.Context, req *pb.DeleteSemesterRequest) (*pb.DeleteSemesterResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -184,6 +224,18 @@ func (h *Handler) DeleteSemester(ctx context.Context, req *pb.DeleteSemesterRequ
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListSemesters lists Semesters with pagination and filtering
 func (h *Handler) ListSemesters(ctx context.Context, req *pb.ListSemestersRequest) (*pb.ListSemestersResponse, error) {
@@ -215,6 +267,7 @@ func (h *Handler) ListSemesters(ctx context.Context, req *pb.ListSemestersReques
 	args := []interface{}{}
 	whiteMap := map[string]bool{
 		"title": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -267,7 +320,7 @@ func (h *Handler) ListSemesters(ctx context.Context, req *pb.ListSemestersReques
 		var entity pb.Semester
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -280,6 +333,7 @@ func (h *Handler) ListSemesters(ctx context.Context, req *pb.ListSemestersReques
 			return nil, status.Errorf(codes.Internal, "failed to scan semester: %v", err)
 		}
 
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -299,8 +353,10 @@ func (h *Handler) ListSemesters(ctx context.Context, req *pb.ListSemestersReques
 
 	return &pb.ListSemestersResponse{
 		Semesters: entities,
-		Total:     total,
-		Page:      page,
-		PageSize:  pageSize,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
 	}, nil
 }
+
+

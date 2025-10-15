@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateMidterm creates a new Midterm record
 func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermRequest) (*pb.CreateMidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -23,7 +25,7 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 	if req.Title == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
@@ -36,10 +38,10 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 	if req.Feedback != nil {
 		Feedback = *req.Feedback
 	}
-
+	
 	// Convert Status enum to string
 	StatusValue := pb.MidtermStatus_NOT_SUBMITTED
-
+	
 	StatusValue = req.Status
 	StatusStr := "not_submitted"
 	switch StatusValue {
@@ -47,10 +49,12 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 		StatusStr = "not_submitted"
 	case pb.MidtermStatus_SUBMITTED:
 		StatusStr = "submitted"
-	case pb.MidtermStatus_GRADED:
-		StatusStr = "graded"
+	case pb.MidtermStatus_PASS:
+		StatusStr = "pass"
+	case pb.MidtermStatus_FAIL:
+		StatusStr = "fail"
 	}
-
+	
 	// Insert into database
 	query := `
 		INSERT INTO Midterm (id, title, grade, status, feedback, created_by, created_at, updated_at)
@@ -82,6 +86,18 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetMidterm retrieves a Midterm by ID
 func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*pb.GetMidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -100,7 +116,7 @@ func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*p
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -126,12 +142,14 @@ func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*p
 		entity.Status = pb.MidtermStatus_NOT_SUBMITTED
 	case "submitted":
 		entity.Status = pb.MidtermStatus_SUBMITTED
-	case "graded":
-		entity.Status = pb.MidtermStatus_GRADED
+	case "pass":
+		entity.Status = pb.MidtermStatus_PASS
+	case "fail":
+		entity.Status = pb.MidtermStatus_FAIL
 	default:
 		entity.Status = pb.MidtermStatus_NOT_SUBMITTED
 	}
-
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -146,6 +164,18 @@ func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*p
 		Midterm: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateMidterm updates an existing Midterm
 func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermRequest) (*pb.UpdateMidtermResponse, error) {
@@ -162,12 +192,12 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
+		
 	}
 	if req.Grade != nil {
 		updateFields = append(updateFields, "grade = ?")
 		args = append(args, *req.Grade)
-
+		
 	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
@@ -177,18 +207,20 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 			StatusStr = "not_submitted"
 		case pb.MidtermStatus_SUBMITTED:
 			StatusStr = "submitted"
-		case pb.MidtermStatus_GRADED:
-			StatusStr = "graded"
+		case pb.MidtermStatus_PASS:
+			StatusStr = "pass"
+		case pb.MidtermStatus_FAIL:
+			StatusStr = "fail"
 		}
 		args = append(args, StatusStr)
-
+		
 	}
 	if req.Feedback != nil {
 		updateFields = append(updateFields, "feedback = ?")
 		args = append(args, *req.Feedback)
-
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -221,6 +253,18 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteMidterm deletes a Midterm by ID
 func (h *Handler) DeleteMidterm(ctx context.Context, req *pb.DeleteMidtermRequest) (*pb.DeleteMidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -249,6 +293,18 @@ func (h *Handler) DeleteMidterm(ctx context.Context, req *pb.DeleteMidtermReques
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListMidterms lists Midterms with pagination and filtering
 func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest) (*pb.ListMidtermsResponse, error) {
@@ -279,10 +335,11 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title":    true,
-		"grade":    true,
-		"status":   true,
+		"title": true,
+		"grade": true,
+		"status": true,
 		"feedback": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -336,7 +393,7 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var StatusStr string
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -358,12 +415,14 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 			entity.Status = pb.MidtermStatus_NOT_SUBMITTED
 		case "submitted":
 			entity.Status = pb.MidtermStatus_SUBMITTED
-		case "graded":
-			entity.Status = pb.MidtermStatus_GRADED
+		case "pass":
+			entity.Status = pb.MidtermStatus_PASS
+		case "fail":
+			entity.Status = pb.MidtermStatus_FAIL
 		default:
 			entity.Status = pb.MidtermStatus_NOT_SUBMITTED
 		}
-
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -388,3 +447,5 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 		PageSize: pageSize,
 	}, nil
 }
+
+

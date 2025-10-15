@@ -19,26 +19,46 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ThesisService_CreateMidterm_FullMethodName    = "/thesis.ThesisService/CreateMidterm"
-	ThesisService_GetMidterm_FullMethodName       = "/thesis.ThesisService/GetMidterm"
-	ThesisService_UpdateMidterm_FullMethodName    = "/thesis.ThesisService/UpdateMidterm"
-	ThesisService_DeleteMidterm_FullMethodName    = "/thesis.ThesisService/DeleteMidterm"
-	ThesisService_ListMidterms_FullMethodName     = "/thesis.ThesisService/ListMidterms"
-	ThesisService_CreateFinal_FullMethodName      = "/thesis.ThesisService/CreateFinal"
-	ThesisService_GetFinal_FullMethodName         = "/thesis.ThesisService/GetFinal"
-	ThesisService_UpdateFinal_FullMethodName      = "/thesis.ThesisService/UpdateFinal"
-	ThesisService_DeleteFinal_FullMethodName      = "/thesis.ThesisService/DeleteFinal"
-	ThesisService_ListFinals_FullMethodName       = "/thesis.ThesisService/ListFinals"
-	ThesisService_CreateEnrollment_FullMethodName = "/thesis.ThesisService/CreateEnrollment"
-	ThesisService_GetEnrollment_FullMethodName    = "/thesis.ThesisService/GetEnrollment"
-	ThesisService_UpdateEnrollment_FullMethodName = "/thesis.ThesisService/UpdateEnrollment"
-	ThesisService_DeleteEnrollment_FullMethodName = "/thesis.ThesisService/DeleteEnrollment"
-	ThesisService_ListEnrollments_FullMethodName  = "/thesis.ThesisService/ListEnrollments"
-	ThesisService_CreateTopic_FullMethodName      = "/thesis.ThesisService/CreateTopic"
-	ThesisService_GetTopic_FullMethodName         = "/thesis.ThesisService/GetTopic"
-	ThesisService_UpdateTopic_FullMethodName      = "/thesis.ThesisService/UpdateTopic"
-	ThesisService_DeleteTopic_FullMethodName      = "/thesis.ThesisService/DeleteTopic"
-	ThesisService_ListTopics_FullMethodName       = "/thesis.ThesisService/ListTopics"
+	ThesisService_CreateMidterm_FullMethodName                = "/thesis.ThesisService/CreateMidterm"
+	ThesisService_GetMidterm_FullMethodName                   = "/thesis.ThesisService/GetMidterm"
+	ThesisService_UpdateMidterm_FullMethodName                = "/thesis.ThesisService/UpdateMidterm"
+	ThesisService_DeleteMidterm_FullMethodName                = "/thesis.ThesisService/DeleteMidterm"
+	ThesisService_ListMidterms_FullMethodName                 = "/thesis.ThesisService/ListMidterms"
+	ThesisService_CreateFinal_FullMethodName                  = "/thesis.ThesisService/CreateFinal"
+	ThesisService_GetFinal_FullMethodName                     = "/thesis.ThesisService/GetFinal"
+	ThesisService_UpdateFinal_FullMethodName                  = "/thesis.ThesisService/UpdateFinal"
+	ThesisService_DeleteFinal_FullMethodName                  = "/thesis.ThesisService/DeleteFinal"
+	ThesisService_ListFinals_FullMethodName                   = "/thesis.ThesisService/ListFinals"
+	ThesisService_CreateEnrollment_FullMethodName             = "/thesis.ThesisService/CreateEnrollment"
+	ThesisService_GetEnrollment_FullMethodName                = "/thesis.ThesisService/GetEnrollment"
+	ThesisService_UpdateEnrollment_FullMethodName             = "/thesis.ThesisService/UpdateEnrollment"
+	ThesisService_DeleteEnrollment_FullMethodName             = "/thesis.ThesisService/DeleteEnrollment"
+	ThesisService_ListEnrollments_FullMethodName              = "/thesis.ThesisService/ListEnrollments"
+	ThesisService_CreateTopic_FullMethodName                  = "/thesis.ThesisService/CreateTopic"
+	ThesisService_GetTopic_FullMethodName                     = "/thesis.ThesisService/GetTopic"
+	ThesisService_UpdateTopic_FullMethodName                  = "/thesis.ThesisService/UpdateTopic"
+	ThesisService_DeleteTopic_FullMethodName                  = "/thesis.ThesisService/DeleteTopic"
+	ThesisService_ListTopics_FullMethodName                   = "/thesis.ThesisService/ListTopics"
+	ThesisService_CreateTopicSupervisor_FullMethodName        = "/thesis.ThesisService/CreateTopicSupervisor"
+	ThesisService_GetTopicSupervisor_FullMethodName           = "/thesis.ThesisService/GetTopicSupervisor"
+	ThesisService_UpdateTopicSupervisor_FullMethodName        = "/thesis.ThesisService/UpdateTopicSupervisor"
+	ThesisService_DeleteTopicSupervisor_FullMethodName        = "/thesis.ThesisService/DeleteTopicSupervisor"
+	ThesisService_ListTopicSupervisors_FullMethodName         = "/thesis.ThesisService/ListTopicSupervisors"
+	ThesisService_CreateTopicCouncil_FullMethodName           = "/thesis.ThesisService/CreateTopicCouncil"
+	ThesisService_GetTopicCouncil_FullMethodName              = "/thesis.ThesisService/GetTopicCouncil"
+	ThesisService_UpdateTopicCouncil_FullMethodName           = "/thesis.ThesisService/UpdateTopicCouncil"
+	ThesisService_DeleteTopicCouncil_FullMethodName           = "/thesis.ThesisService/DeleteTopicCouncil"
+	ThesisService_ListTopicCouncils_FullMethodName            = "/thesis.ThesisService/ListTopicCouncils"
+	ThesisService_CreateTopicCouncilSupervisor_FullMethodName = "/thesis.ThesisService/CreateTopicCouncilSupervisor"
+	ThesisService_GetTopicCouncilSupervisor_FullMethodName    = "/thesis.ThesisService/GetTopicCouncilSupervisor"
+	ThesisService_UpdateTopicCouncilSupervisor_FullMethodName = "/thesis.ThesisService/UpdateTopicCouncilSupervisor"
+	ThesisService_DeleteTopicCouncilSupervisor_FullMethodName = "/thesis.ThesisService/DeleteTopicCouncilSupervisor"
+	ThesisService_ListTopicCouncilSupervisors_FullMethodName  = "/thesis.ThesisService/ListTopicCouncilSupervisors"
+	ThesisService_CreateGradeReview_FullMethodName            = "/thesis.ThesisService/CreateGradeReview"
+	ThesisService_GetGradeReview_FullMethodName               = "/thesis.ThesisService/GetGradeReview"
+	ThesisService_UpdateGradeReview_FullMethodName            = "/thesis.ThesisService/UpdateGradeReview"
+	ThesisService_DeleteGradeReview_FullMethodName            = "/thesis.ThesisService/DeleteGradeReview"
+	ThesisService_ListGradeReviews_FullMethodName             = "/thesis.ThesisService/ListGradeReviews"
 )
 
 // ThesisServiceClient is the client API for ThesisService service.
@@ -71,6 +91,30 @@ type ThesisServiceClient interface {
 	UpdateTopic(ctx context.Context, in *UpdateTopicRequest, opts ...grpc.CallOption) (*UpdateTopicResponse, error)
 	DeleteTopic(ctx context.Context, in *DeleteTopicRequest, opts ...grpc.CallOption) (*DeleteTopicResponse, error)
 	ListTopics(ctx context.Context, in *ListTopicsRequest, opts ...grpc.CallOption) (*ListTopicsResponse, error)
+	// TopicSupervisor
+	CreateTopicSupervisor(ctx context.Context, in *CreateTopicSupervisorRequest, opts ...grpc.CallOption) (*CreateTopicSupervisorResponse, error)
+	GetTopicSupervisor(ctx context.Context, in *GetTopicSupervisorRequest, opts ...grpc.CallOption) (*GetTopicSupervisorResponse, error)
+	UpdateTopicSupervisor(ctx context.Context, in *UpdateTopicSupervisorRequest, opts ...grpc.CallOption) (*UpdateTopicSupervisorResponse, error)
+	DeleteTopicSupervisor(ctx context.Context, in *DeleteTopicSupervisorRequest, opts ...grpc.CallOption) (*DeleteTopicSupervisorResponse, error)
+	ListTopicSupervisors(ctx context.Context, in *ListTopicSupervisorsRequest, opts ...grpc.CallOption) (*ListTopicSupervisorsResponse, error)
+	// TopicCouncil
+	CreateTopicCouncil(ctx context.Context, in *CreateTopicCouncilRequest, opts ...grpc.CallOption) (*CreateTopicCouncilResponse, error)
+	GetTopicCouncil(ctx context.Context, in *GetTopicCouncilRequest, opts ...grpc.CallOption) (*GetTopicCouncilResponse, error)
+	UpdateTopicCouncil(ctx context.Context, in *UpdateTopicCouncilRequest, opts ...grpc.CallOption) (*UpdateTopicCouncilResponse, error)
+	DeleteTopicCouncil(ctx context.Context, in *DeleteTopicCouncilRequest, opts ...grpc.CallOption) (*DeleteTopicCouncilResponse, error)
+	ListTopicCouncils(ctx context.Context, in *ListTopicCouncilsRequest, opts ...grpc.CallOption) (*ListTopicCouncilsResponse, error)
+	// TopicCouncilSupervisor
+	CreateTopicCouncilSupervisor(ctx context.Context, in *CreateTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*CreateTopicCouncilSupervisorResponse, error)
+	GetTopicCouncilSupervisor(ctx context.Context, in *GetTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*GetTopicCouncilSupervisorResponse, error)
+	UpdateTopicCouncilSupervisor(ctx context.Context, in *UpdateTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*UpdateTopicCouncilSupervisorResponse, error)
+	DeleteTopicCouncilSupervisor(ctx context.Context, in *DeleteTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*DeleteTopicCouncilSupervisorResponse, error)
+	ListTopicCouncilSupervisors(ctx context.Context, in *ListTopicCouncilSupervisorsRequest, opts ...grpc.CallOption) (*ListTopicCouncilSupervisorsResponse, error)
+	// GradeReview
+	CreateGradeReview(ctx context.Context, in *CreateGradeReviewRequest, opts ...grpc.CallOption) (*CreateGradeReviewResponse, error)
+	GetGradeReview(ctx context.Context, in *GetGradeReviewRequest, opts ...grpc.CallOption) (*GetGradeReviewResponse, error)
+	UpdateGradeReview(ctx context.Context, in *UpdateGradeReviewRequest, opts ...grpc.CallOption) (*UpdateGradeReviewResponse, error)
+	DeleteGradeReview(ctx context.Context, in *DeleteGradeReviewRequest, opts ...grpc.CallOption) (*DeleteGradeReviewResponse, error)
+	ListGradeReviews(ctx context.Context, in *ListGradeReviewsRequest, opts ...grpc.CallOption) (*ListGradeReviewsResponse, error)
 }
 
 type thesisServiceClient struct {
@@ -281,6 +325,206 @@ func (c *thesisServiceClient) ListTopics(ctx context.Context, in *ListTopicsRequ
 	return out, nil
 }
 
+func (c *thesisServiceClient) CreateTopicSupervisor(ctx context.Context, in *CreateTopicSupervisorRequest, opts ...grpc.CallOption) (*CreateTopicSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateTopicSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_CreateTopicSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) GetTopicSupervisor(ctx context.Context, in *GetTopicSupervisorRequest, opts ...grpc.CallOption) (*GetTopicSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTopicSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_GetTopicSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) UpdateTopicSupervisor(ctx context.Context, in *UpdateTopicSupervisorRequest, opts ...grpc.CallOption) (*UpdateTopicSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateTopicSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_UpdateTopicSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) DeleteTopicSupervisor(ctx context.Context, in *DeleteTopicSupervisorRequest, opts ...grpc.CallOption) (*DeleteTopicSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteTopicSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_DeleteTopicSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) ListTopicSupervisors(ctx context.Context, in *ListTopicSupervisorsRequest, opts ...grpc.CallOption) (*ListTopicSupervisorsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListTopicSupervisorsResponse)
+	err := c.cc.Invoke(ctx, ThesisService_ListTopicSupervisors_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) CreateTopicCouncil(ctx context.Context, in *CreateTopicCouncilRequest, opts ...grpc.CallOption) (*CreateTopicCouncilResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateTopicCouncilResponse)
+	err := c.cc.Invoke(ctx, ThesisService_CreateTopicCouncil_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) GetTopicCouncil(ctx context.Context, in *GetTopicCouncilRequest, opts ...grpc.CallOption) (*GetTopicCouncilResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTopicCouncilResponse)
+	err := c.cc.Invoke(ctx, ThesisService_GetTopicCouncil_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) UpdateTopicCouncil(ctx context.Context, in *UpdateTopicCouncilRequest, opts ...grpc.CallOption) (*UpdateTopicCouncilResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateTopicCouncilResponse)
+	err := c.cc.Invoke(ctx, ThesisService_UpdateTopicCouncil_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) DeleteTopicCouncil(ctx context.Context, in *DeleteTopicCouncilRequest, opts ...grpc.CallOption) (*DeleteTopicCouncilResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteTopicCouncilResponse)
+	err := c.cc.Invoke(ctx, ThesisService_DeleteTopicCouncil_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) ListTopicCouncils(ctx context.Context, in *ListTopicCouncilsRequest, opts ...grpc.CallOption) (*ListTopicCouncilsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListTopicCouncilsResponse)
+	err := c.cc.Invoke(ctx, ThesisService_ListTopicCouncils_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) CreateTopicCouncilSupervisor(ctx context.Context, in *CreateTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*CreateTopicCouncilSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateTopicCouncilSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_CreateTopicCouncilSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) GetTopicCouncilSupervisor(ctx context.Context, in *GetTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*GetTopicCouncilSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTopicCouncilSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_GetTopicCouncilSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) UpdateTopicCouncilSupervisor(ctx context.Context, in *UpdateTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*UpdateTopicCouncilSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateTopicCouncilSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_UpdateTopicCouncilSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) DeleteTopicCouncilSupervisor(ctx context.Context, in *DeleteTopicCouncilSupervisorRequest, opts ...grpc.CallOption) (*DeleteTopicCouncilSupervisorResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteTopicCouncilSupervisorResponse)
+	err := c.cc.Invoke(ctx, ThesisService_DeleteTopicCouncilSupervisor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) ListTopicCouncilSupervisors(ctx context.Context, in *ListTopicCouncilSupervisorsRequest, opts ...grpc.CallOption) (*ListTopicCouncilSupervisorsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListTopicCouncilSupervisorsResponse)
+	err := c.cc.Invoke(ctx, ThesisService_ListTopicCouncilSupervisors_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) CreateGradeReview(ctx context.Context, in *CreateGradeReviewRequest, opts ...grpc.CallOption) (*CreateGradeReviewResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateGradeReviewResponse)
+	err := c.cc.Invoke(ctx, ThesisService_CreateGradeReview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) GetGradeReview(ctx context.Context, in *GetGradeReviewRequest, opts ...grpc.CallOption) (*GetGradeReviewResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetGradeReviewResponse)
+	err := c.cc.Invoke(ctx, ThesisService_GetGradeReview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) UpdateGradeReview(ctx context.Context, in *UpdateGradeReviewRequest, opts ...grpc.CallOption) (*UpdateGradeReviewResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateGradeReviewResponse)
+	err := c.cc.Invoke(ctx, ThesisService_UpdateGradeReview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) DeleteGradeReview(ctx context.Context, in *DeleteGradeReviewRequest, opts ...grpc.CallOption) (*DeleteGradeReviewResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteGradeReviewResponse)
+	err := c.cc.Invoke(ctx, ThesisService_DeleteGradeReview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *thesisServiceClient) ListGradeReviews(ctx context.Context, in *ListGradeReviewsRequest, opts ...grpc.CallOption) (*ListGradeReviewsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListGradeReviewsResponse)
+	err := c.cc.Invoke(ctx, ThesisService_ListGradeReviews_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ThesisServiceServer is the server API for ThesisService service.
 // All implementations must embed UnimplementedThesisServiceServer
 // for forward compatibility.
@@ -311,6 +555,30 @@ type ThesisServiceServer interface {
 	UpdateTopic(context.Context, *UpdateTopicRequest) (*UpdateTopicResponse, error)
 	DeleteTopic(context.Context, *DeleteTopicRequest) (*DeleteTopicResponse, error)
 	ListTopics(context.Context, *ListTopicsRequest) (*ListTopicsResponse, error)
+	// TopicSupervisor
+	CreateTopicSupervisor(context.Context, *CreateTopicSupervisorRequest) (*CreateTopicSupervisorResponse, error)
+	GetTopicSupervisor(context.Context, *GetTopicSupervisorRequest) (*GetTopicSupervisorResponse, error)
+	UpdateTopicSupervisor(context.Context, *UpdateTopicSupervisorRequest) (*UpdateTopicSupervisorResponse, error)
+	DeleteTopicSupervisor(context.Context, *DeleteTopicSupervisorRequest) (*DeleteTopicSupervisorResponse, error)
+	ListTopicSupervisors(context.Context, *ListTopicSupervisorsRequest) (*ListTopicSupervisorsResponse, error)
+	// TopicCouncil
+	CreateTopicCouncil(context.Context, *CreateTopicCouncilRequest) (*CreateTopicCouncilResponse, error)
+	GetTopicCouncil(context.Context, *GetTopicCouncilRequest) (*GetTopicCouncilResponse, error)
+	UpdateTopicCouncil(context.Context, *UpdateTopicCouncilRequest) (*UpdateTopicCouncilResponse, error)
+	DeleteTopicCouncil(context.Context, *DeleteTopicCouncilRequest) (*DeleteTopicCouncilResponse, error)
+	ListTopicCouncils(context.Context, *ListTopicCouncilsRequest) (*ListTopicCouncilsResponse, error)
+	// TopicCouncilSupervisor
+	CreateTopicCouncilSupervisor(context.Context, *CreateTopicCouncilSupervisorRequest) (*CreateTopicCouncilSupervisorResponse, error)
+	GetTopicCouncilSupervisor(context.Context, *GetTopicCouncilSupervisorRequest) (*GetTopicCouncilSupervisorResponse, error)
+	UpdateTopicCouncilSupervisor(context.Context, *UpdateTopicCouncilSupervisorRequest) (*UpdateTopicCouncilSupervisorResponse, error)
+	DeleteTopicCouncilSupervisor(context.Context, *DeleteTopicCouncilSupervisorRequest) (*DeleteTopicCouncilSupervisorResponse, error)
+	ListTopicCouncilSupervisors(context.Context, *ListTopicCouncilSupervisorsRequest) (*ListTopicCouncilSupervisorsResponse, error)
+	// GradeReview
+	CreateGradeReview(context.Context, *CreateGradeReviewRequest) (*CreateGradeReviewResponse, error)
+	GetGradeReview(context.Context, *GetGradeReviewRequest) (*GetGradeReviewResponse, error)
+	UpdateGradeReview(context.Context, *UpdateGradeReviewRequest) (*UpdateGradeReviewResponse, error)
+	DeleteGradeReview(context.Context, *DeleteGradeReviewRequest) (*DeleteGradeReviewResponse, error)
+	ListGradeReviews(context.Context, *ListGradeReviewsRequest) (*ListGradeReviewsResponse, error)
 	mustEmbedUnimplementedThesisServiceServer()
 }
 
@@ -380,6 +648,66 @@ func (UnimplementedThesisServiceServer) DeleteTopic(context.Context, *DeleteTopi
 }
 func (UnimplementedThesisServiceServer) ListTopics(context.Context, *ListTopicsRequest) (*ListTopicsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTopics not implemented")
+}
+func (UnimplementedThesisServiceServer) CreateTopicSupervisor(context.Context, *CreateTopicSupervisorRequest) (*CreateTopicSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTopicSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) GetTopicSupervisor(context.Context, *GetTopicSupervisorRequest) (*GetTopicSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTopicSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) UpdateTopicSupervisor(context.Context, *UpdateTopicSupervisorRequest) (*UpdateTopicSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTopicSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) DeleteTopicSupervisor(context.Context, *DeleteTopicSupervisorRequest) (*DeleteTopicSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTopicSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) ListTopicSupervisors(context.Context, *ListTopicSupervisorsRequest) (*ListTopicSupervisorsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTopicSupervisors not implemented")
+}
+func (UnimplementedThesisServiceServer) CreateTopicCouncil(context.Context, *CreateTopicCouncilRequest) (*CreateTopicCouncilResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTopicCouncil not implemented")
+}
+func (UnimplementedThesisServiceServer) GetTopicCouncil(context.Context, *GetTopicCouncilRequest) (*GetTopicCouncilResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTopicCouncil not implemented")
+}
+func (UnimplementedThesisServiceServer) UpdateTopicCouncil(context.Context, *UpdateTopicCouncilRequest) (*UpdateTopicCouncilResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTopicCouncil not implemented")
+}
+func (UnimplementedThesisServiceServer) DeleteTopicCouncil(context.Context, *DeleteTopicCouncilRequest) (*DeleteTopicCouncilResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTopicCouncil not implemented")
+}
+func (UnimplementedThesisServiceServer) ListTopicCouncils(context.Context, *ListTopicCouncilsRequest) (*ListTopicCouncilsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTopicCouncils not implemented")
+}
+func (UnimplementedThesisServiceServer) CreateTopicCouncilSupervisor(context.Context, *CreateTopicCouncilSupervisorRequest) (*CreateTopicCouncilSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTopicCouncilSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) GetTopicCouncilSupervisor(context.Context, *GetTopicCouncilSupervisorRequest) (*GetTopicCouncilSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTopicCouncilSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) UpdateTopicCouncilSupervisor(context.Context, *UpdateTopicCouncilSupervisorRequest) (*UpdateTopicCouncilSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTopicCouncilSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) DeleteTopicCouncilSupervisor(context.Context, *DeleteTopicCouncilSupervisorRequest) (*DeleteTopicCouncilSupervisorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTopicCouncilSupervisor not implemented")
+}
+func (UnimplementedThesisServiceServer) ListTopicCouncilSupervisors(context.Context, *ListTopicCouncilSupervisorsRequest) (*ListTopicCouncilSupervisorsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTopicCouncilSupervisors not implemented")
+}
+func (UnimplementedThesisServiceServer) CreateGradeReview(context.Context, *CreateGradeReviewRequest) (*CreateGradeReviewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGradeReview not implemented")
+}
+func (UnimplementedThesisServiceServer) GetGradeReview(context.Context, *GetGradeReviewRequest) (*GetGradeReviewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGradeReview not implemented")
+}
+func (UnimplementedThesisServiceServer) UpdateGradeReview(context.Context, *UpdateGradeReviewRequest) (*UpdateGradeReviewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGradeReview not implemented")
+}
+func (UnimplementedThesisServiceServer) DeleteGradeReview(context.Context, *DeleteGradeReviewRequest) (*DeleteGradeReviewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGradeReview not implemented")
+}
+func (UnimplementedThesisServiceServer) ListGradeReviews(context.Context, *ListGradeReviewsRequest) (*ListGradeReviewsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGradeReviews not implemented")
 }
 func (UnimplementedThesisServiceServer) mustEmbedUnimplementedThesisServiceServer() {}
 func (UnimplementedThesisServiceServer) testEmbeddedByValue()                       {}
@@ -762,6 +1090,366 @@ func _ThesisService_ListTopics_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ThesisService_CreateTopicSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTopicSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).CreateTopicSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_CreateTopicSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).CreateTopicSupervisor(ctx, req.(*CreateTopicSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_GetTopicSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTopicSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).GetTopicSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_GetTopicSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).GetTopicSupervisor(ctx, req.(*GetTopicSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_UpdateTopicSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTopicSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).UpdateTopicSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_UpdateTopicSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).UpdateTopicSupervisor(ctx, req.(*UpdateTopicSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_DeleteTopicSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTopicSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).DeleteTopicSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_DeleteTopicSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).DeleteTopicSupervisor(ctx, req.(*DeleteTopicSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_ListTopicSupervisors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTopicSupervisorsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).ListTopicSupervisors(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_ListTopicSupervisors_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).ListTopicSupervisors(ctx, req.(*ListTopicSupervisorsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_CreateTopicCouncil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTopicCouncilRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).CreateTopicCouncil(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_CreateTopicCouncil_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).CreateTopicCouncil(ctx, req.(*CreateTopicCouncilRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_GetTopicCouncil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTopicCouncilRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).GetTopicCouncil(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_GetTopicCouncil_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).GetTopicCouncil(ctx, req.(*GetTopicCouncilRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_UpdateTopicCouncil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTopicCouncilRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).UpdateTopicCouncil(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_UpdateTopicCouncil_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).UpdateTopicCouncil(ctx, req.(*UpdateTopicCouncilRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_DeleteTopicCouncil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTopicCouncilRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).DeleteTopicCouncil(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_DeleteTopicCouncil_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).DeleteTopicCouncil(ctx, req.(*DeleteTopicCouncilRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_ListTopicCouncils_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTopicCouncilsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).ListTopicCouncils(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_ListTopicCouncils_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).ListTopicCouncils(ctx, req.(*ListTopicCouncilsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_CreateTopicCouncilSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTopicCouncilSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).CreateTopicCouncilSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_CreateTopicCouncilSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).CreateTopicCouncilSupervisor(ctx, req.(*CreateTopicCouncilSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_GetTopicCouncilSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTopicCouncilSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).GetTopicCouncilSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_GetTopicCouncilSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).GetTopicCouncilSupervisor(ctx, req.(*GetTopicCouncilSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_UpdateTopicCouncilSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTopicCouncilSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).UpdateTopicCouncilSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_UpdateTopicCouncilSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).UpdateTopicCouncilSupervisor(ctx, req.(*UpdateTopicCouncilSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_DeleteTopicCouncilSupervisor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTopicCouncilSupervisorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).DeleteTopicCouncilSupervisor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_DeleteTopicCouncilSupervisor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).DeleteTopicCouncilSupervisor(ctx, req.(*DeleteTopicCouncilSupervisorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_ListTopicCouncilSupervisors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTopicCouncilSupervisorsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).ListTopicCouncilSupervisors(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_ListTopicCouncilSupervisors_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).ListTopicCouncilSupervisors(ctx, req.(*ListTopicCouncilSupervisorsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_CreateGradeReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGradeReviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).CreateGradeReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_CreateGradeReview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).CreateGradeReview(ctx, req.(*CreateGradeReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_GetGradeReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGradeReviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).GetGradeReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_GetGradeReview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).GetGradeReview(ctx, req.(*GetGradeReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_UpdateGradeReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateGradeReviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).UpdateGradeReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_UpdateGradeReview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).UpdateGradeReview(ctx, req.(*UpdateGradeReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_DeleteGradeReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGradeReviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).DeleteGradeReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_DeleteGradeReview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).DeleteGradeReview(ctx, req.(*DeleteGradeReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ThesisService_ListGradeReviews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGradeReviewsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ThesisServiceServer).ListGradeReviews(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ThesisService_ListGradeReviews_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ThesisServiceServer).ListGradeReviews(ctx, req.(*ListGradeReviewsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ThesisService_ServiceDesc is the grpc.ServiceDesc for ThesisService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -848,6 +1536,86 @@ var ThesisService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListTopics",
 			Handler:    _ThesisService_ListTopics_Handler,
+		},
+		{
+			MethodName: "CreateTopicSupervisor",
+			Handler:    _ThesisService_CreateTopicSupervisor_Handler,
+		},
+		{
+			MethodName: "GetTopicSupervisor",
+			Handler:    _ThesisService_GetTopicSupervisor_Handler,
+		},
+		{
+			MethodName: "UpdateTopicSupervisor",
+			Handler:    _ThesisService_UpdateTopicSupervisor_Handler,
+		},
+		{
+			MethodName: "DeleteTopicSupervisor",
+			Handler:    _ThesisService_DeleteTopicSupervisor_Handler,
+		},
+		{
+			MethodName: "ListTopicSupervisors",
+			Handler:    _ThesisService_ListTopicSupervisors_Handler,
+		},
+		{
+			MethodName: "CreateTopicCouncil",
+			Handler:    _ThesisService_CreateTopicCouncil_Handler,
+		},
+		{
+			MethodName: "GetTopicCouncil",
+			Handler:    _ThesisService_GetTopicCouncil_Handler,
+		},
+		{
+			MethodName: "UpdateTopicCouncil",
+			Handler:    _ThesisService_UpdateTopicCouncil_Handler,
+		},
+		{
+			MethodName: "DeleteTopicCouncil",
+			Handler:    _ThesisService_DeleteTopicCouncil_Handler,
+		},
+		{
+			MethodName: "ListTopicCouncils",
+			Handler:    _ThesisService_ListTopicCouncils_Handler,
+		},
+		{
+			MethodName: "CreateTopicCouncilSupervisor",
+			Handler:    _ThesisService_CreateTopicCouncilSupervisor_Handler,
+		},
+		{
+			MethodName: "GetTopicCouncilSupervisor",
+			Handler:    _ThesisService_GetTopicCouncilSupervisor_Handler,
+		},
+		{
+			MethodName: "UpdateTopicCouncilSupervisor",
+			Handler:    _ThesisService_UpdateTopicCouncilSupervisor_Handler,
+		},
+		{
+			MethodName: "DeleteTopicCouncilSupervisor",
+			Handler:    _ThesisService_DeleteTopicCouncilSupervisor_Handler,
+		},
+		{
+			MethodName: "ListTopicCouncilSupervisors",
+			Handler:    _ThesisService_ListTopicCouncilSupervisors_Handler,
+		},
+		{
+			MethodName: "CreateGradeReview",
+			Handler:    _ThesisService_CreateGradeReview_Handler,
+		},
+		{
+			MethodName: "GetGradeReview",
+			Handler:    _ThesisService_GetGradeReview_Handler,
+		},
+		{
+			MethodName: "UpdateGradeReview",
+			Handler:    _ThesisService_UpdateGradeReview_Handler,
+		},
+		{
+			MethodName: "DeleteGradeReview",
+			Handler:    _ThesisService_DeleteGradeReview_Handler,
+		},
+		{
+			MethodName: "ListGradeReviews",
+			Handler:    _ThesisService_ListGradeReviews_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

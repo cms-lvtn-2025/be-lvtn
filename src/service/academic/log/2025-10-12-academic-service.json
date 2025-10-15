@@ -1,2 +1,0 @@
-{"duration_ms":1,"method":"/academic.AcademicService/GetSemester","queries":[],"request_id":"4168efed-e5ad-4e6d-8bb7-f829be308fbd","service_name":"academic-service","success":true,"timestamp":"2025-10-12T14:57:37+07:00","trace":{"function_name":"GetSemester","duration_ms":1}}
-{"duration_ms":1,"method":"/academic.AcademicService/GetMajor","queries":[],"request_id":"45eaf256-7af2-47f3-8127-57066e21f4a4","service_name":"academic-service","success":true,"timestamp":"2025-10-12T14:57:37+07:00","trace":{"function_name":"GetMajor","duration_ms":1}}

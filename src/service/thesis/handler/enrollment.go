@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateEnrollment creates a new Enrollment record
 func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollmentRequest) (*pb.CreateEnrollmentResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -26,10 +28,10 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 	if req.StudentCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "student_code is required")
 	}
-	if req.MidtermCode == "" {
-		return nil, status.Error(codes.InvalidArgument, "midterm_code is required")
+	if req.TopicCouncilCode == "" {
+		return nil, status.Error(codes.InvalidArgument, "topic_council_code is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
@@ -38,14 +40,19 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 	if req.FinalCode != nil {
 		FinalCode = *req.FinalCode
 	}
-	GradeCode := ""
-	if req.GradeCode != nil {
-		GradeCode = *req.GradeCode
+	GradeReviewCode := ""
+	if req.GradeReviewCode != nil {
+		GradeReviewCode = *req.GradeReviewCode
 	}
-
+	MidtermCode := ""
+	if req.MidtermCode != nil {
+		MidtermCode = *req.MidtermCode
+	}
+	
+	
 	// Insert into database
 	query := `
-		INSERT INTO Enrollment (id, title, student_code, midterm_code, topic_code, final_code, grade_code, created_by, created_at, updated_at)
+		INSERT INTO Enrollment (id, title, student_code, topic_council_code, final_code, grade_review_code, midterm_code, created_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
@@ -53,10 +60,10 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 		id,
 		req.Title,
 		req.StudentCode,
-		req.MidtermCode,
-		req.TopicCode,
+		req.TopicCouncilCode,
 		FinalCode,
-		GradeCode,
+		GradeReviewCode,
+		MidtermCode,
 		req.CreatedBy,
 	)
 
@@ -76,6 +83,18 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetEnrollment retrieves a Enrollment by ID
 func (h *Handler) GetEnrollment(ctx context.Context, req *pb.GetEnrollmentRequest) (*pb.GetEnrollmentResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -85,7 +104,7 @@ func (h *Handler) GetEnrollment(ctx context.Context, req *pb.GetEnrollmentReques
 	}
 
 	query := `
-		SELECT id, title, student_code, midterm_code, final_code, grade_code, created_at, updated_at, created_by, updated_by
+		SELECT id, title, student_code, topic_council_code, final_code, grade_review_code, midterm_code, created_at, updated_at, created_by, updated_by
 		FROM Enrollment
 		WHERE id = ?
 	`
@@ -93,15 +112,15 @@ func (h *Handler) GetEnrollment(ctx context.Context, req *pb.GetEnrollmentReques
 	var entity pb.Enrollment
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.StudentCode,
-		&entity.MidtermCode,
-		&entity.TopicCode,
+		&entity.TopicCouncilCode,
 		&entity.FinalCode,
-		&entity.GradeCode,
+		&entity.GradeReviewCode,
+		&entity.MidtermCode,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -115,6 +134,7 @@ func (h *Handler) GetEnrollment(ctx context.Context, req *pb.GetEnrollmentReques
 		return nil, status.Errorf(codes.Internal, "failed to get enrollment: %v", err)
 	}
 
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -129,6 +149,18 @@ func (h *Handler) GetEnrollment(ctx context.Context, req *pb.GetEnrollmentReques
 		Enrollment: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateEnrollment updates an existing Enrollment
 func (h *Handler) UpdateEnrollment(ctx context.Context, req *pb.UpdateEnrollmentRequest) (*pb.UpdateEnrollmentResponse, error) {
@@ -145,33 +177,34 @@ func (h *Handler) UpdateEnrollment(ctx context.Context, req *pb.UpdateEnrollment
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
+		
 	}
 	if req.StudentCode != nil {
 		updateFields = append(updateFields, "student_code = ?")
 		args = append(args, *req.StudentCode)
-
+		
 	}
-	if req.MidtermCode != nil {
-		updateFields = append(updateFields, "midterm_code = ?")
-		args = append(args, *req.MidtermCode)
-
+	if req.TopicCouncilCode != nil {
+		updateFields = append(updateFields, "topic_council_code = ?")
+		args = append(args, *req.TopicCouncilCode)
+		
 	}
 	if req.FinalCode != nil {
 		updateFields = append(updateFields, "final_code = ?")
 		args = append(args, *req.FinalCode)
-
+		
 	}
-	if req.GradeCode != nil {
-		updateFields = append(updateFields, "grade_code = ?")
-		args = append(args, *req.GradeCode)
-
+	if req.GradeReviewCode != nil {
+		updateFields = append(updateFields, "grade_review_code = ?")
+		args = append(args, *req.GradeReviewCode)
+		
 	}
-	if req.TopicCode != nil {
-		updateFields = append(updateFields, "topic_code = ?")
-		args = append(args, *req.TopicCode)
+	if req.MidtermCode != nil {
+		updateFields = append(updateFields, "midterm_code = ?")
+		args = append(args, *req.MidtermCode)
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -204,6 +237,18 @@ func (h *Handler) UpdateEnrollment(ctx context.Context, req *pb.UpdateEnrollment
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteEnrollment deletes a Enrollment by ID
 func (h *Handler) DeleteEnrollment(ctx context.Context, req *pb.DeleteEnrollmentRequest) (*pb.DeleteEnrollmentResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -232,6 +277,18 @@ func (h *Handler) DeleteEnrollment(ctx context.Context, req *pb.DeleteEnrollment
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListEnrollments lists Enrollments with pagination and filtering
 func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRequest) (*pb.ListEnrollmentsResponse, error) {
@@ -262,12 +319,13 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title":        true,
+		"title": true,
 		"student_code": true,
+		"topic_council_code": true,
+		"final_code": true,
+		"grade_review_code": true,
 		"midterm_code": true,
-		"topic_code":   true,
-		"final_code":   true,
-		"grade_code":   true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -302,7 +360,7 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, student_code, midterm_code, topic_code, final_code, grade_code, created_at, updated_at, created_by, updated_by
+		SELECT id, title, student_code, topic_council_code, final_code, grade_review_code, midterm_code, created_at, updated_at, created_by, updated_by
 		FROM Enrollment
 		%s
 		ORDER BY %s %s
@@ -320,15 +378,15 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 		var entity pb.Enrollment
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
 			&entity.StudentCode,
-			&entity.MidtermCode,
-			&entity.TopicCode,
+			&entity.TopicCouncilCode,
 			&entity.FinalCode,
-			&entity.GradeCode,
+			&entity.GradeReviewCode,
+			&entity.MidtermCode,
 			&createdAt,
 			&updatedAt,
 			&entity.CreatedBy,
@@ -338,6 +396,7 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 			return nil, status.Errorf(codes.Internal, "failed to scan enrollment: %v", err)
 		}
 
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -357,8 +416,10 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 
 	return &pb.ListEnrollmentsResponse{
 		Enrollments: entities,
-		Total:       total,
-		Page:        page,
-		PageSize:    pageSize,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
 	}, nil
 }
+
+

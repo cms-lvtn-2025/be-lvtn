@@ -26,29 +26,37 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 	if req.MajorCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "major_code is required")
 	}
-
 	if req.SemesterCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
-	}
-	if req.TeacherSupervisorCode == "" {
-		return nil, status.Error(codes.InvalidArgument, "teacher_supervisor_code is required")
 	}
 
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
+	PercentStage_1 := int32(0)
+	if req.PercentStage_1 != nil {
+		PercentStage_1 = *req.PercentStage_1
+	}
+	PercentStage_2 := int32(0)
+	if req.PercentStage_2 != nil {
+		PercentStage_2 = *req.PercentStage_2
+	}
 
 	// Convert Status enum to string
-	StatusValue := pb.TopicStatus_TOPIC_PENDING
+	StatusValue := pb.TopicStatus_SUBMIT
 
 	StatusValue = req.Status
-	StatusStr := "topic_pending"
+	StatusStr := "submit"
 	switch StatusValue {
+	case pb.TopicStatus_SUBMIT:
+		StatusStr = "submit"
 	case pb.TopicStatus_TOPIC_PENDING:
 		StatusStr = "topic_pending"
-	case pb.TopicStatus_APPROVED:
-		StatusStr = "approved"
+	case pb.TopicStatus_APPROVED_1:
+		StatusStr = "approved_1"
+	case pb.TopicStatus_APPROVED_2:
+		StatusStr = "approved_2"
 	case pb.TopicStatus_IN_PROGRESS:
 		StatusStr = "in_progress"
 	case pb.TopicStatus_TOPIC_COMPLETED:
@@ -59,8 +67,8 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 
 	// Insert into database
 	query := `
-		INSERT INTO Topic (id, title, major_code, semester_code, teacher_supervisor_code, status,time_start, time_end, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,? NOW(), NOW())
+		INSERT INTO Topic (id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -68,10 +76,9 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 		req.Title,
 		req.MajorCode,
 		req.SemesterCode,
-		req.TeacherSupervisorCode,
-		req.TimeStart,
-		req.TimeEnd,
 		StatusStr,
+		PercentStage_1,
+		PercentStage_2,
 		req.CreatedBy,
 	)
 
@@ -100,13 +107,13 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 	}
 
 	query := `
-		SELECT id, title, major_code, semester_code, teacher_supervisor_code, status, time_start, time_end, created_at, updated_at, created_by, updated_by
+		SELECT id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_at, updated_at, created_by, updated_by
 		FROM Topic
 		WHERE id = ?
 	`
 
 	var entity pb.Topic
-	var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
+	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
 
@@ -115,10 +122,9 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 		&entity.Title,
 		&entity.MajorCode,
 		&entity.SemesterCode,
-		&entity.TeacherSupervisorCode,
 		&StatusStr,
-		&timeStart,
-		&timeEnd,
+		&entity.PercentStage_1,
+		&entity.PercentStage_2,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -134,10 +140,14 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 
 	// Convert Status string to enum
 	switch StatusStr {
+	case "submit":
+		entity.Status = pb.TopicStatus_SUBMIT
 	case "topic_pending":
 		entity.Status = pb.TopicStatus_TOPIC_PENDING
-	case "approved":
-		entity.Status = pb.TopicStatus_APPROVED
+	case "approved_1":
+		entity.Status = pb.TopicStatus_APPROVED_1
+	case "approved_2":
+		entity.Status = pb.TopicStatus_APPROVED_2
 	case "in_progress":
 		entity.Status = pb.TopicStatus_IN_PROGRESS
 	case "topic_completed":
@@ -145,7 +155,7 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 	case "rejected":
 		entity.Status = pb.TopicStatus_REJECTED
 	default:
-		entity.Status = pb.TopicStatus_TOPIC_PENDING
+		entity.Status = pb.TopicStatus_SUBMIT
 	}
 
 	if createdAt.Valid {
@@ -156,12 +166,6 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 	}
 	if updatedBy.Valid {
 		entity.UpdatedBy = updatedBy.String
-	}
-	if timeStart.Valid {
-		entity.TimeStart = timestamppb.New(timeStart.Time)
-	}
-	if timeEnd.Valid {
-		entity.TimeEnd = timestamppb.New(timeEnd.Time)
 	}
 
 	return &pb.GetTopicResponse{
@@ -191,32 +195,23 @@ func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (
 		args = append(args, *req.MajorCode)
 
 	}
-
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
 
 	}
-	if req.TeacherSupervisorCode != nil {
-		updateFields = append(updateFields, "teacher_supervisor_code = ?")
-		args = append(args, *req.TeacherSupervisorCode)
-	}
-	if req.TimeStart != nil {
-		updateFields = append(updateFields, "time_start = ?")
-		args = append(args, *req.TimeStart)
-	}
-	if req.TimeEnd != nil {
-		updateFields = append(updateFields, "time_end = ?")
-		args = append(args, *req.TimeEnd)
-	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
-		StatusStr := "topic_pending"
+		StatusStr := "submit"
 		switch *req.Status {
+		case pb.TopicStatus_SUBMIT:
+			StatusStr = "submit"
 		case pb.TopicStatus_TOPIC_PENDING:
 			StatusStr = "topic_pending"
-		case pb.TopicStatus_APPROVED:
-			StatusStr = "approved"
+		case pb.TopicStatus_APPROVED_1:
+			StatusStr = "approved_1"
+		case pb.TopicStatus_APPROVED_2:
+			StatusStr = "approved_2"
 		case pb.TopicStatus_IN_PROGRESS:
 			StatusStr = "in_progress"
 		case pb.TopicStatus_TOPIC_COMPLETED:
@@ -225,6 +220,16 @@ func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (
 			StatusStr = "rejected"
 		}
 		args = append(args, StatusStr)
+
+	}
+	if req.PercentStage_1 != nil {
+		updateFields = append(updateFields, "percent_stage_1 = ?")
+		args = append(args, *req.PercentStage_1)
+
+	}
+	if req.PercentStage_2 != nil {
+		updateFields = append(updateFields, "percent_stage_2 = ?")
+		args = append(args, *req.PercentStage_2)
 
 	}
 
@@ -318,11 +323,12 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title":                   true,
-		"major_code":              true,
-		"semester_code":           true,
-		"teacher_supervisor_code": true,
-		"status":                  true,
+		"title":           true,
+		"major_code":      true,
+		"semester_code":   true,
+		"status":          true,
+		"percent_stage_1": true,
+		"percent_stage_2": true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -357,7 +363,7 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, major_code, semester_code, teacher_supervisor_code, status, time_start, time_end, created_at, updated_at, created_by, updated_by
+		SELECT id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_at, updated_at, created_by, updated_by
 		FROM Topic
 		%s
 		ORDER BY %s %s
@@ -373,7 +379,7 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	entities := []*pb.Topic{}
 	for rows.Next() {
 		var entity pb.Topic
-		var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
+		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var StatusStr string
 
@@ -382,10 +388,9 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 			&entity.Title,
 			&entity.MajorCode,
 			&entity.SemesterCode,
-			&entity.TeacherSupervisorCode,
 			&StatusStr,
-			&timeStart,
-			&timeEnd,
+			&entity.PercentStage_1,
+			&entity.PercentStage_2,
 			&createdAt,
 			&updatedAt,
 			&entity.CreatedBy,
@@ -397,10 +402,14 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 
 		// Convert Status string to enum
 		switch StatusStr {
+		case "submit":
+			entity.Status = pb.TopicStatus_SUBMIT
 		case "topic_pending":
 			entity.Status = pb.TopicStatus_TOPIC_PENDING
-		case "approved":
-			entity.Status = pb.TopicStatus_APPROVED
+		case "approved_1":
+			entity.Status = pb.TopicStatus_APPROVED_1
+		case "approved_2":
+			entity.Status = pb.TopicStatus_APPROVED_2
 		case "in_progress":
 			entity.Status = pb.TopicStatus_IN_PROGRESS
 		case "topic_completed":
@@ -408,7 +417,7 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 		case "rejected":
 			entity.Status = pb.TopicStatus_REJECTED
 		default:
-			entity.Status = pb.TopicStatus_TOPIC_PENDING
+			entity.Status = pb.TopicStatus_SUBMIT
 		}
 
 		if createdAt.Valid {
@@ -419,12 +428,6 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 		}
 		if updatedBy.Valid {
 			entity.UpdatedBy = updatedBy.String
-		}
-		if timeStart.Valid {
-			entity.TimeStart = timestamppb.New(timeStart.Time)
-		}
-		if timeEnd.Valid {
-			entity.TimeEnd = timestamppb.New(timeEnd.Time)
 		}
 
 		entities = append(entities, &entity)

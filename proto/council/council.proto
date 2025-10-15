@@ -21,17 +21,19 @@ message Council {
   string title = 2;
   string major_code = 3;
   string semester_code = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
-  string created_by = 7;
-  string updated_by = 8;
+  google.protobuf.Timestamp time_start = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  string created_by = 8;
+  string updated_by = 9;
 }
 
 message CreateCouncilRequest {
   string title = 1;
   string major_code = 2;
   string semester_code = 3;
-  string created_by = 4;
+  optional google.protobuf.Timestamp time_start = 4;
+  string created_by = 5;
 }
 
 message CreateCouncilResponse {
@@ -51,7 +53,8 @@ message UpdateCouncilRequest {
   optional string title = 2;
   optional string major_code = 3;
   optional string semester_code = 4;
-  string updated_by = 5;
+  optional google.protobuf.Timestamp time_start = 5;
+  string updated_by = 6;
 }
 
 message UpdateCouncilResponse {
@@ -142,21 +145,25 @@ message ListDefencesResponse {
   int32 page_size = 4;
 }
 
-// ============= Grade_defences =============
+// ============= Grade_defence =============
 message GradeDefence {
   string id = 1;
-  int32 council = 2;
-  int32 secretary = 3;
-  google.protobuf.Timestamp created_at = 4;
-  google.protobuf.Timestamp updated_at = 5;
-  string created_by = 6;
-  string updated_by = 7;
+  string defence_code = 2;
+  string enrollment_code = 3;
+  string note = 4;
+  int32 total_score = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  string created_by = 8;
+  string updated_by = 9;
 }
 
 message CreateGradeDefenceRequest {
-  int32 council = 1;
-  int32 secretary = 2;
-  string created_by = 3;
+  string defence_code = 1;
+  string enrollment_code = 2;
+  optional string note = 3;
+  optional int32 total_score = 4;
+  string created_by = 5;
 }
 
 message CreateGradeDefenceResponse {
@@ -173,9 +180,11 @@ message GetGradeDefenceResponse {
 
 message UpdateGradeDefenceRequest {
   string id = 1;
-  optional int32 council = 2;
-  optional int32 secretary = 3;
-  string updated_by = 4;
+  optional string defence_code = 2;
+  optional string enrollment_code = 3;
+  optional string note = 4;
+  optional int32 total_score = 5;
+  string updated_by = 6;
 }
 
 message UpdateGradeDefenceResponse {
@@ -201,69 +210,66 @@ message ListGradeDefencesResponse {
   int32 page_size = 4;
 }
 
-// ============= CouncilSchedule =============
-message CouncilSchedule {
+// ============= Grade_defence_criterion =============
+message GradeDefenceCriterion {
   string id = 1;
-  string councils_code = 2;
-  string topic_code = 3;
-  google.protobuf.Timestamp time_start = 4;
-  google.protobuf.Timestamp time_end = 5;
+  string grade_defence_code = 2;
+  string name = 3;
+  string score = 4;
+  string maxScore = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
   string created_by = 8;
   string updated_by = 9;
-  bool status = 10;
 }
 
-message CreateCouncilScheduleRequest {
-  string councils_code = 1;
-  string topic_code = 2;
-  google.protobuf.Timestamp time_start = 3;
-  google.protobuf.Timestamp time_end = 4;
-  string created_by = 5;
-  bool status = 6;
+message CreateGradeDefenceCriterionRequest {
+  string grade_defence_code = 1;
+  optional string name = 2;
+  optional string score = 3;
+  optional string maxScore = 4;
+  optional string created_by = 5;
 }
 
-message CreateCouncilScheduleResponse {
-  CouncilSchedule council_schedule = 1;
+message CreateGradeDefenceCriterionResponse {
+  GradeDefenceCriterion grade_defence_criterion = 1;
 }
 
-message GetCouncilScheduleRequest {
+message GetGradeDefenceCriterionRequest {
   string id = 1;
 }
 
-message GetCouncilScheduleResponse {
-  CouncilSchedule council_schedule = 1;
+message GetGradeDefenceCriterionResponse {
+  GradeDefenceCriterion grade_defence_criterion = 1;
 }
 
-message UpdateCouncilScheduleRequest {
+message UpdateGradeDefenceCriterionRequest {
   string id = 1;
-  optional string councils_code = 2;
-  optional string topic_code = 3;
-  optional google.protobuf.Timestamp time_start = 4;
-  optional google.protobuf.Timestamp time_end = 5;
-  string updated_by = 6;
-  optional bool status = 7;
+  optional string grade_defence_code = 2;
+  optional string name = 3;
+  optional string score = 4;
+  optional string maxScore = 5;
+  optional string updated_by = 6;
 }
 
-message UpdateCouncilScheduleResponse {
-  CouncilSchedule council_schedule = 1;
+message UpdateGradeDefenceCriterionResponse {
+  GradeDefenceCriterion grade_defence_criterion = 1;
 }
 
-message DeleteCouncilScheduleRequest {
+message DeleteGradeDefenceCriterionRequest {
   string id = 1;
 }
 
-message DeleteCouncilScheduleResponse {
+message DeleteGradeDefenceCriterionResponse {
   bool success = 1;
 }
 
-message ListCouncilSchedulesRequest {
+message ListGradeDefenceCriteriaRequest {
   common.SearchRequest search = 1;
 }
 
-message ListCouncilSchedulesResponse {
-  repeated CouncilSchedule council_schedules = 1;
+message ListGradeDefenceCriteriaResponse {
+  repeated GradeDefenceCriterion grade_defence_criteria = 1;
   int32 total = 2;
   int32 page = 3;
   int32 page_size = 4;
@@ -292,10 +298,10 @@ service CouncilService {
   rpc DeleteGradeDefence(DeleteGradeDefenceRequest) returns (DeleteGradeDefenceResponse);
   rpc ListGradeDefences(ListGradeDefencesRequest) returns (ListGradeDefencesResponse);
 
-  // CouncilSchedule
-  rpc CreateCouncilSchedule(CreateCouncilScheduleRequest) returns (CreateCouncilScheduleResponse);
-  rpc GetCouncilSchedule(GetCouncilScheduleRequest) returns (GetCouncilScheduleResponse);
-  rpc UpdateCouncilSchedule(UpdateCouncilScheduleRequest) returns (UpdateCouncilScheduleResponse);
-  rpc DeleteCouncilSchedule(DeleteCouncilScheduleRequest) returns (DeleteCouncilScheduleResponse);
-  rpc ListCouncilSchedules(ListCouncilSchedulesRequest) returns (ListCouncilSchedulesResponse);
+  // GradeDefenceCriterion
+  rpc CreateGradeDefenceCriterion(CreateGradeDefenceCriterionRequest) returns (CreateGradeDefenceCriterionResponse);
+  rpc GetGradeDefenceCriterion(GetGradeDefenceCriterionRequest) returns (GetGradeDefenceCriterionResponse);
+  rpc UpdateGradeDefenceCriterion(UpdateGradeDefenceCriterionRequest) returns (UpdateGradeDefenceCriterionResponse);
+  rpc DeleteGradeDefenceCriterion(DeleteGradeDefenceCriterionRequest) returns (DeleteGradeDefenceCriterionResponse);
+  rpc ListGradeDefenceCriteria(ListGradeDefenceCriteriaRequest) returns (ListGradeDefenceCriteriaResponse);
 }

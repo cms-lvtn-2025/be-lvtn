@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateStudent creates a new Student record
 func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentRequest) (*pb.CreateStudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -35,7 +37,7 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 	if req.SemesterCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
@@ -44,7 +46,7 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 	if req.Phone != nil {
 		Phone = *req.Phone
 	}
-
+	
 	// Convert Gender enum to string
 	GenderValue := pb.Gender_MALE
 	if req.Gender != nil {
@@ -59,7 +61,7 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 	case pb.Gender_OTHER:
 		GenderStr = "other"
 	}
-
+	
 	// Insert into database
 	query := `
 		INSERT INTO Student (id, email, phone, username, gender, major_code, class_code, semester_code, created_by, created_at, updated_at)
@@ -94,6 +96,18 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetStudent retrieves a Student by ID
 func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*pb.GetStudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -112,7 +126,7 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var GenderStr string
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Email,
@@ -146,7 +160,7 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 	default:
 		entity.Gender = pb.Gender_MALE
 	}
-
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -161,6 +175,18 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 		Student: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateStudent updates an existing Student
 func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentRequest) (*pb.UpdateStudentResponse, error) {
@@ -177,17 +203,17 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 	if req.Email != nil {
 		updateFields = append(updateFields, "email = ?")
 		args = append(args, *req.Email)
-
+		
 	}
 	if req.Phone != nil {
 		updateFields = append(updateFields, "phone = ?")
 		args = append(args, *req.Phone)
-
+		
 	}
 	if req.Username != nil {
 		updateFields = append(updateFields, "username = ?")
 		args = append(args, *req.Username)
-
+		
 	}
 	if req.Gender != nil {
 		updateFields = append(updateFields, "gender = ?")
@@ -201,24 +227,24 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 			GenderStr = "other"
 		}
 		args = append(args, GenderStr)
-
+		
 	}
 	if req.MajorCode != nil {
 		updateFields = append(updateFields, "major_code = ?")
 		args = append(args, *req.MajorCode)
-
+		
 	}
 	if req.ClassCode != nil {
 		updateFields = append(updateFields, "class_code = ?")
 		args = append(args, *req.ClassCode)
-
+		
 	}
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
-
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -251,6 +277,18 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteStudent deletes a Student by ID
 func (h *Handler) DeleteStudent(ctx context.Context, req *pb.DeleteStudentRequest) (*pb.DeleteStudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -279,6 +317,18 @@ func (h *Handler) DeleteStudent(ctx context.Context, req *pb.DeleteStudentReques
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListStudents lists Students with pagination and filtering
 func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest) (*pb.ListStudentsResponse, error) {
@@ -309,13 +359,14 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"email":         true,
-		"phone":         true,
-		"username":      true,
-		"gender":        true,
-		"major_code":    true,
-		"class_code":    true,
+		"email": true,
+		"phone": true,
+		"username": true,
+		"gender": true,
+		"major_code": true,
+		"class_code": true,
 		"semester_code": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -369,7 +420,7 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var GenderStr string
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Email,
@@ -399,7 +450,7 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 		default:
 			entity.Gender = pb.Gender_MALE
 		}
-
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -424,3 +475,5 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 		PageSize: pageSize,
 	}, nil
 }
+
+

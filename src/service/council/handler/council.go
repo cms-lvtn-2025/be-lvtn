@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+
+
 // CreateCouncil creates a new Council record
 func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilRequest) (*pb.CreateCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -29,12 +31,13 @@ func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilReques
 	if req.SemesterCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
-
+	
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-
+	
+	
 	// Insert into database
 	query := `
 		INSERT INTO Council (id, title, major_code, semester_code, created_by, created_at, updated_at)
@@ -65,6 +68,18 @@ func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // GetCouncil retrieves a Council by ID
 func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*pb.GetCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -82,7 +97,7 @@ func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*p
 	var entity pb.Council
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-
+	
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -101,6 +116,7 @@ func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*p
 		return nil, status.Errorf(codes.Internal, "failed to get council: %v", err)
 	}
 
+	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -115,6 +131,18 @@ func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*p
 		Council: &entity,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // UpdateCouncil updates an existing Council
 func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilRequest) (*pb.UpdateCouncilResponse, error) {
@@ -131,19 +159,19 @@ func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilReques
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
+		
 	}
 	if req.MajorCode != nil {
 		updateFields = append(updateFields, "major_code = ?")
 		args = append(args, *req.MajorCode)
-
+		
 	}
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
-
+		
 	}
-
+	
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -176,6 +204,18 @@ func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilReques
 	}, nil
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 // DeleteCouncil deletes a Council by ID
 func (h *Handler) DeleteCouncil(ctx context.Context, req *pb.DeleteCouncilRequest) (*pb.DeleteCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -204,6 +244,18 @@ func (h *Handler) DeleteCouncil(ctx context.Context, req *pb.DeleteCouncilReques
 		Success: true,
 	}, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ListCouncils lists Councils with pagination and filtering
 func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest) (*pb.ListCouncilsResponse, error) {
@@ -234,9 +286,10 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title":         true,
-		"major_code":    true,
+		"title": true,
+		"major_code": true,
 		"semester_code": true,
+		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -289,7 +342,7 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 		var entity pb.Council
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-
+		
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -304,6 +357,7 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 			return nil, status.Errorf(codes.Internal, "failed to scan council: %v", err)
 		}
 
+		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -328,3 +382,5 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 		PageSize: pageSize,
 	}, nil
 }
+
+

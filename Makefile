@@ -1,5 +1,7 @@
 PROTOC = protoc --go_out=. --go_opt=paths=source_relative \
                --go-grpc_out=. --go-grpc_opt=paths=source_relative
+GEN_BIN = ./gen_skeleton
+GEN = $(GEN_BIN)
 
 
 proto-common:
@@ -31,6 +33,25 @@ proto-user:
 
 # Generate all services
 all: proto-common proto-academic proto-council proto-file proto-role proto-thesis proto-user
+
+
+# Build code generator binary
+gen-tool:
+	cd scripts && go build -o ../$(GEN_BIN) gen_skeleton.go
+gen-academic: gen-tool proto-academic
+	$(GEN) academic AcademicService 50051
+gen-council: gen-tool proto-council
+	$(GEN) council CouncilService 50052
+gen-file: gen-tool proto-file
+	$(GEN) file FileService 50053
+gen-role: gen-tool proto-role
+	$(GEN) role RoleService 50054
+gen-thesis: gen-tool proto-thesis
+	$(GEN) thesis ThesisService 50055
+gen-user: gen-tool proto-user
+	$(GEN) user UserService 50056
+# Generate all service skeletons
+gen-all: gen-tool all gen-academic gen-council gen-file gen-role gen-thesis gen-user
 
 # Build targets
 build-academic:

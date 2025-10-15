@@ -3,20 +3,21 @@ package main
 import (
 	"log"
 	"net"
+	"os"
+
 	pb "thaily/proto/user"
-	"thaily/src/pkg/config"
 	"thaily/src/pkg/database"
 	"thaily/src/pkg/logger"
 	"thaily/src/service/user/handler"
 
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	// Load configuration
-	cfg, err := config.Load("../../../env/user.env")
-	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+	// Load environment variables
+	if err := godotenv.Load("env/user.env"); err != nil {
+		log.Printf("Warning: .env file not found: %v", err)
 	}
 
 	// Initialize file logger
@@ -25,28 +26,31 @@ func main() {
 	}
 	defer logger.GetFileLogger().Close()
 
-	// Connect to database
-	db, err := database.Connect(cfg.GetDSN())
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+	// Initialize database
+	if err := database.InitDB(); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
-	defer db.Close()
+	defer database.CloseDB()
 
-	// Create handler with database connection
-	h := handler.NewHandler(db)
+	// Start gRPC server
+	port := os.Getenv("SERVICE_PORT")
+	if port == "" {
+		port = "50056"
+	}
 
-	// Setup gRPC server with tracing interceptor
-	lis, err := net.Listen("tcp", ":50056")
+	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
+		logger.UnaryServerInterceptor(),
 	)
+
+	h := handler.NewHandler()
 	pb.RegisterUserServiceServer(grpcServer, h)
 
-	log.Println("UserService running on :50056")
+	log.Printf("UserService listening on port %s", port)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
