@@ -4,6 +4,7 @@ type Council {
     title: String!
     majorCode: String!
     semesterCode: String!
+    timeStart: Time
     createdAt: Time
     updatedAt: Time
     createdBy: String
@@ -12,7 +13,7 @@ type Council {
     major: Major
     semester: Semester
     defences: [Defence!]
-    schedules: [CouncilSchedule!]
+    topicCouncils: [TopicCouncil!]
 }
 
 type Defence {
@@ -21,30 +22,42 @@ type Defence {
     councilCode: String!
     teacherCode: String!
     position: DefencePosition!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
 
     council: Council
     teacher: Teacher
+    gradeDefences: [GradeDefence!]
 }
-
 
 type GradeDefence {
     id: ID!
-    council: Int
-    secretary: Int
+    defenceCode: String!
+    enrollmentCode: String!
+    note: String
+    totalScore: Int
     createdAt: Time
     updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    defence: Defence
+    enrollment: Enrollment
+    criteria: [GradeDefenceCriterion!]
 }
 
-type CouncilSchedule {
+type GradeDefenceCriterion {
     id: ID!
-    councilsCode: String
-    topicCode: String
-    timeStart: Time
-    timeEnd: Time
+    gradeDefenceCode: String!
+    name: String
+    score: String
+    maxScore: String
     createdAt: Time
     updatedAt: Time
-    status: Boolean!
+    createdBy: String
+    updatedBy: String
 
-    council: Council
-    topic: Topic
+    gradeDefence: GradeDefence
 }

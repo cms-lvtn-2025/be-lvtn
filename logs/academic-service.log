@@ -5,16 +5,16 @@
 
 mkdir /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
 !exclude handler
-!exclude log
 !exclude tmp-academic
 building...
+# thaily/src/service/academic
+./main.go:47:3: cannot use logger.UnaryServerInterceptor() (value of func type grpc.UnaryServerInterceptor) as grpc.ServerOption value in argument to grpc.NewServer: grpc.UnaryServerInterceptor does not implement grpc.ServerOption (missing method apply)
+./main.go:50:7: not enough arguments in call to handler.NewHandler
+	have ()
+	want (*sql.DB)
+failed to build, error: exit status 1
 running...
-2025/10/12 22:48:09 Database connected successfully with connection pool:
-2025/10/12 22:48:09   - MaxOpenConns: 20
-2025/10/12 22:48:09   - MaxIdleConns: 10
-2025/10/12 22:48:09   - ConnMaxLifetime: 5m0s
-2025/10/12 22:48:09   - ConnMaxIdleTime: 2m0s
-2025/10/12 22:48:09 AcademicService running on :50051
+/bin/sh: 1: /home/thaily/code/heheheh_be/src/service/academic/tmp-academic/academic: not found
 cleaning...
 deleting /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
 see you again~

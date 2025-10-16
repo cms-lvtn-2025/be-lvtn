@@ -14,10 +14,10 @@ type Enrollment {
     id: ID!
     title: String!
     studentCode: String!
-    midtermCode: String
-    topicCode: String
+    topicCouncilCode: String!
     finalCode: String
-    gradeCode: String
+    gradeReviewCode: String
+    midtermCode: String
     createdAt: Time
     updatedAt: Time
     createdBy: String
@@ -26,8 +26,9 @@ type Enrollment {
     student: Student
     midterm: Midterm
     final: Final
-    topic: Topic
-    gradeDefence: GradeDefence
+    topicCouncil: TopicCouncil
+    gradeReview: GradeReview
+    gradeDefences: [GradeDefence!]
 }
 
 type Topic {
@@ -36,29 +37,72 @@ type Topic {
     title: String!
     majorCode: String!
     semesterCode: String!
-    teacherSupervisorCode: String!
     status: TopicStatus!
+    percentStage1: Int
+    percentStage2: Int
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    major: Major
+    semester: Semester
+    enrollments: [Enrollment!]
+    files: [File!]
+    topicSupervisors: [TopicSupervisor!]
+    topicCouncils: [TopicCouncil!]
+}
+
+type TopicSupervisor {
+    id: ID!
+    teacherSupervisorCode: String!
+    topicCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    teacher: Teacher
+    topic: Topic
+}
+
+type TopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
     timeStart: Time!
     timeEnd: Time!
     createdAt: Time
     updatedAt: Time
     createdBy: String
     updatedBy: String
-    major: Major
-    enrollment: [Enrollment]
-    semester: Semester
-    teacherSupervisor: Teacher
-    files: [File!]
-    schedule: CouncilSchedule
 
+    topic: Topic
+    council: Council
+    enrollments: [Enrollment!]
+    supervisors: [TopicCouncilSupervisor!]
+}
+
+type TopicCouncilSupervisor {
+    id: ID!
+    teacherSupervisorCode: String!
+    topicCouncilCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    teacher: Teacher
+    topicCouncil: TopicCouncil
 }
 
 type Final {
     id: ID!
     title: String!
     supervisorGrade: Int
-    reviewerGrade: Int
-    defenseGrade: Int
+    departmentGrade: Int
     finalGrade: Int
     status: FinalStatus!
     notes: String
@@ -67,5 +111,21 @@ type Final {
     updatedAt: Time
     createdBy: String
     updatedBy: String
+}
+
+type GradeReview {
+    id: ID!
+    title: String!
+    reviewGrade: Int
+    teacherCode: String!
+    status: FinalStatus!
+    notes: String
+    completionDate: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    teacher: Teacher
 }
 

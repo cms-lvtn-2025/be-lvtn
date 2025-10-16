@@ -9,7 +9,7 @@ enum Gender {
 
 """Trạng thái file"""
 enum FileStatus {
-    PENDING
+    FILE_PENDING
     APPROVED
     REJECTED
 }
@@ -34,16 +34,25 @@ enum RoleSystemRole {
 enum MidtermStatus {
     NOT_SUBMITTED
     SUBMITTED
-    GRADED
+    PASS
+    FAIL
 }
 
 """Trạng thái đề tài"""
 enum TopicStatus {
-    PENDING
-    APPROVED
+    SUBMIT
+    TOPIC_PENDING
+    APPROVED_1
+    APPROVED_2
     IN_PROGRESS
-    COMPLETED
+    TOPIC_COMPLETED
     REJECTED
+}
+
+"""Giai đoạn đề tài"""
+enum TopicStage {
+    STAGE_DACN
+    STAGE_LVTN
 }
 
 """Vai trò trong hội đồng bảo vệ"""

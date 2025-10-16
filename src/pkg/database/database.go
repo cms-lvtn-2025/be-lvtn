@@ -6,9 +6,15 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+)
+
+var (
+	globalDB *sql.DB
+	dbMutex  sync.RWMutex
 )
 
 // ConnectionPoolConfig chứa các cấu hình cho connection pool
@@ -102,4 +108,51 @@ func ConnectWithConfig(dsn string, config ConnectionPoolConfig) (*sql.DB, error)
 	log.Printf("  - ConnMaxIdleTime: %v", config.ConnMaxIdleTime)
 
 	return db, nil
+}
+
+// InitDB initializes the global database connection from environment variables
+func InitDB() error {
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
+	if dbHost == "" || dbPort == "" || dbUser == "" || dbName == "" {
+		return fmt.Errorf("missing required database environment variables")
+	}
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local",
+		dbUser, dbPassword, dbHost, dbPort, dbName)
+
+	db, err := Connect(dsn)
+	if err != nil {
+		return err
+	}
+
+	dbMutex.Lock()
+	globalDB = db
+	dbMutex.Unlock()
+
+	return nil
+}
+
+// GetDB returns the global database connection
+func GetDB() *sql.DB {
+	dbMutex.RLock()
+	defer dbMutex.RUnlock()
+	return globalDB
+}
+
+// CloseDB closes the global database connection
+func CloseDB() error {
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
+
+	if globalDB != nil {
+		err := globalDB.Close()
+		globalDB = nil
+		return err
+	}
+	return nil
 }
