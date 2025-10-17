@@ -44,10 +44,10 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(
-		logger.UnaryServerInterceptor(),
+		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
 	)
 
-	h := handler.NewHandler()
+	h := handler.NewHandler(database.GetDB())
 	pb.RegisterAcademicServiceServer(grpcServer, h)
 
 	log.Printf("AcademicService listening on port %s", port)

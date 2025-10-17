@@ -406,3 +406,111 @@ func (t *GRPCthesis) GetEnrollmentBySearch(ctx context.Context, search *pbCommon
 
 	return resp, nil
 }
+
+// GetTopicsByIds fetches multiple topics using IN operator
+// This is for DataLoader batching
+func (t *GRPCthesis) GetTopicsByIds(ctx context.Context, ids []string) (*pb.ListTopicsResponse, error) {
+	if t.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+
+	resp, err := t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: false,
+				Page:       1,
+				PageSize:   int32(len(ids)),
+				SortBy:     "id",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "id",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetMidtermsByIds fetches multiple midterms using IN operator
+// This is for DataLoader batching
+func (t *GRPCthesis) GetMidtermsByIds(ctx context.Context, ids []string) (*pb.ListMidtermsResponse, error) {
+	if t.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+	fmt.Print(ids)
+	resp, err := t.client.ListMidterms(ctx, &pb.ListMidtermsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: false,
+				Page:       1,
+				PageSize:   int32(len(ids)),
+				SortBy:     "id",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "id",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetFinalsByIds fetches multiple finals using IN operator
+// This is for DataLoader batching
+func (t *GRPCthesis) GetFinalsByIds(ctx context.Context, ids []string) (*pb.ListFinalsResponse, error) {
+	if t.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+
+	resp, err := t.client.ListFinals(ctx, &pb.ListFinalsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: false,
+				Page:       1,
+				PageSize:   int32(len(ids)),
+				SortBy:     "id",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "id",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}

@@ -6,61 +6,41 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
 
 // Major is the resolver for the major field.
 func (r *councilResolver) Major(ctx context.Context, obj *model.Council) (*model.Major, error) {
-	return r.Ctrl.GetMajorByCode(ctx, obj.MajorCode)
+	panic(fmt.Errorf("not implemented: Major - major"))
 }
 
 // Semester is the resolver for the semester field.
 func (r *councilResolver) Semester(ctx context.Context, obj *model.Council) (*model.Semester, error) {
-	return r.Ctrl.GetSemesterByCode(ctx, obj.SemesterCode)
+	panic(fmt.Errorf("not implemented: Semester - semester"))
 }
 
 // Defences is the resolver for the defences field.
 func (r *councilResolver) Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error) {
-	return r.Ctrl.GetDefencesByCouncilCode(ctx, obj.ID)
-}
-
-// Schedules is the resolver for the schedules field.
-func (r *councilResolver) Schedules(ctx context.Context, obj *model.Council) ([]*model.CouncilSchedule, error) {
-	return r.Ctrl.GetSchedulesByCouncilCode(ctx, obj.ID)
-}
-
-// Council is the resolver for the council field.
-func (r *councilScheduleResolver) Council(ctx context.Context, obj *model.CouncilSchedule) (*model.Council, error) {
-	return r.Ctrl.GetCouncilByIdForSchedule(ctx, obj.ID)
-}
-
-// Topic is the resolver for the topic field.
-func (r *councilScheduleResolver) Topic(ctx context.Context, obj *model.CouncilSchedule) (*model.Topic, error) {
-	return r.Ctrl.GetTopicById(ctx, obj.TopicCode)
+	panic(fmt.Errorf("not implemented: Defences - defences"))
 }
 
 // Council is the resolver for the council field.
 func (r *defenceResolver) Council(ctx context.Context, obj *model.Defence) (*model.Council, error) {
-	return r.Ctrl.GetCouncilByIdForDefences(ctx, obj.ID)
+	panic(fmt.Errorf("not implemented: Council - council"))
 }
 
 // Teacher is the resolver for the teacher field.
 func (r *defenceResolver) Teacher(ctx context.Context, obj *model.Defence) (*model.Teacher, error) {
-	return r.Ctrl.GetTeacherById(ctx, obj.TeacherCode)
+	panic(fmt.Errorf("not implemented: Teacher - teacher"))
 }
 
 // Council returns generated.CouncilResolver implementation.
 func (r *Resolver) Council() generated.CouncilResolver { return &councilResolver{r} }
 
-// CouncilSchedule returns generated.CouncilScheduleResolver implementation.
-func (r *Resolver) CouncilSchedule() generated.CouncilScheduleResolver {
-	return &councilScheduleResolver{r}
-}
-
 // Defence returns generated.DefenceResolver implementation.
 func (r *Resolver) Defence() generated.DefenceResolver { return &defenceResolver{r} }
 
 type councilResolver struct{ *Resolver }
-type councilScheduleResolver struct{ *Resolver }
 type defenceResolver struct{ *Resolver }

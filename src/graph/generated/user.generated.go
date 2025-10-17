@@ -515,14 +515,14 @@ func (ec *executionContext) fieldContext_Student_enrollments(_ context.Context, 
 				return ec.fieldContext_Enrollment_title(ctx, field)
 			case "studentCode":
 				return ec.fieldContext_Enrollment_studentCode(ctx, field)
-			case "midtermCode":
-				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
-			case "topicCode":
-				return ec.fieldContext_Enrollment_topicCode(ctx, field)
+			case "topicCouncilCode":
+				return ec.fieldContext_Enrollment_topicCouncilCode(ctx, field)
 			case "finalCode":
 				return ec.fieldContext_Enrollment_finalCode(ctx, field)
-			case "gradeCode":
-				return ec.fieldContext_Enrollment_gradeCode(ctx, field)
+			case "gradeReviewCode":
+				return ec.fieldContext_Enrollment_gradeReviewCode(ctx, field)
+			case "midtermCode":
+				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Enrollment_createdAt(ctx, field)
 			case "updatedAt":
@@ -537,10 +537,12 @@ func (ec *executionContext) fieldContext_Student_enrollments(_ context.Context, 
 				return ec.fieldContext_Enrollment_midterm(ctx, field)
 			case "final":
 				return ec.fieldContext_Enrollment_final(ctx, field)
-			case "topic":
-				return ec.fieldContext_Enrollment_topic(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_Enrollment_gradeDefence(ctx, field)
+			case "topicCouncil":
+				return ec.fieldContext_Enrollment_topicCouncil(ctx, field)
+			case "gradeReview":
+				return ec.fieldContext_Enrollment_gradeReview(ctx, field)
+			case "gradeDefences":
+				return ec.fieldContext_Enrollment_gradeDefences(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},
@@ -1025,14 +1027,12 @@ func (ec *executionContext) fieldContext_Teacher_topicsSupervised(_ context.Cont
 				return ec.fieldContext_Topic_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "teacherSupervisorCode":
-				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Topic_status(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_Topic_timeStart(ctx, field)
-			case "timeEnd":
-				return ec.fieldContext_Topic_timeEnd(ctx, field)
+			case "percentStage1":
+				return ec.fieldContext_Topic_percentStage1(ctx, field)
+			case "percentStage2":
+				return ec.fieldContext_Topic_percentStage2(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Topic_createdAt(ctx, field)
 			case "updatedAt":
@@ -1043,16 +1043,16 @@ func (ec *executionContext) fieldContext_Teacher_topicsSupervised(_ context.Cont
 				return ec.fieldContext_Topic_updatedBy(ctx, field)
 			case "major":
 				return ec.fieldContext_Topic_major(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_Topic_enrollment(ctx, field)
 			case "semester":
 				return ec.fieldContext_Topic_semester(ctx, field)
-			case "teacherSupervisor":
-				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
+			case "enrollments":
+				return ec.fieldContext_Topic_enrollments(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "schedule":
-				return ec.fieldContext_Topic_schedule(ctx, field)
+			case "topicSupervisors":
+				return ec.fieldContext_Topic_topicSupervisors(ctx, field)
+			case "topicCouncils":
+				return ec.fieldContext_Topic_topicCouncils(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -1402,10 +1402,6 @@ func (ec *executionContext) marshalNStudent2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSt
 		return graphql.Null
 	}
 	return ec._Student(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNTeacher2thailyᚋsrcᚋgraphᚋmodelᚐTeacher(ctx context.Context, sel ast.SelectionSet, v model.Teacher) graphql.Marshaler {
-	return ec._Teacher(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher(ctx context.Context, sel ast.SelectionSet, v *model.Teacher) graphql.Marshaler {

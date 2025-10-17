@@ -6,9 +6,15 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
+
+// Empty is the resolver for the _empty field.
+func (r *mutationResolver) Empty(ctx context.Context) (*string, error) {
+	panic(fmt.Errorf("not implemented: Empty - _empty"))
+}
 
 // GetInfoStudent is the resolver for the getInfoStudent field.
 func (r *queryResolver) GetInfoStudent(ctx context.Context) (*model.Student, error) {
@@ -32,20 +38,33 @@ func (r *queryResolver) GetListEnrollment(ctx context.Context, search model.Sear
 
 // GetListSemester is the resolver for the getListSemester field.
 func (r *queryResolver) GetListSemester(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error) {
-	return r.Ctrl.GetSemesters(ctx, search)
+	panic(fmt.Errorf("not implemented: GetListSemester - getListSemester"))
 }
 
 // GetListCouncil is the resolver for the getListCouncil field.
 func (r *queryResolver) GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
-	return r.Ctrl.GetCouncils(ctx, search)
+	panic(fmt.Errorf("not implemented: GetListCouncil - getListCouncil"))
 }
 
 // GetListDefence is the resolver for the getListDefence field.
 func (r *queryResolver) GetListDefence(ctx context.Context, search model.SearchRequestInput) ([]*model.Defence, error) {
-	return r.Ctrl.GetDefences(ctx, search)
+	panic(fmt.Errorf("not implemented: GetListDefence - getListDefence"))
 }
+
+// Empty is the resolver for the _empty field.
+func (r *subscriptionResolver) Empty(ctx context.Context) (<-chan *string, error) {
+	panic(fmt.Errorf("not implemented: Empty - _empty"))
+}
+
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// Subscription returns generated.SubscriptionResolver implementation.
+func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
+
+type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }

@@ -4,6 +4,7 @@ package generated
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"sync/atomic"
@@ -16,6 +17,9 @@ import (
 
 // region    ************************** generated!.gotpl **************************
 
+type MutationResolver interface {
+	Empty(ctx context.Context) (*string, error)
+}
 type QueryResolver interface {
 	GetInfoStudent(ctx context.Context) (*model.Student, error)
 	GetInfoTeacher(ctx context.Context) (*model.Teacher, error)
@@ -24,6 +28,9 @@ type QueryResolver interface {
 	GetListSemester(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error)
 	GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error)
 	GetListDefence(ctx context.Context, search model.SearchRequestInput) ([]*model.Defence, error)
+}
+type SubscriptionResolver interface {
+	Empty(ctx context.Context) (<-chan *string, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -104,6 +111,35 @@ func (ec *executionContext) field_Query_getListTopic_args(ctx context.Context, r
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _Mutation__empty(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation__empty,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Mutation().Empty(ctx)
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_getInfoStudent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -175,9 +211,9 @@ func (ec *executionContext) _Query_getInfoTeacher(ctx context.Context, field gra
 			return ec.resolvers.Query().GetInfoTeacher(ctx)
 		},
 		nil,
-		ec.marshalNTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
+		ec.marshalOTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -259,14 +295,12 @@ func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context,
 				return ec.fieldContext_Topic_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "teacherSupervisorCode":
-				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Topic_status(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_Topic_timeStart(ctx, field)
-			case "timeEnd":
-				return ec.fieldContext_Topic_timeEnd(ctx, field)
+			case "percentStage1":
+				return ec.fieldContext_Topic_percentStage1(ctx, field)
+			case "percentStage2":
+				return ec.fieldContext_Topic_percentStage2(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Topic_createdAt(ctx, field)
 			case "updatedAt":
@@ -277,16 +311,16 @@ func (ec *executionContext) fieldContext_Query_getListTopic(ctx context.Context,
 				return ec.fieldContext_Topic_updatedBy(ctx, field)
 			case "major":
 				return ec.fieldContext_Topic_major(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_Topic_enrollment(ctx, field)
 			case "semester":
 				return ec.fieldContext_Topic_semester(ctx, field)
-			case "teacherSupervisor":
-				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
+			case "enrollments":
+				return ec.fieldContext_Topic_enrollments(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "schedule":
-				return ec.fieldContext_Topic_schedule(ctx, field)
+			case "topicSupervisors":
+				return ec.fieldContext_Topic_topicSupervisors(ctx, field)
+			case "topicCouncils":
+				return ec.fieldContext_Topic_topicCouncils(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -336,14 +370,14 @@ func (ec *executionContext) fieldContext_Query_getListEnrollment(ctx context.Con
 				return ec.fieldContext_Enrollment_title(ctx, field)
 			case "studentCode":
 				return ec.fieldContext_Enrollment_studentCode(ctx, field)
-			case "midtermCode":
-				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
-			case "topicCode":
-				return ec.fieldContext_Enrollment_topicCode(ctx, field)
+			case "topicCouncilCode":
+				return ec.fieldContext_Enrollment_topicCouncilCode(ctx, field)
 			case "finalCode":
 				return ec.fieldContext_Enrollment_finalCode(ctx, field)
-			case "gradeCode":
-				return ec.fieldContext_Enrollment_gradeCode(ctx, field)
+			case "gradeReviewCode":
+				return ec.fieldContext_Enrollment_gradeReviewCode(ctx, field)
+			case "midtermCode":
+				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Enrollment_createdAt(ctx, field)
 			case "updatedAt":
@@ -358,10 +392,12 @@ func (ec *executionContext) fieldContext_Query_getListEnrollment(ctx context.Con
 				return ec.fieldContext_Enrollment_midterm(ctx, field)
 			case "final":
 				return ec.fieldContext_Enrollment_final(ctx, field)
-			case "topic":
-				return ec.fieldContext_Enrollment_topic(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_Enrollment_gradeDefence(ctx, field)
+			case "topicCouncil":
+				return ec.fieldContext_Enrollment_topicCouncil(ctx, field)
+			case "gradeReview":
+				return ec.fieldContext_Enrollment_gradeReview(ctx, field)
+			case "gradeDefences":
+				return ec.fieldContext_Enrollment_gradeDefences(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},
@@ -476,6 +512,8 @@ func (ec *executionContext) fieldContext_Query_getListCouncil(ctx context.Contex
 				return ec.fieldContext_Council_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Council_semesterCode(ctx, field)
+			case "timeStart":
+				return ec.fieldContext_Council_timeStart(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Council_createdAt(ctx, field)
 			case "updatedAt":
@@ -490,8 +528,8 @@ func (ec *executionContext) fieldContext_Query_getListCouncil(ctx context.Contex
 				return ec.fieldContext_Council_semester(ctx, field)
 			case "defences":
 				return ec.fieldContext_Council_defences(ctx, field)
-			case "schedules":
-				return ec.fieldContext_Council_schedules(ctx, field)
+			case "topicCouncils":
+				return ec.fieldContext_Council_topicCouncils(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
 		},
@@ -545,10 +583,20 @@ func (ec *executionContext) fieldContext_Query_getListDefence(ctx context.Contex
 				return ec.fieldContext_Defence_teacherCode(ctx, field)
 			case "position":
 				return ec.fieldContext_Defence_position(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Defence_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Defence_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Defence_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Defence_updatedBy(ctx, field)
 			case "council":
 				return ec.fieldContext_Defence_council(ctx, field)
 			case "teacher":
 				return ec.fieldContext_Defence_teacher(ctx, field)
+			case "gradeDefences":
+				return ec.fieldContext_Defence_gradeDefences(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Defence", field.Name)
 		},
@@ -670,6 +718,35 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Subscription__empty(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
+	return graphql.ResolveFieldStream(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Subscription__empty,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Subscription().Empty(ctx)
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Subscription__empty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -892,6 +969,52 @@ func (ec *executionContext) unmarshalInputSearchRequestInput(ctx context.Context
 
 // region    **************************** object.gotpl ****************************
 
+var mutationImplementors = []string{"Mutation"}
+
+func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Mutation",
+	})
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
+			Object: field.Name,
+			Field:  field,
+		})
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Mutation")
+		case "_empty":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation__empty(ctx, field)
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -936,16 +1059,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "getInfoTeacher":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_getInfoTeacher(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -1081,6 +1201,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
+var subscriptionImplementors = []string{"Subscription"}
+
+func (ec *executionContext) _Subscription(ctx context.Context, sel ast.SelectionSet) func(ctx context.Context) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, subscriptionImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Subscription",
+	})
+	if len(fields) != 1 {
+		ec.Errorf(ctx, "must subscribe to exactly one stream")
+		return nil
+	}
+
+	switch fields[0].Name {
+	case "_empty":
+		return ec._Subscription__empty(ctx, fields[0])
+	default:
+		panic("unknown field " + strconv.Quote(fields[0].Name))
+	}
+}
+
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
@@ -1194,6 +1334,16 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNTopicStage2thailyᚋsrcᚋgraphᚋmodelᚐTopicStage(ctx context.Context, v any) (model.TopicStage, error) {
+	var res model.TopicStage
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTopicStage2thailyᚋsrcᚋgraphᚋmodelᚐTopicStage(ctx context.Context, sel ast.SelectionSet, v model.TopicStage) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNTopicStatus2thailyᚋsrcᚋgraphᚋmodelᚐTopicStatus(ctx context.Context, v any) (model.TopicStatus, error) {

@@ -5,16 +5,10 @@
 
 mkdir /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
 !exclude handler
+!exclude log
 !exclude tmp-academic
 building...
-# thaily/src/service/academic
-./main.go:47:3: cannot use logger.UnaryServerInterceptor() (value of func type grpc.UnaryServerInterceptor) as grpc.ServerOption value in argument to grpc.NewServer: grpc.UnaryServerInterceptor does not implement grpc.ServerOption (missing method apply)
-./main.go:50:7: not enough arguments in call to handler.NewHandler
-	have ()
-	want (*sql.DB)
-failed to build, error: exit status 1
 running...
-/bin/sh: 1: /home/thaily/code/heheheh_be/src/service/academic/tmp-academic/academic: not found
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/academic/tmp-academic
-see you again~
+2025/10/18 00:45:32 Warning: .env file not found: open env/academic.env: no such file or directory
+2025/10/18 00:45:32 Failed to initialize database: missing required database environment variables
+Process Exit with Code: 1

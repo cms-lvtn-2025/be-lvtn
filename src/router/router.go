@@ -7,6 +7,7 @@ import (
 	"thaily/src/api"
 	"thaily/src/config"
 	"thaily/src/graph/controller"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/helper"
 	"thaily/src/graph/resolver"
@@ -82,7 +83,10 @@ func setupGraphQL(r *gin.Engine, c *container.Container) {
 
 	// Routes
 	r.GET("/", gin.WrapH(playground.Handler("GraphQL Playground", "/query")))
-	r.Any("/query", graphqlAuthMiddleware(c.Config.JWT), gin.WrapH(srv))
+	r.Any("/query",
+		dataloaderMiddleware(c), // Inject dataloaders first
+		//graphqlAuthMiddleware(c.Config.JWT, ctrl), // Then handle auth
+		gin.WrapH(srv))
 }
 
 func setupRestAPI(r *gin.Engine, c *container.Container) {
@@ -102,8 +106,25 @@ func setupRestAPI(r *gin.Engine, c *container.Container) {
 	apiHandler.RegisterRoutes(apiV1)
 }
 
-// graphqlAuthMiddleware xử lý authentication cho GraphQL
-func graphqlAuthMiddleware(cfg config.JWTConfig) gin.HandlerFunc {
+// dataloaderMiddleware injects dataloaders into the context
+func dataloaderMiddleware(c *container.Container) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// Create new loaders for each request
+		loaders := dataloader.NewLoaders(
+			c.Clients.User,
+			c.Clients.Thesis,
+			c.Clients.Council,
+		)
+
+		// Inject loaders into context
+		requestCtx := dataloader.WithLoaders(ctx.Request.Context(), loaders)
+		ctx.Request = ctx.Request.WithContext(requestCtx)
+		ctx.Next()
+	}
+}
+
+// graphqlAuthMiddleware xử lý authentication cho GraphQL và inject dataloaders
+func graphqlAuthMiddleware(cfg config.JWTConfig, ctrl *controller.Controller) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		semester := c.GetHeader("x-semester")

@@ -313,3 +313,101 @@ func (u *GRPCUser) GetTeacherByEmail(ctx context.Context, email string) (*pb.Lis
 
 	return resp, nil
 }
+
+// GetStudentsByIds fetches multiple students using IN operator
+// IMPORTANT: NO caching here - DataLoader handles L1 and L2 cache
+// This function simply queries DB with IN operator for the given IDs
+func (u *GRPCUser) GetStudentsByIds(ctx context.Context, ids []string) (*pb.ListStudentsResponse, error) {
+	if u == nil {
+		return nil, fmt.Errorf("GRPCUser is nil")
+	}
+	if u.client == nil {
+		return nil, fmt.Errorf("gRPC client is not initialized")
+	}
+
+	if len(ids) == 0 {
+		return &pb.ListStudentsResponse{Students: []*pb.Student{}, Total: 0}, nil
+	}
+
+	log.Printf("[gRPC] Fetching %d students from DB using IN operator: %v", len(ids), ids)
+
+	// Simple query with IN operator - NO caching
+	resp, err := u.client.ListStudents(ctx, &pb.ListStudentsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: false,
+				Page:       1,
+				PageSize:   int32(len(ids)),
+				SortBy:     "id",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "id",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("[gRPC] Fetched %d students from DB", len(resp.Students))
+
+	return resp, nil
+}
+
+// GetTeachersByIds fetches multiple teachers using IN operator
+// IMPORTANT: NO caching here - DataLoader handles L1 and L2 cache
+// This function simply queries DB with IN operator for the given IDs
+func (u *GRPCUser) GetTeachersByIds(ctx context.Context, ids []string) (*pb.ListTeachersResponse, error) {
+	if u == nil {
+		return nil, fmt.Errorf("GRPCUser is nil")
+	}
+	if u.client == nil {
+		return nil, fmt.Errorf("gRPC client is not initialized")
+	}
+
+	if len(ids) == 0 {
+		return &pb.ListTeachersResponse{Teachers: []*pb.Teacher{}, Total: 0}, nil
+	}
+
+	log.Printf("[gRPC] Fetching %d teachers from DB using IN operator: %v", len(ids), ids)
+
+	// Simple query with IN operator - NO caching
+	resp, err := u.client.ListTeachers(ctx, &pb.ListTeachersRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: false,
+				Page:       1,
+				PageSize:   int32(len(ids)),
+				SortBy:     "id",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "id",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("[gRPC] Fetched %d teachers from DB", len(resp.Teachers))
+
+	return resp, nil
+}

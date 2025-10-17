@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateMidterm creates a new Midterm record
 func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermRequest) (*pb.CreateMidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -25,7 +23,7 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 	if req.Title == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
@@ -38,10 +36,10 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 	if req.Feedback != nil {
 		Feedback = *req.Feedback
 	}
-	
+
 	// Convert Status enum to string
 	StatusValue := pb.MidtermStatus_NOT_SUBMITTED
-	
+
 	StatusValue = req.Status
 	StatusStr := "not_submitted"
 	switch StatusValue {
@@ -54,7 +52,7 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 	case pb.MidtermStatus_FAIL:
 		StatusStr = "fail"
 	}
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO Midterm (id, title, grade, status, feedback, created_by, created_at, updated_at)
@@ -86,18 +84,6 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetMidterm retrieves a Midterm by ID
 func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*pb.GetMidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -116,7 +102,7 @@ func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*p
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -149,7 +135,7 @@ func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*p
 	default:
 		entity.Status = pb.MidtermStatus_NOT_SUBMITTED
 	}
-	
+
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -164,18 +150,6 @@ func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*p
 		Midterm: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateMidterm updates an existing Midterm
 func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermRequest) (*pb.UpdateMidtermResponse, error) {
@@ -192,12 +166,12 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-		
+
 	}
 	if req.Grade != nil {
 		updateFields = append(updateFields, "grade = ?")
 		args = append(args, *req.Grade)
-		
+
 	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
@@ -213,14 +187,14 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 			StatusStr = "fail"
 		}
 		args = append(args, StatusStr)
-		
+
 	}
 	if req.Feedback != nil {
 		updateFields = append(updateFields, "feedback = ?")
 		args = append(args, *req.Feedback)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -253,18 +227,6 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteMidterm deletes a Midterm by ID
 func (h *Handler) DeleteMidterm(ctx context.Context, req *pb.DeleteMidtermRequest) (*pb.DeleteMidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -294,22 +256,10 @@ func (h *Handler) DeleteMidterm(ctx context.Context, req *pb.DeleteMidtermReques
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // ListMidterms lists Midterms with pagination and filtering
 func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest) (*pb.ListMidtermsResponse, error) {
 	defer logger.TraceFunction(ctx)()
-
+	fmt.Print("xxxxxxxx", req.Search)
 	// Default pagination
 	page := int32(1)
 	pageSize := int32(10)
@@ -335,11 +285,11 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title": true,
-		"grade": true,
-		"status": true,
+		"id":       true, // Required for DataLoader batch fetching
+		"title":    true,
+		"grade":    true,
+		"status":   true,
 		"feedback": true,
-		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -365,14 +315,20 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 
 	// Get total count
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Midterm %s", whereClause)
+	fmt.Printf("\n[COUNT Query] %s\n", countQuery)
+	fmt.Printf("[COUNT Args] Count: %d, Values: %v\n", len(args), args)
+
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
+	fmt.Printf("[COUNT Result] Total: %d\n\n", total)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to count midterms: %v", err)
 	}
 
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
+	fmt.Print("cccccccccccccccccc", whereClause)
+
 	query := fmt.Sprintf(`
 		SELECT id, title, grade, status, feedback, created_at, updated_at, created_by, updated_by
 		FROM Midterm
@@ -380,6 +336,10 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?
 	`, whereClause, sortBy, sortDirection)
+
+	// Log full query with parameters
+	fmt.Printf("\n[SQL Query] %s\n", query)
+	fmt.Printf("[SQL Args] Count: %d, Values: %v\n\n", len(args), args)
 
 	rows, err := h.query(ctx, query, args...)
 	if err != nil {
@@ -393,7 +353,7 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var StatusStr string
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -422,7 +382,7 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 		default:
 			entity.Status = pb.MidtermStatus_NOT_SUBMITTED
 		}
-		
+
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -440,6 +400,8 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 		return nil, status.Errorf(codes.Internal, "error iterating midterms: %v", err)
 	}
 
+	fmt.Printf("[RESULT] Fetched %d/%d midterms (Page: %d, PageSize: %d)\n\n", len(entities), total, page, pageSize)
+
 	return &pb.ListMidtermsResponse{
 		Midterms: entities,
 		Total:    total,
@@ -447,5 +409,3 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 		PageSize: pageSize,
 	}, nil
 }
-
-

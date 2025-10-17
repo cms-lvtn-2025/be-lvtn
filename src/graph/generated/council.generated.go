@@ -21,11 +21,6 @@ type CouncilResolver interface {
 	Major(ctx context.Context, obj *model.Council) (*model.Major, error)
 	Semester(ctx context.Context, obj *model.Council) (*model.Semester, error)
 	Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error)
-	Schedules(ctx context.Context, obj *model.Council) ([]*model.CouncilSchedule, error)
-}
-type CouncilScheduleResolver interface {
-	Council(ctx context.Context, obj *model.CouncilSchedule) (*model.Council, error)
-	Topic(ctx context.Context, obj *model.CouncilSchedule) (*model.Topic, error)
 }
 type DefenceResolver interface {
 	Council(ctx context.Context, obj *model.Defence) (*model.Council, error)
@@ -184,6 +179,35 @@ func (ec *executionContext) fieldContext_Council_semesterCode(_ context.Context,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Council_timeStart(ctx context.Context, field graphql.CollectedField, obj *model.Council) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Council_timeStart,
+		func(ctx context.Context) (any, error) {
+			return obj.TimeStart, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Council_timeStart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Council",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -437,10 +461,20 @@ func (ec *executionContext) fieldContext_Council_defences(_ context.Context, fie
 				return ec.fieldContext_Defence_teacherCode(ctx, field)
 			case "position":
 				return ec.fieldContext_Defence_position(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Defence_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Defence_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Defence_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Defence_updatedBy(ctx, field)
 			case "council":
 				return ec.fieldContext_Defence_council(ctx, field)
 			case "teacher":
 				return ec.fieldContext_Defence_teacher(ctx, field)
+			case "gradeDefences":
+				return ec.fieldContext_Defence_gradeDefences(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Defence", field.Name)
 		},
@@ -448,410 +482,62 @@ func (ec *executionContext) fieldContext_Council_defences(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Council_schedules(ctx context.Context, field graphql.CollectedField, obj *model.Council) (ret graphql.Marshaler) {
+func (ec *executionContext) _Council_topicCouncils(ctx context.Context, field graphql.CollectedField, obj *model.Council) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Council_schedules,
+		ec.fieldContext_Council_topicCouncils,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Council().Schedules(ctx, obj)
+			return obj.TopicCouncils, nil
 		},
 		nil,
-		ec.marshalOCouncilSchedule2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilScheduleᚄ,
+		ec.marshalOTopicCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicCouncilᚄ,
 		true,
 		false,
 	)
 }
 
-func (ec *executionContext) fieldContext_Council_schedules(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Council_topicCouncils(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_CouncilSchedule_id(ctx, field)
-			case "councilsCode":
-				return ec.fieldContext_CouncilSchedule_councilsCode(ctx, field)
+				return ec.fieldContext_TopicCouncil_id(ctx, field)
+			case "title":
+				return ec.fieldContext_TopicCouncil_title(ctx, field)
+			case "stage":
+				return ec.fieldContext_TopicCouncil_stage(ctx, field)
 			case "topicCode":
-				return ec.fieldContext_CouncilSchedule_topicCode(ctx, field)
+				return ec.fieldContext_TopicCouncil_topicCode(ctx, field)
+			case "councilCode":
+				return ec.fieldContext_TopicCouncil_councilCode(ctx, field)
 			case "timeStart":
-				return ec.fieldContext_CouncilSchedule_timeStart(ctx, field)
+				return ec.fieldContext_TopicCouncil_timeStart(ctx, field)
 			case "timeEnd":
-				return ec.fieldContext_CouncilSchedule_timeEnd(ctx, field)
+				return ec.fieldContext_TopicCouncil_timeEnd(ctx, field)
 			case "createdAt":
-				return ec.fieldContext_CouncilSchedule_createdAt(ctx, field)
+				return ec.fieldContext_TopicCouncil_createdAt(ctx, field)
 			case "updatedAt":
-				return ec.fieldContext_CouncilSchedule_updatedAt(ctx, field)
-			case "status":
-				return ec.fieldContext_CouncilSchedule_status(ctx, field)
-			case "council":
-				return ec.fieldContext_CouncilSchedule_council(ctx, field)
+				return ec.fieldContext_TopicCouncil_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_TopicCouncil_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_TopicCouncil_updatedBy(ctx, field)
 			case "topic":
-				return ec.fieldContext_CouncilSchedule_topic(ctx, field)
+				return ec.fieldContext_TopicCouncil_topic(ctx, field)
+			case "council":
+				return ec.fieldContext_TopicCouncil_council(ctx, field)
+			case "enrollments":
+				return ec.fieldContext_TopicCouncil_enrollments(ctx, field)
+			case "supervisors":
+				return ec.fieldContext_TopicCouncil_supervisors(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type CouncilSchedule", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_id(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_id,
-		func(ctx context.Context) (any, error) {
-			return obj.ID, nil
-		},
-		nil,
-		ec.marshalNID2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_councilsCode(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_councilsCode,
-		func(ctx context.Context) (any, error) {
-			return obj.CouncilsCode, nil
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_councilsCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_topicCode(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_topicCode,
-		func(ctx context.Context) (any, error) {
-			return obj.TopicCode, nil
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_topicCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_timeStart(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_timeStart,
-		func(ctx context.Context) (any, error) {
-			return obj.TimeStart, nil
-		},
-		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_timeStart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_timeEnd(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_timeEnd,
-		func(ctx context.Context) (any, error) {
-			return obj.TimeEnd, nil
-		},
-		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_timeEnd(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_createdAt,
-		func(ctx context.Context) (any, error) {
-			return obj.CreatedAt, nil
-		},
-		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_updatedAt,
-		func(ctx context.Context) (any, error) {
-			return obj.UpdatedAt, nil
-		},
-		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_status(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_status,
-		func(ctx context.Context) (any, error) {
-			return obj.Status, nil
-		},
-		nil,
-		ec.marshalNBoolean2bool,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_council(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_council,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.CouncilSchedule().Council(ctx, obj)
-		},
-		nil,
-		ec.marshalOCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_council(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "total":
-				return ec.fieldContext_Council_total(ctx, field)
-			case "id":
-				return ec.fieldContext_Council_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Council_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Council_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Council_semesterCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Council_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Council_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Council_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Council_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Council_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Council_semester(ctx, field)
-			case "defences":
-				return ec.fieldContext_Council_defences(ctx, field)
-			case "schedules":
-				return ec.fieldContext_Council_schedules(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CouncilSchedule_topic(ctx context.Context, field graphql.CollectedField, obj *model.CouncilSchedule) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_CouncilSchedule_topic,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.CouncilSchedule().Topic(ctx, obj)
-		},
-		nil,
-		ec.marshalOTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_CouncilSchedule_topic(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CouncilSchedule",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "total":
-				return ec.fieldContext_Topic_total(ctx, field)
-			case "id":
-				return ec.fieldContext_Topic_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Topic_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "teacherSupervisorCode":
-				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
-			case "status":
-				return ec.fieldContext_Topic_status(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_Topic_timeStart(ctx, field)
-			case "timeEnd":
-				return ec.fieldContext_Topic_timeEnd(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Topic_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Topic_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Topic_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Topic_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Topic_major(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_Topic_enrollment(ctx, field)
-			case "semester":
-				return ec.fieldContext_Topic_semester(ctx, field)
-			case "teacherSupervisor":
-				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
-			case "files":
-				return ec.fieldContext_Topic_files(ctx, field)
-			case "schedule":
-				return ec.fieldContext_Topic_schedule(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type TopicCouncil", field.Name)
 		},
 	}
 	return fc, nil
@@ -1002,6 +688,122 @@ func (ec *executionContext) fieldContext_Defence_position(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Defence_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Defence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Defence_createdAt,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Defence_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Defence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Defence_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Defence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Defence_updatedAt,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedAt, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Defence_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Defence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Defence_createdBy(ctx context.Context, field graphql.CollectedField, obj *model.Defence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Defence_createdBy,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedBy, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Defence_createdBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Defence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Defence_updatedBy(ctx context.Context, field graphql.CollectedField, obj *model.Defence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Defence_updatedBy,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedBy, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Defence_updatedBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Defence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Defence_council(ctx context.Context, field graphql.CollectedField, obj *model.Defence) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1036,6 +838,8 @@ func (ec *executionContext) fieldContext_Defence_council(_ context.Context, fiel
 				return ec.fieldContext_Council_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Council_semesterCode(ctx, field)
+			case "timeStart":
+				return ec.fieldContext_Council_timeStart(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Council_createdAt(ctx, field)
 			case "updatedAt":
@@ -1050,8 +854,8 @@ func (ec *executionContext) fieldContext_Defence_council(_ context.Context, fiel
 				return ec.fieldContext_Council_semester(ctx, field)
 			case "defences":
 				return ec.fieldContext_Council_defences(ctx, field)
-			case "schedules":
-				return ec.fieldContext_Council_schedules(ctx, field)
+			case "topicCouncils":
+				return ec.fieldContext_Council_topicCouncils(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
 		},
@@ -1118,6 +922,61 @@ func (ec *executionContext) fieldContext_Defence_teacher(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Defence_gradeDefences(ctx context.Context, field graphql.CollectedField, obj *model.Defence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Defence_gradeDefences,
+		func(ctx context.Context) (any, error) {
+			return obj.GradeDefences, nil
+		},
+		nil,
+		ec.marshalOGradeDefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Defence_gradeDefences(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Defence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GradeDefence_id(ctx, field)
+			case "defenceCode":
+				return ec.fieldContext_GradeDefence_defenceCode(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_GradeDefence_enrollmentCode(ctx, field)
+			case "note":
+				return ec.fieldContext_GradeDefence_note(ctx, field)
+			case "totalScore":
+				return ec.fieldContext_GradeDefence_totalScore(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_GradeDefence_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_GradeDefence_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_GradeDefence_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_GradeDefence_updatedBy(ctx, field)
+			case "defence":
+				return ec.fieldContext_GradeDefence_defence(ctx, field)
+			case "enrollment":
+				return ec.fieldContext_GradeDefence_enrollment(ctx, field)
+			case "criteria":
+				return ec.fieldContext_GradeDefence_criteria(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GradeDefence", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _GradeDefence_id(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1147,43 +1006,101 @@ func (ec *executionContext) fieldContext_GradeDefence_id(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _GradeDefence_council(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+func (ec *executionContext) _GradeDefence_defenceCode(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_GradeDefence_council,
+		ec.fieldContext_GradeDefence_defenceCode,
 		func(ctx context.Context) (any, error) {
-			return obj.Council, nil
+			return obj.DefenceCode, nil
 		},
 		nil,
-		ec.marshalOInt2ᚖint32,
+		ec.marshalNString2string,
 		true,
-		false,
+		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_GradeDefence_council(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GradeDefence_defenceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _GradeDefence_secretary(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+func (ec *executionContext) _GradeDefence_enrollmentCode(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_GradeDefence_secretary,
+		ec.fieldContext_GradeDefence_enrollmentCode,
 		func(ctx context.Context) (any, error) {
-			return obj.Secretary, nil
+			return obj.EnrollmentCode, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefence_enrollmentCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefence_note(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefence_note,
+		func(ctx context.Context) (any, error) {
+			return obj.Note, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefence_note(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefence_totalScore(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefence_totalScore,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalScore, nil
 		},
 		nil,
 		ec.marshalOInt2ᚖint32,
@@ -1192,7 +1109,7 @@ func (ec *executionContext) _GradeDefence_secretary(ctx context.Context, field g
 	)
 }
 
-func (ec *executionContext) fieldContext_GradeDefence_secretary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GradeDefence_totalScore(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
@@ -1263,6 +1180,551 @@ func (ec *executionContext) fieldContext_GradeDefence_updatedAt(_ context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _GradeDefence_createdBy(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefence_createdBy,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedBy, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefence_createdBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefence_updatedBy(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefence_updatedBy,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedBy, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefence_updatedBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefence_defence(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefence_defence,
+		func(ctx context.Context) (any, error) {
+			return obj.Defence, nil
+		},
+		nil,
+		ec.marshalODefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefence_defence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Defence_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Defence_title(ctx, field)
+			case "councilCode":
+				return ec.fieldContext_Defence_councilCode(ctx, field)
+			case "teacherCode":
+				return ec.fieldContext_Defence_teacherCode(ctx, field)
+			case "position":
+				return ec.fieldContext_Defence_position(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Defence_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Defence_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Defence_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Defence_updatedBy(ctx, field)
+			case "council":
+				return ec.fieldContext_Defence_council(ctx, field)
+			case "teacher":
+				return ec.fieldContext_Defence_teacher(ctx, field)
+			case "gradeDefences":
+				return ec.fieldContext_Defence_gradeDefences(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Defence", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefence_enrollment(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefence_enrollment,
+		func(ctx context.Context) (any, error) {
+			return obj.Enrollment, nil
+		},
+		nil,
+		ec.marshalOEnrollment2ᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollment,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefence_enrollment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Enrollment_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Enrollment_title(ctx, field)
+			case "studentCode":
+				return ec.fieldContext_Enrollment_studentCode(ctx, field)
+			case "topicCouncilCode":
+				return ec.fieldContext_Enrollment_topicCouncilCode(ctx, field)
+			case "finalCode":
+				return ec.fieldContext_Enrollment_finalCode(ctx, field)
+			case "gradeReviewCode":
+				return ec.fieldContext_Enrollment_gradeReviewCode(ctx, field)
+			case "midtermCode":
+				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Enrollment_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Enrollment_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_Enrollment_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_Enrollment_updatedBy(ctx, field)
+			case "student":
+				return ec.fieldContext_Enrollment_student(ctx, field)
+			case "midterm":
+				return ec.fieldContext_Enrollment_midterm(ctx, field)
+			case "final":
+				return ec.fieldContext_Enrollment_final(ctx, field)
+			case "topicCouncil":
+				return ec.fieldContext_Enrollment_topicCouncil(ctx, field)
+			case "gradeReview":
+				return ec.fieldContext_Enrollment_gradeReview(ctx, field)
+			case "gradeDefences":
+				return ec.fieldContext_Enrollment_gradeDefences(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefence_criteria(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefence) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefence_criteria,
+		func(ctx context.Context) (any, error) {
+			return obj.Criteria, nil
+		},
+		nil,
+		ec.marshalOGradeDefenceCriterion2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterionᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefence_criteria(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefence",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GradeDefenceCriterion_id(ctx, field)
+			case "gradeDefenceCode":
+				return ec.fieldContext_GradeDefenceCriterion_gradeDefenceCode(ctx, field)
+			case "name":
+				return ec.fieldContext_GradeDefenceCriterion_name(ctx, field)
+			case "score":
+				return ec.fieldContext_GradeDefenceCriterion_score(ctx, field)
+			case "maxScore":
+				return ec.fieldContext_GradeDefenceCriterion_maxScore(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_GradeDefenceCriterion_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_GradeDefenceCriterion_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_GradeDefenceCriterion_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_GradeDefenceCriterion_updatedBy(ctx, field)
+			case "gradeDefence":
+				return ec.fieldContext_GradeDefenceCriterion_gradeDefence(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GradeDefenceCriterion", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_id(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_gradeDefenceCode(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_gradeDefenceCode,
+		func(ctx context.Context) (any, error) {
+			return obj.GradeDefenceCode, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_gradeDefenceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_name(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_score(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_score,
+		func(ctx context.Context) (any, error) {
+			return obj.Score, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_score(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_maxScore(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_maxScore,
+		func(ctx context.Context) (any, error) {
+			return obj.MaxScore, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_maxScore(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_createdAt,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_updatedAt,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedAt, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_createdBy(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_createdBy,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedBy, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_createdBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_updatedBy(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_updatedBy,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedBy, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_updatedBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GradeDefenceCriterion_gradeDefence(ctx context.Context, field graphql.CollectedField, obj *model.GradeDefenceCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GradeDefenceCriterion_gradeDefence,
+		func(ctx context.Context) (any, error) {
+			return obj.GradeDefence, nil
+		},
+		nil,
+		ec.marshalOGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_GradeDefenceCriterion_gradeDefence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GradeDefenceCriterion",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GradeDefence_id(ctx, field)
+			case "defenceCode":
+				return ec.fieldContext_GradeDefence_defenceCode(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_GradeDefence_enrollmentCode(ctx, field)
+			case "note":
+				return ec.fieldContext_GradeDefence_note(ctx, field)
+			case "totalScore":
+				return ec.fieldContext_GradeDefence_totalScore(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_GradeDefence_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_GradeDefence_updatedAt(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_GradeDefence_createdBy(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_GradeDefence_updatedBy(ctx, field)
+			case "defence":
+				return ec.fieldContext_GradeDefence_defence(ctx, field)
+			case "enrollment":
+				return ec.fieldContext_GradeDefence_enrollment(ctx, field)
+			case "criteria":
+				return ec.fieldContext_GradeDefence_criteria(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GradeDefence", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -1308,6 +1770,8 @@ func (ec *executionContext) _Council(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "timeStart":
+			out.Values[i] = ec._Council_timeStart(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._Council_createdAt(ctx, field, obj)
 		case "updatedAt":
@@ -1415,161 +1879,8 @@ func (ec *executionContext) _Council(ctx context.Context, sel ast.SelectionSet, 
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "schedules":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Council_schedules(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var councilScheduleImplementors = []string{"CouncilSchedule"}
-
-func (ec *executionContext) _CouncilSchedule(ctx context.Context, sel ast.SelectionSet, obj *model.CouncilSchedule) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, councilScheduleImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("CouncilSchedule")
-		case "id":
-			out.Values[i] = ec._CouncilSchedule_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "councilsCode":
-			out.Values[i] = ec._CouncilSchedule_councilsCode(ctx, field, obj)
-		case "topicCode":
-			out.Values[i] = ec._CouncilSchedule_topicCode(ctx, field, obj)
-		case "timeStart":
-			out.Values[i] = ec._CouncilSchedule_timeStart(ctx, field, obj)
-		case "timeEnd":
-			out.Values[i] = ec._CouncilSchedule_timeEnd(ctx, field, obj)
-		case "createdAt":
-			out.Values[i] = ec._CouncilSchedule_createdAt(ctx, field, obj)
-		case "updatedAt":
-			out.Values[i] = ec._CouncilSchedule_updatedAt(ctx, field, obj)
-		case "status":
-			out.Values[i] = ec._CouncilSchedule_status(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "council":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._CouncilSchedule_council(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "topic":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._CouncilSchedule_topic(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "topicCouncils":
+			out.Values[i] = ec._Council_topicCouncils(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1629,6 +1940,14 @@ func (ec *executionContext) _Defence(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "createdAt":
+			out.Values[i] = ec._Defence_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Defence_updatedAt(ctx, field, obj)
+		case "createdBy":
+			out.Values[i] = ec._Defence_createdBy(ctx, field, obj)
+		case "updatedBy":
+			out.Values[i] = ec._Defence_updatedBy(ctx, field, obj)
 		case "council":
 			field := field
 
@@ -1695,6 +2014,8 @@ func (ec *executionContext) _Defence(ctx context.Context, sel ast.SelectionSet, 
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "gradeDefences":
+			out.Values[i] = ec._Defence_gradeDefences(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1734,14 +2055,94 @@ func (ec *executionContext) _GradeDefence(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "council":
-			out.Values[i] = ec._GradeDefence_council(ctx, field, obj)
-		case "secretary":
-			out.Values[i] = ec._GradeDefence_secretary(ctx, field, obj)
+		case "defenceCode":
+			out.Values[i] = ec._GradeDefence_defenceCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "enrollmentCode":
+			out.Values[i] = ec._GradeDefence_enrollmentCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "note":
+			out.Values[i] = ec._GradeDefence_note(ctx, field, obj)
+		case "totalScore":
+			out.Values[i] = ec._GradeDefence_totalScore(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._GradeDefence_createdAt(ctx, field, obj)
 		case "updatedAt":
 			out.Values[i] = ec._GradeDefence_updatedAt(ctx, field, obj)
+		case "createdBy":
+			out.Values[i] = ec._GradeDefence_createdBy(ctx, field, obj)
+		case "updatedBy":
+			out.Values[i] = ec._GradeDefence_updatedBy(ctx, field, obj)
+		case "defence":
+			out.Values[i] = ec._GradeDefence_defence(ctx, field, obj)
+		case "enrollment":
+			out.Values[i] = ec._GradeDefence_enrollment(ctx, field, obj)
+		case "criteria":
+			out.Values[i] = ec._GradeDefence_criteria(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var gradeDefenceCriterionImplementors = []string{"GradeDefenceCriterion"}
+
+func (ec *executionContext) _GradeDefenceCriterion(ctx context.Context, sel ast.SelectionSet, obj *model.GradeDefenceCriterion) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gradeDefenceCriterionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GradeDefenceCriterion")
+		case "id":
+			out.Values[i] = ec._GradeDefenceCriterion_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "gradeDefenceCode":
+			out.Values[i] = ec._GradeDefenceCriterion_gradeDefenceCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._GradeDefenceCriterion_name(ctx, field, obj)
+		case "score":
+			out.Values[i] = ec._GradeDefenceCriterion_score(ctx, field, obj)
+		case "maxScore":
+			out.Values[i] = ec._GradeDefenceCriterion_maxScore(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._GradeDefenceCriterion_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._GradeDefenceCriterion_updatedAt(ctx, field, obj)
+		case "createdBy":
+			out.Values[i] = ec._GradeDefenceCriterion_createdBy(ctx, field, obj)
+		case "updatedBy":
+			out.Values[i] = ec._GradeDefenceCriterion_updatedBy(ctx, field, obj)
+		case "gradeDefence":
+			out.Values[i] = ec._GradeDefenceCriterion_gradeDefence(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1779,16 +2180,6 @@ func (ec *executionContext) marshalNCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCo
 	return ec._Council(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCouncilSchedule2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilSchedule(ctx context.Context, sel ast.SelectionSet, v *model.CouncilSchedule) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._CouncilSchedule(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalNDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence(ctx context.Context, sel ast.SelectionSet, v *model.Defence) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -1797,6 +2188,26 @@ func (ec *executionContext) marshalNDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDe
 		return graphql.Null
 	}
 	return ec._Defence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefence) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GradeDefence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGradeDefenceCriterion2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefenceCriterion) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GradeDefenceCriterion(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Council) graphql.Marshaler {
@@ -1853,60 +2264,6 @@ func (ec *executionContext) marshalOCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCo
 	return ec._Council(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCouncilSchedule2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilScheduleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.CouncilSchedule) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCouncilSchedule2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilSchedule(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalOCouncilSchedule2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilSchedule(ctx context.Context, sel ast.SelectionSet, v *model.CouncilSchedule) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._CouncilSchedule(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalODefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐDefenceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Defence) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -1954,11 +2311,112 @@ func (ec *executionContext) marshalODefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodel�
 	return ret
 }
 
+func (ec *executionContext) marshalODefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence(ctx context.Context, sel ast.SelectionSet, v *model.Defence) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Defence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOGradeDefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GradeDefence) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalOGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefence) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._GradeDefence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOGradeDefenceCriterion2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GradeDefenceCriterion) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGradeDefenceCriterion2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 // endregion ***************************** type.gotpl *****************************

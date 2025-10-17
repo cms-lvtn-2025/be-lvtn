@@ -16,7 +16,7 @@ import (
 
 func main() {
 	// Load environment variables
-	if err := godotenv.Load("env/council.env"); err != nil {
+	if err := godotenv.Load("/home/thaily/code/heheheh_be/env/council.env"); err != nil {
 		log.Printf("Warning: .env file not found: %v", err)
 	}
 
@@ -44,10 +44,10 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(
-		logger.UnaryServerInterceptor(),
+		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
 	)
 
-	h := handler.NewHandler()
+	h := handler.NewHandler(database.GetDB())
 	pb.RegisterCouncilServiceServer(grpcServer, h)
 
 	log.Printf("CouncilService listening on port %s", port)

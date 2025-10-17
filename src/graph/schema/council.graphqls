@@ -27,7 +27,7 @@ type Defence {
     createdBy: String
     updatedBy: String
 
-    council: Council
+    council: Council # all
     teacher: Teacher
     gradeDefences: [GradeDefence!]
 }
@@ -43,9 +43,9 @@ type GradeDefence {
     createdBy: String
     updatedBy: String
 
-    defence: Defence
-    enrollment: Enrollment
-    criteria: [GradeDefenceCriterion!]
+    defence: Defence # all
+    enrollment: Enrollment # gv
+    criteria: [GradeDefenceCriterion!] # all
 }
 
 type GradeDefenceCriterion {

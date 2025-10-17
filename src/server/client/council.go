@@ -181,85 +181,85 @@ func (c *GRPCCouncil) GetDefencesByCouncilCode(ctx context.Context, councilCode 
 	return resp, nil
 }
 
-func (c *GRPCCouncil) GetSchedulesByCouncilCode(ctx context.Context, councilCode string) (*pb.ListCouncilSchedulesResponse, error) {
-	if c.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
-	}
-	cacheKey := fmt.Sprintf("%s%s", scheduleCouncilCodeCachePrefix, councilCode)
-	var cached pb.ListCouncilSchedulesResponse
-	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
-		log.Printf("Cache HIT for council: %s", councilCode)
-		return &cached, nil
-	}
-	log.Printf("Cache MISS for council: %s", councilCode)
-	resp, err := c.client.ListCouncilSchedules(ctx, &pb.ListCouncilSchedulesRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: true,
-				Page:       1,
-				PageSize:   100,
-				SortBy:     "created_by",
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "council_code",
-							Operator: pbCommon.FilterOperator_EQUAL,
-							Values:   []string{councilCode},
-						},
-					},
-				},
-			},
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
-	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
-	return resp, nil
-
-}
-
-func (c *GRPCCouncil) GetScheduleByTopicCode(ctx context.Context, topicCode string) (*pb.ListCouncilSchedulesResponse, error) {
-	if c.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
-	}
-	cacheKey := fmt.Sprintf("%s%s", scheduleTopicCodeCachePrefix, topicCode)
-	var cached pb.ListCouncilSchedulesResponse
-	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
-		log.Printf("Cache HIT for council: %s", topicCode)
-		return &cached, nil
-	}
-	log.Printf("Cache MISS for council: %s", topicCode)
-	resp, err := c.client.ListCouncilSchedules(ctx, &pb.ListCouncilSchedulesRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: true,
-				Page:       1,
-				PageSize:   100,
-				SortBy:     "status",
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "topic_code",
-							Operator: pbCommon.FilterOperator_EQUAL,
-							Values:   []string{topicCode},
-						},
-					},
-				},
-			},
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
-	SetCachedProto(ctx, c.redisClient, cacheKey, resp, scheduleCacheTTL)
-	return resp, nil
-
-}
+//func (c *GRPCCouncil) GetSchedulesByCouncilCode(ctx context.Context, councilCode string) (*pb.ListCouncilSchedulesResponse, error) {
+//	if c.client == nil {
+//		return nil, fmt.Errorf("grpc client not initialized")
+//	}
+//	cacheKey := fmt.Sprintf("%s%s", scheduleCouncilCodeCachePrefix, councilCode)
+//	var cached pb.ListCouncilSchedulesResponse
+//	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+//		log.Printf("Cache HIT for council: %s", councilCode)
+//		return &cached, nil
+//	}
+//	log.Printf("Cache MISS for council: %s", councilCode)
+//	resp, err := c.client.ListCouncilSchedules(ctx, &pb.ListCouncilSchedulesRequest{
+//		Search: &pbCommon.SearchRequest{
+//			Pagination: &pbCommon.Pagination{
+//				Descending: true,
+//				Page:       1,
+//				PageSize:   100,
+//				SortBy:     "created_by",
+//			},
+//			Filters: []*pbCommon.FilterCriteria{
+//				{
+//					Criteria: &pbCommon.FilterCriteria_Condition{
+//						Condition: &pbCommon.FilterCondition{
+//							Field:    "council_code",
+//							Operator: pbCommon.FilterOperator_EQUAL,
+//							Values:   []string{councilCode},
+//						},
+//					},
+//				},
+//			},
+//		},
+//	})
+//	if err != nil {
+//		return nil, err
+//	}
+//	SetCachedProto(ctx, c.redisClient, cacheKey, resp, councilCacheTTL)
+//	return resp, nil
+//
+//}
+//
+//func (c *GRPCCouncil) GetScheduleByTopicCode(ctx context.Context, topicCode string) (*pb.ListCouncilSchedulesResponse, error) {
+//	if c.client == nil {
+//		return nil, fmt.Errorf("grpc client not initialized")
+//	}
+//	cacheKey := fmt.Sprintf("%s%s", scheduleTopicCodeCachePrefix, topicCode)
+//	var cached pb.ListCouncilSchedulesResponse
+//	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+//		log.Printf("Cache HIT for council: %s", topicCode)
+//		return &cached, nil
+//	}
+//	log.Printf("Cache MISS for council: %s", topicCode)
+//	resp, err := c.client.ListCouncilSchedules(ctx, &pb.ListCouncilSchedulesRequest{
+//		Search: &pbCommon.SearchRequest{
+//			Pagination: &pbCommon.Pagination{
+//				Descending: true,
+//				Page:       1,
+//				PageSize:   100,
+//				SortBy:     "status",
+//			},
+//			Filters: []*pbCommon.FilterCriteria{
+//				{
+//					Criteria: &pbCommon.FilterCriteria_Condition{
+//						Condition: &pbCommon.FilterCondition{
+//							Field:    "topic_code",
+//							Operator: pbCommon.FilterOperator_EQUAL,
+//							Values:   []string{topicCode},
+//						},
+//					},
+//				},
+//			},
+//		},
+//	})
+//	if err != nil {
+//		return nil, err
+//	}
+//	SetCachedProto(ctx, c.redisClient, cacheKey, resp, scheduleCacheTTL)
+//	return resp, nil
+//
+//}
 
 func (c *GRPCCouncil) GetGradeById(ctx context.Context, id string) (*pb.GetGradeDefenceResponse, error) {
 	if c.client == nil {
@@ -281,4 +281,76 @@ func (c *GRPCCouncil) GetGradeById(ctx context.Context, id string) (*pb.GetGrade
 	SetCachedProto(ctx, c.redisClient, cacheKey, grade, gradeCacheTTL)
 	return grade, nil
 
+}
+
+// GetCouncilsByIds fetches multiple councils using IN operator
+// This is for DataLoader batching
+func (c *GRPCCouncil) GetCouncilsByIds(ctx context.Context, ids []string) (*pb.ListCouncilsResponse, error) {
+	if c.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+
+	resp, err := c.client.ListCouncils(ctx, &pb.ListCouncilsRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: false,
+				Page:       1,
+				PageSize:   int32(len(ids)),
+				SortBy:     "id",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "id",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetGradeDefencesByIds fetches multiple grade defences using IN operator
+// This is for DataLoader batching
+func (c *GRPCCouncil) GetGradeDefencesByIds(ctx context.Context, ids []string) (*pb.ListGradeDefencesResponse, error) {
+	if c.client == nil {
+		return nil, fmt.Errorf("grpc client not initialized")
+	}
+
+	resp, err := c.client.ListGradeDefences(ctx, &pb.ListGradeDefencesRequest{
+		Search: &pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Descending: false,
+				Page:       1,
+				PageSize:   int32(len(ids)),
+				SortBy:     "id",
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "id",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

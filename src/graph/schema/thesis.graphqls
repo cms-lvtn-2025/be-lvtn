@@ -23,12 +23,12 @@ type Enrollment {
     createdBy: String
     updatedBy: String
 
-    student: Student
-    midterm: Midterm
-    final: Final
-    topicCouncil: TopicCouncil
-    gradeReview: GradeReview
-    gradeDefences: [GradeDefence!]
+    student: Student # gv
+    midterm: Midterm # all
+    final: Final # all
+    topicCouncil: TopicCouncil # all
+    gradeReview: GradeReview # all
+    gradeDefences: [GradeDefence!] # all
 }
 
 type Topic {

@@ -534,14 +534,12 @@ func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field g
 				return ec.fieldContext_Topic_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "teacherSupervisorCode":
-				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Topic_status(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_Topic_timeStart(ctx, field)
-			case "timeEnd":
-				return ec.fieldContext_Topic_timeEnd(ctx, field)
+			case "percentStage1":
+				return ec.fieldContext_Topic_percentStage1(ctx, field)
+			case "percentStage2":
+				return ec.fieldContext_Topic_percentStage2(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Topic_createdAt(ctx, field)
 			case "updatedAt":
@@ -552,16 +550,16 @@ func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field g
 				return ec.fieldContext_Topic_updatedBy(ctx, field)
 			case "major":
 				return ec.fieldContext_Topic_major(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_Topic_enrollment(ctx, field)
 			case "semester":
 				return ec.fieldContext_Topic_semester(ctx, field)
-			case "teacherSupervisor":
-				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
+			case "enrollments":
+				return ec.fieldContext_Topic_enrollments(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "schedule":
-				return ec.fieldContext_Topic_schedule(ctx, field)
+			case "topicSupervisors":
+				return ec.fieldContext_Topic_topicSupervisors(ctx, field)
+			case "topicCouncils":
+				return ec.fieldContext_Topic_topicCouncils(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
@@ -897,14 +895,12 @@ func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, fiel
 				return ec.fieldContext_Topic_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "teacherSupervisorCode":
-				return ec.fieldContext_Topic_teacherSupervisorCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Topic_status(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_Topic_timeStart(ctx, field)
-			case "timeEnd":
-				return ec.fieldContext_Topic_timeEnd(ctx, field)
+			case "percentStage1":
+				return ec.fieldContext_Topic_percentStage1(ctx, field)
+			case "percentStage2":
+				return ec.fieldContext_Topic_percentStage2(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Topic_createdAt(ctx, field)
 			case "updatedAt":
@@ -915,16 +911,16 @@ func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, fiel
 				return ec.fieldContext_Topic_updatedBy(ctx, field)
 			case "major":
 				return ec.fieldContext_Topic_major(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_Topic_enrollment(ctx, field)
 			case "semester":
 				return ec.fieldContext_Topic_semester(ctx, field)
-			case "teacherSupervisor":
-				return ec.fieldContext_Topic_teacherSupervisor(ctx, field)
+			case "enrollments":
+				return ec.fieldContext_Topic_enrollments(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "schedule":
-				return ec.fieldContext_Topic_schedule(ctx, field)
+			case "topicSupervisors":
+				return ec.fieldContext_Topic_topicSupervisors(ctx, field)
+			case "topicCouncils":
+				return ec.fieldContext_Topic_topicCouncils(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},

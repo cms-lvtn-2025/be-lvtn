@@ -11,61 +11,55 @@ import (
 )
 
 type Council struct {
-	Total        *int32             `json:"total,omitempty"`
-	ID           string             `json:"id"`
-	Title        string             `json:"title"`
-	MajorCode    string             `json:"majorCode"`
-	SemesterCode string             `json:"semesterCode"`
-	CreatedAt    *time.Time         `json:"createdAt,omitempty"`
-	UpdatedAt    *time.Time         `json:"updatedAt,omitempty"`
-	CreatedBy    *string            `json:"createdBy,omitempty"`
-	UpdatedBy    *string            `json:"updatedBy,omitempty"`
-	Major        *Major             `json:"major,omitempty"`
-	Semester     *Semester          `json:"semester,omitempty"`
-	Defences     []*Defence         `json:"defences,omitempty"`
-	Schedules    []*CouncilSchedule `json:"schedules,omitempty"`
-}
-
-type CouncilSchedule struct {
-	ID           string     `json:"id"`
-	CouncilsCode *string    `json:"councilsCode,omitempty"`
-	TopicCode    *string    `json:"topicCode,omitempty"`
-	TimeStart    *time.Time `json:"timeStart,omitempty"`
-	TimeEnd      *time.Time `json:"timeEnd,omitempty"`
-	CreatedAt    *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt    *time.Time `json:"updatedAt,omitempty"`
-	Status       bool       `json:"status"`
-	Council      *Council   `json:"council,omitempty"`
-	Topic        *Topic     `json:"topic,omitempty"`
+	Total         *int32          `json:"total,omitempty"`
+	ID            string          `json:"id"`
+	Title         string          `json:"title"`
+	MajorCode     string          `json:"majorCode"`
+	SemesterCode  string          `json:"semesterCode"`
+	TimeStart     *time.Time      `json:"timeStart,omitempty"`
+	CreatedAt     *time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt     *time.Time      `json:"updatedAt,omitempty"`
+	CreatedBy     *string         `json:"createdBy,omitempty"`
+	UpdatedBy     *string         `json:"updatedBy,omitempty"`
+	Major         *Major          `json:"major,omitempty"`
+	Semester      *Semester       `json:"semester,omitempty"`
+	Defences      []*Defence      `json:"defences,omitempty"`
+	TopicCouncils []*TopicCouncil `json:"topicCouncils,omitempty"`
 }
 
 type Defence struct {
-	ID          string          `json:"id"`
-	Title       string          `json:"title"`
-	CouncilCode string          `json:"councilCode"`
-	TeacherCode string          `json:"teacherCode"`
-	Position    DefencePosition `json:"position"`
-	Council     *Council        `json:"council,omitempty"`
-	Teacher     *Teacher        `json:"teacher,omitempty"`
+	ID            string          `json:"id"`
+	Title         string          `json:"title"`
+	CouncilCode   string          `json:"councilCode"`
+	TeacherCode   string          `json:"teacherCode"`
+	Position      DefencePosition `json:"position"`
+	CreatedAt     *time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt     *time.Time      `json:"updatedAt,omitempty"`
+	CreatedBy     *string         `json:"createdBy,omitempty"`
+	UpdatedBy     *string         `json:"updatedBy,omitempty"`
+	Council       *Council        `json:"council,omitempty"`
+	Teacher       *Teacher        `json:"teacher,omitempty"`
+	GradeDefences []*GradeDefence `json:"gradeDefences,omitempty"`
 }
 
 type Enrollment struct {
-	ID           string        `json:"id"`
-	Title        string        `json:"title"`
-	StudentCode  string        `json:"studentCode"`
-	MidtermCode  *string       `json:"midtermCode,omitempty"`
-	TopicCode    *string       `json:"topicCode,omitempty"`
-	FinalCode    *string       `json:"finalCode,omitempty"`
-	GradeCode    *string       `json:"gradeCode,omitempty"`
-	CreatedAt    *time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
-	CreatedBy    *string       `json:"createdBy,omitempty"`
-	UpdatedBy    *string       `json:"updatedBy,omitempty"`
-	Student      *Student      `json:"student,omitempty"`
-	Midterm      *Midterm      `json:"midterm,omitempty"`
-	Final        *Final        `json:"final,omitempty"`
-	Topic        *Topic        `json:"topic,omitempty"`
-	GradeDefence *GradeDefence `json:"gradeDefence,omitempty"`
+	ID               string          `json:"id"`
+	Title            string          `json:"title"`
+	StudentCode      string          `json:"studentCode"`
+	TopicCouncilCode string          `json:"topicCouncilCode"`
+	FinalCode        *string         `json:"finalCode,omitempty"`
+	GradeReviewCode  *string         `json:"gradeReviewCode,omitempty"`
+	MidtermCode      *string         `json:"midtermCode,omitempty"`
+	CreatedAt        *time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt        *time.Time      `json:"updatedAt,omitempty"`
+	CreatedBy        *string         `json:"createdBy,omitempty"`
+	UpdatedBy        *string         `json:"updatedBy,omitempty"`
+	Student          *Student        `json:"student,omitempty"`
+	Midterm          *Midterm        `json:"midterm,omitempty"`
+	Final            *Final          `json:"final,omitempty"`
+	TopicCouncil     *TopicCouncil   `json:"topicCouncil,omitempty"`
+	GradeReview      *GradeReview    `json:"gradeReview,omitempty"`
+	GradeDefences    []*GradeDefence `json:"gradeDefences,omitempty"`
 }
 
 type Faculty struct {
@@ -112,8 +106,7 @@ type Final struct {
 	ID              string      `json:"id"`
 	Title           string      `json:"title"`
 	SupervisorGrade *int32      `json:"supervisorGrade,omitempty"`
-	ReviewerGrade   *int32      `json:"reviewerGrade,omitempty"`
-	DefenseGrade    *int32      `json:"defenseGrade,omitempty"`
+	DepartmentGrade *int32      `json:"departmentGrade,omitempty"`
 	FinalGrade      *int32      `json:"finalGrade,omitempty"`
 	Status          FinalStatus `json:"status"`
 	Notes           *string     `json:"notes,omitempty"`
@@ -125,11 +118,46 @@ type Final struct {
 }
 
 type GradeDefence struct {
-	ID        string     `json:"id"`
-	Council   *int32     `json:"council,omitempty"`
-	Secretary *int32     `json:"secretary,omitempty"`
-	CreatedAt *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	ID             string                   `json:"id"`
+	DefenceCode    string                   `json:"defenceCode"`
+	EnrollmentCode string                   `json:"enrollmentCode"`
+	Note           *string                  `json:"note,omitempty"`
+	TotalScore     *int32                   `json:"totalScore,omitempty"`
+	CreatedAt      *time.Time               `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time               `json:"updatedAt,omitempty"`
+	CreatedBy      *string                  `json:"createdBy,omitempty"`
+	UpdatedBy      *string                  `json:"updatedBy,omitempty"`
+	Defence        *Defence                 `json:"defence,omitempty"`
+	Enrollment     *Enrollment              `json:"enrollment,omitempty"`
+	Criteria       []*GradeDefenceCriterion `json:"criteria,omitempty"`
+}
+
+type GradeDefenceCriterion struct {
+	ID               string        `json:"id"`
+	GradeDefenceCode string        `json:"gradeDefenceCode"`
+	Name             *string       `json:"name,omitempty"`
+	Score            *string       `json:"score,omitempty"`
+	MaxScore         *string       `json:"maxScore,omitempty"`
+	CreatedAt        *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt        *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy        *string       `json:"createdBy,omitempty"`
+	UpdatedBy        *string       `json:"updatedBy,omitempty"`
+	GradeDefence     *GradeDefence `json:"gradeDefence,omitempty"`
+}
+
+type GradeReview struct {
+	ID             string      `json:"id"`
+	Title          string      `json:"title"`
+	ReviewGrade    *int32      `json:"reviewGrade,omitempty"`
+	TeacherCode    string      `json:"teacherCode"`
+	Status         FinalStatus `json:"status"`
+	Notes          *string     `json:"notes,omitempty"`
+	CompletionDate *time.Time  `json:"completionDate,omitempty"`
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	CreatedBy      *string     `json:"createdBy,omitempty"`
+	UpdatedBy      *string     `json:"updatedBy,omitempty"`
+	Teacher        *Teacher    `json:"teacher,omitempty"`
 }
 
 type Major struct {
@@ -154,6 +182,9 @@ type Midterm struct {
 	UpdatedAt *time.Time    `json:"updatedAt,omitempty"`
 	CreatedBy *string       `json:"createdBy,omitempty"`
 	UpdatedBy *string       `json:"updatedBy,omitempty"`
+}
+
+type Mutation struct {
 }
 
 type PaginationInput struct {
@@ -216,6 +247,9 @@ type Student struct {
 	Enrollments  []*Enrollment `json:"enrollments,omitempty"`
 }
 
+type Subscription struct {
+}
+
 type Teacher struct {
 	ID               string        `json:"id"`
 	Email            string        `json:"email"`
@@ -234,25 +268,66 @@ type Teacher struct {
 }
 
 type Topic struct {
-	Total                 *int32           `json:"total,omitempty"`
-	ID                    string           `json:"id"`
-	Title                 string           `json:"title"`
-	MajorCode             string           `json:"majorCode"`
-	SemesterCode          string           `json:"semesterCode"`
-	TeacherSupervisorCode string           `json:"teacherSupervisorCode"`
-	Status                TopicStatus      `json:"status"`
-	TimeStart             time.Time        `json:"timeStart"`
-	TimeEnd               time.Time        `json:"timeEnd"`
-	CreatedAt             *time.Time       `json:"createdAt,omitempty"`
-	UpdatedAt             *time.Time       `json:"updatedAt,omitempty"`
-	CreatedBy             *string          `json:"createdBy,omitempty"`
-	UpdatedBy             *string          `json:"updatedBy,omitempty"`
-	Major                 *Major           `json:"major,omitempty"`
-	Enrollment            []*Enrollment    `json:"enrollment,omitempty"`
-	Semester              *Semester        `json:"semester,omitempty"`
-	TeacherSupervisor     *Teacher         `json:"teacherSupervisor,omitempty"`
-	Files                 []*File          `json:"files,omitempty"`
-	Schedule              *CouncilSchedule `json:"schedule,omitempty"`
+	Total            *int32             `json:"total,omitempty"`
+	ID               string             `json:"id"`
+	Title            string             `json:"title"`
+	MajorCode        string             `json:"majorCode"`
+	SemesterCode     string             `json:"semesterCode"`
+	Status           TopicStatus        `json:"status"`
+	PercentStage1    *int32             `json:"percentStage1,omitempty"`
+	PercentStage2    *int32             `json:"percentStage2,omitempty"`
+	CreatedAt        *time.Time         `json:"createdAt,omitempty"`
+	UpdatedAt        *time.Time         `json:"updatedAt,omitempty"`
+	CreatedBy        *string            `json:"createdBy,omitempty"`
+	UpdatedBy        *string            `json:"updatedBy,omitempty"`
+	Major            *Major             `json:"major,omitempty"`
+	Semester         *Semester          `json:"semester,omitempty"`
+	Enrollments      []*Enrollment      `json:"enrollments,omitempty"`
+	Files            []*File            `json:"files,omitempty"`
+	TopicSupervisors []*TopicSupervisor `json:"topicSupervisors,omitempty"`
+	TopicCouncils    []*TopicCouncil    `json:"topicCouncils,omitempty"`
+}
+
+type TopicCouncil struct {
+	ID          string                    `json:"id"`
+	Title       string                    `json:"title"`
+	Stage       TopicStage                `json:"stage"`
+	TopicCode   string                    `json:"topicCode"`
+	CouncilCode *string                   `json:"councilCode,omitempty"`
+	TimeStart   time.Time                 `json:"timeStart"`
+	TimeEnd     time.Time                 `json:"timeEnd"`
+	CreatedAt   *time.Time                `json:"createdAt,omitempty"`
+	UpdatedAt   *time.Time                `json:"updatedAt,omitempty"`
+	CreatedBy   *string                   `json:"createdBy,omitempty"`
+	UpdatedBy   *string                   `json:"updatedBy,omitempty"`
+	Topic       *Topic                    `json:"topic,omitempty"`
+	Council     *Council                  `json:"council,omitempty"`
+	Enrollments []*Enrollment             `json:"enrollments,omitempty"`
+	Supervisors []*TopicCouncilSupervisor `json:"supervisors,omitempty"`
+}
+
+type TopicCouncilSupervisor struct {
+	ID                    string        `json:"id"`
+	TeacherSupervisorCode string        `json:"teacherSupervisorCode"`
+	TopicCouncilCode      string        `json:"topicCouncilCode"`
+	CreatedAt             *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt             *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy             *string       `json:"createdBy,omitempty"`
+	UpdatedBy             *string       `json:"updatedBy,omitempty"`
+	Teacher               *Teacher      `json:"teacher,omitempty"`
+	TopicCouncil          *TopicCouncil `json:"topicCouncil,omitempty"`
+}
+
+type TopicSupervisor struct {
+	ID                    string     `json:"id"`
+	TeacherSupervisorCode string     `json:"teacherSupervisorCode"`
+	TopicCode             string     `json:"topicCode"`
+	CreatedAt             *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt             *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy             *string    `json:"createdBy,omitempty"`
+	UpdatedBy             *string    `json:"updatedBy,omitempty"`
+	Teacher               *Teacher   `json:"teacher,omitempty"`
+	Topic                 *Topic     `json:"topic,omitempty"`
 }
 
 // Vai trò trong hội đồng bảo vệ
@@ -319,20 +394,20 @@ func (e DefencePosition) MarshalJSON() ([]byte, error) {
 type FileStatus string
 
 const (
-	FileStatusPending  FileStatus = "PENDING"
-	FileStatusApproved FileStatus = "APPROVED"
-	FileStatusRejected FileStatus = "REJECTED"
+	FileStatusFilePending FileStatus = "FILE_PENDING"
+	FileStatusApproved    FileStatus = "APPROVED"
+	FileStatusRejected    FileStatus = "REJECTED"
 )
 
 var AllFileStatus = []FileStatus{
-	FileStatusPending,
+	FileStatusFilePending,
 	FileStatusApproved,
 	FileStatusRejected,
 }
 
 func (e FileStatus) IsValid() bool {
 	switch e {
-	case FileStatusPending, FileStatusApproved, FileStatusRejected:
+	case FileStatusFilePending, FileStatusApproved, FileStatusRejected:
 		return true
 	}
 	return false
@@ -687,18 +762,20 @@ type MidtermStatus string
 const (
 	MidtermStatusNotSubmitted MidtermStatus = "NOT_SUBMITTED"
 	MidtermStatusSubmitted    MidtermStatus = "SUBMITTED"
-	MidtermStatusGraded       MidtermStatus = "GRADED"
+	MidtermStatusPass         MidtermStatus = "PASS"
+	MidtermStatusFail         MidtermStatus = "FAIL"
 )
 
 var AllMidtermStatus = []MidtermStatus{
 	MidtermStatusNotSubmitted,
 	MidtermStatusSubmitted,
-	MidtermStatusGraded,
+	MidtermStatusPass,
+	MidtermStatusFail,
 }
 
 func (e MidtermStatus) IsValid() bool {
 	switch e {
-	case MidtermStatusNotSubmitted, MidtermStatusSubmitted, MidtermStatusGraded:
+	case MidtermStatusNotSubmitted, MidtermStatusSubmitted, MidtermStatusPass, MidtermStatusFail:
 		return true
 	}
 	return false
@@ -854,28 +931,88 @@ func (e RoleSystemRole) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// Giai đoạn đề tài
+type TopicStage string
+
+const (
+	TopicStageStageDacn TopicStage = "STAGE_DACN"
+	TopicStageStageLvtn TopicStage = "STAGE_LVTN"
+)
+
+var AllTopicStage = []TopicStage{
+	TopicStageStageDacn,
+	TopicStageStageLvtn,
+}
+
+func (e TopicStage) IsValid() bool {
+	switch e {
+	case TopicStageStageDacn, TopicStageStageLvtn:
+		return true
+	}
+	return false
+}
+
+func (e TopicStage) String() string {
+	return string(e)
+}
+
+func (e *TopicStage) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TopicStage(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TopicStage", str)
+	}
+	return nil
+}
+
+func (e TopicStage) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *TopicStage) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e TopicStage) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
 // Trạng thái đề tài
 type TopicStatus string
 
 const (
-	TopicStatusPending    TopicStatus = "PENDING"
-	TopicStatusApproved   TopicStatus = "APPROVED"
-	TopicStatusInProgress TopicStatus = "IN_PROGRESS"
-	TopicStatusCompleted  TopicStatus = "COMPLETED"
-	TopicStatusRejected   TopicStatus = "REJECTED"
+	TopicStatusSubmit         TopicStatus = "SUBMIT"
+	TopicStatusTopicPending   TopicStatus = "TOPIC_PENDING"
+	TopicStatusApproved1      TopicStatus = "APPROVED_1"
+	TopicStatusApproved2      TopicStatus = "APPROVED_2"
+	TopicStatusInProgress     TopicStatus = "IN_PROGRESS"
+	TopicStatusTopicCompleted TopicStatus = "TOPIC_COMPLETED"
+	TopicStatusRejected       TopicStatus = "REJECTED"
 )
 
 var AllTopicStatus = []TopicStatus{
-	TopicStatusPending,
-	TopicStatusApproved,
+	TopicStatusSubmit,
+	TopicStatusTopicPending,
+	TopicStatusApproved1,
+	TopicStatusApproved2,
 	TopicStatusInProgress,
-	TopicStatusCompleted,
+	TopicStatusTopicCompleted,
 	TopicStatusRejected,
 }
 
 func (e TopicStatus) IsValid() bool {
 	switch e {
-	case TopicStatusPending, TopicStatusApproved, TopicStatusInProgress, TopicStatusCompleted, TopicStatusRejected:
+	case TopicStatusSubmit, TopicStatusTopicPending, TopicStatusApproved1, TopicStatusApproved2, TopicStatusInProgress, TopicStatusTopicCompleted, TopicStatusRejected:
 		return true
 	}
 	return false

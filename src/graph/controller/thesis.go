@@ -26,18 +26,11 @@ func (c *Controller) pbTopicsToModel(resp *pb.ListTopicsResponse) []*model.Topic
 	for _, topic := range topics {
 		var status model.TopicStatus
 		switch topic.GetStatus() {
-		case pb.TopicStatus_TOPIC_PENDING:
-			status = model.TopicStatusPending
-		case pb.TopicStatus_APPROVED:
-			status = model.TopicStatusApproved
 		case pb.TopicStatus_IN_PROGRESS:
 			status = model.TopicStatusInProgress
 		case pb.TopicStatus_REJECTED:
 			status = model.TopicStatusRejected
 		case pb.TopicStatus_TOPIC_COMPLETED:
-			status = model.TopicStatusCompleted
-		default:
-			status = model.TopicStatusPending
 
 		}
 		var createdAt, updatedAt *time.Time
@@ -60,19 +53,16 @@ func (c *Controller) pbTopicsToModel(resp *pb.ListTopicsResponse) []*model.Topic
 		}
 
 		result = append(result, &model.Topic{
-			ID:                    topic.GetId(),
-			Total:                 total,
-			Title:                 topic.GetTitle(),
-			MajorCode:             topic.GetMajorCode(),
-			Status:                status,
-			CreatedAt:             createdAt,
-			UpdatedAt:             updatedAt,
-			SemesterCode:          topic.GetSemesterCode(),
-			TeacherSupervisorCode: topic.GetTeacherSupervisorCode(),
-			TimeEnd:               topic.TimeEnd.AsTime(),
-			TimeStart:             topic.TimeStart.AsTime(),
-			CreatedBy:             createdBy,
-			UpdatedBy:             updatedBy,
+			ID:           topic.GetId(),
+			Total:        total,
+			Title:        topic.GetTitle(),
+			MajorCode:    topic.GetMajorCode(),
+			Status:       status,
+			CreatedAt:    createdAt,
+			UpdatedAt:    updatedAt,
+			SemesterCode: topic.GetSemesterCode(),
+			CreatedBy:    createdBy,
+			UpdatedBy:    updatedBy,
 		})
 	}
 	return result
@@ -85,18 +75,11 @@ func (c *Controller) pbTopicToModel(resp *pb.GetTopicResponse) *model.Topic {
 	topic := resp.GetTopic()
 	var status model.TopicStatus
 	switch topic.GetStatus() {
-	case pb.TopicStatus_TOPIC_PENDING:
-		status = model.TopicStatusPending
-	case pb.TopicStatus_APPROVED:
-		status = model.TopicStatusApproved
 	case pb.TopicStatus_IN_PROGRESS:
 		status = model.TopicStatusInProgress
 	case pb.TopicStatus_REJECTED:
 		status = model.TopicStatusRejected
 	case pb.TopicStatus_TOPIC_COMPLETED:
-		status = model.TopicStatusCompleted
-	default:
-		status = model.TopicStatusPending
 
 	}
 	var createdAt, updatedAt *time.Time
@@ -118,18 +101,15 @@ func (c *Controller) pbTopicToModel(resp *pb.GetTopicResponse) *model.Topic {
 		updatedBy = &topic.UpdatedBy
 	}
 	return &model.Topic{
-		ID:                    topic.GetId(),
-		Title:                 topic.GetTitle(),
-		MajorCode:             topic.GetMajorCode(),
-		Status:                status,
-		CreatedAt:             createdAt,
-		UpdatedAt:             updatedAt,
-		SemesterCode:          topic.GetSemesterCode(),
-		TeacherSupervisorCode: topic.GetTeacherSupervisorCode(),
-		TimeEnd:               topic.TimeEnd.AsTime(),
-		TimeStart:             topic.TimeStart.AsTime(),
-		CreatedBy:             createdBy,
-		UpdatedBy:             updatedBy,
+		ID:           topic.GetId(),
+		Title:        topic.GetTitle(),
+		MajorCode:    topic.GetMajorCode(),
+		Status:       status,
+		CreatedAt:    createdAt,
+		UpdatedAt:    updatedAt,
+		SemesterCode: topic.GetSemesterCode(),
+		CreatedBy:    createdBy,
+		UpdatedBy:    updatedBy,
 	}
 }
 
@@ -149,33 +129,19 @@ func (c *Controller) pbEnrollmentsToModel(resp *pb.ListEnrollmentsResponse) []*m
 			t := enrollment.GetUpdatedAt().AsTime()
 			updatedAt = &t
 		}
-		var createdBy, updatedBy, midTermCode, topicCode, finalCode, gradeCode *string
+		var createdBy, updatedBy, finalCode *string
 		if enrollment.CreatedBy != "" {
 			createdBy = &enrollment.CreatedBy
 		}
 		if enrollment.UpdatedBy != "" {
 			updatedBy = &enrollment.UpdatedBy
 		}
-		if enrollment.TopicCode != "" {
-			topicCode = &enrollment.TopicCode
-		}
-		if enrollment.FinalCode != "" {
-			finalCode = &enrollment.FinalCode
-		}
-		if enrollment.GradeCode != "" {
-			gradeCode = &enrollment.GradeCode
-		}
-		if enrollment.MidtermCode != "" {
-			midTermCode = &enrollment.MidtermCode
-		}
 		result = append(result, &model.Enrollment{
 			ID:          enrollment.GetId(),
 			Title:       enrollment.GetTitle(),
 			StudentCode: enrollment.GetStudentCode(),
-			MidtermCode: midTermCode,
+			MidtermCode: enrollment.MidtermCode,
 			FinalCode:   finalCode,
-			GradeCode:   gradeCode,
-			TopicCode:   topicCode,
 			CreatedAt:   createdAt,
 			UpdatedAt:   updatedAt,
 			CreatedBy:   createdBy,
@@ -194,12 +160,14 @@ func (c *Controller) pbMidtermToModel(resp *pb.GetMidtermResponse) *model.Midter
 
 	var status model.MidtermStatus
 	switch midterm.GetStatus() {
-	case pb.MidtermStatus_GRADED:
-		status = model.MidtermStatusGraded
 	case pb.MidtermStatus_NOT_SUBMITTED:
 		status = model.MidtermStatusNotSubmitted
 	case pb.MidtermStatus_SUBMITTED:
 		status = model.MidtermStatusSubmitted
+	case pb.MidtermStatus_PASS:
+		status = model.MidtermStatusPass
+	case pb.MidtermStatus_FAIL:
+		status = model.MidtermStatusFail
 	default:
 		status = model.MidtermStatusNotSubmitted
 	}
@@ -247,7 +215,7 @@ func (c *Controller) pbFinalToModel(resp *pb.GetFinalResponse) *model.Final {
 		return nil
 	}
 	final := resp.GetFinal()
-	var supervisorGrade, reviewerGrade, finalGrade *int32
+	var supervisorGrade, finalGrade *int32
 	var notes, createdBy, updatedBy *string
 	var status model.FinalStatus
 	var createdAt, updatedAt *time.Time
@@ -266,9 +234,6 @@ func (c *Controller) pbFinalToModel(resp *pb.GetFinalResponse) *model.Final {
 	}
 	if final.GetSupervisorGrade() != -1 {
 		supervisorGrade = &final.SupervisorGrade
-	}
-	if final.GetReviewerGrade() != -1 {
-		reviewerGrade = &final.ReviewerGrade
 	}
 	if final.GetFinalGrade() != -1 {
 		finalGrade = &final.FinalGrade
@@ -296,7 +261,6 @@ func (c *Controller) pbFinalToModel(resp *pb.GetFinalResponse) *model.Final {
 		Title:           final.GetTitle(),
 		Status:          status,
 		SupervisorGrade: supervisorGrade,
-		ReviewerGrade:   reviewerGrade,
 		FinalGrade:      finalGrade,
 		Notes:           notes,
 		CreatedBy:       createdBy,
@@ -481,52 +445,58 @@ func (c *Controller) GetEnrollmentsChild(ctx context.Context, topicCode string) 
 }
 
 func (c *Controller) GetEnrollments(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error) {
-	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
-	if !ok {
-		return nil, fmt.Errorf("not authorized")
-	}
-	role, ok := claims["role"].(string)
-	if !ok {
-		return nil, fmt.Errorf("not authorized")
-	}
-	semester, ok := ctx.Value("semester").(string)
-
-	idsArr := strings.Split(claims["ids"].(string), ",")
-	myId := ""
-	if semester == "" {
-		myId = strings.Split(idsArr[0], "-")[1]
-	} else {
-		for _, id := range idsArr {
-			if strings.HasPrefix(id, semester+"-") {
-				myId = strings.Split(id, "-")[1]
-			}
-		}
-	}
-	if myId == "" {
-		return nil, fmt.Errorf("no teacher found for semester %s", semester)
-	}
+	//claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	//if !ok {
+	//	return nil, fmt.Errorf("not authorized")
+	//}
+	//role, ok := claims["role"].(string)
+	//if !ok {
+	//	return nil, fmt.Errorf("not authorized")
+	//}
+	//semester, ok := ctx.Value("semester").(string)
+	//
+	//idsArr := strings.Split(claims["ids"].(string), ",")
+	//myId := ""
+	//if semester == "" {
+	//	myId = strings.Split(idsArr[0], "-")[1]
+	//} else {
+	//	for _, id := range idsArr {
+	//		if strings.HasPrefix(id, semester+"-") {
+	//			myId = strings.Split(id, "-")[1]
+	//		}
+	//	}
+	//}
+	//if myId == "" {
+	//	return nil, fmt.Errorf("no teacher found for semester %s", semester)
+	//}
+	var err error
 	var enrolls *pb.ListEnrollmentsResponse
-	if role == "student" {
-		var err error
-		var newSearch model.SearchRequestInput
-		newSearch = model.SearchRequestInput{
-			Pagination: search.Pagination,
-			Filters: append([]*model.FilterCriteriaInput{
-				&model.FilterCriteriaInput{
-					Condition: &model.FilterConditionInput{
-						Field:    "student_code",
-						Operator: model.FilterOperatorEqual,
-						Values:   []string{myId},
-					},
-				},
-			}, search.Filters...),
-		}
-		enrolls, err = c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
-		if err != nil {
-			return nil, err
-		}
-	} else if role == "teacher" {
-		return nil, fmt.Errorf("teacher role not allowed")
+	enrolls, err = c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(search))
+
+	//if role == "student" {
+	//	//var err error
+	//	//var newSearch model.SearchRequestInput
+	//	//newSearch = model.SearchRequestInput{
+	//	//	Pagination: search.Pagination,
+	//	//	Filters: append([]*model.FilterCriteriaInput{
+	//	//		&model.FilterCriteriaInput{
+	//	//			Condition: &model.FilterConditionInput{
+	//	//				Field:    "student_code",
+	//	//				Operator: model.FilterOperatorEqual,
+	//	//				Values:   []string{myId},
+	//	//			},
+	//	//		},
+	//	//	}, search.Filters...),
+	//	//}
+	//	enrolls, err = c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//} else if role == "teacher" {
+	//	return nil, fmt.Errorf("teacher role not allowed")
+	//}
+	if err != nil {
+		return nil, err
 	}
 
 	return c.pbEnrollmentsToModel(enrolls), nil

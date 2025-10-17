@@ -9,12 +9,9 @@ mkdir /home/thaily/code/heheheh_be/src/service/user/tmp-user
 !exclude tmp-user
 building...
 running...
-2025/10/16 21:27:06 Database connected successfully with connection pool:
-2025/10/16 21:27:06   - MaxOpenConns: 20
-2025/10/16 21:27:06   - MaxIdleConns: 10
-2025/10/16 21:27:06   - ConnMaxLifetime: 5m0s
-2025/10/16 21:27:06   - ConnMaxIdleTime: 2m0s
-2025/10/16 21:27:06 UserService listening on port 50056
-cleaning...
-deleting /home/thaily/code/heheheh_be/src/service/user/tmp-user
-see you again~
+2025/10/18 00:45:31 Database connected successfully with connection pool:
+2025/10/18 00:45:31   - MaxOpenConns: 20
+2025/10/18 00:45:31   - MaxIdleConns: 10
+2025/10/18 00:45:31   - ConnMaxLifetime: 5m0s
+2025/10/18 00:45:31   - ConnMaxIdleTime: 2m0s
+2025/10/18 00:45:31 UserService listening on port 50056

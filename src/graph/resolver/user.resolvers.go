@@ -6,28 +6,29 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
 
 // Major is the resolver for the major field.
 func (r *studentResolver) Major(ctx context.Context, obj *model.Student) (*model.Major, error) {
-	return r.Ctrl.GetMajorByCode(ctx, obj.MajorCode)
+	panic(fmt.Errorf("not implemented: Major - major"))
 }
 
 // Semester is the resolver for the semester field.
 func (r *studentResolver) Semester(ctx context.Context, obj *model.Student) (*model.Semester, error) {
-	return r.Ctrl.GetSemesterByCode(ctx, obj.SemesterCode)
+	panic(fmt.Errorf("not implemented: Semester - semester"))
 }
 
 // Major is the resolver for the major field.
 func (r *teacherResolver) Major(ctx context.Context, obj *model.Teacher) (*model.Major, error) {
-	return r.Ctrl.GetMajorByCode(ctx, obj.MajorCode)
+	panic(fmt.Errorf("not implemented: Major - major"))
 }
 
 // Semester is the resolver for the semester field.
 func (r *teacherResolver) Semester(ctx context.Context, obj *model.Teacher) (*model.Semester, error) {
-	return r.Ctrl.GetSemesterByCode(ctx, obj.SemesterCode)
+	panic(fmt.Errorf("not implemented: Semester - semester"))
 }
 
 // Roles is the resolver for the roles field.

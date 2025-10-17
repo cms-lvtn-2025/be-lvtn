@@ -128,10 +128,20 @@ input SearchRequestInput {
 
 type Query {
     getInfoStudent: Student!
-    getInfoTeacher: Teacher!
+    getInfoTeacher: Teacher
     getListTopic(search: SearchRequestInput!): [Topic!]
     getListEnrollment(search: SearchRequestInput!): [Enrollment!]
     getListSemester(search: SearchRequestInput!): [Semester!]
     getListCouncil(search: SearchRequestInput!): [Council!]
     getListDefence(search: SearchRequestInput!): [Defence!]
+}
+
+type Mutation {
+    """Base mutation - sẽ được extend trong student.graphqls và teacher.graphqls"""
+    _empty: String
+}
+
+type Subscription {
+    """Base subscription - sẽ được extend trong student.graphqls và teacher.graphqls"""
+    _empty: String
 }
