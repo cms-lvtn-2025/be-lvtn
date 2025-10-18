@@ -213,47 +213,37 @@ func (dl *DataLoader[K, V]) LoadMany(ctx context.Context, keys []K) ([]V, []erro
 	return values, errors
 }
 
-// executeBatch executes the current batch
-func (dl *DataLoader[K, V]) executeBatch(ctx context.Context) {
-	dl.batchMutex.Lock()
-
-	// Take current batch
-	currentBatch := dl.batch
-	dl.batch = make(map[K][]chan<- *Result[V])
-	dl.batchTimer = nil
-
-	dl.batchMutex.Unlock()
-
-	if len(currentBatch) == 0 {
-		return
+// splitIntoChunks splits keys into chunks of specified size
+func (dl *DataLoader[K, V]) splitIntoChunks(keys []K, chunkSize int) [][]K {
+	if chunkSize <= 0 {
+		return [][]K{keys}
 	}
 
-	// Extract unique keys (L1 deduplication happens here)
-	keys := make([]K, 0, len(currentBatch))
-	for key := range currentBatch {
-		keys = append(keys, key)
+	var chunks [][]K
+	for i := 0; i < len(keys); i += chunkSize {
+		end := i + chunkSize
+		if end > len(keys) {
+			end = len(keys)
+		}
+		chunks = append(chunks, keys[i:end])
 	}
+	return chunks
+}
 
-	fmt.Printf("[DataLoader] Executing batch with %d unique keys: %v\n", len(keys), keys)
-
-	// Execute batch function
-	results, err := dl.batchFn(ctx, keys)
-
-	if err != nil {
-		fmt.Printf("[DataLoader] Batch execution failed: %v\n", err)
-	} else {
-		fmt.Printf("[DataLoader] Batch execution returned %d results\n", len(results))
-	}
-
-	// Distribute results to waiting channels
+// distributeResults distributes batch results to all waiting channels
+func (dl *DataLoader[K, V]) distributeResults(
+	batch map[K][]chan<- *Result[V],
+	results map[K]V,
+	batchErr error,
+) {
 	successKeys := []K{}
 	failedKeys := []K{}
 
-	for key, channels := range currentBatch {
+	for key, channels := range batch {
 		var result *Result[V]
 
-		if err != nil {
-			result = &Result[V]{Error: err}
+		if batchErr != nil {
+			result = &Result[V]{Error: batchErr}
 			failedKeys = append(failedKeys, key)
 		} else if value, ok := results[key]; ok {
 			result = &Result[V]{Value: value}
@@ -284,6 +274,75 @@ func (dl *DataLoader[K, V]) executeBatch(ctx context.Context) {
 	if len(failedKeys) > 0 {
 		fmt.Printf("[DataLoader] Failed to load %d keys: %v\n", len(failedKeys), failedKeys)
 	}
+}
+
+// executeBatch executes the current batch
+func (dl *DataLoader[K, V]) executeBatch(ctx context.Context) {
+	dl.batchMutex.Lock()
+
+	// Take current batch
+	currentBatch := dl.batch
+	dl.batch = make(map[K][]chan<- *Result[V])
+	dl.batchTimer = nil
+
+	dl.batchMutex.Unlock()
+
+	if len(currentBatch) == 0 {
+		return
+	}
+
+	// Extract unique keys (L1 deduplication happens here)
+	keys := make([]K, 0, len(currentBatch))
+	for key := range currentBatch {
+		keys = append(keys, key)
+	}
+
+	fmt.Printf("[DataLoader] Executing batch with %d unique keys\n", len(keys))
+
+	// Check if splitting is needed (MaxBatchSize enforcement)
+	if dl.maxBatchSize > 0 && len(keys) > dl.maxBatchSize {
+		fmt.Printf("[DataLoader] Splitting into chunks (MaxBatchSize: %d)\n", dl.maxBatchSize)
+
+		chunks := dl.splitIntoChunks(keys, dl.maxBatchSize)
+		allResults := make(map[K]V)
+		var lastErr error
+
+		// Execute chunks sequentially
+		for i, chunk := range chunks {
+			fmt.Printf("[DataLoader] Executing chunk %d/%d with %d keys\n",
+				i+1, len(chunks), len(chunk))
+
+			chunkResults, err := dl.batchFn(ctx, chunk)
+			if err != nil {
+				fmt.Printf("[DataLoader] Chunk %d failed: %v\n", i+1, err)
+				lastErr = err
+				continue
+			}
+
+			// Merge results
+			for k, v := range chunkResults {
+				allResults[k] = v
+			}
+		}
+
+		fmt.Printf("[DataLoader] Completed %d chunks, got %d results\n",
+			len(chunks), len(allResults))
+
+		// Distribute merged results
+		dl.distributeResults(currentBatch, allResults, lastErr)
+		return
+	}
+
+	// Original path for small batches
+	results, err := dl.batchFn(ctx, keys)
+
+	if err != nil {
+		fmt.Printf("[DataLoader] Batch execution failed: %v\n", err)
+	} else {
+		fmt.Printf("[DataLoader] Batch execution returned %d results\n", len(results))
+	}
+
+	dl.distributeResults(currentBatch, results, err)
 }
 
 // L2 cache operations

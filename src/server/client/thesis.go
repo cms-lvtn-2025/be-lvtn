@@ -408,48 +408,96 @@ func (t *GRPCthesis) GetEnrollmentBySearch(ctx context.Context, search *pbCommon
 }
 
 // GetTopicsByIds fetches multiple topics using IN operator
-// This is for DataLoader batching
+// This is for DataLoader batching with Redis cache support
 func (t *GRPCthesis) GetTopicsByIds(ctx context.Context, ids []string) (*pb.ListTopicsResponse, error) {
 	if t.client == nil {
 		return nil, fmt.Errorf("grpc client not initialized")
 	}
 
-	resp, err := t.client.ListTopics(ctx, &pb.ListTopicsRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: false,
-				Page:       1,
-				PageSize:   int32(len(ids)),
-				SortBy:     "id",
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "id",
-							Operator: pbCommon.FilterOperator_IN,
-							Values:   ids,
+	if len(ids) == 0 {
+		return &pb.ListTopicsResponse{Topics: []*pb.Topic{}}, nil
+	}
+
+	result := &pb.ListTopicsResponse{Topics: []*pb.Topic{}}
+	missingIds := []string{}
+	cacheHits := 0
+
+	// Check Redis cache for each ID
+	for _, id := range ids {
+		cacheKey := fmt.Sprintf("%s%s", topicCachePrefix, id)
+		var cached pb.GetTopicResponse
+
+		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
+			if cached.Topic != nil {
+				result.Topics = append(result.Topics, cached.Topic)
+				cacheHits++
+			} else {
+				missingIds = append(missingIds, id)
+			}
+		} else {
+			missingIds = append(missingIds, id)
+		}
+	}
+
+	log.Printf("[GetTopicsByIds] Total: %d, Cache hits: %d, Database queries needed: %d",
+		len(ids), cacheHits, len(missingIds))
+
+	// Fetch missing IDs from database
+	if len(missingIds) > 0 {
+		resp, err := t.client.ListTopics(ctx, &pb.ListTopicsRequest{
+			Search: &pbCommon.SearchRequest{
+				Pagination: &pbCommon.Pagination{
+					Descending: false,
+					Page:       1,
+					PageSize:   int32(len(missingIds)),
+					SortBy:     "id",
+				},
+				Filters: []*pbCommon.FilterCriteria{
+					{
+						Criteria: &pbCommon.FilterCriteria_Condition{
+							Condition: &pbCommon.FilterCondition{
+								Field:    "id",
+								Operator: pbCommon.FilterOperator_IN,
+								Values:   missingIds,
+							},
 						},
 					},
 				},
 			},
-		},
-	})
+		})
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			log.Printf("[GetTopicsByIds] Database query failed: %v", err)
+			return nil, err
+		}
+
+		// Store fetched items to Redis and add to result
+		if resp != nil && resp.Topics != nil {
+			for _, topic := range resp.Topics {
+				if topic != nil {
+					// Store in Redis cache
+					cacheKey := fmt.Sprintf("%s%s", topicCachePrefix, topic.Id)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetTopicResponse{
+						Topic: topic,
+					}, topicCacheTTL)
+
+					result.Topics = append(result.Topics, topic)
+				}
+			}
+			log.Printf("[GetTopicsByIds] Fetched and cached %d topics from database", len(resp.Topics))
+		}
 	}
 
-	return resp, nil
+	log.Printf("[GetTopicsByIds] Returning %d total topics", len(result.Topics))
+	return result, nil
 }
 
 // GetMidtermsByIds fetches multiple midterms using IN operator
-// This is for DataLoader batching
+// This is for DataLoader batching with Redis cache support
 func (t *GRPCthesis) GetMidtermsByIds(ctx context.Context, ids []string) (*pb.ListMidtermsResponse, error) {
 	if t.client == nil {
 		return nil, fmt.Errorf("grpc client not initialized")
 	}
-	fmt.Print(ids)
 	resp, err := t.client.ListMidterms(ctx, &pb.ListMidtermsRequest{
 		Search: &pbCommon.SearchRequest{
 			Pagination: &pbCommon.Pagination{
@@ -471,46 +519,174 @@ func (t *GRPCthesis) GetMidtermsByIds(ctx context.Context, ids []string) (*pb.Li
 			},
 		},
 	})
-
 	if err != nil {
 		return nil, err
 	}
-
 	return resp, nil
+
+	//if err != nil {
+	//	log.Printf("[GetMidtermsByIds] Database query failed: %v", err)
+	//	return nil, err
+	//}
+	//if len(ids) == 0 {
+	//	return &pb.ListMidtermsResponse{Midterms: []*pb.Midterm{}}, nil
+	//}
+	//
+	//result := &pb.ListMidtermsResponse{Midterms: []*pb.Midterm{}}
+	//missingIds := []string{}
+	//cacheHits := 0
+	//
+	//// Check Redis cache for each ID
+	//for _, id := range ids {
+	//	cacheKey := fmt.Sprintf("%s%s", midtermCachePrefix, id)
+	//	var cached pb.GetMidtermResponse
+	//
+	//	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
+	//		if cached.Midterm != nil {
+	//			result.Midterms = append(result.Midterms, cached.Midterm)
+	//			cacheHits++
+	//		} else {
+	//			missingIds = append(missingIds, id)
+	//		}
+	//	} else {
+	//		missingIds = append(missingIds, id)
+	//	}
+	//}
+	//
+	//log.Printf("[GetMidtermsByIds] Total: %d, Cache hits: %d, Database queries needed: %d",
+	//	len(ids), cacheHits, len(missingIds))
+	//
+	//// Fetch missing IDs from database
+	//if len(missingIds) > 0 {
+	//	resp, err := t.client.ListMidterms(ctx, &pb.ListMidtermsRequest{
+	//		Search: &pbCommon.SearchRequest{
+	//			Pagination: &pbCommon.Pagination{
+	//				Descending: false,
+	//				Page:       1,
+	//				PageSize:   int32(len(missingIds)),
+	//				SortBy:     "id",
+	//			},
+	//			Filters: []*pbCommon.FilterCriteria{
+	//				{
+	//					Criteria: &pbCommon.FilterCriteria_Condition{
+	//						Condition: &pbCommon.FilterCondition{
+	//							Field:    "id",
+	//							Operator: pbCommon.FilterOperator_IN,
+	//							Values:   missingIds,
+	//						},
+	//					},
+	//				},
+	//			},
+	//		},
+	//	})
+	//
+	//	if err != nil {
+	//		log.Printf("[GetMidtermsByIds] Database query failed: %v", err)
+	//		return nil, err
+	//	}
+	//
+	//	// Store fetched items to Redis and add to result
+	//	if resp != nil && resp.Midterms != nil {
+	//		for _, midterm := range resp.Midterms {
+	//			if midterm != nil {
+	//				// Store in Redis cache
+	//				cacheKey := fmt.Sprintf("%s%s", midtermCachePrefix, midterm.Id)
+	//				SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetMidtermResponse{
+	//					Midterm: midterm,
+	//				}, midtermCacheTTL)
+	//
+	//				result.Midterms = append(result.Midterms, midterm)
+	//			}
+	//		}
+	//		log.Printf("[GetMidtermsByIds] Fetched and cached %d midterms from database", len(resp.Midterms))
+	//	}
+	//}
+	//
+	//log.Printf("[GetMidtermsByIds] Returning %d total midterms", len(result.Midterms))
+	//return result, nil
 }
 
 // GetFinalsByIds fetches multiple finals using IN operator
-// This is for DataLoader batching
+// This is for DataLoader batching with Redis cache support
 func (t *GRPCthesis) GetFinalsByIds(ctx context.Context, ids []string) (*pb.ListFinalsResponse, error) {
 	if t.client == nil {
 		return nil, fmt.Errorf("grpc client not initialized")
 	}
 
-	resp, err := t.client.ListFinals(ctx, &pb.ListFinalsRequest{
-		Search: &pbCommon.SearchRequest{
-			Pagination: &pbCommon.Pagination{
-				Descending: false,
-				Page:       1,
-				PageSize:   int32(len(ids)),
-				SortBy:     "id",
-			},
-			Filters: []*pbCommon.FilterCriteria{
-				{
-					Criteria: &pbCommon.FilterCriteria_Condition{
-						Condition: &pbCommon.FilterCondition{
-							Field:    "id",
-							Operator: pbCommon.FilterOperator_IN,
-							Values:   ids,
+	if len(ids) == 0 {
+		return &pb.ListFinalsResponse{Finals: []*pb.Final{}}, nil
+	}
+
+	result := &pb.ListFinalsResponse{Finals: []*pb.Final{}}
+	missingIds := []string{}
+	cacheHits := 0
+
+	// Check Redis cache for each ID
+	for _, id := range ids {
+		cacheKey := fmt.Sprintf("%s%s", finalCachePrefix, id)
+		var cached pb.GetFinalResponse
+
+		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
+			if cached.Final != nil {
+				result.Finals = append(result.Finals, cached.Final)
+				cacheHits++
+			} else {
+				missingIds = append(missingIds, id)
+			}
+		} else {
+			missingIds = append(missingIds, id)
+		}
+	}
+
+	log.Printf("[GetFinalsByIds] Total: %d, Cache hits: %d, Database queries needed: %d",
+		len(ids), cacheHits, len(missingIds))
+
+	// Fetch missing IDs from database
+	if len(missingIds) > 0 {
+		resp, err := t.client.ListFinals(ctx, &pb.ListFinalsRequest{
+			Search: &pbCommon.SearchRequest{
+				Pagination: &pbCommon.Pagination{
+					Descending: false,
+					Page:       1,
+					PageSize:   int32(len(missingIds)),
+					SortBy:     "id",
+				},
+				Filters: []*pbCommon.FilterCriteria{
+					{
+						Criteria: &pbCommon.FilterCriteria_Condition{
+							Condition: &pbCommon.FilterCondition{
+								Field:    "id",
+								Operator: pbCommon.FilterOperator_IN,
+								Values:   missingIds,
+							},
 						},
 					},
 				},
 			},
-		},
-	})
+		})
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			log.Printf("[GetFinalsByIds] Database query failed: %v", err)
+			return nil, err
+		}
+
+		// Store fetched items to Redis and add to result
+		if resp != nil && resp.Finals != nil {
+			for _, final := range resp.Finals {
+				if final != nil {
+					// Store in Redis cache
+					cacheKey := fmt.Sprintf("%s%s", finalCachePrefix, final.Id)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetFinalResponse{
+						Final: final,
+					}, finalCacheTTL)
+
+					result.Finals = append(result.Finals, final)
+				}
+			}
+			log.Printf("[GetFinalsByIds] Fetched and cached %d finals from database", len(resp.Finals))
+		}
 	}
 
-	return resp, nil
+	log.Printf("[GetFinalsByIds] Returning %d total finals", len(result.Finals))
+	return result, nil
 }

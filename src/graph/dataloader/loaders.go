@@ -28,7 +28,7 @@ func NewLoaders(
 			createCouncilBatchFunc(councilClient),
 			&Config{
 				BatchWindow:  2 * time.Millisecond,
-				MaxBatchSize: 100,
+				MaxBatchSize: 300,
 				L2TTL:        5 * time.Minute,
 			},
 		),
@@ -36,7 +36,7 @@ func NewLoaders(
 			createMidtermBatchFunc(thesisClient),
 			&Config{
 				BatchWindow:  2 * time.Millisecond,
-				MaxBatchSize: 100,
+				MaxBatchSize: 300,
 				L2TTL:        5 * time.Minute,
 			},
 		),
