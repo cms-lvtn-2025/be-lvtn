@@ -22,12 +22,17 @@ enum FileTable {
     ORDER
 }
 
-"""Vai trò trong hệ thống"""
+"""
+Vai trò STATIC trong hệ thống
+Role động (Supervisor, Reviewer, Council Member) được xác định qua:
+- Supervisor: bảng Topic_council_supervisor
+- Reviewer: bảng Grade_review
+- Council Member: bảng Defence
+"""
 enum RoleSystemRole {
     ACADEMIC_AFFAIRS_STAFF
-    SUPERVISOR_LECTURER
     DEPARTMENT_LECTURER
-    REVIEWER_LECTURER
+    TEACHER
 }
 
 """Trạng thái giữa kỳ"""
@@ -96,6 +101,31 @@ enum LogicalCondition {
     OR
 }
 
+# ============================================
+# SHARED RESTRICTED TYPES - Prevent Circular Queries
+# ============================================
+
+"""
+Major info - Restricted type để tránh circular query
+Không có relationships (topics, faculty) để tránh vòng lặp
+Dùng chung cho tất cả custom types
+"""
+type MajorInfo {
+    id: ID!
+    title: String!
+    facultyCode: String!
+}
+
+"""
+Semester info - Restricted type để tránh circular query
+Không có relationships (students, teachers, topics) để tránh vòng lặp
+Dùng chung cho tất cả custom types
+"""
+type SemesterInfo {
+    id: ID!
+    title: String!
+}
+
 input FilterConditionInput {
     field: String!
     operator: FilterOperator!
@@ -127,22 +157,13 @@ input SearchRequestInput {
 
 
 type Query {
-    getInfoStudent: Student!
-    getInfoTeacher: Teacher
-    getListTopic(search: SearchRequestInput!): [Topic!]
-    getListEnrollment(search: SearchRequestInput!): [Enrollment!]
-
-    getListSemester(search: SearchRequestInput!): [Semester!]
-    getListCouncil(search: SearchRequestInput!): [Council!]
-    getListDefence(search: SearchRequestInput!): [Defence!]
+    _empty: String
 }
 
 type Mutation {
-    """Base mutation - sẽ được extend trong student.graphqls và teacher.graphqls"""
     _empty: String
 }
 
 type Subscription {
-    """Base subscription - sẽ được extend trong student.graphqls và teacher.graphqls"""
     _empty: String
 }

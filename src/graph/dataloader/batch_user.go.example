@@ -1,0 +1,101 @@
+package dataloader
+
+// This is an EXAMPLE file showing how to add user-related batch functions
+// To use this:
+// 1. Rename to batch_user.go
+// 2. Implement the actual batch functions
+// 3. Add loaders to loaders.go
+
+import (
+	"context"
+	"log"
+
+	"thaily/src/graph/model"
+	"thaily/src/server/client"
+)
+
+// Example: Student loader
+func createStudentBatchFunc(client *client.GRPCUser) BatchFunc[string, *model.Student] {
+	return func(ctx context.Context, ids []string) (map[string]*model.Student, error) {
+		result := make(map[string]*model.Student)
+
+		if len(ids) == 0 {
+			return result, nil
+		}
+
+		// TODO: Implement batch fetching when GetStudentsByIds is available
+		// For now, fallback to individual fetching
+		for _, id := range ids {
+			student, err := client.GetUserById(ctx, id)
+			if err != nil {
+				log.Printf("[DataLoader] Failed to fetch student %s: %v", id, err)
+				continue
+			}
+
+			if student != nil && student.Student != nil {
+				result[id] = &model.Student{
+					ID:   student.Student.Id,
+					Name: student.Student.Name,
+					// Map other fields...
+				}
+			}
+		}
+
+		log.Printf("[DataLoader] Loaded %d/%d students successfully", len(result), len(ids))
+		return result, nil
+	}
+}
+
+// Example: Teacher loader
+func createTeacherBatchFunc(client *client.GRPCUser) BatchFunc[string, *model.Teacher] {
+	return func(ctx context.Context, ids []string) (map[string]*model.Teacher, error) {
+		result := make(map[string]*model.Teacher)
+
+		if len(ids) == 0 {
+			return result, nil
+		}
+
+		// TODO: Implement batch fetching
+		for _, id := range ids {
+			teacher, err := client.GetTeacherById(ctx, id)
+			if err != nil {
+				log.Printf("[DataLoader] Failed to fetch teacher %s: %v", id, err)
+				continue
+			}
+
+			if teacher != nil && teacher.Teacher != nil {
+				result[id] = &model.Teacher{
+					ID:   teacher.Teacher.Id,
+					Name: teacher.Teacher.Name,
+					// Map other fields...
+				}
+			}
+		}
+
+		log.Printf("[DataLoader] Loaded %d/%d teachers successfully", len(result), len(ids))
+		return result, nil
+	}
+}
+
+// Then add to loaders.go:
+/*
+type Loaders struct {
+	// ... existing loaders
+	StudentByID *DataLoader[string, *model.Student]
+	TeacherByID *DataLoader[string, *model.Teacher]
+}
+
+func NewLoaders(..., userClient *client.GRPCUser, ...) *Loaders {
+	return &Loaders{
+		// ... existing loaders
+		StudentByID: NewDataLoader(
+			createStudentBatchFunc(userClient),
+			defaultConfig,
+		),
+		TeacherByID: NewDataLoader(
+			createTeacherBatchFunc(userClient),
+			defaultConfig,
+		),
+	}
+}
+*/

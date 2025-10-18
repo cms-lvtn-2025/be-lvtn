@@ -9,9 +9,8 @@ import "proto/common/common.proto";
 
 enum RoleType {
   ACADEMIC_AFFAIRS_STAFF = 0;
-  SUPERVISOR_LECTURER = 1;
-  DEPARTMENT_LECTURER = 2;
-  REVIEWER_LECTURER = 3;
+  DEPARTMENT_LECTURER = 1;
+  TEACHER = 2;
 }
 
 // ============= RoleSystem =============

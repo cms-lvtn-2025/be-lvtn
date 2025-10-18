@@ -159,62 +159,362 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Time
 
+  # === CORE TYPES ===
   Student:
     fields:
       major:
-        resolver: true
+        resolver: true  # Join via dataloader
       semester:
-        resolver: true
+        resolver: true  # Join via dataloader
+      enrollments:
+        resolver: true  # Security: filter by student_code = current_user.id
+
   Teacher:
     fields:
       roles:
-        resolver: true
+        resolver: true  # Join via dataloader
       major:
-        resolver: true
+        resolver: true  # Join via dataloader
       semester:
-        resolver: true
+        resolver: true  # Join via dataloader
+      topicsSupervised:
+        resolver: true  # Security: filter by supervisor_code = current_user.id
+
+  # === THESIS RELATED ===
   Topic:
     fields:
-      enrollment:
-        resolver: true
-      teacherSupervisor:
-        resolver: true
-      schedule:
-        resolver: true
+      major:
+        resolver: true  # Join via dataloader
+      semester:
+        resolver: true  # Join via dataloader
+      enrollments:
+        resolver: true  # Security: check role-based access
+      files:
+        resolver: true  # Join via dataloader, security check
+      topicSupervisors:
+        resolver: true  # Join via dataloader
+      topicCouncils:
+        resolver: true  # Join via dataloader
+
+  TopicSupervisor:
+    fields:
+      teacher:
+        resolver: true  # Join via dataloader
+      topic:
+        resolver: true  # Join via dataloader
+
+  TopicCouncil:
+    fields:
+      topic:
+        resolver: true  # Join via dataloader
+      council:
+        resolver: true  # Join via dataloader, security check
+      enrollments:
+        resolver: true  # Security: check role-based access
+      supervisors:
+        resolver: true  # Join via dataloader
+
+  TopicCouncilSupervisor:
+    fields:
+      teacher:
+        resolver: true  # Join via dataloader
+      topicCouncil:
+        resolver: true  # Join via dataloader
+
   Enrollment:
     fields:
       student:
-        resolver: true
+        resolver: true  # Join via dataloader, security: check ownership
       midterm:
-        resolver: true
+        resolver: true  # Join via dataloader, security check
       final:
-        resolver: true
-      topic:
-        resolver: true
-      gradeDefence:
-        resolver: true
-  Council:
+        resolver: true  # Join via dataloader, security check
+      topicCouncil:
+        resolver: true  # Join via dataloader
+      gradeReview:
+        resolver: true  # Join via dataloader, security check
+      gradeDefences:
+        resolver: true  # Join via dataloader, security check
+
+  Midterm:
     fields:
-      semester:
-        resolver: true
-      defences:
-        resolver: true
-      schedules:
-        resolver: true
-      major:
-        resolver: true
-  CouncilSchedule:
+      # All fields auto-mapped from database
+
+  Final:
     fields:
-      topic:
-        resolver: true
-      council:
-        resolver: true
-  Defence:
+      # All fields auto-mapped from database
+
+  GradeReview:
     fields:
       teacher:
-        resolver: true
+        resolver: true  # Join via dataloader
+
+  # === COUNCIL RELATED ===
+  Council:
+    fields:
+      major:
+        resolver: true  # Join via dataloader
+      semester:
+        resolver: true  # Join via dataloader
+      defences:
+        resolver: true  # Join via dataloader
+      topicCouncils:
+        resolver: true  # Join via dataloader, security check
+
+  Defence:
+    fields:
       council:
-        resolver: true
+        resolver: true  # Join via dataloader
+      teacher:
+        resolver: true  # Join via dataloader
+      gradeDefences:
+        resolver: true  # Join via dataloader, security check
+
+  GradeDefence:
+    fields:
+      defence:
+        resolver: true  # Join via dataloader
+      enrollment:
+        resolver: true  # Join via dataloader, security check
+      criteria:
+        resolver: true  # Join via dataloader
+
+  GradeDefenceCriterion:
+    fields:
+      gradeDefence:
+        resolver: true  # Join via dataloader
+
+  # === ACADEMIC RELATED ===
+  Faculty:
+    fields:
+      majors:
+        resolver: true  # Join via dataloader
+
+  Major:
+    fields:
+      faculty:
+        resolver: true  # Join via dataloader
+      topics:
+        resolver: true  # Join via dataloader, security check
+
+  Semester:
+    fields:
+      students:
+        resolver: true  # Join via dataloader, security check
+      teachers:
+        resolver: true  # Join via dataloader, security check
+      topics:
+        resolver: true  # Join via dataloader, security check
+
+  # === FILE & ROLE ===
+  File:
+    fields:
+      # All fields auto-mapped
+
+  RoleSystem:
+    fields:
+      teacher:
+        resolver: true  # Join via dataloader
+      semester:
+        resolver: true  # Join via dataloader
+
+  # ============================================
+  # STUDENT CUSTOM TYPES - Schema-level security
+  # ============================================
+  StudentEnrollment:
+    fields:
+      topicCouncil:
+        resolver: true  # Join via dataloader → StudentTopicCouncil
+      midterm:
+        resolver: true  # Join via dataloader
+      final:
+        resolver: true  # Join via dataloader
+      gradeReview:
+        resolver: true  # Join via dataloader
+      gradeDefences:
+        resolver: true  # Join via dataloader → [StudentGradeDefence]
+
+  StudentTopicCouncil:
+    fields:
+      topic:
+        resolver: true  # Join via dataloader → StudentTopic
+      supervisors:
+        resolver: true  # Join via dataloader → [StudentTopicSupervisor]
+      council:
+        resolver: true  # Join via dataloader → StudentCouncil
+
+  StudentTopic:
+    fields:
+      major:
+        resolver: true  # Join via dataloader
+      semester:
+        resolver: true  # Join via dataloader
+      files:
+        resolver: true  # Join via dataloader
+
+  StudentTopicSupervisor:
+    fields:
+      teacher:
+        resolver: true  # Join via dataloader → StudentTeacherInfo
+
+  StudentTeacherInfo:
+    fields:
+      # No relationships - majorCode is scalar
+
+  StudentGradeDefence:
+    fields:
+      criteria:
+        resolver: true  # Join via dataloader
+      defence:
+        resolver: true  # Join via dataloader → StudentDefenceInfo
+
+  StudentCouncil:
+    fields:
+      major:
+        resolver: true  # Join via dataloader
+      semester:
+        resolver: true  # Join via dataloader
+      defences:
+        resolver: true  # Join via dataloader → [StudentDefenceInfo]
+
+  StudentDefenceInfo:
+    fields:
+      teacher:
+        resolver: true  # Join via dataloader → StudentTeacherInfo
+
+  # ============================================
+  # SUPERVISOR CUSTOM TYPES
+  # ============================================
+  SupervisorTopic:
+    fields:
+      major:
+        resolver: true  # Join via dataloader
+      semester:
+        resolver: true  # Join via dataloader
+      enrollments:
+        resolver: true  # Join → [SupervisorEnrollment]
+      files:
+        resolver: true  # Join via dataloader
+      topicSupervisors:
+        resolver: true  # Join via dataloader
+      topicCouncils:
+        resolver: true  # Join → [SupervisorTopicCouncil]
+
+  SupervisorEnrollment:
+    fields:
+      student:
+        resolver: true  # Join via dataloader
+      topicCouncil:
+        resolver: true  # Join → SupervisorTopicCouncil
+      midterm:
+        resolver: true  # Join via dataloader
+      final:
+        resolver: true  # Join via dataloader
+      gradeReview:
+        resolver: true  # Join via dataloader
+      gradeDefences:
+        resolver: true  # Join via dataloader
+
+  SupervisorTopicCouncil:
+    fields:
+      topic:
+        resolver: true  # Join → SupervisorTopic
+      council:
+        resolver: true  # Join via dataloader
+      enrollments:
+        resolver: true  # Join → [SupervisorEnrollment]
+      supervisors:
+        resolver: true  # Join via dataloader
+
+  # ============================================
+  # COUNCIL MEMBER CUSTOM TYPES
+  # ============================================
+  CouncilMemberCouncil:
+    fields:
+      major:
+        resolver: true  # Join via dataloader
+      semester:
+        resolver: true  # Join via dataloader
+      defences:
+        resolver: true  # Join → [CouncilDefence]
+      topicCouncils:
+        resolver: true  # Join → [CouncilTopicCouncil]
+
+  CouncilDefence:
+    fields:
+      council:
+        resolver: true  # Join → CouncilMemberCouncil
+      teacher:
+        resolver: true  # Join via dataloader
+      gradeDefences:
+        resolver: true  # Join via dataloader
+
+  CouncilTopicCouncil:
+    fields:
+      topic:
+        resolver: true  # Join via dataloader (full Topic)
+      council:
+        resolver: true  # Join → CouncilMemberCouncil
+      enrollments:
+        resolver: true  # Join → [CouncilEnrollment]
+      supervisors:
+        resolver: true  # Join via dataloader
+
+  CouncilEnrollment:
+    fields:
+      student:
+        resolver: true  # Join via dataloader
+      topicCouncil:
+        resolver: true  # Join → CouncilTopicCouncil
+      midterm:
+        resolver: true  # Join via dataloader
+      final:
+        resolver: true  # Join via dataloader
+      gradeReview:
+        resolver: true  # Join via dataloader
+      gradeDefences:
+        resolver: true  # Join via dataloader
+
+  # ============================================
+  # REVIEWER CUSTOM TYPES
+  # ============================================
+  ReviewerEnrollment:
+    fields:
+      student:
+        resolver: true  # Join via dataloader
+      topicCouncil:
+        resolver: true  # Join → ReviewerTopicCouncil
+      midterm:
+        resolver: true  # Join via dataloader
+      final:
+        resolver: true  # Join via dataloader
+      gradeReview:
+        resolver: true  # Join via dataloader
+
+  ReviewerTopicCouncil:
+    fields:
+      topic:
+        resolver: true  # Join → ReviewerTopic
+      supervisors:
+        resolver: true  # Join via dataloader
+
+  ReviewerTopic:
+    fields:
+      major:
+        resolver: true  # Join via dataloader → MajorInfo
+      files:
+        resolver: true  # Join via dataloader
+
+  # ============================================
+  # SHARED RESTRICTED TYPES - No relationships
+  # ============================================
+  MajorInfo:
+    fields:
+      # All fields auto-mapped - no relationships
+
+  SemesterInfo:
+    fields:
+      # All fields auto-mapped - no relationships
 
 
 

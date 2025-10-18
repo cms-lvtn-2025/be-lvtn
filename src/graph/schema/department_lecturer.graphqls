@@ -1,0 +1,81 @@
+# Schema dành riêng cho GIÁO VIÊN BỘ MÔN (Department Lecturer)
+# Được xem tất cả topic, enrollment trong bộ môn và tạo council, phê duyệt topic lần 1
+
+extend type Query {
+    """Lấy danh sách giáo viên trong bộ môn"""
+    getDepartmentTeachers(search: SearchRequestInput!): [Teacher!]!
+
+    """Lấy danh sách sinh viên trong bộ môn"""
+    getDepartmentStudents(search: SearchRequestInput!): [Student!]!
+
+    """Lấy danh sách semester"""
+    getDepartmentSemesters(search: SearchRequestInput!): [Semester!]!
+
+    """Lấy danh sách major trong bộ môn"""
+    getDepartmentMajors(search: SearchRequestInput!): [Major!]!
+
+    """Lấy danh sách faculty"""
+    getDepartmentFaculties(search: SearchRequestInput!): [Faculty!]!
+
+    """Lấy danh sách tất cả topic trong bộ môn"""
+    getDepartmentTopics(search: SearchRequestInput!): [Topic!]!
+
+    """Lấy chi tiết topic"""
+    getDepartmentTopicDetail(id: ID!): Topic
+
+    """Lấy danh sách enrollment trong bộ môn"""
+    getDepartmentEnrollments(search: SearchRequestInput!): [Enrollment!]!
+
+    """Lấy chi tiết enrollment"""
+    getDepartmentEnrollmentDetail(id: ID!): Enrollment
+
+    """Lấy danh sách council trong bộ môn"""
+    getDepartmentCouncils(search: SearchRequestInput!): [Council!]!
+
+    """Lấy chi tiết council"""
+    getDepartmentCouncilDetail(id: ID!): Council
+
+    """Lấy danh sách defence của council"""
+    getDepartmentDefences(councilId: ID!): [Defence!]!
+
+    """Lấy danh sách grade defence"""
+    getDepartmentGradeDefences(search: SearchRequestInput!): [GradeDefence!]!
+}
+
+extend type Mutation {
+    """Tạo council mới (giáo viên bộ môn có quyền tạo)"""
+    createCouncil(input: CreateCouncilInput!): Council!
+
+    """Cập nhật council"""
+    updateDepartmentCouncil(id: ID!, input: UpdateCouncilInput!): Council!
+
+    """Thêm thành viên vào council"""
+    addDefenceToCouncil(input: CreateDefenceInput!): Defence!
+
+    """Xóa thành viên khỏi council"""
+    removeDefenceFromCouncil(id: ID!): Boolean!
+
+    """Phê duyệt topic lần 1 (approved_1)"""
+    approveTopicStage1(id: ID!): Topic!
+
+    """Từ chối topic"""
+    rejectTopicStage1(id: ID!, reason: String): Topic!
+
+    """Gán topic vào council"""
+    assignTopicToCouncil(topicCouncilId: ID!, councilId: ID!): TopicCouncil!
+}
+
+# Input để tạo council
+input CreateCouncilInput {
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+}
+
+# Input để tạo defence (thành viên hội đồng)
+input CreateDefenceInput {
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+}

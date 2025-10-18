@@ -17,6 +17,11 @@ import (
 
 // region    ************************** generated!.gotpl **************************
 
+type RoleSystemResolver interface {
+	Teacher(ctx context.Context, obj *model.RoleSystem) (*model.Teacher, error)
+	Semester(ctx context.Context, obj *model.RoleSystem) (*model.Semester, error)
+}
+
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
@@ -326,7 +331,7 @@ func (ec *executionContext) _RoleSystem_teacher(ctx context.Context, field graph
 		field,
 		ec.fieldContext_RoleSystem_teacher,
 		func(ctx context.Context) (any, error) {
-			return obj.Teacher, nil
+			return ec.resolvers.RoleSystem().Teacher(ctx, obj)
 		},
 		nil,
 		ec.marshalOTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
@@ -339,8 +344,8 @@ func (ec *executionContext) fieldContext_RoleSystem_teacher(_ context.Context, f
 	fc = &graphql.FieldContext{
 		Object:     "RoleSystem",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -385,7 +390,7 @@ func (ec *executionContext) _RoleSystem_semester(ctx context.Context, field grap
 		field,
 		ec.fieldContext_RoleSystem_semester,
 		func(ctx context.Context) (any, error) {
-			return obj.Semester, nil
+			return ec.resolvers.RoleSystem().Semester(ctx, obj)
 		},
 		nil,
 		ec.marshalOSemester2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSemester,
@@ -398,8 +403,8 @@ func (ec *executionContext) fieldContext_RoleSystem_semester(_ context.Context, 
 	fc = &graphql.FieldContext{
 		Object:     "RoleSystem",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -453,29 +458,29 @@ func (ec *executionContext) _RoleSystem(ctx context.Context, sel ast.SelectionSe
 		case "id":
 			out.Values[i] = ec._RoleSystem_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "title":
 			out.Values[i] = ec._RoleSystem_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "teacherCode":
 			out.Values[i] = ec._RoleSystem_teacherCode(ctx, field, obj)
 		case "role":
 			out.Values[i] = ec._RoleSystem_role(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "semesterCode":
 			out.Values[i] = ec._RoleSystem_semesterCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "activate":
 			out.Values[i] = ec._RoleSystem_activate(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
 			out.Values[i] = ec._RoleSystem_createdAt(ctx, field, obj)
@@ -486,9 +491,71 @@ func (ec *executionContext) _RoleSystem(ctx context.Context, sel ast.SelectionSe
 		case "updatedBy":
 			out.Values[i] = ec._RoleSystem_updatedBy(ctx, field, obj)
 		case "teacher":
-			out.Values[i] = ec._RoleSystem_teacher(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._RoleSystem_teacher(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "semester":
-			out.Values[i] = ec._RoleSystem_semester(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._RoleSystem_semester(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

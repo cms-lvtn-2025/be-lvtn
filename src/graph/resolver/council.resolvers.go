@@ -26,6 +26,11 @@ func (r *councilResolver) Defences(ctx context.Context, obj *model.Council) ([]*
 	panic(fmt.Errorf("not implemented: Defences - defences"))
 }
 
+// TopicCouncils is the resolver for the topicCouncils field.
+func (r *councilResolver) TopicCouncils(ctx context.Context, obj *model.Council) ([]*model.TopicCouncil, error) {
+	panic(fmt.Errorf("not implemented: TopicCouncils - topicCouncils"))
+}
+
 // Council is the resolver for the council field.
 func (r *defenceResolver) Council(ctx context.Context, obj *model.Defence) (*model.Council, error) {
 	panic(fmt.Errorf("not implemented: Council - council"))
@@ -36,11 +41,46 @@ func (r *defenceResolver) Teacher(ctx context.Context, obj *model.Defence) (*mod
 	panic(fmt.Errorf("not implemented: Teacher - teacher"))
 }
 
+// GradeDefences is the resolver for the gradeDefences field.
+func (r *defenceResolver) GradeDefences(ctx context.Context, obj *model.Defence) ([]*model.GradeDefence, error) {
+	panic(fmt.Errorf("not implemented: GradeDefences - gradeDefences"))
+}
+
+// Defence is the resolver for the defence field.
+func (r *gradeDefenceResolver) Defence(ctx context.Context, obj *model.GradeDefence) (*model.Defence, error) {
+	panic(fmt.Errorf("not implemented: Defence - defence"))
+}
+
+// Enrollment is the resolver for the enrollment field.
+func (r *gradeDefenceResolver) Enrollment(ctx context.Context, obj *model.GradeDefence) (*model.Enrollment, error) {
+	panic(fmt.Errorf("not implemented: Enrollment - enrollment"))
+}
+
+// Criteria is the resolver for the criteria field.
+func (r *gradeDefenceResolver) Criteria(ctx context.Context, obj *model.GradeDefence) ([]*model.GradeDefenceCriterion, error) {
+	panic(fmt.Errorf("not implemented: Criteria - criteria"))
+}
+
+// GradeDefence is the resolver for the gradeDefence field.
+func (r *gradeDefenceCriterionResolver) GradeDefence(ctx context.Context, obj *model.GradeDefenceCriterion) (*model.GradeDefence, error) {
+	panic(fmt.Errorf("not implemented: GradeDefence - gradeDefence"))
+}
+
 // Council returns generated.CouncilResolver implementation.
 func (r *Resolver) Council() generated.CouncilResolver { return &councilResolver{r} }
 
 // Defence returns generated.DefenceResolver implementation.
 func (r *Resolver) Defence() generated.DefenceResolver { return &defenceResolver{r} }
 
+// GradeDefence returns generated.GradeDefenceResolver implementation.
+func (r *Resolver) GradeDefence() generated.GradeDefenceResolver { return &gradeDefenceResolver{r} }
+
+// GradeDefenceCriterion returns generated.GradeDefenceCriterionResolver implementation.
+func (r *Resolver) GradeDefenceCriterion() generated.GradeDefenceCriterionResolver {
+	return &gradeDefenceCriterionResolver{r}
+}
+
 type councilResolver struct{ *Resolver }
 type defenceResolver struct{ *Resolver }
+type gradeDefenceResolver struct{ *Resolver }
+type gradeDefenceCriterionResolver struct{ *Resolver }

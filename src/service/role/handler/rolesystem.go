@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateRoleSystem creates a new RoleSystem record
 func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystemRequest) (*pb.CreateRoleSystemResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -31,28 +29,26 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 	if req.SemesterCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-	
+
 	// Convert Role enum to string
 	RoleValue := pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-	
+
 	RoleValue = req.Role
 	RoleStr := "academic_affairs_staff"
 	switch RoleValue {
 	case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
 		RoleStr = "academic_affairs_staff"
-	case pb.RoleType_SUPERVISOR_LECTURER:
-		RoleStr = "supervisor_lecturer"
 	case pb.RoleType_DEPARTMENT_LECTURER:
 		RoleStr = "department_lecturer"
-	case pb.RoleType_REVIEWER_LECTURER:
-		RoleStr = "reviewer_lecturer"
+	case pb.RoleType_TEACHER:
+		RoleStr = "teacher"
 	}
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO RoleSystem (id, title, teacher_code, role, semester_code, activate, created_by, created_at, updated_at)
@@ -85,18 +81,6 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetRoleSystem retrieves a RoleSystem by ID
 func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemRequest) (*pb.GetRoleSystemResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -115,7 +99,7 @@ func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemReques
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var RoleStr string
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -140,16 +124,14 @@ func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemReques
 	switch RoleStr {
 	case "academic_affairs_staff":
 		entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-	case "supervisor_lecturer":
-		entity.Role = pb.RoleType_SUPERVISOR_LECTURER
 	case "department_lecturer":
 		entity.Role = pb.RoleType_DEPARTMENT_LECTURER
-	case "reviewer_lecturer":
-		entity.Role = pb.RoleType_REVIEWER_LECTURER
+	case "teacher":
+		entity.Role = pb.RoleType_TEACHER
 	default:
-		entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
+		entity.Role = pb.RoleType_TEACHER
 	}
-	
+
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -164,18 +146,6 @@ func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemReques
 		RoleSystem: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateRoleSystem updates an existing RoleSystem
 func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystemRequest) (*pb.UpdateRoleSystemResponse, error) {
@@ -192,12 +162,12 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-		
+
 	}
 	if req.TeacherCode != nil {
 		updateFields = append(updateFields, "teacher_code = ?")
 		args = append(args, *req.TeacherCode)
-		
+
 	}
 	if req.Role != nil {
 		updateFields = append(updateFields, "role = ?")
@@ -205,27 +175,25 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 		switch *req.Role {
 		case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
 			RoleStr = "academic_affairs_staff"
-		case pb.RoleType_SUPERVISOR_LECTURER:
-			RoleStr = "supervisor_lecturer"
 		case pb.RoleType_DEPARTMENT_LECTURER:
 			RoleStr = "department_lecturer"
-		case pb.RoleType_REVIEWER_LECTURER:
-			RoleStr = "reviewer_lecturer"
+		case pb.RoleType_TEACHER:
+			RoleStr = "teacher"
 		}
 		args = append(args, RoleStr)
-		
+
 	}
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
-		
+
 	}
 	if req.Activate != nil {
 		updateFields = append(updateFields, "activate = ?")
 		args = append(args, *req.Activate)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -258,18 +226,6 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteRoleSystem deletes a RoleSystem by ID
 func (h *Handler) DeleteRoleSystem(ctx context.Context, req *pb.DeleteRoleSystemRequest) (*pb.DeleteRoleSystemResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -298,18 +254,6 @@ func (h *Handler) DeleteRoleSystem(ctx context.Context, req *pb.DeleteRoleSystem
 		Success: true,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ListRoleSystems lists RoleSystems with pagination and filtering
 func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRequest) (*pb.ListRoleSystemsResponse, error) {
@@ -340,12 +284,11 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title": true,
-		"teacher_code": true,
-		"role": true,
+		"title":         true,
+		"teacher_code":  true,
+		"role":          true,
 		"semester_code": true,
-		"activate": true,
-		
+		"activate":      true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -399,7 +342,7 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var RoleStr string
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -420,16 +363,14 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 		switch RoleStr {
 		case "academic_affairs_staff":
 			entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-		case "supervisor_lecturer":
-			entity.Role = pb.RoleType_SUPERVISOR_LECTURER
 		case "department_lecturer":
 			entity.Role = pb.RoleType_DEPARTMENT_LECTURER
-		case "reviewer_lecturer":
-			entity.Role = pb.RoleType_REVIEWER_LECTURER
+		case "teacher":
+			entity.Role = pb.RoleType_TEACHER
 		default:
-			entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
+			entity.Role = pb.RoleType_TEACHER
 		}
-		
+
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -449,10 +390,8 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 
 	return &pb.ListRoleSystemsResponse{
 		RoleSystems: entities,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
+		Total:       total,
+		Page:        page,
+		PageSize:    pageSize,
 	}, nil
 }
-
-

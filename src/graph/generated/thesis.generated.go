@@ -21,6 +21,34 @@ type EnrollmentResolver interface {
 	Student(ctx context.Context, obj *model.Enrollment) (*model.Student, error)
 	Midterm(ctx context.Context, obj *model.Enrollment) (*model.Midterm, error)
 	Final(ctx context.Context, obj *model.Enrollment) (*model.Final, error)
+	TopicCouncil(ctx context.Context, obj *model.Enrollment) (*model.TopicCouncil, error)
+	GradeReview(ctx context.Context, obj *model.Enrollment) (*model.GradeReview, error)
+	GradeDefences(ctx context.Context, obj *model.Enrollment) ([]*model.GradeDefence, error)
+}
+type GradeReviewResolver interface {
+	Teacher(ctx context.Context, obj *model.GradeReview) (*model.Teacher, error)
+}
+type TopicResolver interface {
+	Major(ctx context.Context, obj *model.Topic) (*model.Major, error)
+	Semester(ctx context.Context, obj *model.Topic) (*model.Semester, error)
+	Enrollments(ctx context.Context, obj *model.Topic) ([]*model.Enrollment, error)
+	Files(ctx context.Context, obj *model.Topic) ([]*model.File, error)
+	TopicSupervisors(ctx context.Context, obj *model.Topic) ([]*model.TopicSupervisor, error)
+	TopicCouncils(ctx context.Context, obj *model.Topic) ([]*model.TopicCouncil, error)
+}
+type TopicCouncilResolver interface {
+	Topic(ctx context.Context, obj *model.TopicCouncil) (*model.Topic, error)
+	Council(ctx context.Context, obj *model.TopicCouncil) (*model.Council, error)
+	Enrollments(ctx context.Context, obj *model.TopicCouncil) ([]*model.Enrollment, error)
+	Supervisors(ctx context.Context, obj *model.TopicCouncil) ([]*model.TopicCouncilSupervisor, error)
+}
+type TopicCouncilSupervisorResolver interface {
+	Teacher(ctx context.Context, obj *model.TopicCouncilSupervisor) (*model.Teacher, error)
+	TopicCouncil(ctx context.Context, obj *model.TopicCouncilSupervisor) (*model.TopicCouncil, error)
+}
+type TopicSupervisorResolver interface {
+	Teacher(ctx context.Context, obj *model.TopicSupervisor) (*model.Teacher, error)
+	Topic(ctx context.Context, obj *model.TopicSupervisor) (*model.Topic, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -526,7 +554,7 @@ func (ec *executionContext) _Enrollment_topicCouncil(ctx context.Context, field 
 		field,
 		ec.fieldContext_Enrollment_topicCouncil,
 		func(ctx context.Context) (any, error) {
-			return obj.TopicCouncil, nil
+			return ec.resolvers.Enrollment().TopicCouncil(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopicCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicCouncil,
@@ -539,8 +567,8 @@ func (ec *executionContext) fieldContext_Enrollment_topicCouncil(_ context.Conte
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -587,7 +615,7 @@ func (ec *executionContext) _Enrollment_gradeReview(ctx context.Context, field g
 		field,
 		ec.fieldContext_Enrollment_gradeReview,
 		func(ctx context.Context) (any, error) {
-			return obj.GradeReview, nil
+			return ec.resolvers.Enrollment().GradeReview(ctx, obj)
 		},
 		nil,
 		ec.marshalOGradeReview2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeReview,
@@ -600,8 +628,8 @@ func (ec *executionContext) fieldContext_Enrollment_gradeReview(_ context.Contex
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -642,7 +670,7 @@ func (ec *executionContext) _Enrollment_gradeDefences(ctx context.Context, field
 		field,
 		ec.fieldContext_Enrollment_gradeDefences,
 		func(ctx context.Context) (any, error) {
-			return obj.GradeDefences, nil
+			return ec.resolvers.Enrollment().GradeDefences(ctx, obj)
 		},
 		nil,
 		ec.marshalOGradeDefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceᚄ,
@@ -655,8 +683,8 @@ func (ec *executionContext) fieldContext_Enrollment_gradeDefences(_ context.Cont
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1364,7 +1392,7 @@ func (ec *executionContext) _GradeReview_teacher(ctx context.Context, field grap
 		field,
 		ec.fieldContext_GradeReview_teacher,
 		func(ctx context.Context) (any, error) {
-			return obj.Teacher, nil
+			return ec.resolvers.GradeReview().Teacher(ctx, obj)
 		},
 		nil,
 		ec.marshalOTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
@@ -1377,8 +1405,8 @@ func (ec *executionContext) fieldContext_GradeReview_teacher(_ context.Context, 
 	fc = &graphql.FieldContext{
 		Object:     "GradeReview",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2032,7 +2060,7 @@ func (ec *executionContext) _Topic_major(ctx context.Context, field graphql.Coll
 		field,
 		ec.fieldContext_Topic_major,
 		func(ctx context.Context) (any, error) {
-			return obj.Major, nil
+			return ec.resolvers.Topic().Major(ctx, obj)
 		},
 		nil,
 		ec.marshalOMajor2ᚖthailyᚋsrcᚋgraphᚋmodelᚐMajor,
@@ -2045,8 +2073,8 @@ func (ec *executionContext) fieldContext_Topic_major(_ context.Context, field gr
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2081,7 +2109,7 @@ func (ec *executionContext) _Topic_semester(ctx context.Context, field graphql.C
 		field,
 		ec.fieldContext_Topic_semester,
 		func(ctx context.Context) (any, error) {
-			return obj.Semester, nil
+			return ec.resolvers.Topic().Semester(ctx, obj)
 		},
 		nil,
 		ec.marshalOSemester2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSemester,
@@ -2094,8 +2122,8 @@ func (ec *executionContext) fieldContext_Topic_semester(_ context.Context, field
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2130,7 +2158,7 @@ func (ec *executionContext) _Topic_enrollments(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Topic_enrollments,
 		func(ctx context.Context) (any, error) {
-			return obj.Enrollments, nil
+			return ec.resolvers.Topic().Enrollments(ctx, obj)
 		},
 		nil,
 		ec.marshalOEnrollment2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollmentᚄ,
@@ -2143,8 +2171,8 @@ func (ec *executionContext) fieldContext_Topic_enrollments(_ context.Context, fi
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2195,7 +2223,7 @@ func (ec *executionContext) _Topic_files(ctx context.Context, field graphql.Coll
 		field,
 		ec.fieldContext_Topic_files,
 		func(ctx context.Context) (any, error) {
-			return obj.Files, nil
+			return ec.resolvers.Topic().Files(ctx, obj)
 		},
 		nil,
 		ec.marshalOFile2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐFileᚄ,
@@ -2208,8 +2236,8 @@ func (ec *executionContext) fieldContext_Topic_files(_ context.Context, field gr
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2248,7 +2276,7 @@ func (ec *executionContext) _Topic_topicSupervisors(ctx context.Context, field g
 		field,
 		ec.fieldContext_Topic_topicSupervisors,
 		func(ctx context.Context) (any, error) {
-			return obj.TopicSupervisors, nil
+			return ec.resolvers.Topic().TopicSupervisors(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopicSupervisor2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicSupervisorᚄ,
@@ -2261,8 +2289,8 @@ func (ec *executionContext) fieldContext_Topic_topicSupervisors(_ context.Contex
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2297,7 +2325,7 @@ func (ec *executionContext) _Topic_topicCouncils(ctx context.Context, field grap
 		field,
 		ec.fieldContext_Topic_topicCouncils,
 		func(ctx context.Context) (any, error) {
-			return obj.TopicCouncils, nil
+			return ec.resolvers.Topic().TopicCouncils(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopicCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicCouncilᚄ,
@@ -2310,8 +2338,8 @@ func (ec *executionContext) fieldContext_Topic_topicCouncils(_ context.Context, 
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2677,7 +2705,7 @@ func (ec *executionContext) _TopicCouncil_topic(ctx context.Context, field graph
 		field,
 		ec.fieldContext_TopicCouncil_topic,
 		func(ctx context.Context) (any, error) {
-			return obj.Topic, nil
+			return ec.resolvers.TopicCouncil().Topic(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic,
@@ -2690,8 +2718,8 @@ func (ec *executionContext) fieldContext_TopicCouncil_topic(_ context.Context, f
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "total":
@@ -2744,7 +2772,7 @@ func (ec *executionContext) _TopicCouncil_council(ctx context.Context, field gra
 		field,
 		ec.fieldContext_TopicCouncil_council,
 		func(ctx context.Context) (any, error) {
-			return obj.Council, nil
+			return ec.resolvers.TopicCouncil().Council(ctx, obj)
 		},
 		nil,
 		ec.marshalOCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil,
@@ -2757,8 +2785,8 @@ func (ec *executionContext) fieldContext_TopicCouncil_council(_ context.Context,
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "total":
@@ -2803,7 +2831,7 @@ func (ec *executionContext) _TopicCouncil_enrollments(ctx context.Context, field
 		field,
 		ec.fieldContext_TopicCouncil_enrollments,
 		func(ctx context.Context) (any, error) {
-			return obj.Enrollments, nil
+			return ec.resolvers.TopicCouncil().Enrollments(ctx, obj)
 		},
 		nil,
 		ec.marshalOEnrollment2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollmentᚄ,
@@ -2816,8 +2844,8 @@ func (ec *executionContext) fieldContext_TopicCouncil_enrollments(_ context.Cont
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -2868,7 +2896,7 @@ func (ec *executionContext) _TopicCouncil_supervisors(ctx context.Context, field
 		field,
 		ec.fieldContext_TopicCouncil_supervisors,
 		func(ctx context.Context) (any, error) {
-			return obj.Supervisors, nil
+			return ec.resolvers.TopicCouncil().Supervisors(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopicCouncilSupervisor2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicCouncilSupervisorᚄ,
@@ -2881,8 +2909,8 @@ func (ec *executionContext) fieldContext_TopicCouncil_supervisors(_ context.Cont
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -3120,7 +3148,7 @@ func (ec *executionContext) _TopicCouncilSupervisor_teacher(ctx context.Context,
 		field,
 		ec.fieldContext_TopicCouncilSupervisor_teacher,
 		func(ctx context.Context) (any, error) {
-			return obj.Teacher, nil
+			return ec.resolvers.TopicCouncilSupervisor().Teacher(ctx, obj)
 		},
 		nil,
 		ec.marshalOTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
@@ -3133,8 +3161,8 @@ func (ec *executionContext) fieldContext_TopicCouncilSupervisor_teacher(_ contex
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncilSupervisor",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -3179,7 +3207,7 @@ func (ec *executionContext) _TopicCouncilSupervisor_topicCouncil(ctx context.Con
 		field,
 		ec.fieldContext_TopicCouncilSupervisor_topicCouncil,
 		func(ctx context.Context) (any, error) {
-			return obj.TopicCouncil, nil
+			return ec.resolvers.TopicCouncilSupervisor().TopicCouncil(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopicCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicCouncil,
@@ -3192,8 +3220,8 @@ func (ec *executionContext) fieldContext_TopicCouncilSupervisor_topicCouncil(_ c
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncilSupervisor",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -3443,7 +3471,7 @@ func (ec *executionContext) _TopicSupervisor_teacher(ctx context.Context, field 
 		field,
 		ec.fieldContext_TopicSupervisor_teacher,
 		func(ctx context.Context) (any, error) {
-			return obj.Teacher, nil
+			return ec.resolvers.TopicSupervisor().Teacher(ctx, obj)
 		},
 		nil,
 		ec.marshalOTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
@@ -3456,8 +3484,8 @@ func (ec *executionContext) fieldContext_TopicSupervisor_teacher(_ context.Conte
 	fc = &graphql.FieldContext{
 		Object:     "TopicSupervisor",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -3502,7 +3530,7 @@ func (ec *executionContext) _TopicSupervisor_topic(ctx context.Context, field gr
 		field,
 		ec.fieldContext_TopicSupervisor_topic,
 		func(ctx context.Context) (any, error) {
-			return obj.Topic, nil
+			return ec.resolvers.TopicSupervisor().Topic(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic,
@@ -3515,8 +3543,8 @@ func (ec *executionContext) fieldContext_TopicSupervisor_topic(_ context.Context
 	fc = &graphql.FieldContext{
 		Object:     "TopicSupervisor",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "total":
@@ -3719,11 +3747,104 @@ func (ec *executionContext) _Enrollment(ctx context.Context, sel ast.SelectionSe
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "topicCouncil":
-			out.Values[i] = ec._Enrollment_topicCouncil(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Enrollment_topicCouncil(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "gradeReview":
-			out.Values[i] = ec._Enrollment_gradeReview(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Enrollment_gradeReview(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "gradeDefences":
-			out.Values[i] = ec._Enrollment_gradeDefences(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Enrollment_gradeDefences(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3828,24 +3949,24 @@ func (ec *executionContext) _GradeReview(ctx context.Context, sel ast.SelectionS
 		case "id":
 			out.Values[i] = ec._GradeReview_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "title":
 			out.Values[i] = ec._GradeReview_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "reviewGrade":
 			out.Values[i] = ec._GradeReview_reviewGrade(ctx, field, obj)
 		case "teacherCode":
 			out.Values[i] = ec._GradeReview_teacherCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "status":
 			out.Values[i] = ec._GradeReview_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "notes":
 			out.Values[i] = ec._GradeReview_notes(ctx, field, obj)
@@ -3860,7 +3981,38 @@ func (ec *executionContext) _GradeReview(ctx context.Context, sel ast.SelectionS
 		case "updatedBy":
 			out.Values[i] = ec._GradeReview_updatedBy(ctx, field, obj)
 		case "teacher":
-			out.Values[i] = ec._GradeReview_teacher(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GradeReview_teacher(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3961,27 +4113,27 @@ func (ec *executionContext) _Topic(ctx context.Context, sel ast.SelectionSet, ob
 		case "id":
 			out.Values[i] = ec._Topic_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "title":
 			out.Values[i] = ec._Topic_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "majorCode":
 			out.Values[i] = ec._Topic_majorCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "semesterCode":
 			out.Values[i] = ec._Topic_semesterCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "status":
 			out.Values[i] = ec._Topic_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "percentStage1":
 			out.Values[i] = ec._Topic_percentStage1(ctx, field, obj)
@@ -3996,17 +4148,203 @@ func (ec *executionContext) _Topic(ctx context.Context, sel ast.SelectionSet, ob
 		case "updatedBy":
 			out.Values[i] = ec._Topic_updatedBy(ctx, field, obj)
 		case "major":
-			out.Values[i] = ec._Topic_major(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Topic_major(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "semester":
-			out.Values[i] = ec._Topic_semester(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Topic_semester(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "enrollments":
-			out.Values[i] = ec._Topic_enrollments(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Topic_enrollments(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "files":
-			out.Values[i] = ec._Topic_files(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Topic_files(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "topicSupervisors":
-			out.Values[i] = ec._Topic_topicSupervisors(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Topic_topicSupervisors(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "topicCouncils":
-			out.Values[i] = ec._Topic_topicCouncils(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Topic_topicCouncils(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4044,34 +4382,34 @@ func (ec *executionContext) _TopicCouncil(ctx context.Context, sel ast.Selection
 		case "id":
 			out.Values[i] = ec._TopicCouncil_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "title":
 			out.Values[i] = ec._TopicCouncil_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "stage":
 			out.Values[i] = ec._TopicCouncil_stage(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "topicCode":
 			out.Values[i] = ec._TopicCouncil_topicCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "councilCode":
 			out.Values[i] = ec._TopicCouncil_councilCode(ctx, field, obj)
 		case "timeStart":
 			out.Values[i] = ec._TopicCouncil_timeStart(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "timeEnd":
 			out.Values[i] = ec._TopicCouncil_timeEnd(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
 			out.Values[i] = ec._TopicCouncil_createdAt(ctx, field, obj)
@@ -4082,13 +4420,137 @@ func (ec *executionContext) _TopicCouncil(ctx context.Context, sel ast.Selection
 		case "updatedBy":
 			out.Values[i] = ec._TopicCouncil_updatedBy(ctx, field, obj)
 		case "topic":
-			out.Values[i] = ec._TopicCouncil_topic(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicCouncil_topic(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "council":
-			out.Values[i] = ec._TopicCouncil_council(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicCouncil_council(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "enrollments":
-			out.Values[i] = ec._TopicCouncil_enrollments(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicCouncil_enrollments(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "supervisors":
-			out.Values[i] = ec._TopicCouncil_supervisors(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicCouncil_supervisors(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4126,17 +4588,17 @@ func (ec *executionContext) _TopicCouncilSupervisor(ctx context.Context, sel ast
 		case "id":
 			out.Values[i] = ec._TopicCouncilSupervisor_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "teacherSupervisorCode":
 			out.Values[i] = ec._TopicCouncilSupervisor_teacherSupervisorCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "topicCouncilCode":
 			out.Values[i] = ec._TopicCouncilSupervisor_topicCouncilCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
 			out.Values[i] = ec._TopicCouncilSupervisor_createdAt(ctx, field, obj)
@@ -4147,9 +4609,71 @@ func (ec *executionContext) _TopicCouncilSupervisor(ctx context.Context, sel ast
 		case "updatedBy":
 			out.Values[i] = ec._TopicCouncilSupervisor_updatedBy(ctx, field, obj)
 		case "teacher":
-			out.Values[i] = ec._TopicCouncilSupervisor_teacher(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicCouncilSupervisor_teacher(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "topicCouncil":
-			out.Values[i] = ec._TopicCouncilSupervisor_topicCouncil(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicCouncilSupervisor_topicCouncil(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4187,17 +4711,17 @@ func (ec *executionContext) _TopicSupervisor(ctx context.Context, sel ast.Select
 		case "id":
 			out.Values[i] = ec._TopicSupervisor_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "teacherSupervisorCode":
 			out.Values[i] = ec._TopicSupervisor_teacherSupervisorCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "topicCode":
 			out.Values[i] = ec._TopicSupervisor_topicCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
 			out.Values[i] = ec._TopicSupervisor_createdAt(ctx, field, obj)
@@ -4208,9 +4732,71 @@ func (ec *executionContext) _TopicSupervisor(ctx context.Context, sel ast.Select
 		case "updatedBy":
 			out.Values[i] = ec._TopicSupervisor_updatedBy(ctx, field, obj)
 		case "teacher":
-			out.Values[i] = ec._TopicSupervisor_teacher(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicSupervisor_teacher(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "topic":
-			out.Values[i] = ec._TopicSupervisor_topic(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TopicSupervisor_topic(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4238,6 +4824,50 @@ func (ec *executionContext) _TopicSupervisor(ctx context.Context, sel ast.Select
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNEnrollment2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Enrollment) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEnrollment2ᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollment(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNEnrollment2ᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollment(ctx context.Context, sel ast.SelectionSet, v *model.Enrollment) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -4248,6 +4878,140 @@ func (ec *executionContext) marshalNEnrollment2ᚖthailyᚋsrcᚋgraphᚋmodel�
 	return ec._Enrollment(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNFinal2thailyᚋsrcᚋgraphᚋmodelᚐFinal(ctx context.Context, sel ast.SelectionSet, v model.Final) graphql.Marshaler {
+	return ec._Final(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFinal2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFinal(ctx context.Context, sel ast.SelectionSet, v *model.Final) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Final(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGradeReview2thailyᚋsrcᚋgraphᚋmodelᚐGradeReview(ctx context.Context, sel ast.SelectionSet, v model.GradeReview) graphql.Marshaler {
+	return ec._GradeReview(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGradeReview2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeReviewᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GradeReview) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGradeReview2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeReview(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNGradeReview2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeReview(ctx context.Context, sel ast.SelectionSet, v *model.GradeReview) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GradeReview(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNMidterm2thailyᚋsrcᚋgraphᚋmodelᚐMidterm(ctx context.Context, sel ast.SelectionSet, v model.Midterm) graphql.Marshaler {
+	return ec._Midterm(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMidterm2ᚖthailyᚋsrcᚋgraphᚋmodelᚐMidterm(ctx context.Context, sel ast.SelectionSet, v *model.Midterm) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Midterm(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTopic2thailyᚋsrcᚋgraphᚋmodelᚐTopic(ctx context.Context, sel ast.SelectionSet, v model.Topic) graphql.Marshaler {
+	return ec._Topic(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTopic2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Topic) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopic(ctx context.Context, sel ast.SelectionSet, v *model.Topic) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -4256,6 +5020,10 @@ func (ec *executionContext) marshalNTopic2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopi
 		return graphql.Null
 	}
 	return ec._Topic(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTopicCouncil2thailyᚋsrcᚋgraphᚋmodelᚐTopicCouncil(ctx context.Context, sel ast.SelectionSet, v model.TopicCouncil) graphql.Marshaler {
+	return ec._TopicCouncil(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNTopicCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicCouncil(ctx context.Context, sel ast.SelectionSet, v *model.TopicCouncil) graphql.Marshaler {

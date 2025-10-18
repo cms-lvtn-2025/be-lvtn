@@ -8,6 +8,7 @@ import (
 	"errors"
 	"sync/atomic"
 	"thaily/src/graph/model"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -34,13 +35,41 @@ type Config struct {
 
 type ResolverRoot interface {
 	Council() CouncilResolver
+	CouncilDefence() CouncilDefenceResolver
+	CouncilEnrollment() CouncilEnrollmentResolver
+	CouncilMemberCouncil() CouncilMemberCouncilResolver
+	CouncilTopicCouncil() CouncilTopicCouncilResolver
 	Defence() DefenceResolver
 	Enrollment() EnrollmentResolver
+	Faculty() FacultyResolver
+	GradeDefence() GradeDefenceResolver
+	GradeDefenceCriterion() GradeDefenceCriterionResolver
+	GradeReview() GradeReviewResolver
+	Major() MajorResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
+	ReviewerEnrollment() ReviewerEnrollmentResolver
+	ReviewerTopic() ReviewerTopicResolver
+	ReviewerTopicCouncil() ReviewerTopicCouncilResolver
+	RoleSystem() RoleSystemResolver
+	Semester() SemesterResolver
 	Student() StudentResolver
+	StudentCouncil() StudentCouncilResolver
+	StudentDefenceInfo() StudentDefenceInfoResolver
+	StudentEnrollment() StudentEnrollmentResolver
+	StudentGradeDefence() StudentGradeDefenceResolver
+	StudentTopic() StudentTopicResolver
+	StudentTopicCouncil() StudentTopicCouncilResolver
+	StudentTopicSupervisor() StudentTopicSupervisorResolver
 	Subscription() SubscriptionResolver
+	SupervisorEnrollment() SupervisorEnrollmentResolver
+	SupervisorTopic() SupervisorTopicResolver
+	SupervisorTopicCouncil() SupervisorTopicCouncilResolver
 	Teacher() TeacherResolver
+	Topic() TopicResolver
+	TopicCouncil() TopicCouncilResolver
+	TopicCouncilSupervisor() TopicCouncilSupervisorResolver
+	TopicSupervisor() TopicSupervisorResolver
 }
 
 type DirectiveRoot struct {
@@ -62,6 +91,74 @@ type ComplexityRoot struct {
 		Total         func(childComplexity int) int
 		UpdatedAt     func(childComplexity int) int
 		UpdatedBy     func(childComplexity int) int
+	}
+
+	CouncilDefence struct {
+		Council       func(childComplexity int) int
+		CouncilCode   func(childComplexity int) int
+		CreatedAt     func(childComplexity int) int
+		GradeDefences func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Position      func(childComplexity int) int
+		Teacher       func(childComplexity int) int
+		TeacherCode   func(childComplexity int) int
+		Title         func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+	}
+
+	CouncilEnrollment struct {
+		CreatedAt        func(childComplexity int) int
+		Final            func(childComplexity int) int
+		FinalCode        func(childComplexity int) int
+		GradeDefences    func(childComplexity int) int
+		GradeReview      func(childComplexity int) int
+		GradeReviewCode  func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Midterm          func(childComplexity int) int
+		MidtermCode      func(childComplexity int) int
+		Student          func(childComplexity int) int
+		StudentCode      func(childComplexity int) int
+		Title            func(childComplexity int) int
+		TopicCouncil     func(childComplexity int) int
+		TopicCouncilCode func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+	}
+
+	CouncilListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
+	}
+
+	CouncilMemberCouncil struct {
+		CreatedAt     func(childComplexity int) int
+		CreatedBy     func(childComplexity int) int
+		Defences      func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Major         func(childComplexity int) int
+		MajorCode     func(childComplexity int) int
+		Semester      func(childComplexity int) int
+		SemesterCode  func(childComplexity int) int
+		TimeStart     func(childComplexity int) int
+		Title         func(childComplexity int) int
+		TopicCouncils func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+		UpdatedBy     func(childComplexity int) int
+	}
+
+	CouncilTopicCouncil struct {
+		Council     func(childComplexity int) int
+		CouncilCode func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Enrollments func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Stage       func(childComplexity int) int
+		Supervisors func(childComplexity int) int
+		TimeEnd     func(childComplexity int) int
+		TimeStart   func(childComplexity int) int
+		Title       func(childComplexity int) int
+		Topic       func(childComplexity int) int
+		TopicCode   func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	Defence struct {
@@ -99,6 +196,11 @@ type ComplexityRoot struct {
 		UpdatedBy        func(childComplexity int) int
 	}
 
+	EnrollmentListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
+	}
+
 	Faculty struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
@@ -107,6 +209,11 @@ type ComplexityRoot struct {
 		Title     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UpdatedBy func(childComplexity int) int
+	}
+
+	FacultyListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
 	}
 
 	File struct {
@@ -193,6 +300,17 @@ type ComplexityRoot struct {
 		UpdatedBy   func(childComplexity int) int
 	}
 
+	MajorInfo struct {
+		FacultyCode func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Title       func(childComplexity int) int
+	}
+
+	MajorListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
+	}
+
 	Midterm struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
@@ -206,17 +324,142 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		Empty func(childComplexity int) int
+		AddDefenceToCouncil         func(childComplexity int, input model.CreateDefenceInput) int
+		AddGradeDefenceCriterion    func(childComplexity int, input model.CreateGradeDefenceCriterionInput) int
+		ApproveCouncil              func(childComplexity int, id string, timeStart time.Time) int
+		ApproveFinalFile            func(childComplexity int, fileID string) int
+		ApproveMidtermFile          func(childComplexity int, fileID string) int
+		ApproveTopic                func(childComplexity int, id string) int
+		ApproveTopicStage1          func(childComplexity int, id string) int
+		AssignTopicToCouncil        func(childComplexity int, topicCouncilID string, councilID string) int
+		CompleteGradeReview         func(childComplexity int, id string) int
+		CreateCouncil               func(childComplexity int, input model.CreateCouncilInput) int
+		CreateFaculty               func(childComplexity int, input model.CreateFacultyInput) int
+		CreateGradeDefence          func(childComplexity int, input model.CreateGradeDefenceInput) int
+		CreateGradeReview           func(childComplexity int, enrollmentID string, input model.CreateGradeReviewInput) int
+		CreateMajor                 func(childComplexity int, input model.CreateMajorInput) int
+		CreateSemester              func(childComplexity int, input model.CreateSemesterInput) int
+		CreateStudent               func(childComplexity int, input model.CreateStudentInput) int
+		CreateTeacher               func(childComplexity int, input model.CreateTeacherInput) int
+		DeleteCouncil               func(childComplexity int, id string) int
+		DeleteFaculty               func(childComplexity int, id string) int
+		DeleteGradeDefenceCriterion func(childComplexity int, id string) int
+		DeleteMajor                 func(childComplexity int, id string) int
+		DeleteSemester              func(childComplexity int, id string) int
+		DeleteStudent               func(childComplexity int, id string) int
+		DeleteTeacher               func(childComplexity int, id string) int
+		DeleteTopic                 func(childComplexity int, id string) int
+		Empty                       func(childComplexity int) int
+		FeedbackFinal               func(childComplexity int, finalID string, notes string) int
+		FeedbackMidterm             func(childComplexity int, midtermID string, feedback string) int
+		GradeFinal                  func(childComplexity int, enrollmentID string, input model.GradeFinalInput) int
+		GradeMidterm                func(childComplexity int, enrollmentID string, input model.GradeMidtermInput) int
+		RejectFinalFile             func(childComplexity int, fileID string, reason *string) int
+		RejectMidtermFile           func(childComplexity int, fileID string, reason *string) int
+		RejectTopic                 func(childComplexity int, id string, reason *string) int
+		RejectTopicStage1           func(childComplexity int, id string, reason *string) int
+		RemoveDefenceFromCouncil    func(childComplexity int, id string) int
+		UpdateCouncil               func(childComplexity int, id string, input model.UpdateCouncilInput) int
+		UpdateDepartmentCouncil     func(childComplexity int, id string, input model.UpdateCouncilInput) int
+		UpdateFaculty               func(childComplexity int, id string, input model.UpdateFacultyInput) int
+		UpdateGradeDefence          func(childComplexity int, id string, input model.UpdateGradeDefenceInput) int
+		UpdateGradeDefenceCriterion func(childComplexity int, id string, input model.UpdateGradeDefenceCriterionInput) int
+		UpdateGradeReview           func(childComplexity int, id string, input model.UpdateGradeReviewInput) int
+		UpdateMajor                 func(childComplexity int, id string, input model.UpdateMajorInput) int
+		UpdateMyProfile             func(childComplexity int, input model.UpdateStudentProfileInput) int
+		UpdateMyTeacherProfile      func(childComplexity int, input model.UpdateTeacherProfileInput) int
+		UpdateSemester              func(childComplexity int, id string, input model.UpdateSemesterInput) int
+		UpdateStudent               func(childComplexity int, id string, input model.UpdateStudentInput) int
+		UpdateTeacher               func(childComplexity int, id string, input model.UpdateTeacherInput) int
+		UpdateTopic                 func(childComplexity int, id string, input model.UpdateTopicInput) int
+		UploadFinalFile             func(childComplexity int, input model.UploadFileInput) int
+		UploadMidtermFile           func(childComplexity int, input model.UploadFileInput) int
 	}
 
 	Query struct {
-		GetInfoStudent    func(childComplexity int) int
-		GetInfoTeacher    func(childComplexity int) int
-		GetListCouncil    func(childComplexity int, search model.SearchRequestInput) int
-		GetListDefence    func(childComplexity int, search model.SearchRequestInput) int
-		GetListEnrollment func(childComplexity int, search model.SearchRequestInput) int
-		GetListSemester   func(childComplexity int, search model.SearchRequestInput) int
-		GetListTopic      func(childComplexity int, search model.SearchRequestInput) int
+		Empty                           func(childComplexity int) int
+		GetAllCouncils                  func(childComplexity int, search model.SearchRequestInput) int
+		GetAllEnrollments               func(childComplexity int, search model.SearchRequestInput) int
+		GetAllFaculties                 func(childComplexity int, search model.SearchRequestInput) int
+		GetAllGradeDefences             func(childComplexity int, search model.SearchRequestInput) int
+		GetAllMajors                    func(childComplexity int, search model.SearchRequestInput) int
+		GetAllSemesters                 func(childComplexity int, search model.SearchRequestInput) int
+		GetAllTopics                    func(childComplexity int, search model.SearchRequestInput) int
+		GetCouncilDetail                func(childComplexity int, id string) int
+		GetDefencesByCouncil            func(childComplexity int, councilID string) int
+		GetDepartmentCouncilDetail      func(childComplexity int, id string) int
+		GetDepartmentCouncils           func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentDefences           func(childComplexity int, councilID string) int
+		GetDepartmentEnrollmentDetail   func(childComplexity int, id string) int
+		GetDepartmentEnrollments        func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentFaculties          func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentGradeDefences      func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentMajors             func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentSemesters          func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentStudents           func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentTeachers           func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentTopicDetail        func(childComplexity int, id string) int
+		GetDepartmentTopics             func(childComplexity int, search model.SearchRequestInput) int
+		GetEnrollmentDetail             func(childComplexity int, id string) int
+		GetListStudents                 func(childComplexity int, search model.SearchRequestInput) int
+		GetListTeachers                 func(childComplexity int, search model.SearchRequestInput) int
+		GetMyCouncilEnrollments         func(childComplexity int, councilID string) int
+		GetMyCouncilTopics              func(childComplexity int, councilID string) int
+		GetMyCouncils                   func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyDefenceAssignments         func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyDefenceDetail              func(childComplexity int, defenceID string) int
+		GetMyEnrollmentDetail           func(childComplexity int, id string) int
+		GetMyEnrollments                func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyGradeReviews               func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyProfile                    func(childComplexity int) int
+		GetMyReviewAssignmentDetail     func(childComplexity int, enrollmentID string) int
+		GetMyReviewAssignments          func(childComplexity int, search *model.SearchRequestInput) int
+		GetMySemesters                  func(childComplexity int, search *model.SearchRequestInput) int
+		GetMySupervisedEnrollmentDetail func(childComplexity int, enrollmentID string) int
+		GetMySupervisedEnrollments      func(childComplexity int, search *model.SearchRequestInput) int
+		GetMySupervisedTopicDetail      func(childComplexity int, topicID string) int
+		GetMySupervisedTopics           func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyTeacherProfile             func(childComplexity int) int
+		GetStudentDetail                func(childComplexity int, id string) int
+		GetTeacherDetail                func(childComplexity int, id string) int
+		GetTopicDetail                  func(childComplexity int, id string) int
+	}
+
+	ReviewerEnrollment struct {
+		CreatedAt        func(childComplexity int) int
+		Final            func(childComplexity int) int
+		FinalCode        func(childComplexity int) int
+		GradeReview      func(childComplexity int) int
+		GradeReviewCode  func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Midterm          func(childComplexity int) int
+		MidtermCode      func(childComplexity int) int
+		Student          func(childComplexity int) int
+		StudentCode      func(childComplexity int) int
+		Title            func(childComplexity int) int
+		TopicCouncil     func(childComplexity int) int
+		TopicCouncilCode func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+	}
+
+	ReviewerTopic struct {
+		Files     func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Major     func(childComplexity int) int
+		MajorCode func(childComplexity int) int
+		Status    func(childComplexity int) int
+		Title     func(childComplexity int) int
+	}
+
+	ReviewerTopicCouncil struct {
+		ID          func(childComplexity int) int
+		Stage       func(childComplexity int) int
+		Supervisors func(childComplexity int) int
+		TimeEnd     func(childComplexity int) int
+		TimeStart   func(childComplexity int) int
+		Title       func(childComplexity int) int
+		Topic       func(childComplexity int) int
+		TopicCode   func(childComplexity int) int
 	}
 
 	RoleSystem struct {
@@ -246,6 +489,16 @@ type ComplexityRoot struct {
 		UpdatedBy func(childComplexity int) int
 	}
 
+	SemesterInfo struct {
+		ID    func(childComplexity int) int
+		Title func(childComplexity int) int
+	}
+
+	SemesterListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
+	}
+
 	Student struct {
 		ClassCode    func(childComplexity int) int
 		CreatedAt    func(childComplexity int) int
@@ -264,8 +517,167 @@ type ComplexityRoot struct {
 		Username     func(childComplexity int) int
 	}
 
+	StudentCouncil struct {
+		CreatedAt    func(childComplexity int) int
+		Defences     func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Major        func(childComplexity int) int
+		MajorCode    func(childComplexity int) int
+		Semester     func(childComplexity int) int
+		SemesterCode func(childComplexity int) int
+		TimeStart    func(childComplexity int) int
+		Title        func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+	}
+
+	StudentDefenceInfo struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Position  func(childComplexity int) int
+		Teacher   func(childComplexity int) int
+		Title     func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	StudentEnrollment struct {
+		CreatedAt        func(childComplexity int) int
+		CreatedBy        func(childComplexity int) int
+		Final            func(childComplexity int) int
+		FinalCode        func(childComplexity int) int
+		GradeDefences    func(childComplexity int) int
+		GradeReview      func(childComplexity int) int
+		GradeReviewCode  func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Midterm          func(childComplexity int) int
+		MidtermCode      func(childComplexity int) int
+		StudentCode      func(childComplexity int) int
+		Title            func(childComplexity int) int
+		TopicCouncil     func(childComplexity int) int
+		TopicCouncilCode func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+		UpdatedBy        func(childComplexity int) int
+	}
+
+	StudentGradeDefence struct {
+		CreatedAt      func(childComplexity int) int
+		Criteria       func(childComplexity int) int
+		Defence        func(childComplexity int) int
+		DefenceCode    func(childComplexity int) int
+		EnrollmentCode func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Note           func(childComplexity int) int
+		TotalScore     func(childComplexity int) int
+		UpdatedAt      func(childComplexity int) int
+	}
+
+	StudentListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
+	}
+
+	StudentTeacherInfo struct {
+		Email     func(childComplexity int) int
+		Gender    func(childComplexity int) int
+		ID        func(childComplexity int) int
+		MajorCode func(childComplexity int) int
+		Username  func(childComplexity int) int
+	}
+
+	StudentTopic struct {
+		CreatedAt     func(childComplexity int) int
+		Files         func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Major         func(childComplexity int) int
+		MajorCode     func(childComplexity int) int
+		PercentStage1 func(childComplexity int) int
+		PercentStage2 func(childComplexity int) int
+		Semester      func(childComplexity int) int
+		SemesterCode  func(childComplexity int) int
+		Status        func(childComplexity int) int
+		Title         func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+	}
+
+	StudentTopicCouncil struct {
+		Council     func(childComplexity int) int
+		CouncilCode func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Stage       func(childComplexity int) int
+		Supervisors func(childComplexity int) int
+		TimeEnd     func(childComplexity int) int
+		TimeStart   func(childComplexity int) int
+		Title       func(childComplexity int) int
+		Topic       func(childComplexity int) int
+		TopicCode   func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+	}
+
+	StudentTopicSupervisor struct {
+		ID                    func(childComplexity int) int
+		Teacher               func(childComplexity int) int
+		TeacherSupervisorCode func(childComplexity int) int
+		TopicCouncilCode      func(childComplexity int) int
+	}
+
 	Subscription struct {
 		Empty func(childComplexity int) int
+	}
+
+	SupervisorEnrollment struct {
+		CreatedAt        func(childComplexity int) int
+		CreatedBy        func(childComplexity int) int
+		Final            func(childComplexity int) int
+		FinalCode        func(childComplexity int) int
+		GradeDefences    func(childComplexity int) int
+		GradeReview      func(childComplexity int) int
+		GradeReviewCode  func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Midterm          func(childComplexity int) int
+		MidtermCode      func(childComplexity int) int
+		Student          func(childComplexity int) int
+		StudentCode      func(childComplexity int) int
+		Title            func(childComplexity int) int
+		TopicCouncil     func(childComplexity int) int
+		TopicCouncilCode func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+		UpdatedBy        func(childComplexity int) int
+	}
+
+	SupervisorTopic struct {
+		CreatedAt        func(childComplexity int) int
+		CreatedBy        func(childComplexity int) int
+		Enrollments      func(childComplexity int) int
+		Files            func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Major            func(childComplexity int) int
+		MajorCode        func(childComplexity int) int
+		PercentStage1    func(childComplexity int) int
+		PercentStage2    func(childComplexity int) int
+		Semester         func(childComplexity int) int
+		SemesterCode     func(childComplexity int) int
+		Status           func(childComplexity int) int
+		Title            func(childComplexity int) int
+		TopicCouncils    func(childComplexity int) int
+		TopicSupervisors func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+		UpdatedBy        func(childComplexity int) int
+	}
+
+	SupervisorTopicCouncil struct {
+		Council     func(childComplexity int) int
+		CouncilCode func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Enrollments func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Stage       func(childComplexity int) int
+		Supervisors func(childComplexity int) int
+		TimeEnd     func(childComplexity int) int
+		TimeStart   func(childComplexity int) int
+		Title       func(childComplexity int) int
+		Topic       func(childComplexity int) int
+		TopicCode   func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	Teacher struct {
@@ -283,6 +695,11 @@ type ComplexityRoot struct {
 		UpdatedAt        func(childComplexity int) int
 		UpdatedBy        func(childComplexity int) int
 		Username         func(childComplexity int) int
+	}
+
+	TeacherListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
 	}
 
 	Topic struct {
@@ -334,6 +751,11 @@ type ComplexityRoot struct {
 		TopicCouncilCode      func(childComplexity int) int
 		UpdatedAt             func(childComplexity int) int
 		UpdatedBy             func(childComplexity int) int
+	}
+
+	TopicListResponse struct {
+		Data  func(childComplexity int) int
+		Total func(childComplexity int) int
 	}
 
 	TopicSupervisor struct {
@@ -465,6 +887,377 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Council.UpdatedBy(childComplexity), true
+
+	case "CouncilDefence.council":
+		if e.complexity.CouncilDefence.Council == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.Council(childComplexity), true
+
+	case "CouncilDefence.councilCode":
+		if e.complexity.CouncilDefence.CouncilCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.CouncilCode(childComplexity), true
+
+	case "CouncilDefence.createdAt":
+		if e.complexity.CouncilDefence.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.CreatedAt(childComplexity), true
+
+	case "CouncilDefence.gradeDefences":
+		if e.complexity.CouncilDefence.GradeDefences == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.GradeDefences(childComplexity), true
+
+	case "CouncilDefence.id":
+		if e.complexity.CouncilDefence.ID == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.ID(childComplexity), true
+
+	case "CouncilDefence.position":
+		if e.complexity.CouncilDefence.Position == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.Position(childComplexity), true
+
+	case "CouncilDefence.teacher":
+		if e.complexity.CouncilDefence.Teacher == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.Teacher(childComplexity), true
+
+	case "CouncilDefence.teacherCode":
+		if e.complexity.CouncilDefence.TeacherCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.TeacherCode(childComplexity), true
+
+	case "CouncilDefence.title":
+		if e.complexity.CouncilDefence.Title == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.Title(childComplexity), true
+
+	case "CouncilDefence.updatedAt":
+		if e.complexity.CouncilDefence.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilDefence.UpdatedAt(childComplexity), true
+
+	case "CouncilEnrollment.createdAt":
+		if e.complexity.CouncilEnrollment.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.CreatedAt(childComplexity), true
+
+	case "CouncilEnrollment.final":
+		if e.complexity.CouncilEnrollment.Final == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.Final(childComplexity), true
+
+	case "CouncilEnrollment.finalCode":
+		if e.complexity.CouncilEnrollment.FinalCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.FinalCode(childComplexity), true
+
+	case "CouncilEnrollment.gradeDefences":
+		if e.complexity.CouncilEnrollment.GradeDefences == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.GradeDefences(childComplexity), true
+
+	case "CouncilEnrollment.gradeReview":
+		if e.complexity.CouncilEnrollment.GradeReview == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.GradeReview(childComplexity), true
+
+	case "CouncilEnrollment.gradeReviewCode":
+		if e.complexity.CouncilEnrollment.GradeReviewCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.GradeReviewCode(childComplexity), true
+
+	case "CouncilEnrollment.id":
+		if e.complexity.CouncilEnrollment.ID == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.ID(childComplexity), true
+
+	case "CouncilEnrollment.midterm":
+		if e.complexity.CouncilEnrollment.Midterm == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.Midterm(childComplexity), true
+
+	case "CouncilEnrollment.midtermCode":
+		if e.complexity.CouncilEnrollment.MidtermCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.MidtermCode(childComplexity), true
+
+	case "CouncilEnrollment.student":
+		if e.complexity.CouncilEnrollment.Student == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.Student(childComplexity), true
+
+	case "CouncilEnrollment.studentCode":
+		if e.complexity.CouncilEnrollment.StudentCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.StudentCode(childComplexity), true
+
+	case "CouncilEnrollment.title":
+		if e.complexity.CouncilEnrollment.Title == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.Title(childComplexity), true
+
+	case "CouncilEnrollment.topicCouncil":
+		if e.complexity.CouncilEnrollment.TopicCouncil == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.TopicCouncil(childComplexity), true
+
+	case "CouncilEnrollment.topicCouncilCode":
+		if e.complexity.CouncilEnrollment.TopicCouncilCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.TopicCouncilCode(childComplexity), true
+
+	case "CouncilEnrollment.updatedAt":
+		if e.complexity.CouncilEnrollment.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilEnrollment.UpdatedAt(childComplexity), true
+
+	case "CouncilListResponse.data":
+		if e.complexity.CouncilListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.CouncilListResponse.Data(childComplexity), true
+
+	case "CouncilListResponse.total":
+		if e.complexity.CouncilListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.CouncilListResponse.Total(childComplexity), true
+
+	case "CouncilMemberCouncil.createdAt":
+		if e.complexity.CouncilMemberCouncil.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.CreatedAt(childComplexity), true
+
+	case "CouncilMemberCouncil.createdBy":
+		if e.complexity.CouncilMemberCouncil.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.CreatedBy(childComplexity), true
+
+	case "CouncilMemberCouncil.defences":
+		if e.complexity.CouncilMemberCouncil.Defences == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.Defences(childComplexity), true
+
+	case "CouncilMemberCouncil.id":
+		if e.complexity.CouncilMemberCouncil.ID == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.ID(childComplexity), true
+
+	case "CouncilMemberCouncil.major":
+		if e.complexity.CouncilMemberCouncil.Major == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.Major(childComplexity), true
+
+	case "CouncilMemberCouncil.majorCode":
+		if e.complexity.CouncilMemberCouncil.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.MajorCode(childComplexity), true
+
+	case "CouncilMemberCouncil.semester":
+		if e.complexity.CouncilMemberCouncil.Semester == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.Semester(childComplexity), true
+
+	case "CouncilMemberCouncil.semesterCode":
+		if e.complexity.CouncilMemberCouncil.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.SemesterCode(childComplexity), true
+
+	case "CouncilMemberCouncil.timeStart":
+		if e.complexity.CouncilMemberCouncil.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.TimeStart(childComplexity), true
+
+	case "CouncilMemberCouncil.title":
+		if e.complexity.CouncilMemberCouncil.Title == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.Title(childComplexity), true
+
+	case "CouncilMemberCouncil.topicCouncils":
+		if e.complexity.CouncilMemberCouncil.TopicCouncils == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.TopicCouncils(childComplexity), true
+
+	case "CouncilMemberCouncil.updatedAt":
+		if e.complexity.CouncilMemberCouncil.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.UpdatedAt(childComplexity), true
+
+	case "CouncilMemberCouncil.updatedBy":
+		if e.complexity.CouncilMemberCouncil.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.CouncilMemberCouncil.UpdatedBy(childComplexity), true
+
+	case "CouncilTopicCouncil.council":
+		if e.complexity.CouncilTopicCouncil.Council == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.Council(childComplexity), true
+
+	case "CouncilTopicCouncil.councilCode":
+		if e.complexity.CouncilTopicCouncil.CouncilCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.CouncilCode(childComplexity), true
+
+	case "CouncilTopicCouncil.createdAt":
+		if e.complexity.CouncilTopicCouncil.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.CreatedAt(childComplexity), true
+
+	case "CouncilTopicCouncil.enrollments":
+		if e.complexity.CouncilTopicCouncil.Enrollments == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.Enrollments(childComplexity), true
+
+	case "CouncilTopicCouncil.id":
+		if e.complexity.CouncilTopicCouncil.ID == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.ID(childComplexity), true
+
+	case "CouncilTopicCouncil.stage":
+		if e.complexity.CouncilTopicCouncil.Stage == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.Stage(childComplexity), true
+
+	case "CouncilTopicCouncil.supervisors":
+		if e.complexity.CouncilTopicCouncil.Supervisors == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.Supervisors(childComplexity), true
+
+	case "CouncilTopicCouncil.timeEnd":
+		if e.complexity.CouncilTopicCouncil.TimeEnd == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.TimeEnd(childComplexity), true
+
+	case "CouncilTopicCouncil.timeStart":
+		if e.complexity.CouncilTopicCouncil.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.TimeStart(childComplexity), true
+
+	case "CouncilTopicCouncil.title":
+		if e.complexity.CouncilTopicCouncil.Title == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.Title(childComplexity), true
+
+	case "CouncilTopicCouncil.topic":
+		if e.complexity.CouncilTopicCouncil.Topic == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.Topic(childComplexity), true
+
+	case "CouncilTopicCouncil.topicCode":
+		if e.complexity.CouncilTopicCouncil.TopicCode == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.TopicCode(childComplexity), true
+
+	case "CouncilTopicCouncil.updatedAt":
+		if e.complexity.CouncilTopicCouncil.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.CouncilTopicCouncil.UpdatedAt(childComplexity), true
 
 	case "Defence.council":
 		if e.complexity.Defence.Council == nil {
@@ -669,6 +1462,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Enrollment.UpdatedBy(childComplexity), true
 
+	case "EnrollmentListResponse.data":
+		if e.complexity.EnrollmentListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.EnrollmentListResponse.Data(childComplexity), true
+
+	case "EnrollmentListResponse.total":
+		if e.complexity.EnrollmentListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.EnrollmentListResponse.Total(childComplexity), true
+
 	case "Faculty.createdAt":
 		if e.complexity.Faculty.CreatedAt == nil {
 			break
@@ -717,6 +1524,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Faculty.UpdatedBy(childComplexity), true
+
+	case "FacultyListResponse.data":
+		if e.complexity.FacultyListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.FacultyListResponse.Data(childComplexity), true
+
+	case "FacultyListResponse.total":
+		if e.complexity.FacultyListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.FacultyListResponse.Total(childComplexity), true
 
 	case "File.createdAt":
 		if e.complexity.File.CreatedAt == nil {
@@ -1180,6 +2001,41 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Major.UpdatedBy(childComplexity), true
 
+	case "MajorInfo.facultyCode":
+		if e.complexity.MajorInfo.FacultyCode == nil {
+			break
+		}
+
+		return e.complexity.MajorInfo.FacultyCode(childComplexity), true
+
+	case "MajorInfo.id":
+		if e.complexity.MajorInfo.ID == nil {
+			break
+		}
+
+		return e.complexity.MajorInfo.ID(childComplexity), true
+
+	case "MajorInfo.title":
+		if e.complexity.MajorInfo.Title == nil {
+			break
+		}
+
+		return e.complexity.MajorInfo.Title(childComplexity), true
+
+	case "MajorListResponse.data":
+		if e.complexity.MajorListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.MajorListResponse.Data(childComplexity), true
+
+	case "MajorListResponse.total":
+		if e.complexity.MajorListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.MajorListResponse.Total(childComplexity), true
+
 	case "Midterm.createdAt":
 		if e.complexity.Midterm.CreatedAt == nil {
 			break
@@ -1243,6 +2099,306 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Midterm.UpdatedBy(childComplexity), true
 
+	case "Mutation.addDefenceToCouncil":
+		if e.complexity.Mutation.AddDefenceToCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addDefenceToCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddDefenceToCouncil(childComplexity, args["input"].(model.CreateDefenceInput)), true
+
+	case "Mutation.addGradeDefenceCriterion":
+		if e.complexity.Mutation.AddGradeDefenceCriterion == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addGradeDefenceCriterion_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddGradeDefenceCriterion(childComplexity, args["input"].(model.CreateGradeDefenceCriterionInput)), true
+
+	case "Mutation.approveCouncil":
+		if e.complexity.Mutation.ApproveCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_approveCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ApproveCouncil(childComplexity, args["id"].(string), args["timeStart"].(time.Time)), true
+
+	case "Mutation.approveFinalFile":
+		if e.complexity.Mutation.ApproveFinalFile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_approveFinalFile_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ApproveFinalFile(childComplexity, args["fileId"].(string)), true
+
+	case "Mutation.approveMidtermFile":
+		if e.complexity.Mutation.ApproveMidtermFile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_approveMidtermFile_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ApproveMidtermFile(childComplexity, args["fileId"].(string)), true
+
+	case "Mutation.approveTopic":
+		if e.complexity.Mutation.ApproveTopic == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_approveTopic_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ApproveTopic(childComplexity, args["id"].(string)), true
+
+	case "Mutation.approveTopicStage1":
+		if e.complexity.Mutation.ApproveTopicStage1 == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_approveTopicStage1_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ApproveTopicStage1(childComplexity, args["id"].(string)), true
+
+	case "Mutation.assignTopicToCouncil":
+		if e.complexity.Mutation.AssignTopicToCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_assignTopicToCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AssignTopicToCouncil(childComplexity, args["topicCouncilId"].(string), args["councilId"].(string)), true
+
+	case "Mutation.completeGradeReview":
+		if e.complexity.Mutation.CompleteGradeReview == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_completeGradeReview_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CompleteGradeReview(childComplexity, args["id"].(string)), true
+
+	case "Mutation.createCouncil":
+		if e.complexity.Mutation.CreateCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateCouncil(childComplexity, args["input"].(model.CreateCouncilInput)), true
+
+	case "Mutation.createFaculty":
+		if e.complexity.Mutation.CreateFaculty == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createFaculty_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateFaculty(childComplexity, args["input"].(model.CreateFacultyInput)), true
+
+	case "Mutation.createGradeDefence":
+		if e.complexity.Mutation.CreateGradeDefence == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createGradeDefence_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateGradeDefence(childComplexity, args["input"].(model.CreateGradeDefenceInput)), true
+
+	case "Mutation.createGradeReview":
+		if e.complexity.Mutation.CreateGradeReview == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createGradeReview_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateGradeReview(childComplexity, args["enrollmentId"].(string), args["input"].(model.CreateGradeReviewInput)), true
+
+	case "Mutation.createMajor":
+		if e.complexity.Mutation.CreateMajor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createMajor_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateMajor(childComplexity, args["input"].(model.CreateMajorInput)), true
+
+	case "Mutation.createSemester":
+		if e.complexity.Mutation.CreateSemester == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createSemester_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateSemester(childComplexity, args["input"].(model.CreateSemesterInput)), true
+
+	case "Mutation.createStudent":
+		if e.complexity.Mutation.CreateStudent == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createStudent_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateStudent(childComplexity, args["input"].(model.CreateStudentInput)), true
+
+	case "Mutation.createTeacher":
+		if e.complexity.Mutation.CreateTeacher == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTeacher_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTeacher(childComplexity, args["input"].(model.CreateTeacherInput)), true
+
+	case "Mutation.deleteCouncil":
+		if e.complexity.Mutation.DeleteCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCouncil(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteFaculty":
+		if e.complexity.Mutation.DeleteFaculty == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteFaculty_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteFaculty(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteGradeDefenceCriterion":
+		if e.complexity.Mutation.DeleteGradeDefenceCriterion == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteGradeDefenceCriterion_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteGradeDefenceCriterion(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteMajor":
+		if e.complexity.Mutation.DeleteMajor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteMajor_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteMajor(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteSemester":
+		if e.complexity.Mutation.DeleteSemester == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteSemester_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteSemester(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteStudent":
+		if e.complexity.Mutation.DeleteStudent == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteStudent_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteStudent(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteTeacher":
+		if e.complexity.Mutation.DeleteTeacher == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTeacher_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTeacher(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteTopic":
+		if e.complexity.Mutation.DeleteTopic == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTopic_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTopic(childComplexity, args["id"].(string)), true
+
 	case "Mutation._empty":
 		if e.complexity.Mutation.Empty == nil {
 			break
@@ -1250,79 +2406,1026 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.Empty(childComplexity), true
 
-	case "Query.getInfoStudent":
-		if e.complexity.Query.GetInfoStudent == nil {
+	case "Mutation.feedbackFinal":
+		if e.complexity.Mutation.FeedbackFinal == nil {
 			break
 		}
 
-		return e.complexity.Query.GetInfoStudent(childComplexity), true
-
-	case "Query.getInfoTeacher":
-		if e.complexity.Query.GetInfoTeacher == nil {
-			break
-		}
-
-		return e.complexity.Query.GetInfoTeacher(childComplexity), true
-
-	case "Query.getListCouncil":
-		if e.complexity.Query.GetListCouncil == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getListCouncil_args(ctx, rawArgs)
+		args, err := ec.field_Mutation_feedbackFinal_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetListCouncil(childComplexity, args["search"].(model.SearchRequestInput)), true
+		return e.complexity.Mutation.FeedbackFinal(childComplexity, args["finalId"].(string), args["notes"].(string)), true
 
-	case "Query.getListDefence":
-		if e.complexity.Query.GetListDefence == nil {
+	case "Mutation.feedbackMidterm":
+		if e.complexity.Mutation.FeedbackMidterm == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getListDefence_args(ctx, rawArgs)
+		args, err := ec.field_Mutation_feedbackMidterm_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetListDefence(childComplexity, args["search"].(model.SearchRequestInput)), true
+		return e.complexity.Mutation.FeedbackMidterm(childComplexity, args["midtermId"].(string), args["feedback"].(string)), true
 
-	case "Query.getListEnrollment":
-		if e.complexity.Query.GetListEnrollment == nil {
+	case "Mutation.gradeFinal":
+		if e.complexity.Mutation.GradeFinal == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getListEnrollment_args(ctx, rawArgs)
+		args, err := ec.field_Mutation_gradeFinal_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetListEnrollment(childComplexity, args["search"].(model.SearchRequestInput)), true
+		return e.complexity.Mutation.GradeFinal(childComplexity, args["enrollmentId"].(string), args["input"].(model.GradeFinalInput)), true
 
-	case "Query.getListSemester":
-		if e.complexity.Query.GetListSemester == nil {
+	case "Mutation.gradeMidterm":
+		if e.complexity.Mutation.GradeMidterm == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getListSemester_args(ctx, rawArgs)
+		args, err := ec.field_Mutation_gradeMidterm_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetListSemester(childComplexity, args["search"].(model.SearchRequestInput)), true
+		return e.complexity.Mutation.GradeMidterm(childComplexity, args["enrollmentId"].(string), args["input"].(model.GradeMidtermInput)), true
 
-	case "Query.getListTopic":
-		if e.complexity.Query.GetListTopic == nil {
+	case "Mutation.rejectFinalFile":
+		if e.complexity.Mutation.RejectFinalFile == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getListTopic_args(ctx, rawArgs)
+		args, err := ec.field_Mutation_rejectFinalFile_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetListTopic(childComplexity, args["search"].(model.SearchRequestInput)), true
+		return e.complexity.Mutation.RejectFinalFile(childComplexity, args["fileId"].(string), args["reason"].(*string)), true
+
+	case "Mutation.rejectMidtermFile":
+		if e.complexity.Mutation.RejectMidtermFile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_rejectMidtermFile_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RejectMidtermFile(childComplexity, args["fileId"].(string), args["reason"].(*string)), true
+
+	case "Mutation.rejectTopic":
+		if e.complexity.Mutation.RejectTopic == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_rejectTopic_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RejectTopic(childComplexity, args["id"].(string), args["reason"].(*string)), true
+
+	case "Mutation.rejectTopicStage1":
+		if e.complexity.Mutation.RejectTopicStage1 == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_rejectTopicStage1_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RejectTopicStage1(childComplexity, args["id"].(string), args["reason"].(*string)), true
+
+	case "Mutation.removeDefenceFromCouncil":
+		if e.complexity.Mutation.RemoveDefenceFromCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeDefenceFromCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveDefenceFromCouncil(childComplexity, args["id"].(string)), true
+
+	case "Mutation.updateCouncil":
+		if e.complexity.Mutation.UpdateCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateCouncil(childComplexity, args["id"].(string), args["input"].(model.UpdateCouncilInput)), true
+
+	case "Mutation.updateDepartmentCouncil":
+		if e.complexity.Mutation.UpdateDepartmentCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateDepartmentCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateDepartmentCouncil(childComplexity, args["id"].(string), args["input"].(model.UpdateCouncilInput)), true
+
+	case "Mutation.updateFaculty":
+		if e.complexity.Mutation.UpdateFaculty == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateFaculty_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateFaculty(childComplexity, args["id"].(string), args["input"].(model.UpdateFacultyInput)), true
+
+	case "Mutation.updateGradeDefence":
+		if e.complexity.Mutation.UpdateGradeDefence == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateGradeDefence_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateGradeDefence(childComplexity, args["id"].(string), args["input"].(model.UpdateGradeDefenceInput)), true
+
+	case "Mutation.updateGradeDefenceCriterion":
+		if e.complexity.Mutation.UpdateGradeDefenceCriterion == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateGradeDefenceCriterion_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateGradeDefenceCriterion(childComplexity, args["id"].(string), args["input"].(model.UpdateGradeDefenceCriterionInput)), true
+
+	case "Mutation.updateGradeReview":
+		if e.complexity.Mutation.UpdateGradeReview == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateGradeReview_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateGradeReview(childComplexity, args["id"].(string), args["input"].(model.UpdateGradeReviewInput)), true
+
+	case "Mutation.updateMajor":
+		if e.complexity.Mutation.UpdateMajor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateMajor_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateMajor(childComplexity, args["id"].(string), args["input"].(model.UpdateMajorInput)), true
+
+	case "Mutation.updateMyProfile":
+		if e.complexity.Mutation.UpdateMyProfile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateMyProfile_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateMyProfile(childComplexity, args["input"].(model.UpdateStudentProfileInput)), true
+
+	case "Mutation.updateMyTeacherProfile":
+		if e.complexity.Mutation.UpdateMyTeacherProfile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateMyTeacherProfile_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateMyTeacherProfile(childComplexity, args["input"].(model.UpdateTeacherProfileInput)), true
+
+	case "Mutation.updateSemester":
+		if e.complexity.Mutation.UpdateSemester == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateSemester_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateSemester(childComplexity, args["id"].(string), args["input"].(model.UpdateSemesterInput)), true
+
+	case "Mutation.updateStudent":
+		if e.complexity.Mutation.UpdateStudent == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateStudent_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateStudent(childComplexity, args["id"].(string), args["input"].(model.UpdateStudentInput)), true
+
+	case "Mutation.updateTeacher":
+		if e.complexity.Mutation.UpdateTeacher == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTeacher_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTeacher(childComplexity, args["id"].(string), args["input"].(model.UpdateTeacherInput)), true
+
+	case "Mutation.updateTopic":
+		if e.complexity.Mutation.UpdateTopic == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTopic_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTopic(childComplexity, args["id"].(string), args["input"].(model.UpdateTopicInput)), true
+
+	case "Mutation.uploadFinalFile":
+		if e.complexity.Mutation.UploadFinalFile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_uploadFinalFile_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UploadFinalFile(childComplexity, args["input"].(model.UploadFileInput)), true
+
+	case "Mutation.uploadMidtermFile":
+		if e.complexity.Mutation.UploadMidtermFile == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_uploadMidtermFile_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UploadMidtermFile(childComplexity, args["input"].(model.UploadFileInput)), true
+
+	case "Query._empty":
+		if e.complexity.Query.Empty == nil {
+			break
+		}
+
+		return e.complexity.Query.Empty(childComplexity), true
+
+	case "Query.getAllCouncils":
+		if e.complexity.Query.GetAllCouncils == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAllCouncils_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAllCouncils(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getAllEnrollments":
+		if e.complexity.Query.GetAllEnrollments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAllEnrollments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAllEnrollments(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getAllFaculties":
+		if e.complexity.Query.GetAllFaculties == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAllFaculties_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAllFaculties(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getAllGradeDefences":
+		if e.complexity.Query.GetAllGradeDefences == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAllGradeDefences_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAllGradeDefences(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getAllMajors":
+		if e.complexity.Query.GetAllMajors == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAllMajors_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAllMajors(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getAllSemesters":
+		if e.complexity.Query.GetAllSemesters == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAllSemesters_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAllSemesters(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getAllTopics":
+		if e.complexity.Query.GetAllTopics == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAllTopics_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAllTopics(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getCouncilDetail":
+		if e.complexity.Query.GetCouncilDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getCouncilDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetCouncilDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getDefencesByCouncil":
+		if e.complexity.Query.GetDefencesByCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDefencesByCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDefencesByCouncil(childComplexity, args["councilId"].(string)), true
+
+	case "Query.getDepartmentCouncilDetail":
+		if e.complexity.Query.GetDepartmentCouncilDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentCouncilDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentCouncilDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getDepartmentCouncils":
+		if e.complexity.Query.GetDepartmentCouncils == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentCouncils_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentCouncils(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentDefences":
+		if e.complexity.Query.GetDepartmentDefences == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentDefences_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentDefences(childComplexity, args["councilId"].(string)), true
+
+	case "Query.getDepartmentEnrollmentDetail":
+		if e.complexity.Query.GetDepartmentEnrollmentDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentEnrollmentDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentEnrollmentDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getDepartmentEnrollments":
+		if e.complexity.Query.GetDepartmentEnrollments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentEnrollments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentEnrollments(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentFaculties":
+		if e.complexity.Query.GetDepartmentFaculties == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentFaculties_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentFaculties(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentGradeDefences":
+		if e.complexity.Query.GetDepartmentGradeDefences == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentGradeDefences_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentGradeDefences(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentMajors":
+		if e.complexity.Query.GetDepartmentMajors == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentMajors_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentMajors(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentSemesters":
+		if e.complexity.Query.GetDepartmentSemesters == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentSemesters_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentSemesters(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentStudents":
+		if e.complexity.Query.GetDepartmentStudents == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentStudents_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentStudents(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentTeachers":
+		if e.complexity.Query.GetDepartmentTeachers == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentTeachers_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentTeachers(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getDepartmentTopicDetail":
+		if e.complexity.Query.GetDepartmentTopicDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentTopicDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentTopicDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getDepartmentTopics":
+		if e.complexity.Query.GetDepartmentTopics == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getDepartmentTopics_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetDepartmentTopics(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getEnrollmentDetail":
+		if e.complexity.Query.GetEnrollmentDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getEnrollmentDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetEnrollmentDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getListStudents":
+		if e.complexity.Query.GetListStudents == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getListStudents_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListStudents(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getListTeachers":
+		if e.complexity.Query.GetListTeachers == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getListTeachers_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetListTeachers(childComplexity, args["search"].(model.SearchRequestInput)), true
+
+	case "Query.getMyCouncilEnrollments":
+		if e.complexity.Query.GetMyCouncilEnrollments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyCouncilEnrollments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyCouncilEnrollments(childComplexity, args["councilId"].(string)), true
+
+	case "Query.getMyCouncilTopics":
+		if e.complexity.Query.GetMyCouncilTopics == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyCouncilTopics_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyCouncilTopics(childComplexity, args["councilId"].(string)), true
+
+	case "Query.getMyCouncils":
+		if e.complexity.Query.GetMyCouncils == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyCouncils_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyCouncils(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMyDefenceAssignments":
+		if e.complexity.Query.GetMyDefenceAssignments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyDefenceAssignments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyDefenceAssignments(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMyDefenceDetail":
+		if e.complexity.Query.GetMyDefenceDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyDefenceDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyDefenceDetail(childComplexity, args["defenceId"].(string)), true
+
+	case "Query.getMyEnrollmentDetail":
+		if e.complexity.Query.GetMyEnrollmentDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyEnrollmentDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyEnrollmentDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getMyEnrollments":
+		if e.complexity.Query.GetMyEnrollments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyEnrollments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyEnrollments(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMyGradeReviews":
+		if e.complexity.Query.GetMyGradeReviews == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyGradeReviews_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyGradeReviews(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMyProfile":
+		if e.complexity.Query.GetMyProfile == nil {
+			break
+		}
+
+		return e.complexity.Query.GetMyProfile(childComplexity), true
+
+	case "Query.getMyReviewAssignmentDetail":
+		if e.complexity.Query.GetMyReviewAssignmentDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyReviewAssignmentDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyReviewAssignmentDetail(childComplexity, args["enrollmentId"].(string)), true
+
+	case "Query.getMyReviewAssignments":
+		if e.complexity.Query.GetMyReviewAssignments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMyReviewAssignments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMyReviewAssignments(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMySemesters":
+		if e.complexity.Query.GetMySemesters == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMySemesters_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMySemesters(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMySupervisedEnrollmentDetail":
+		if e.complexity.Query.GetMySupervisedEnrollmentDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMySupervisedEnrollmentDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMySupervisedEnrollmentDetail(childComplexity, args["enrollmentId"].(string)), true
+
+	case "Query.getMySupervisedEnrollments":
+		if e.complexity.Query.GetMySupervisedEnrollments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMySupervisedEnrollments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMySupervisedEnrollments(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMySupervisedTopicDetail":
+		if e.complexity.Query.GetMySupervisedTopicDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMySupervisedTopicDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMySupervisedTopicDetail(childComplexity, args["topicId"].(string)), true
+
+	case "Query.getMySupervisedTopics":
+		if e.complexity.Query.GetMySupervisedTopics == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMySupervisedTopics_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMySupervisedTopics(childComplexity, args["search"].(*model.SearchRequestInput)), true
+
+	case "Query.getMyTeacherProfile":
+		if e.complexity.Query.GetMyTeacherProfile == nil {
+			break
+		}
+
+		return e.complexity.Query.GetMyTeacherProfile(childComplexity), true
+
+	case "Query.getStudentDetail":
+		if e.complexity.Query.GetStudentDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getStudentDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetStudentDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getTeacherDetail":
+		if e.complexity.Query.GetTeacherDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getTeacherDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetTeacherDetail(childComplexity, args["id"].(string)), true
+
+	case "Query.getTopicDetail":
+		if e.complexity.Query.GetTopicDetail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getTopicDetail_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetTopicDetail(childComplexity, args["id"].(string)), true
+
+	case "ReviewerEnrollment.createdAt":
+		if e.complexity.ReviewerEnrollment.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.CreatedAt(childComplexity), true
+
+	case "ReviewerEnrollment.final":
+		if e.complexity.ReviewerEnrollment.Final == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.Final(childComplexity), true
+
+	case "ReviewerEnrollment.finalCode":
+		if e.complexity.ReviewerEnrollment.FinalCode == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.FinalCode(childComplexity), true
+
+	case "ReviewerEnrollment.gradeReview":
+		if e.complexity.ReviewerEnrollment.GradeReview == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.GradeReview(childComplexity), true
+
+	case "ReviewerEnrollment.gradeReviewCode":
+		if e.complexity.ReviewerEnrollment.GradeReviewCode == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.GradeReviewCode(childComplexity), true
+
+	case "ReviewerEnrollment.id":
+		if e.complexity.ReviewerEnrollment.ID == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.ID(childComplexity), true
+
+	case "ReviewerEnrollment.midterm":
+		if e.complexity.ReviewerEnrollment.Midterm == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.Midterm(childComplexity), true
+
+	case "ReviewerEnrollment.midtermCode":
+		if e.complexity.ReviewerEnrollment.MidtermCode == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.MidtermCode(childComplexity), true
+
+	case "ReviewerEnrollment.student":
+		if e.complexity.ReviewerEnrollment.Student == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.Student(childComplexity), true
+
+	case "ReviewerEnrollment.studentCode":
+		if e.complexity.ReviewerEnrollment.StudentCode == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.StudentCode(childComplexity), true
+
+	case "ReviewerEnrollment.title":
+		if e.complexity.ReviewerEnrollment.Title == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.Title(childComplexity), true
+
+	case "ReviewerEnrollment.topicCouncil":
+		if e.complexity.ReviewerEnrollment.TopicCouncil == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.TopicCouncil(childComplexity), true
+
+	case "ReviewerEnrollment.topicCouncilCode":
+		if e.complexity.ReviewerEnrollment.TopicCouncilCode == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.TopicCouncilCode(childComplexity), true
+
+	case "ReviewerEnrollment.updatedAt":
+		if e.complexity.ReviewerEnrollment.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.ReviewerEnrollment.UpdatedAt(childComplexity), true
+
+	case "ReviewerTopic.files":
+		if e.complexity.ReviewerTopic.Files == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopic.Files(childComplexity), true
+
+	case "ReviewerTopic.id":
+		if e.complexity.ReviewerTopic.ID == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopic.ID(childComplexity), true
+
+	case "ReviewerTopic.major":
+		if e.complexity.ReviewerTopic.Major == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopic.Major(childComplexity), true
+
+	case "ReviewerTopic.majorCode":
+		if e.complexity.ReviewerTopic.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopic.MajorCode(childComplexity), true
+
+	case "ReviewerTopic.status":
+		if e.complexity.ReviewerTopic.Status == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopic.Status(childComplexity), true
+
+	case "ReviewerTopic.title":
+		if e.complexity.ReviewerTopic.Title == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopic.Title(childComplexity), true
+
+	case "ReviewerTopicCouncil.id":
+		if e.complexity.ReviewerTopicCouncil.ID == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.ID(childComplexity), true
+
+	case "ReviewerTopicCouncil.stage":
+		if e.complexity.ReviewerTopicCouncil.Stage == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.Stage(childComplexity), true
+
+	case "ReviewerTopicCouncil.supervisors":
+		if e.complexity.ReviewerTopicCouncil.Supervisors == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.Supervisors(childComplexity), true
+
+	case "ReviewerTopicCouncil.timeEnd":
+		if e.complexity.ReviewerTopicCouncil.TimeEnd == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.TimeEnd(childComplexity), true
+
+	case "ReviewerTopicCouncil.timeStart":
+		if e.complexity.ReviewerTopicCouncil.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.TimeStart(childComplexity), true
+
+	case "ReviewerTopicCouncil.title":
+		if e.complexity.ReviewerTopicCouncil.Title == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.Title(childComplexity), true
+
+	case "ReviewerTopicCouncil.topic":
+		if e.complexity.ReviewerTopicCouncil.Topic == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.Topic(childComplexity), true
+
+	case "ReviewerTopicCouncil.topicCode":
+		if e.complexity.ReviewerTopicCouncil.TopicCode == nil {
+			break
+		}
+
+		return e.complexity.ReviewerTopicCouncil.TopicCode(childComplexity), true
 
 	case "RoleSystem.activate":
 		if e.complexity.RoleSystem.Activate == nil {
@@ -1471,6 +3574,34 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Semester.UpdatedBy(childComplexity), true
 
+	case "SemesterInfo.id":
+		if e.complexity.SemesterInfo.ID == nil {
+			break
+		}
+
+		return e.complexity.SemesterInfo.ID(childComplexity), true
+
+	case "SemesterInfo.title":
+		if e.complexity.SemesterInfo.Title == nil {
+			break
+		}
+
+		return e.complexity.SemesterInfo.Title(childComplexity), true
+
+	case "SemesterListResponse.data":
+		if e.complexity.SemesterListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.SemesterListResponse.Data(childComplexity), true
+
+	case "SemesterListResponse.total":
+		if e.complexity.SemesterListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.SemesterListResponse.Total(childComplexity), true
+
 	case "Student.classCode":
 		if e.complexity.Student.ClassCode == nil {
 			break
@@ -1576,12 +3707,873 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Student.Username(childComplexity), true
 
+	case "StudentCouncil.createdAt":
+		if e.complexity.StudentCouncil.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.CreatedAt(childComplexity), true
+
+	case "StudentCouncil.defences":
+		if e.complexity.StudentCouncil.Defences == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.Defences(childComplexity), true
+
+	case "StudentCouncil.id":
+		if e.complexity.StudentCouncil.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.ID(childComplexity), true
+
+	case "StudentCouncil.major":
+		if e.complexity.StudentCouncil.Major == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.Major(childComplexity), true
+
+	case "StudentCouncil.majorCode":
+		if e.complexity.StudentCouncil.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.MajorCode(childComplexity), true
+
+	case "StudentCouncil.semester":
+		if e.complexity.StudentCouncil.Semester == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.Semester(childComplexity), true
+
+	case "StudentCouncil.semesterCode":
+		if e.complexity.StudentCouncil.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.SemesterCode(childComplexity), true
+
+	case "StudentCouncil.timeStart":
+		if e.complexity.StudentCouncil.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.TimeStart(childComplexity), true
+
+	case "StudentCouncil.title":
+		if e.complexity.StudentCouncil.Title == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.Title(childComplexity), true
+
+	case "StudentCouncil.updatedAt":
+		if e.complexity.StudentCouncil.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentCouncil.UpdatedAt(childComplexity), true
+
+	case "StudentDefenceInfo.createdAt":
+		if e.complexity.StudentDefenceInfo.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentDefenceInfo.CreatedAt(childComplexity), true
+
+	case "StudentDefenceInfo.id":
+		if e.complexity.StudentDefenceInfo.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentDefenceInfo.ID(childComplexity), true
+
+	case "StudentDefenceInfo.position":
+		if e.complexity.StudentDefenceInfo.Position == nil {
+			break
+		}
+
+		return e.complexity.StudentDefenceInfo.Position(childComplexity), true
+
+	case "StudentDefenceInfo.teacher":
+		if e.complexity.StudentDefenceInfo.Teacher == nil {
+			break
+		}
+
+		return e.complexity.StudentDefenceInfo.Teacher(childComplexity), true
+
+	case "StudentDefenceInfo.title":
+		if e.complexity.StudentDefenceInfo.Title == nil {
+			break
+		}
+
+		return e.complexity.StudentDefenceInfo.Title(childComplexity), true
+
+	case "StudentDefenceInfo.updatedAt":
+		if e.complexity.StudentDefenceInfo.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentDefenceInfo.UpdatedAt(childComplexity), true
+
+	case "StudentEnrollment.createdAt":
+		if e.complexity.StudentEnrollment.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.CreatedAt(childComplexity), true
+
+	case "StudentEnrollment.createdBy":
+		if e.complexity.StudentEnrollment.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.CreatedBy(childComplexity), true
+
+	case "StudentEnrollment.final":
+		if e.complexity.StudentEnrollment.Final == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.Final(childComplexity), true
+
+	case "StudentEnrollment.finalCode":
+		if e.complexity.StudentEnrollment.FinalCode == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.FinalCode(childComplexity), true
+
+	case "StudentEnrollment.gradeDefences":
+		if e.complexity.StudentEnrollment.GradeDefences == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.GradeDefences(childComplexity), true
+
+	case "StudentEnrollment.gradeReview":
+		if e.complexity.StudentEnrollment.GradeReview == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.GradeReview(childComplexity), true
+
+	case "StudentEnrollment.gradeReviewCode":
+		if e.complexity.StudentEnrollment.GradeReviewCode == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.GradeReviewCode(childComplexity), true
+
+	case "StudentEnrollment.id":
+		if e.complexity.StudentEnrollment.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.ID(childComplexity), true
+
+	case "StudentEnrollment.midterm":
+		if e.complexity.StudentEnrollment.Midterm == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.Midterm(childComplexity), true
+
+	case "StudentEnrollment.midtermCode":
+		if e.complexity.StudentEnrollment.MidtermCode == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.MidtermCode(childComplexity), true
+
+	case "StudentEnrollment.studentCode":
+		if e.complexity.StudentEnrollment.StudentCode == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.StudentCode(childComplexity), true
+
+	case "StudentEnrollment.title":
+		if e.complexity.StudentEnrollment.Title == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.Title(childComplexity), true
+
+	case "StudentEnrollment.topicCouncil":
+		if e.complexity.StudentEnrollment.TopicCouncil == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.TopicCouncil(childComplexity), true
+
+	case "StudentEnrollment.topicCouncilCode":
+		if e.complexity.StudentEnrollment.TopicCouncilCode == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.TopicCouncilCode(childComplexity), true
+
+	case "StudentEnrollment.updatedAt":
+		if e.complexity.StudentEnrollment.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.UpdatedAt(childComplexity), true
+
+	case "StudentEnrollment.updatedBy":
+		if e.complexity.StudentEnrollment.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.StudentEnrollment.UpdatedBy(childComplexity), true
+
+	case "StudentGradeDefence.createdAt":
+		if e.complexity.StudentGradeDefence.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.CreatedAt(childComplexity), true
+
+	case "StudentGradeDefence.criteria":
+		if e.complexity.StudentGradeDefence.Criteria == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.Criteria(childComplexity), true
+
+	case "StudentGradeDefence.defence":
+		if e.complexity.StudentGradeDefence.Defence == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.Defence(childComplexity), true
+
+	case "StudentGradeDefence.defenceCode":
+		if e.complexity.StudentGradeDefence.DefenceCode == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.DefenceCode(childComplexity), true
+
+	case "StudentGradeDefence.enrollmentCode":
+		if e.complexity.StudentGradeDefence.EnrollmentCode == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.EnrollmentCode(childComplexity), true
+
+	case "StudentGradeDefence.id":
+		if e.complexity.StudentGradeDefence.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.ID(childComplexity), true
+
+	case "StudentGradeDefence.note":
+		if e.complexity.StudentGradeDefence.Note == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.Note(childComplexity), true
+
+	case "StudentGradeDefence.totalScore":
+		if e.complexity.StudentGradeDefence.TotalScore == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.TotalScore(childComplexity), true
+
+	case "StudentGradeDefence.updatedAt":
+		if e.complexity.StudentGradeDefence.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentGradeDefence.UpdatedAt(childComplexity), true
+
+	case "StudentListResponse.data":
+		if e.complexity.StudentListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.StudentListResponse.Data(childComplexity), true
+
+	case "StudentListResponse.total":
+		if e.complexity.StudentListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.StudentListResponse.Total(childComplexity), true
+
+	case "StudentTeacherInfo.email":
+		if e.complexity.StudentTeacherInfo.Email == nil {
+			break
+		}
+
+		return e.complexity.StudentTeacherInfo.Email(childComplexity), true
+
+	case "StudentTeacherInfo.gender":
+		if e.complexity.StudentTeacherInfo.Gender == nil {
+			break
+		}
+
+		return e.complexity.StudentTeacherInfo.Gender(childComplexity), true
+
+	case "StudentTeacherInfo.id":
+		if e.complexity.StudentTeacherInfo.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentTeacherInfo.ID(childComplexity), true
+
+	case "StudentTeacherInfo.majorCode":
+		if e.complexity.StudentTeacherInfo.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.StudentTeacherInfo.MajorCode(childComplexity), true
+
+	case "StudentTeacherInfo.username":
+		if e.complexity.StudentTeacherInfo.Username == nil {
+			break
+		}
+
+		return e.complexity.StudentTeacherInfo.Username(childComplexity), true
+
+	case "StudentTopic.createdAt":
+		if e.complexity.StudentTopic.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.CreatedAt(childComplexity), true
+
+	case "StudentTopic.files":
+		if e.complexity.StudentTopic.Files == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.Files(childComplexity), true
+
+	case "StudentTopic.id":
+		if e.complexity.StudentTopic.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.ID(childComplexity), true
+
+	case "StudentTopic.major":
+		if e.complexity.StudentTopic.Major == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.Major(childComplexity), true
+
+	case "StudentTopic.majorCode":
+		if e.complexity.StudentTopic.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.MajorCode(childComplexity), true
+
+	case "StudentTopic.percentStage1":
+		if e.complexity.StudentTopic.PercentStage1 == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.PercentStage1(childComplexity), true
+
+	case "StudentTopic.percentStage2":
+		if e.complexity.StudentTopic.PercentStage2 == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.PercentStage2(childComplexity), true
+
+	case "StudentTopic.semester":
+		if e.complexity.StudentTopic.Semester == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.Semester(childComplexity), true
+
+	case "StudentTopic.semesterCode":
+		if e.complexity.StudentTopic.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.SemesterCode(childComplexity), true
+
+	case "StudentTopic.status":
+		if e.complexity.StudentTopic.Status == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.Status(childComplexity), true
+
+	case "StudentTopic.title":
+		if e.complexity.StudentTopic.Title == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.Title(childComplexity), true
+
+	case "StudentTopic.updatedAt":
+		if e.complexity.StudentTopic.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentTopic.UpdatedAt(childComplexity), true
+
+	case "StudentTopicCouncil.council":
+		if e.complexity.StudentTopicCouncil.Council == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.Council(childComplexity), true
+
+	case "StudentTopicCouncil.councilCode":
+		if e.complexity.StudentTopicCouncil.CouncilCode == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.CouncilCode(childComplexity), true
+
+	case "StudentTopicCouncil.createdAt":
+		if e.complexity.StudentTopicCouncil.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.CreatedAt(childComplexity), true
+
+	case "StudentTopicCouncil.id":
+		if e.complexity.StudentTopicCouncil.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.ID(childComplexity), true
+
+	case "StudentTopicCouncil.stage":
+		if e.complexity.StudentTopicCouncil.Stage == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.Stage(childComplexity), true
+
+	case "StudentTopicCouncil.supervisors":
+		if e.complexity.StudentTopicCouncil.Supervisors == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.Supervisors(childComplexity), true
+
+	case "StudentTopicCouncil.timeEnd":
+		if e.complexity.StudentTopicCouncil.TimeEnd == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.TimeEnd(childComplexity), true
+
+	case "StudentTopicCouncil.timeStart":
+		if e.complexity.StudentTopicCouncil.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.TimeStart(childComplexity), true
+
+	case "StudentTopicCouncil.title":
+		if e.complexity.StudentTopicCouncil.Title == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.Title(childComplexity), true
+
+	case "StudentTopicCouncil.topic":
+		if e.complexity.StudentTopicCouncil.Topic == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.Topic(childComplexity), true
+
+	case "StudentTopicCouncil.topicCode":
+		if e.complexity.StudentTopicCouncil.TopicCode == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.TopicCode(childComplexity), true
+
+	case "StudentTopicCouncil.updatedAt":
+		if e.complexity.StudentTopicCouncil.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicCouncil.UpdatedAt(childComplexity), true
+
+	case "StudentTopicSupervisor.id":
+		if e.complexity.StudentTopicSupervisor.ID == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicSupervisor.ID(childComplexity), true
+
+	case "StudentTopicSupervisor.teacher":
+		if e.complexity.StudentTopicSupervisor.Teacher == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicSupervisor.Teacher(childComplexity), true
+
+	case "StudentTopicSupervisor.teacherSupervisorCode":
+		if e.complexity.StudentTopicSupervisor.TeacherSupervisorCode == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicSupervisor.TeacherSupervisorCode(childComplexity), true
+
+	case "StudentTopicSupervisor.topicCouncilCode":
+		if e.complexity.StudentTopicSupervisor.TopicCouncilCode == nil {
+			break
+		}
+
+		return e.complexity.StudentTopicSupervisor.TopicCouncilCode(childComplexity), true
+
 	case "Subscription._empty":
 		if e.complexity.Subscription.Empty == nil {
 			break
 		}
 
 		return e.complexity.Subscription.Empty(childComplexity), true
+
+	case "SupervisorEnrollment.createdAt":
+		if e.complexity.SupervisorEnrollment.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.CreatedAt(childComplexity), true
+
+	case "SupervisorEnrollment.createdBy":
+		if e.complexity.SupervisorEnrollment.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.CreatedBy(childComplexity), true
+
+	case "SupervisorEnrollment.final":
+		if e.complexity.SupervisorEnrollment.Final == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.Final(childComplexity), true
+
+	case "SupervisorEnrollment.finalCode":
+		if e.complexity.SupervisorEnrollment.FinalCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.FinalCode(childComplexity), true
+
+	case "SupervisorEnrollment.gradeDefences":
+		if e.complexity.SupervisorEnrollment.GradeDefences == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.GradeDefences(childComplexity), true
+
+	case "SupervisorEnrollment.gradeReview":
+		if e.complexity.SupervisorEnrollment.GradeReview == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.GradeReview(childComplexity), true
+
+	case "SupervisorEnrollment.gradeReviewCode":
+		if e.complexity.SupervisorEnrollment.GradeReviewCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.GradeReviewCode(childComplexity), true
+
+	case "SupervisorEnrollment.id":
+		if e.complexity.SupervisorEnrollment.ID == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.ID(childComplexity), true
+
+	case "SupervisorEnrollment.midterm":
+		if e.complexity.SupervisorEnrollment.Midterm == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.Midterm(childComplexity), true
+
+	case "SupervisorEnrollment.midtermCode":
+		if e.complexity.SupervisorEnrollment.MidtermCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.MidtermCode(childComplexity), true
+
+	case "SupervisorEnrollment.student":
+		if e.complexity.SupervisorEnrollment.Student == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.Student(childComplexity), true
+
+	case "SupervisorEnrollment.studentCode":
+		if e.complexity.SupervisorEnrollment.StudentCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.StudentCode(childComplexity), true
+
+	case "SupervisorEnrollment.title":
+		if e.complexity.SupervisorEnrollment.Title == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.Title(childComplexity), true
+
+	case "SupervisorEnrollment.topicCouncil":
+		if e.complexity.SupervisorEnrollment.TopicCouncil == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.TopicCouncil(childComplexity), true
+
+	case "SupervisorEnrollment.topicCouncilCode":
+		if e.complexity.SupervisorEnrollment.TopicCouncilCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.TopicCouncilCode(childComplexity), true
+
+	case "SupervisorEnrollment.updatedAt":
+		if e.complexity.SupervisorEnrollment.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.UpdatedAt(childComplexity), true
+
+	case "SupervisorEnrollment.updatedBy":
+		if e.complexity.SupervisorEnrollment.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.SupervisorEnrollment.UpdatedBy(childComplexity), true
+
+	case "SupervisorTopic.createdAt":
+		if e.complexity.SupervisorTopic.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.CreatedAt(childComplexity), true
+
+	case "SupervisorTopic.createdBy":
+		if e.complexity.SupervisorTopic.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.CreatedBy(childComplexity), true
+
+	case "SupervisorTopic.enrollments":
+		if e.complexity.SupervisorTopic.Enrollments == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.Enrollments(childComplexity), true
+
+	case "SupervisorTopic.files":
+		if e.complexity.SupervisorTopic.Files == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.Files(childComplexity), true
+
+	case "SupervisorTopic.id":
+		if e.complexity.SupervisorTopic.ID == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.ID(childComplexity), true
+
+	case "SupervisorTopic.major":
+		if e.complexity.SupervisorTopic.Major == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.Major(childComplexity), true
+
+	case "SupervisorTopic.majorCode":
+		if e.complexity.SupervisorTopic.MajorCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.MajorCode(childComplexity), true
+
+	case "SupervisorTopic.percentStage1":
+		if e.complexity.SupervisorTopic.PercentStage1 == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.PercentStage1(childComplexity), true
+
+	case "SupervisorTopic.percentStage2":
+		if e.complexity.SupervisorTopic.PercentStage2 == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.PercentStage2(childComplexity), true
+
+	case "SupervisorTopic.semester":
+		if e.complexity.SupervisorTopic.Semester == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.Semester(childComplexity), true
+
+	case "SupervisorTopic.semesterCode":
+		if e.complexity.SupervisorTopic.SemesterCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.SemesterCode(childComplexity), true
+
+	case "SupervisorTopic.status":
+		if e.complexity.SupervisorTopic.Status == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.Status(childComplexity), true
+
+	case "SupervisorTopic.title":
+		if e.complexity.SupervisorTopic.Title == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.Title(childComplexity), true
+
+	case "SupervisorTopic.topicCouncils":
+		if e.complexity.SupervisorTopic.TopicCouncils == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.TopicCouncils(childComplexity), true
+
+	case "SupervisorTopic.topicSupervisors":
+		if e.complexity.SupervisorTopic.TopicSupervisors == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.TopicSupervisors(childComplexity), true
+
+	case "SupervisorTopic.updatedAt":
+		if e.complexity.SupervisorTopic.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.UpdatedAt(childComplexity), true
+
+	case "SupervisorTopic.updatedBy":
+		if e.complexity.SupervisorTopic.UpdatedBy == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopic.UpdatedBy(childComplexity), true
+
+	case "SupervisorTopicCouncil.council":
+		if e.complexity.SupervisorTopicCouncil.Council == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.Council(childComplexity), true
+
+	case "SupervisorTopicCouncil.councilCode":
+		if e.complexity.SupervisorTopicCouncil.CouncilCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.CouncilCode(childComplexity), true
+
+	case "SupervisorTopicCouncil.createdAt":
+		if e.complexity.SupervisorTopicCouncil.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.CreatedAt(childComplexity), true
+
+	case "SupervisorTopicCouncil.enrollments":
+		if e.complexity.SupervisorTopicCouncil.Enrollments == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.Enrollments(childComplexity), true
+
+	case "SupervisorTopicCouncil.id":
+		if e.complexity.SupervisorTopicCouncil.ID == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.ID(childComplexity), true
+
+	case "SupervisorTopicCouncil.stage":
+		if e.complexity.SupervisorTopicCouncil.Stage == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.Stage(childComplexity), true
+
+	case "SupervisorTopicCouncil.supervisors":
+		if e.complexity.SupervisorTopicCouncil.Supervisors == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.Supervisors(childComplexity), true
+
+	case "SupervisorTopicCouncil.timeEnd":
+		if e.complexity.SupervisorTopicCouncil.TimeEnd == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.TimeEnd(childComplexity), true
+
+	case "SupervisorTopicCouncil.timeStart":
+		if e.complexity.SupervisorTopicCouncil.TimeStart == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.TimeStart(childComplexity), true
+
+	case "SupervisorTopicCouncil.title":
+		if e.complexity.SupervisorTopicCouncil.Title == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.Title(childComplexity), true
+
+	case "SupervisorTopicCouncil.topic":
+		if e.complexity.SupervisorTopicCouncil.Topic == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.Topic(childComplexity), true
+
+	case "SupervisorTopicCouncil.topicCode":
+		if e.complexity.SupervisorTopicCouncil.TopicCode == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.TopicCode(childComplexity), true
+
+	case "SupervisorTopicCouncil.updatedAt":
+		if e.complexity.SupervisorTopicCouncil.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.SupervisorTopicCouncil.UpdatedAt(childComplexity), true
 
 	case "Teacher.createdAt":
 		if e.complexity.Teacher.CreatedAt == nil {
@@ -1680,6 +4672,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Teacher.Username(childComplexity), true
+
+	case "TeacherListResponse.data":
+		if e.complexity.TeacherListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.TeacherListResponse.Data(childComplexity), true
+
+	case "TeacherListResponse.total":
+		if e.complexity.TeacherListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.TeacherListResponse.Total(childComplexity), true
 
 	case "Topic.createdAt":
 		if e.complexity.Topic.CreatedAt == nil {
@@ -1975,6 +4981,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.TopicCouncilSupervisor.UpdatedBy(childComplexity), true
 
+	case "TopicListResponse.data":
+		if e.complexity.TopicListResponse.Data == nil {
+			break
+		}
+
+		return e.complexity.TopicListResponse.Data(childComplexity), true
+
+	case "TopicListResponse.total":
+		if e.complexity.TopicListResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.TopicListResponse.Total(childComplexity), true
+
 	case "TopicSupervisor.createdAt":
 		if e.complexity.TopicSupervisor.CreatedAt == nil {
 			break
@@ -2046,11 +5066,36 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCreateCouncilInput,
+		ec.unmarshalInputCreateDefenceInput,
+		ec.unmarshalInputCreateFacultyInput,
+		ec.unmarshalInputCreateGradeDefenceCriterionInput,
+		ec.unmarshalInputCreateGradeDefenceInput,
+		ec.unmarshalInputCreateGradeReviewInput,
+		ec.unmarshalInputCreateMajorInput,
+		ec.unmarshalInputCreateSemesterInput,
+		ec.unmarshalInputCreateStudentInput,
+		ec.unmarshalInputCreateTeacherInput,
 		ec.unmarshalInputFilterConditionInput,
 		ec.unmarshalInputFilterCriteriaInput,
 		ec.unmarshalInputFilterGroupInput,
+		ec.unmarshalInputGradeFinalInput,
+		ec.unmarshalInputGradeMidtermInput,
 		ec.unmarshalInputPaginationInput,
 		ec.unmarshalInputSearchRequestInput,
+		ec.unmarshalInputUpdateCouncilInput,
+		ec.unmarshalInputUpdateFacultyInput,
+		ec.unmarshalInputUpdateGradeDefenceCriterionInput,
+		ec.unmarshalInputUpdateGradeDefenceInput,
+		ec.unmarshalInputUpdateGradeReviewInput,
+		ec.unmarshalInputUpdateMajorInput,
+		ec.unmarshalInputUpdateSemesterInput,
+		ec.unmarshalInputUpdateStudentInput,
+		ec.unmarshalInputUpdateStudentProfileInput,
+		ec.unmarshalInputUpdateTeacherInput,
+		ec.unmarshalInputUpdateTeacherProfileInput,
+		ec.unmarshalInputUpdateTopicInput,
+		ec.unmarshalInputUploadFileInput,
 	)
 	first := true
 
@@ -2165,7 +5210,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/acadamic.graphqls", Input: `type Faculty {
+	{Name: "../schema/academic.graphqls", Input: `type Faculty {
     id: ID!
     title: String!
     createdAt: Time
@@ -2202,6 +5247,245 @@ type Semester {
     students: [Student!]
     teachers: [Teacher!]
     topics: [Topic!]
+}
+`, BuiltIn: false},
+	{Name: "../schema/academic_affairs.graphqls", Input: `# Schema dành riêng cho GIÁO VỤ (Academic Affairs Staff)
+# Có quyền đọc và chỉnh sửa hầu hết các thông tin trong hệ thống
+
+extend type Query {
+    """Lấy danh sách giáo viên"""
+    getListTeachers(search: SearchRequestInput!): TeacherListResponse!
+
+    """Lấy danh sách sinh viên"""
+    getListStudents(search: SearchRequestInput!): StudentListResponse!
+
+    """Lấy chi tiết sinh viên"""
+    getStudentDetail(id: ID!): Student
+
+    """Lấy chi tiết giáo viên"""
+    getTeacherDetail(id: ID!): Teacher
+
+    """Lấy danh sách semester"""
+    getAllSemesters(search: SearchRequestInput!): SemesterListResponse!
+
+    """Lấy danh sách major"""
+    getAllMajors(search: SearchRequestInput!): MajorListResponse!
+
+    """Lấy danh sách faculty"""
+    getAllFaculties(search: SearchRequestInput!): FacultyListResponse!
+
+    """Lấy danh sách topic với đầy đủ thông tin"""
+    getAllTopics(search: SearchRequestInput!): TopicListResponse!
+
+    """Lấy chi tiết topic"""
+    getTopicDetail(id: ID!): Topic
+
+    """Lấy danh sách enrollment"""
+    getAllEnrollments(search: SearchRequestInput!): EnrollmentListResponse!
+
+    """Lấy chi tiết enrollment với đầy đủ thông tin"""
+    getEnrollmentDetail(id: ID!): Enrollment
+
+    """Lấy danh sách council"""
+    getAllCouncils(search: SearchRequestInput!): CouncilListResponse!
+
+    """Lấy chi tiết council"""
+    getCouncilDetail(id: ID!): Council
+
+    """Lấy danh sách defence của một council"""
+    getDefencesByCouncil(councilId: ID!): [Defence!]!
+
+    """Lấy danh sách grade defence"""
+    getAllGradeDefences(search: SearchRequestInput!): [GradeDefence!]!
+}
+
+extend type Mutation {
+    """Tạo mới giáo viên"""
+    createTeacher(input: CreateTeacherInput!): Teacher!
+
+    """Cập nhật thông tin giáo viên"""
+    updateTeacher(id: ID!, input: UpdateTeacherInput!): Teacher!
+
+    """Xóa giáo viên"""
+    deleteTeacher(id: ID!): Boolean!
+
+    """Tạo mới sinh viên"""
+    createStudent(input: CreateStudentInput!): Student!
+
+    """Cập nhật thông tin sinh viên"""
+    updateStudent(id: ID!, input: UpdateStudentInput!): Student!
+
+    """Xóa sinh viên"""
+    deleteStudent(id: ID!): Boolean!
+
+    """Tạo semester mới"""
+    createSemester(input: CreateSemesterInput!): Semester!
+
+    """Cập nhật semester"""
+    updateSemester(id: ID!, input: UpdateSemesterInput!): Semester!
+
+    """Xóa semester"""
+    deleteSemester(id: ID!): Boolean!
+
+    """Tạo major mới"""
+    createMajor(input: CreateMajorInput!): Major!
+
+    """Cập nhật major"""
+    updateMajor(id: ID!, input: UpdateMajorInput!): Major!
+
+    """Xóa major"""
+    deleteMajor(id: ID!): Boolean!
+
+    """Tạo faculty mới"""
+    createFaculty(input: CreateFacultyInput!): Faculty!
+
+    """Cập nhật faculty"""
+    updateFaculty(id: ID!, input: UpdateFacultyInput!): Faculty!
+
+    """Xóa faculty"""
+    deleteFaculty(id: ID!): Boolean!
+
+    """Phê duyệt council (cho phép set thời gian)"""
+    approveCouncil(id: ID!, timeStart: Time!): Council!
+
+    """Cập nhật council"""
+    updateCouncil(id: ID!, input: UpdateCouncilInput!): Council!
+
+    """Xóa council"""
+    deleteCouncil(id: ID!): Boolean!
+
+    """Phê duyệt topic lần 2 (approved_2)"""
+    approveTopic(id: ID!): Topic!
+
+    """Từ chối topic"""
+    rejectTopic(id: ID!, reason: String): Topic!
+
+    """Cập nhật topic"""
+    updateTopic(id: ID!, input: UpdateTopicInput!): Topic!
+
+    """Xóa topic"""
+    deleteTopic(id: ID!): Boolean!
+}
+
+# Response types with pagination
+type TeacherListResponse {
+    total: Int!
+    data: [Teacher!]!
+}
+
+type StudentListResponse {
+    total: Int!
+    data: [Student!]!
+}
+
+type SemesterListResponse {
+    total: Int!
+    data: [Semester!]!
+}
+
+type MajorListResponse {
+    total: Int!
+    data: [Major!]!
+}
+
+type FacultyListResponse {
+    total: Int!
+    data: [Faculty!]!
+}
+
+type TopicListResponse {
+    total: Int!
+    data: [Topic!]!
+}
+
+type EnrollmentListResponse {
+    total: Int!
+    data: [Enrollment!]!
+}
+
+type CouncilListResponse {
+    total: Int!
+    data: [Council!]!
+}
+
+# Input types for mutations
+input CreateTeacherInput {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender!
+    majorCode: String!
+    semesterCode: String!
+}
+
+input UpdateTeacherInput {
+    email: String
+    username: String
+    gender: Gender
+    majorCode: String
+    semesterCode: String
+}
+
+input CreateStudentInput {
+    id: ID!
+    email: String!
+    phone: String!
+    username: String!
+    gender: Gender!
+    majorCode: String!
+    classCode: String
+    semesterCode: String!
+}
+
+input UpdateStudentInput {
+    email: String
+    phone: String
+    username: String
+    gender: Gender
+    majorCode: String
+    classCode: String
+    semesterCode: String
+}
+
+input CreateSemesterInput {
+    id: ID!
+    title: String!
+}
+
+input UpdateSemesterInput {
+    title: String
+}
+
+input CreateMajorInput {
+    id: ID!
+    title: String!
+    facultyCode: String!
+}
+
+input UpdateMajorInput {
+    title: String
+    facultyCode: String
+}
+
+input CreateFacultyInput {
+    id: ID!
+    title: String!
+}
+
+input UpdateFacultyInput {
+    title: String
+}
+
+input UpdateCouncilInput {
+    title: String
+    timeStart: Time
+}
+
+input UpdateTopicInput {
+    title: String
+    status: TopicStatus
+    percentStage1: Int
+    percentStage2: Int
 }
 `, BuiltIn: false},
 	{Name: "../schema/council.graphqls", Input: `type Council {
@@ -2268,6 +5552,88 @@ type GradeDefenceCriterion {
     gradeDefence: GradeDefence
 }
 `, BuiltIn: false},
+	{Name: "../schema/department_lecturer.graphqls", Input: `# Schema dành riêng cho GIÁO VIÊN BỘ MÔN (Department Lecturer)
+# Được xem tất cả topic, enrollment trong bộ môn và tạo council, phê duyệt topic lần 1
+
+extend type Query {
+    """Lấy danh sách giáo viên trong bộ môn"""
+    getDepartmentTeachers(search: SearchRequestInput!): [Teacher!]!
+
+    """Lấy danh sách sinh viên trong bộ môn"""
+    getDepartmentStudents(search: SearchRequestInput!): [Student!]!
+
+    """Lấy danh sách semester"""
+    getDepartmentSemesters(search: SearchRequestInput!): [Semester!]!
+
+    """Lấy danh sách major trong bộ môn"""
+    getDepartmentMajors(search: SearchRequestInput!): [Major!]!
+
+    """Lấy danh sách faculty"""
+    getDepartmentFaculties(search: SearchRequestInput!): [Faculty!]!
+
+    """Lấy danh sách tất cả topic trong bộ môn"""
+    getDepartmentTopics(search: SearchRequestInput!): [Topic!]!
+
+    """Lấy chi tiết topic"""
+    getDepartmentTopicDetail(id: ID!): Topic
+
+    """Lấy danh sách enrollment trong bộ môn"""
+    getDepartmentEnrollments(search: SearchRequestInput!): [Enrollment!]!
+
+    """Lấy chi tiết enrollment"""
+    getDepartmentEnrollmentDetail(id: ID!): Enrollment
+
+    """Lấy danh sách council trong bộ môn"""
+    getDepartmentCouncils(search: SearchRequestInput!): [Council!]!
+
+    """Lấy chi tiết council"""
+    getDepartmentCouncilDetail(id: ID!): Council
+
+    """Lấy danh sách defence của council"""
+    getDepartmentDefences(councilId: ID!): [Defence!]!
+
+    """Lấy danh sách grade defence"""
+    getDepartmentGradeDefences(search: SearchRequestInput!): [GradeDefence!]!
+}
+
+extend type Mutation {
+    """Tạo council mới (giáo viên bộ môn có quyền tạo)"""
+    createCouncil(input: CreateCouncilInput!): Council!
+
+    """Cập nhật council"""
+    updateDepartmentCouncil(id: ID!, input: UpdateCouncilInput!): Council!
+
+    """Thêm thành viên vào council"""
+    addDefenceToCouncil(input: CreateDefenceInput!): Defence!
+
+    """Xóa thành viên khỏi council"""
+    removeDefenceFromCouncil(id: ID!): Boolean!
+
+    """Phê duyệt topic lần 1 (approved_1)"""
+    approveTopicStage1(id: ID!): Topic!
+
+    """Từ chối topic"""
+    rejectTopicStage1(id: ID!, reason: String): Topic!
+
+    """Gán topic vào council"""
+    assignTopicToCouncil(topicCouncilId: ID!, councilId: ID!): TopicCouncil!
+}
+
+# Input để tạo council
+input CreateCouncilInput {
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+}
+
+# Input để tạo defence (thành viên hội đồng)
+input CreateDefenceInput {
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+}
+`, BuiltIn: false},
 	{Name: "../schema/file.graphqls", Input: `type File {
     id: ID!
     title: String!
@@ -2323,12 +5689,17 @@ enum FileTable {
     ORDER
 }
 
-"""Vai trò trong hệ thống"""
+"""
+Vai trò STATIC trong hệ thống
+Role động (Supervisor, Reviewer, Council Member) được xác định qua:
+- Supervisor: bảng Topic_council_supervisor
+- Reviewer: bảng Grade_review
+- Council Member: bảng Defence
+"""
 enum RoleSystemRole {
     ACADEMIC_AFFAIRS_STAFF
-    SUPERVISOR_LECTURER
     DEPARTMENT_LECTURER
-    REVIEWER_LECTURER
+    TEACHER
 }
 
 """Trạng thái giữa kỳ"""
@@ -2397,6 +5768,31 @@ enum LogicalCondition {
     OR
 }
 
+# ============================================
+# SHARED RESTRICTED TYPES - Prevent Circular Queries
+# ============================================
+
+"""
+Major info - Restricted type để tránh circular query
+Không có relationships (topics, faculty) để tránh vòng lặp
+Dùng chung cho tất cả custom types
+"""
+type MajorInfo {
+    id: ID!
+    title: String!
+    facultyCode: String!
+}
+
+"""
+Semester info - Restricted type để tránh circular query
+Không có relationships (students, teachers, topics) để tránh vòng lặp
+Dùng chung cho tất cả custom types
+"""
+type SemesterInfo {
+    id: ID!
+    title: String!
+}
+
 input FilterConditionInput {
     field: String!
     operator: FilterOperator!
@@ -2428,23 +5824,605 @@ input SearchRequestInput {
 
 
 type Query {
-    getInfoStudent: Student!
-    getInfoTeacher: Teacher
-    getListTopic(search: SearchRequestInput!): [Topic!]
-    getListEnrollment(search: SearchRequestInput!): [Enrollment!]
-    getListSemester(search: SearchRequestInput!): [Semester!]
-    getListCouncil(search: SearchRequestInput!): [Council!]
-    getListDefence(search: SearchRequestInput!): [Defence!]
+    _empty: String
 }
 
 type Mutation {
-    """Base mutation - sẽ được extend trong student.graphqls và teacher.graphqls"""
     _empty: String
 }
 
 type Subscription {
-    """Base subscription - sẽ được extend trong student.graphqls và teacher.graphqls"""
     _empty: String
+}
+`, BuiltIn: false},
+	{Name: "../schema/student.graphqls", Input: `# Schema dành riêng cho SINH VIÊN
+# Security at SCHEMA LEVEL - student không thể query fields không được phép
+# Custom types chỉ expose fields mà student được xem
+
+extend type Query {
+    """Lấy thông tin cá nhân của sinh viên đang đăng nhập"""
+    getMyProfile: Student!
+
+    """Lấy danh sách enrollment của sinh viên (chỉ của mình)"""
+    getMyEnrollments(search: SearchRequestInput): [StudentEnrollment!]!
+
+    """Lấy chi tiết enrollment của sinh viên"""
+    getMyEnrollmentDetail(id: ID!): StudentEnrollment
+
+    """Lấy danh sách học kỳ của sinh viên"""
+    getMySemesters(search: SearchRequestInput): [Semester!]!
+}
+
+extend type Mutation {
+    """Cập nhật thông tin cá nhân sinh viên"""
+    updateMyProfile(input: UpdateStudentProfileInput!): Student!
+
+    """Upload file midterm (chỉ sinh viên mới upload được)"""
+    uploadMidtermFile(input: UploadFileInput!): File!
+
+    """Upload file final (chỉ sinh viên mới upload được)"""
+    uploadFinalFile(input: UploadFileInput!): File!
+}
+
+# ============================================
+# CUSTOM TYPES CHO STUDENT - Restricted Fields
+# Student không thể query những fields không có trong types này
+# ============================================
+
+"""
+Enrollment view cho Student
+KHÔNG có field 'student' vì student tự query của mình
+"""
+type StudentEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    finalCode: String
+    gradeReviewCode: String
+    midtermCode: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - restricted types
+    topicCouncil: StudentTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+    gradeDefences: [StudentGradeDefence!]
+}
+
+"""
+TopicCouncil view cho Student
+CÓ field 'council' để xem thông tin hội đồng (tên, thời gian, thành viên)
+KHÔNG có field 'enrollments' vì không cần xem enrollment người khác
+"""
+type StudentTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - restricted
+    topic: StudentTopic
+    supervisors: [StudentTopicSupervisor!]
+    council: StudentCouncil  # ✅ Student xem được hội đồng
+}
+
+"""
+Topic view cho Student
+Chỉ xem thông tin cơ bản
+KHÔNG có field 'enrollments' vì không cần xem enrollment người khác
+"""
+type StudentTopic {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    status: TopicStatus!
+    percentStage1: Int
+    percentStage2: Int
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - restricted để tránh circular query
+    major: MajorInfo  # Chỉ có thông tin cơ bản, không có topics
+    semester: SemesterInfo  # Chỉ có thông tin cơ bản
+    files: [File!]
+}
+
+
+"""
+TopicSupervisor view cho Student
+Student chỉ xem được thông tin giáo viên hướng dẫn cơ bản
+"""
+type StudentTopicSupervisor {
+    id: ID!
+    teacherSupervisorCode: String!
+    topicCouncilCode: String!
+
+    # Chỉ xem thông tin giáo viên cơ bản
+    teacher: StudentTeacherInfo
+}
+
+"""
+Teacher info view cho Student
+Student chỉ xem được thông tin cơ bản của giáo viên
+KHÔNG có field 'roles' vì sensitive
+KHÔNG có field 'major' relationship để tránh circular query
+"""
+type StudentTeacherInfo {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    # KHÔNG có major relationship - chỉ có majorCode để tránh circular query
+}
+
+"""
+GradeDefence view cho Student
+Student xem được điểm defence của mình
+"""
+type StudentGradeDefence {
+    id: ID!
+    defenceCode: String!
+    enrollmentCode: String!
+    note: String
+    totalScore: Int
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    criteria: [GradeDefenceCriterion!]
+    defence: StudentDefenceInfo
+}
+
+"""
+Council view cho Student
+Student xem được thông tin hội đồng: tên, thời gian, thành viên
+KHÔNG có field 'topicCouncils' để tránh xem topic của người khác
+"""
+type StudentCouncil {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    timeStart: Time
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - restricted để tránh circular query
+    major: MajorInfo  # Không có topics
+    semester: SemesterInfo  # Không có topics/students
+    defences: [StudentDefenceInfo!]  # Danh sách thành viên hội đồng
+}
+
+"""
+Defence info cho Student
+Student xem được thông tin thành viên hội đồng
+"""
+type StudentDefenceInfo {
+    id: ID!
+    title: String!
+    position: DefencePosition!
+    createdAt: Time
+    updatedAt: Time
+
+    # Teacher info cơ bản
+    teacher: StudentTeacherInfo
+}
+
+# ============================================
+# INPUT TYPES
+# ============================================
+
+input UpdateStudentProfileInput {
+    email: String
+    phone: String
+    username: String
+}
+
+input UploadFileInput {
+    title: String!
+    file: String!
+    tableId: ID!
+    option: String
+}
+`, BuiltIn: false},
+	{Name: "../schema/teacher_general.graphqls", Input: `# Schema dành cho GIÁO VIÊN (Teacher - General)
+# Security at SCHEMA LEVEL - teacher types cho phép xem nhiều hơn student
+# Custom types cho từng role động: Supervisor, Council Member, Reviewer
+
+extend type Query {
+    """Lấy thông tin cá nhân giáo viên"""
+    getMyTeacherProfile: Teacher!
+
+    # === SUPERVISOR QUERIES (role động qua Topic_council_supervisor) ===
+
+    """Lấy danh sách topic mà giáo viên đang hướng dẫn"""
+    getMySupervisedTopics(search: SearchRequestInput): [SupervisorTopic!]!
+
+    """Lấy chi tiết topic mà giáo viên hướng dẫn"""
+    getMySupervisedTopicDetail(topicId: ID!): SupervisorTopic
+
+    """Lấy danh sách enrollment của các topic mình hướng dẫn"""
+    getMySupervisedEnrollments(search: SearchRequestInput): [SupervisorEnrollment!]!
+
+    """Lấy chi tiết enrollment của sinh viên mình hướng dẫn"""
+    getMySupervisedEnrollmentDetail(enrollmentId: ID!): SupervisorEnrollment
+
+    # === COUNCIL MEMBER QUERIES (role động qua Defence) ===
+
+    """Lấy danh sách defence mà giáo viên tham gia"""
+    getMyDefenceAssignments(search: SearchRequestInput): [CouncilDefence!]!
+
+    """Lấy chi tiết defence"""
+    getMyDefenceDetail(defenceId: ID!): CouncilDefence
+
+    """Lấy danh sách council mà giáo viên tham gia"""
+    getMyCouncils(search: SearchRequestInput): [CouncilMemberCouncil!]!
+
+    """Lấy danh sách topic trong council mà giáo viên tham gia"""
+    getMyCouncilTopics(councilId: ID!): [CouncilTopicCouncil!]!
+
+    """Lấy danh sách enrollment cần chấm trong council"""
+    getMyCouncilEnrollments(councilId: ID!): [CouncilEnrollment!]!
+
+    # === REVIEWER QUERIES (role động qua Grade_review) ===
+
+    """Lấy danh sách enrollment được phân công phản biện"""
+    getMyReviewAssignments(search: SearchRequestInput): [ReviewerEnrollment!]!
+
+    """Lấy chi tiết enrollment cần phản biện"""
+    getMyReviewAssignmentDetail(enrollmentId: ID!): ReviewerEnrollment
+
+    """Lấy danh sách grade review của mình"""
+    getMyGradeReviews(search: SearchRequestInput): [GradeReview!]!
+}
+
+# ============================================
+# SUPERVISOR TYPES - Giáo viên hướng dẫn
+# ============================================
+
+"""
+Topic view cho Supervisor
+Supervisor được xem đầy đủ thông tin topic mình hướng dẫn
+"""
+type SupervisorTopic {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    status: TopicStatus!
+    percentStage1: Int
+    percentStage2: Int
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - dùng MajorInfo/SemesterInfo để tránh circular query
+    major: MajorInfo
+    semester: SemesterInfo
+    enrollments: [SupervisorEnrollment!]
+    files: [File!]
+    topicSupervisors: [TopicSupervisor!]
+    topicCouncils: [SupervisorTopicCouncil!]
+}
+
+"""
+Enrollment view cho Supervisor
+Supervisor được xem đầy đủ thông tin sinh viên và chấm điểm
+"""
+type SupervisorEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    finalCode: String
+    gradeReviewCode: String
+    midtermCode: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - supervisor được xem đầy đủ
+    student: Student
+    topicCouncil: SupervisorTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+    gradeDefences: [GradeDefence!]
+}
+
+"""
+TopicCouncil view cho Supervisor
+"""
+type SupervisorTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    topic: SupervisorTopic
+    council: Council
+    enrollments: [SupervisorEnrollment!]
+    supervisors: [TopicCouncilSupervisor!]
+}
+
+# ============================================
+# COUNCIL MEMBER TYPES - Thành viên hội đồng
+# ============================================
+
+"""
+Council view cho Council Member
+"""
+type CouncilMemberCouncil {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    timeStart: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - dùng MajorInfo/SemesterInfo để tránh circular query
+    major: MajorInfo
+    semester: SemesterInfo
+    defences: [CouncilDefence!]
+    topicCouncils: [CouncilTopicCouncil!]
+}
+
+"""
+Defence view cho Council Member
+"""
+type CouncilDefence {
+    id: ID!
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    council: CouncilMemberCouncil
+    teacher: Teacher
+    gradeDefences: [GradeDefence!]
+}
+
+"""
+TopicCouncil view cho Council Member
+"""
+type CouncilTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    topic: Topic
+    council: CouncilMemberCouncil
+    enrollments: [CouncilEnrollment!]
+    supervisors: [TopicCouncilSupervisor!]
+}
+
+"""
+Enrollment view cho Council Member
+Council member được xem để chấm điểm
+"""
+type CouncilEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    finalCode: String
+    gradeReviewCode: String
+    midtermCode: String
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    student: Student
+    topicCouncil: CouncilTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+    gradeDefences: [GradeDefence!]
+}
+
+# ============================================
+# REVIEWER TYPES - Giáo viên phản biện
+# ============================================
+
+"""
+Enrollment view cho Reviewer
+Reviewer được xem để chấm phản biện
+"""
+type ReviewerEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    gradeReviewCode: String
+    midtermCode: String
+    finalCode: String
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    student: Student
+    topicCouncil: ReviewerTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+}
+
+"""
+TopicCouncil view cho Reviewer
+"""
+type ReviewerTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    timeStart: Time!
+    timeEnd: Time!
+
+    # Relationships
+    topic: ReviewerTopic
+    supervisors: [TopicCouncilSupervisor!]
+}
+
+"""
+Topic view cho Reviewer
+Reviewer chỉ xem thông tin cơ bản của topic
+"""
+type ReviewerTopic {
+    id: ID!
+    title: String!
+    status: TopicStatus!
+    majorCode: String!
+
+    # Relationships - dùng MajorInfo để tránh circular query
+    major: MajorInfo
+    files: [File!]
+}
+
+extend type Mutation {
+    """Cập nhật thông tin cá nhân giáo viên"""
+    updateMyTeacherProfile(input: UpdateTeacherProfileInput!): Teacher!
+
+    # === SUPERVISOR MUTATIONS ===
+
+    """Cập nhật điểm midterm cho sinh viên (chỉ cho topic mình hướng dẫn)"""
+    gradeMidterm(enrollmentId: ID!, input: GradeMidtermInput!): Midterm!
+
+    """Phản hồi midterm cho sinh viên"""
+    feedbackMidterm(midtermId: ID!, feedback: String!): Midterm!
+
+    """Cập nhật điểm final cho sinh viên (chỉ cho topic mình hướng dẫn)"""
+    gradeFinal(enrollmentId: ID!, input: GradeFinalInput!): Final!
+
+    """Phản hồi final cho sinh viên"""
+    feedbackFinal(finalId: ID!, notes: String!): Final!
+
+    """Phê duyệt file midterm của sinh viên"""
+    approveMidtermFile(fileId: ID!): File!
+
+    """Từ chối file midterm của sinh viên"""
+    rejectMidtermFile(fileId: ID!, reason: String): File!
+
+    """Phê duyệt file final của sinh viên"""
+    approveFinalFile(fileId: ID!): File!
+
+    """Từ chối file final của sinh viên"""
+    rejectFinalFile(fileId: ID!, reason: String): File!
+
+    # === COUNCIL MEMBER MUTATIONS ===
+
+    """Tạo grade defence cho enrollment trong council"""
+    createGradeDefence(input: CreateGradeDefenceInput!): GradeDefence!
+
+    """Cập nhật grade defence"""
+    updateGradeDefence(id: ID!, input: UpdateGradeDefenceInput!): GradeDefence!
+
+    """Thêm criterion vào grade defence"""
+    addGradeDefenceCriterion(input: CreateGradeDefenceCriterionInput!): GradeDefenceCriterion!
+
+    """Cập nhật criterion"""
+    updateGradeDefenceCriterion(id: ID!, input: UpdateGradeDefenceCriterionInput!): GradeDefenceCriterion!
+
+    """Xóa criterion"""
+    deleteGradeDefenceCriterion(id: ID!): Boolean!
+
+    # === REVIEWER MUTATIONS ===
+
+    """Tạo grade review cho enrollment"""
+    createGradeReview(enrollmentId: ID!, input: CreateGradeReviewInput!): GradeReview!
+
+    """Cập nhật grade review"""
+    updateGradeReview(id: ID!, input: UpdateGradeReviewInput!): GradeReview!
+
+    """Hoàn thành grade review"""
+    completeGradeReview(id: ID!): GradeReview!
+}
+
+# Input types
+input UpdateTeacherProfileInput {
+    email: String
+    username: String
+}
+
+input GradeMidtermInput {
+    grade: Int!
+    status: MidtermStatus!
+    feedback: String
+}
+
+input GradeFinalInput {
+    supervisorGrade: Int!
+    status: FinalStatus!
+    notes: String
+}
+
+input CreateGradeDefenceInput {
+    defenceCode: String!
+    enrollmentCode: String!
+    note: String
+    totalScore: Int
+}
+
+input UpdateGradeDefenceInput {
+    note: String
+    totalScore: Int
+}
+
+input CreateGradeDefenceCriterionInput {
+    gradeDefenceCode: String!
+    name: String!
+    score: String!
+    maxScore: String!
+}
+
+input UpdateGradeDefenceCriterionInput {
+    name: String
+    score: String
+    maxScore: String
+}
+
+input CreateGradeReviewInput {
+    title: String!
+    reviewGrade: Int!
+    notes: String
+}
+
+input UpdateGradeReviewInput {
+    reviewGrade: Int
+    status: FinalStatus
+    notes: String
 }
 `, BuiltIn: false},
 	{Name: "../schema/thesis.graphqls", Input: `type Midterm {

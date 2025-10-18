@@ -1,0 +1,387 @@
+# Schema dành cho GIÁO VIÊN (Teacher - General)
+# Security at SCHEMA LEVEL - teacher types cho phép xem nhiều hơn student
+# Custom types cho từng role động: Supervisor, Council Member, Reviewer
+
+extend type Query {
+    """Lấy thông tin cá nhân giáo viên"""
+    getMyTeacherProfile: Teacher!
+
+    # === SUPERVISOR QUERIES (role động qua Topic_council_supervisor) ===
+
+    """Lấy danh sách topic mà giáo viên đang hướng dẫn"""
+    getMySupervisedTopics(search: SearchRequestInput): [SupervisorTopic!]!
+
+    """Lấy chi tiết topic mà giáo viên hướng dẫn"""
+    getMySupervisedTopicDetail(topicId: ID!): SupervisorTopic
+
+    """Lấy danh sách enrollment của các topic mình hướng dẫn"""
+    getMySupervisedEnrollments(search: SearchRequestInput): [SupervisorEnrollment!]!
+
+    """Lấy chi tiết enrollment của sinh viên mình hướng dẫn"""
+    getMySupervisedEnrollmentDetail(enrollmentId: ID!): SupervisorEnrollment
+
+    # === COUNCIL MEMBER QUERIES (role động qua Defence) ===
+
+    """Lấy danh sách defence mà giáo viên tham gia"""
+    getMyDefenceAssignments(search: SearchRequestInput): [CouncilDefence!]!
+
+    """Lấy chi tiết defence"""
+    getMyDefenceDetail(defenceId: ID!): CouncilDefence
+
+    """Lấy danh sách council mà giáo viên tham gia"""
+    getMyCouncils(search: SearchRequestInput): [CouncilMemberCouncil!]!
+
+    """Lấy danh sách topic trong council mà giáo viên tham gia"""
+    getMyCouncilTopics(councilId: ID!): [CouncilTopicCouncil!]!
+
+    """Lấy danh sách enrollment cần chấm trong council"""
+    getMyCouncilEnrollments(councilId: ID!): [CouncilEnrollment!]!
+
+    # === REVIEWER QUERIES (role động qua Grade_review) ===
+
+    """Lấy danh sách enrollment được phân công phản biện"""
+    getMyReviewAssignments(search: SearchRequestInput): [ReviewerEnrollment!]!
+
+    """Lấy chi tiết enrollment cần phản biện"""
+    getMyReviewAssignmentDetail(enrollmentId: ID!): ReviewerEnrollment
+
+    """Lấy danh sách grade review của mình"""
+    getMyGradeReviews(search: SearchRequestInput): [GradeReview!]!
+}
+
+# ============================================
+# SUPERVISOR TYPES - Giáo viên hướng dẫn
+# ============================================
+
+"""
+Topic view cho Supervisor
+Supervisor được xem đầy đủ thông tin topic mình hướng dẫn
+"""
+type SupervisorTopic {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    status: TopicStatus!
+    percentStage1: Int
+    percentStage2: Int
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - dùng MajorInfo/SemesterInfo để tránh circular query
+    major: MajorInfo
+    semester: SemesterInfo
+    enrollments: [SupervisorEnrollment!]
+    files: [File!]
+    topicSupervisors: [TopicSupervisor!]
+    topicCouncils: [SupervisorTopicCouncil!]
+}
+
+"""
+Enrollment view cho Supervisor
+Supervisor được xem đầy đủ thông tin sinh viên và chấm điểm
+"""
+type SupervisorEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    finalCode: String
+    gradeReviewCode: String
+    midtermCode: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - supervisor được xem đầy đủ
+    student: Student
+    topicCouncil: SupervisorTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+    gradeDefences: [GradeDefence!]
+}
+
+"""
+TopicCouncil view cho Supervisor
+"""
+type SupervisorTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    topic: SupervisorTopic
+    council: Council
+    enrollments: [SupervisorEnrollment!]
+    supervisors: [TopicCouncilSupervisor!]
+}
+
+# ============================================
+# COUNCIL MEMBER TYPES - Thành viên hội đồng
+# ============================================
+
+"""
+Council view cho Council Member
+"""
+type CouncilMemberCouncil {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    timeStart: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - dùng MajorInfo/SemesterInfo để tránh circular query
+    major: MajorInfo
+    semester: SemesterInfo
+    defences: [CouncilDefence!]
+    topicCouncils: [CouncilTopicCouncil!]
+}
+
+"""
+Defence view cho Council Member
+"""
+type CouncilDefence {
+    id: ID!
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    council: CouncilMemberCouncil
+    teacher: Teacher
+    gradeDefences: [GradeDefence!]
+}
+
+"""
+TopicCouncil view cho Council Member
+"""
+type CouncilTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    topic: Topic
+    council: CouncilMemberCouncil
+    enrollments: [CouncilEnrollment!]
+    supervisors: [TopicCouncilSupervisor!]
+}
+
+"""
+Enrollment view cho Council Member
+Council member được xem để chấm điểm
+"""
+type CouncilEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    finalCode: String
+    gradeReviewCode: String
+    midtermCode: String
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    student: Student
+    topicCouncil: CouncilTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+    gradeDefences: [GradeDefence!]
+}
+
+# ============================================
+# REVIEWER TYPES - Giáo viên phản biện
+# ============================================
+
+"""
+Enrollment view cho Reviewer
+Reviewer được xem để chấm phản biện
+"""
+type ReviewerEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    gradeReviewCode: String
+    midtermCode: String
+    finalCode: String
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    student: Student
+    topicCouncil: ReviewerTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+}
+
+"""
+TopicCouncil view cho Reviewer
+"""
+type ReviewerTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    timeStart: Time!
+    timeEnd: Time!
+
+    # Relationships
+    topic: ReviewerTopic
+    supervisors: [TopicCouncilSupervisor!]
+}
+
+"""
+Topic view cho Reviewer
+Reviewer chỉ xem thông tin cơ bản của topic
+"""
+type ReviewerTopic {
+    id: ID!
+    title: String!
+    status: TopicStatus!
+    majorCode: String!
+
+    # Relationships - dùng MajorInfo để tránh circular query
+    major: MajorInfo
+    files: [File!]
+}
+
+extend type Mutation {
+    """Cập nhật thông tin cá nhân giáo viên"""
+    updateMyTeacherProfile(input: UpdateTeacherProfileInput!): Teacher!
+
+    # === SUPERVISOR MUTATIONS ===
+
+    """Cập nhật điểm midterm cho sinh viên (chỉ cho topic mình hướng dẫn)"""
+    gradeMidterm(enrollmentId: ID!, input: GradeMidtermInput!): Midterm!
+
+    """Phản hồi midterm cho sinh viên"""
+    feedbackMidterm(midtermId: ID!, feedback: String!): Midterm!
+
+    """Cập nhật điểm final cho sinh viên (chỉ cho topic mình hướng dẫn)"""
+    gradeFinal(enrollmentId: ID!, input: GradeFinalInput!): Final!
+
+    """Phản hồi final cho sinh viên"""
+    feedbackFinal(finalId: ID!, notes: String!): Final!
+
+    """Phê duyệt file midterm của sinh viên"""
+    approveMidtermFile(fileId: ID!): File!
+
+    """Từ chối file midterm của sinh viên"""
+    rejectMidtermFile(fileId: ID!, reason: String): File!
+
+    """Phê duyệt file final của sinh viên"""
+    approveFinalFile(fileId: ID!): File!
+
+    """Từ chối file final của sinh viên"""
+    rejectFinalFile(fileId: ID!, reason: String): File!
+
+    # === COUNCIL MEMBER MUTATIONS ===
+
+    """Tạo grade defence cho enrollment trong council"""
+    createGradeDefence(input: CreateGradeDefenceInput!): GradeDefence!
+
+    """Cập nhật grade defence"""
+    updateGradeDefence(id: ID!, input: UpdateGradeDefenceInput!): GradeDefence!
+
+    """Thêm criterion vào grade defence"""
+    addGradeDefenceCriterion(input: CreateGradeDefenceCriterionInput!): GradeDefenceCriterion!
+
+    """Cập nhật criterion"""
+    updateGradeDefenceCriterion(id: ID!, input: UpdateGradeDefenceCriterionInput!): GradeDefenceCriterion!
+
+    """Xóa criterion"""
+    deleteGradeDefenceCriterion(id: ID!): Boolean!
+
+    # === REVIEWER MUTATIONS ===
+
+    """Tạo grade review cho enrollment"""
+    createGradeReview(enrollmentId: ID!, input: CreateGradeReviewInput!): GradeReview!
+
+    """Cập nhật grade review"""
+    updateGradeReview(id: ID!, input: UpdateGradeReviewInput!): GradeReview!
+
+    """Hoàn thành grade review"""
+    completeGradeReview(id: ID!): GradeReview!
+}
+
+# Input types
+input UpdateTeacherProfileInput {
+    email: String
+    username: String
+}
+
+input GradeMidtermInput {
+    grade: Int!
+    status: MidtermStatus!
+    feedback: String
+}
+
+input GradeFinalInput {
+    supervisorGrade: Int!
+    status: FinalStatus!
+    notes: String
+}
+
+input CreateGradeDefenceInput {
+    defenceCode: String!
+    enrollmentCode: String!
+    note: String
+    totalScore: Int
+}
+
+input UpdateGradeDefenceInput {
+    note: String
+    totalScore: Int
+}
+
+input CreateGradeDefenceCriterionInput {
+    gradeDefenceCode: String!
+    name: String!
+    score: String!
+    maxScore: String!
+}
+
+input UpdateGradeDefenceCriterionInput {
+    name: String
+    score: String
+    maxScore: String
+}
+
+input CreateGradeReviewInput {
+    title: String!
+    reviewGrade: Int!
+    notes: String
+}
+
+input UpdateGradeReviewInput {
+    reviewGrade: Int
+    status: FinalStatus
+    notes: String
+}

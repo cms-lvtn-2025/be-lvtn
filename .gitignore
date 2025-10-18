@@ -33,3 +33,6 @@ src/service/*/user
 
 *.md
 *.yml
+
+*.log
+*.json

@@ -21,14 +21,12 @@ func (c *Controller) pbRoleToModel(ctx context.Context, role *pb.ListRoleSystems
 		switch r.GetRole() {
 		case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
 			roleType = model.RoleSystemRoleAcademicAffairsStaff
-		case pb.RoleType_SUPERVISOR_LECTURER:
-			roleType = model.RoleSystemRoleSupervisorLecturer
+		case pb.RoleType_TEACHER:
+			roleType = model.RoleSystemRoleTeacher
 		case pb.RoleType_DEPARTMENT_LECTURER:
 			roleType = model.RoleSystemRoleDepartmentLecturer
-		case pb.RoleType_REVIEWER_LECTURER:
-			roleType = model.RoleSystemRoleReviewerLecturer
 		default:
-			roleType = model.RoleSystemRoleAcademicAffairsStaff
+			roleType = model.RoleSystemRoleTeacher
 		}
 
 		// Convert timestamps

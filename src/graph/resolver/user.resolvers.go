@@ -21,6 +21,11 @@ func (r *studentResolver) Semester(ctx context.Context, obj *model.Student) (*mo
 	panic(fmt.Errorf("not implemented: Semester - semester"))
 }
 
+// Enrollments is the resolver for the enrollments field.
+func (r *studentResolver) Enrollments(ctx context.Context, obj *model.Student) ([]*model.Enrollment, error) {
+	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
+}
+
 // Major is the resolver for the major field.
 func (r *teacherResolver) Major(ctx context.Context, obj *model.Teacher) (*model.Major, error) {
 	panic(fmt.Errorf("not implemented: Major - major"))
@@ -34,6 +39,11 @@ func (r *teacherResolver) Semester(ctx context.Context, obj *model.Teacher) (*mo
 // Roles is the resolver for the roles field.
 func (r *teacherResolver) Roles(ctx context.Context, obj *model.Teacher) ([]*model.RoleSystem, error) {
 	return r.Ctrl.GetRole(ctx, obj.ID)
+}
+
+// TopicsSupervised is the resolver for the topicsSupervised field.
+func (r *teacherResolver) TopicsSupervised(ctx context.Context, obj *model.Teacher) ([]*model.Topic, error) {
+	panic(fmt.Errorf("not implemented: TopicsSupervised - topicsSupervised"))
 }
 
 // Student returns generated.StudentResolver implementation.

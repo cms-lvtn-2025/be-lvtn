@@ -27,24 +27,21 @@ type RoleType int32
 
 const (
 	RoleType_ACADEMIC_AFFAIRS_STAFF RoleType = 0
-	RoleType_SUPERVISOR_LECTURER    RoleType = 1
-	RoleType_DEPARTMENT_LECTURER    RoleType = 2
-	RoleType_REVIEWER_LECTURER      RoleType = 3
+	RoleType_DEPARTMENT_LECTURER    RoleType = 1
+	RoleType_TEACHER                RoleType = 2
 )
 
 // Enum value maps for RoleType.
 var (
 	RoleType_name = map[int32]string{
 		0: "ACADEMIC_AFFAIRS_STAFF",
-		1: "SUPERVISOR_LECTURER",
-		2: "DEPARTMENT_LECTURER",
-		3: "REVIEWER_LECTURER",
+		1: "DEPARTMENT_LECTURER",
+		2: "TEACHER",
 	}
 	RoleType_value = map[string]int32{
 		"ACADEMIC_AFFAIRS_STAFF": 0,
-		"SUPERVISOR_LECTURER":    1,
-		"DEPARTMENT_LECTURER":    2,
-		"REVIEWER_LECTURER":      3,
+		"DEPARTMENT_LECTURER":    1,
+		"TEACHER":                2,
 	}
 )
 
@@ -809,12 +806,11 @@ const file_proto_role_role_proto_rawDesc = "" +
 	"\frole_systems\x18\x01 \x03(\v2\x10.role.RoleSystemR\vroleSystems\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize*o\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize*L\n" +
 	"\bRoleType\x12\x1a\n" +
 	"\x16ACADEMIC_AFFAIRS_STAFF\x10\x00\x12\x17\n" +
-	"\x13SUPERVISOR_LECTURER\x10\x01\x12\x17\n" +
-	"\x13DEPARTMENT_LECTURER\x10\x02\x12\x15\n" +
-	"\x11REVIEWER_LECTURER\x10\x032\xa0\x03\n" +
+	"\x13DEPARTMENT_LECTURER\x10\x01\x12\v\n" +
+	"\aTEACHER\x10\x022\xa0\x03\n" +
 	"\vRoleService\x12Q\n" +
 	"\x10CreateRoleSystem\x12\x1d.role.CreateRoleSystemRequest\x1a\x1e.role.CreateRoleSystemResponse\x12H\n" +
 	"\rGetRoleSystem\x12\x1a.role.GetRoleSystemRequest\x1a\x1b.role.GetRoleSystemResponse\x12Q\n" +

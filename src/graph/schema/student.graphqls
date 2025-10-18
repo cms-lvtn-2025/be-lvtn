@@ -1,0 +1,201 @@
+# Schema dành riêng cho SINH VIÊN
+# Security at SCHEMA LEVEL - student không thể query fields không được phép
+# Custom types chỉ expose fields mà student được xem
+
+extend type Query {
+    """Lấy thông tin cá nhân của sinh viên đang đăng nhập"""
+    getMyProfile: Student!
+
+    """Lấy danh sách enrollment của sinh viên (chỉ của mình)"""
+    getMyEnrollments(search: SearchRequestInput): [StudentEnrollment!]!
+
+    """Lấy chi tiết enrollment của sinh viên"""
+    getMyEnrollmentDetail(id: ID!): StudentEnrollment
+
+    """Lấy danh sách học kỳ của sinh viên"""
+    getMySemesters(search: SearchRequestInput): [Semester!]!
+}
+
+extend type Mutation {
+    """Cập nhật thông tin cá nhân sinh viên"""
+    updateMyProfile(input: UpdateStudentProfileInput!): Student!
+
+    """Upload file midterm (chỉ sinh viên mới upload được)"""
+    uploadMidtermFile(input: UploadFileInput!): File!
+
+    """Upload file final (chỉ sinh viên mới upload được)"""
+    uploadFinalFile(input: UploadFileInput!): File!
+}
+
+# ============================================
+# CUSTOM TYPES CHO STUDENT - Restricted Fields
+# Student không thể query những fields không có trong types này
+# ============================================
+
+"""
+Enrollment view cho Student
+KHÔNG có field 'student' vì student tự query của mình
+"""
+type StudentEnrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    finalCode: String
+    gradeReviewCode: String
+    midtermCode: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relationships - restricted types
+    topicCouncil: StudentTopicCouncil
+    midterm: Midterm
+    final: Final
+    gradeReview: GradeReview
+    gradeDefences: [StudentGradeDefence!]
+}
+
+"""
+TopicCouncil view cho Student
+CÓ field 'council' để xem thông tin hội đồng (tên, thời gian, thành viên)
+KHÔNG có field 'enrollments' vì không cần xem enrollment người khác
+"""
+type StudentTopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - restricted
+    topic: StudentTopic
+    supervisors: [StudentTopicSupervisor!]
+    council: StudentCouncil  # ✅ Student xem được hội đồng
+}
+
+"""
+Topic view cho Student
+Chỉ xem thông tin cơ bản
+KHÔNG có field 'enrollments' vì không cần xem enrollment người khác
+"""
+type StudentTopic {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    status: TopicStatus!
+    percentStage1: Int
+    percentStage2: Int
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - restricted để tránh circular query
+    major: MajorInfo  # Chỉ có thông tin cơ bản, không có topics
+    semester: SemesterInfo  # Chỉ có thông tin cơ bản
+    files: [File!]
+}
+
+
+"""
+TopicSupervisor view cho Student
+Student chỉ xem được thông tin giáo viên hướng dẫn cơ bản
+"""
+type StudentTopicSupervisor {
+    id: ID!
+    teacherSupervisorCode: String!
+    topicCouncilCode: String!
+
+    # Chỉ xem thông tin giáo viên cơ bản
+    teacher: StudentTeacherInfo
+}
+
+"""
+Teacher info view cho Student
+Student chỉ xem được thông tin cơ bản của giáo viên
+KHÔNG có field 'roles' vì sensitive
+KHÔNG có field 'major' relationship để tránh circular query
+"""
+type StudentTeacherInfo {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    # KHÔNG có major relationship - chỉ có majorCode để tránh circular query
+}
+
+"""
+GradeDefence view cho Student
+Student xem được điểm defence của mình
+"""
+type StudentGradeDefence {
+    id: ID!
+    defenceCode: String!
+    enrollmentCode: String!
+    note: String
+    totalScore: Int
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships
+    criteria: [GradeDefenceCriterion!]
+    defence: StudentDefenceInfo
+}
+
+"""
+Council view cho Student
+Student xem được thông tin hội đồng: tên, thời gian, thành viên
+KHÔNG có field 'topicCouncils' để tránh xem topic của người khác
+"""
+type StudentCouncil {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    timeStart: Time
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - restricted để tránh circular query
+    major: MajorInfo  # Không có topics
+    semester: SemesterInfo  # Không có topics/students
+    defences: [StudentDefenceInfo!]  # Danh sách thành viên hội đồng
+}
+
+"""
+Defence info cho Student
+Student xem được thông tin thành viên hội đồng
+"""
+type StudentDefenceInfo {
+    id: ID!
+    title: String!
+    position: DefencePosition!
+    createdAt: Time
+    updatedAt: Time
+
+    # Teacher info cơ bản
+    teacher: StudentTeacherInfo
+}
+
+# ============================================
+# INPUT TYPES
+# ============================================
+
+input UpdateStudentProfileInput {
+    email: String
+    phone: String
+    username: String
+}
+
+input UploadFileInput {
+    title: String!
+    file: String!
+    tableId: ID!
+    option: String
+}

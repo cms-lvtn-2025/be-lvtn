@@ -55,7 +55,121 @@ func (r *enrollmentResolver) Final(ctx context.Context, obj *model.Enrollment) (
 	return nil, nil
 }
 
+// TopicCouncil is the resolver for the topicCouncil field.
+func (r *enrollmentResolver) TopicCouncil(ctx context.Context, obj *model.Enrollment) (*model.TopicCouncil, error) {
+	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
+}
+
+// GradeReview is the resolver for the gradeReview field.
+func (r *enrollmentResolver) GradeReview(ctx context.Context, obj *model.Enrollment) (*model.GradeReview, error) {
+	panic(fmt.Errorf("not implemented: GradeReview - gradeReview"))
+}
+
+// GradeDefences is the resolver for the gradeDefences field.
+func (r *enrollmentResolver) GradeDefences(ctx context.Context, obj *model.Enrollment) ([]*model.GradeDefence, error) {
+	panic(fmt.Errorf("not implemented: GradeDefences - gradeDefences"))
+}
+
+// Teacher is the resolver for the teacher field.
+func (r *gradeReviewResolver) Teacher(ctx context.Context, obj *model.GradeReview) (*model.Teacher, error) {
+	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+}
+
+// Major is the resolver for the major field.
+func (r *topicResolver) Major(ctx context.Context, obj *model.Topic) (*model.Major, error) {
+	panic(fmt.Errorf("not implemented: Major - major"))
+}
+
+// Semester is the resolver for the semester field.
+func (r *topicResolver) Semester(ctx context.Context, obj *model.Topic) (*model.Semester, error) {
+	panic(fmt.Errorf("not implemented: Semester - semester"))
+}
+
+// Enrollments is the resolver for the enrollments field.
+func (r *topicResolver) Enrollments(ctx context.Context, obj *model.Topic) ([]*model.Enrollment, error) {
+	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
+}
+
+// Files is the resolver for the files field.
+func (r *topicResolver) Files(ctx context.Context, obj *model.Topic) ([]*model.File, error) {
+	panic(fmt.Errorf("not implemented: Files - files"))
+}
+
+// TopicSupervisors is the resolver for the topicSupervisors field.
+func (r *topicResolver) TopicSupervisors(ctx context.Context, obj *model.Topic) ([]*model.TopicSupervisor, error) {
+	panic(fmt.Errorf("not implemented: TopicSupervisors - topicSupervisors"))
+}
+
+// TopicCouncils is the resolver for the topicCouncils field.
+func (r *topicResolver) TopicCouncils(ctx context.Context, obj *model.Topic) ([]*model.TopicCouncil, error) {
+	panic(fmt.Errorf("not implemented: TopicCouncils - topicCouncils"))
+}
+
+// Topic is the resolver for the topic field.
+func (r *topicCouncilResolver) Topic(ctx context.Context, obj *model.TopicCouncil) (*model.Topic, error) {
+	panic(fmt.Errorf("not implemented: Topic - topic"))
+}
+
+// Council is the resolver for the council field.
+func (r *topicCouncilResolver) Council(ctx context.Context, obj *model.TopicCouncil) (*model.Council, error) {
+	panic(fmt.Errorf("not implemented: Council - council"))
+}
+
+// Enrollments is the resolver for the enrollments field.
+func (r *topicCouncilResolver) Enrollments(ctx context.Context, obj *model.TopicCouncil) ([]*model.Enrollment, error) {
+	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
+}
+
+// Supervisors is the resolver for the supervisors field.
+func (r *topicCouncilResolver) Supervisors(ctx context.Context, obj *model.TopicCouncil) ([]*model.TopicCouncilSupervisor, error) {
+	panic(fmt.Errorf("not implemented: Supervisors - supervisors"))
+}
+
+// Teacher is the resolver for the teacher field.
+func (r *topicCouncilSupervisorResolver) Teacher(ctx context.Context, obj *model.TopicCouncilSupervisor) (*model.Teacher, error) {
+	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+}
+
+// TopicCouncil is the resolver for the topicCouncil field.
+func (r *topicCouncilSupervisorResolver) TopicCouncil(ctx context.Context, obj *model.TopicCouncilSupervisor) (*model.TopicCouncil, error) {
+	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
+}
+
+// Teacher is the resolver for the teacher field.
+func (r *topicSupervisorResolver) Teacher(ctx context.Context, obj *model.TopicSupervisor) (*model.Teacher, error) {
+	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+}
+
+// Topic is the resolver for the topic field.
+func (r *topicSupervisorResolver) Topic(ctx context.Context, obj *model.TopicSupervisor) (*model.Topic, error) {
+	panic(fmt.Errorf("not implemented: Topic - topic"))
+}
+
 // Enrollment returns generated.EnrollmentResolver implementation.
 func (r *Resolver) Enrollment() generated.EnrollmentResolver { return &enrollmentResolver{r} }
 
+// GradeReview returns generated.GradeReviewResolver implementation.
+func (r *Resolver) GradeReview() generated.GradeReviewResolver { return &gradeReviewResolver{r} }
+
+// Topic returns generated.TopicResolver implementation.
+func (r *Resolver) Topic() generated.TopicResolver { return &topicResolver{r} }
+
+// TopicCouncil returns generated.TopicCouncilResolver implementation.
+func (r *Resolver) TopicCouncil() generated.TopicCouncilResolver { return &topicCouncilResolver{r} }
+
+// TopicCouncilSupervisor returns generated.TopicCouncilSupervisorResolver implementation.
+func (r *Resolver) TopicCouncilSupervisor() generated.TopicCouncilSupervisorResolver {
+	return &topicCouncilSupervisorResolver{r}
+}
+
+// TopicSupervisor returns generated.TopicSupervisorResolver implementation.
+func (r *Resolver) TopicSupervisor() generated.TopicSupervisorResolver {
+	return &topicSupervisorResolver{r}
+}
+
 type enrollmentResolver struct{ *Resolver }
+type gradeReviewResolver struct{ *Resolver }
+type topicResolver struct{ *Resolver }
+type topicCouncilResolver struct{ *Resolver }
+type topicCouncilSupervisorResolver struct{ *Resolver }
+type topicSupervisorResolver struct{ *Resolver }

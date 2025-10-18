@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"thaily/src/graph/generated"
-	"thaily/src/graph/model"
 )
 
 // Empty is the resolver for the _empty field.
@@ -16,39 +15,9 @@ func (r *mutationResolver) Empty(ctx context.Context) (*string, error) {
 	panic(fmt.Errorf("not implemented: Empty - _empty"))
 }
 
-// GetInfoStudent is the resolver for the getInfoStudent field.
-func (r *queryResolver) GetInfoStudent(ctx context.Context) (*model.Student, error) {
-	return r.Ctrl.GetInfoStudent(ctx)
-}
-
-// GetInfoTeacher is the resolver for the getInfoTeacher field.
-func (r *queryResolver) GetInfoTeacher(ctx context.Context) (*model.Teacher, error) {
-	return r.Ctrl.GetInfoTeacher(ctx)
-}
-
-// GetListTopic is the resolver for the getListTopic field.
-func (r *queryResolver) GetListTopic(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error) {
-	return r.Ctrl.GetTopics(ctx, search)
-}
-
-// GetListEnrollment is the resolver for the getListEnrollment field.
-func (r *queryResolver) GetListEnrollment(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error) {
-	return r.Ctrl.GetEnrollments(ctx, search)
-}
-
-// GetListSemester is the resolver for the getListSemester field.
-func (r *queryResolver) GetListSemester(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: GetListSemester - getListSemester"))
-}
-
-// GetListCouncil is the resolver for the getListCouncil field.
-func (r *queryResolver) GetListCouncil(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
-	panic(fmt.Errorf("not implemented: GetListCouncil - getListCouncil"))
-}
-
-// GetListDefence is the resolver for the getListDefence field.
-func (r *queryResolver) GetListDefence(ctx context.Context, search model.SearchRequestInput) ([]*model.Defence, error) {
-	panic(fmt.Errorf("not implemented: GetListDefence - getListDefence"))
+// Empty is the resolver for the _empty field.
+func (r *queryResolver) Empty(ctx context.Context) (*string, error) {
+	panic(fmt.Errorf("not implemented: Empty - _empty"))
 }
 
 // Empty is the resolver for the _empty field.

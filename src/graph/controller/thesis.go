@@ -334,7 +334,7 @@ func (c *Controller) GetTopics(ctx context.Context, search model.SearchRequestIn
 			}
 			topics, err = c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
 
-		} else if permissionMap[pbRole.RoleType_SUPERVISOR_LECTURER] {
+		} else if permissionMap[pbRole.RoleType_TEACHER] {
 			newSearch = model.SearchRequestInput{
 				Pagination: search.Pagination,
 				Filters: append([]*model.FilterCriteriaInput{

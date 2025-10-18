@@ -1,0 +1,238 @@
+# Schema dành riêng cho GIÁO VỤ (Academic Affairs Staff)
+# Có quyền đọc và chỉnh sửa hầu hết các thông tin trong hệ thống
+
+extend type Query {
+    """Lấy danh sách giáo viên"""
+    getListTeachers(search: SearchRequestInput!): TeacherListResponse!
+
+    """Lấy danh sách sinh viên"""
+    getListStudents(search: SearchRequestInput!): StudentListResponse!
+
+    """Lấy chi tiết sinh viên"""
+    getStudentDetail(id: ID!): Student
+
+    """Lấy chi tiết giáo viên"""
+    getTeacherDetail(id: ID!): Teacher
+
+    """Lấy danh sách semester"""
+    getAllSemesters(search: SearchRequestInput!): SemesterListResponse!
+
+    """Lấy danh sách major"""
+    getAllMajors(search: SearchRequestInput!): MajorListResponse!
+
+    """Lấy danh sách faculty"""
+    getAllFaculties(search: SearchRequestInput!): FacultyListResponse!
+
+    """Lấy danh sách topic với đầy đủ thông tin"""
+    getAllTopics(search: SearchRequestInput!): TopicListResponse!
+
+    """Lấy chi tiết topic"""
+    getTopicDetail(id: ID!): Topic
+
+    """Lấy danh sách enrollment"""
+    getAllEnrollments(search: SearchRequestInput!): EnrollmentListResponse!
+
+    """Lấy chi tiết enrollment với đầy đủ thông tin"""
+    getEnrollmentDetail(id: ID!): Enrollment
+
+    """Lấy danh sách council"""
+    getAllCouncils(search: SearchRequestInput!): CouncilListResponse!
+
+    """Lấy chi tiết council"""
+    getCouncilDetail(id: ID!): Council
+
+    """Lấy danh sách defence của một council"""
+    getDefencesByCouncil(councilId: ID!): [Defence!]!
+
+    """Lấy danh sách grade defence"""
+    getAllGradeDefences(search: SearchRequestInput!): [GradeDefence!]!
+}
+
+extend type Mutation {
+    """Tạo mới giáo viên"""
+    createTeacher(input: CreateTeacherInput!): Teacher!
+
+    """Cập nhật thông tin giáo viên"""
+    updateTeacher(id: ID!, input: UpdateTeacherInput!): Teacher!
+
+    """Xóa giáo viên"""
+    deleteTeacher(id: ID!): Boolean!
+
+    """Tạo mới sinh viên"""
+    createStudent(input: CreateStudentInput!): Student!
+
+    """Cập nhật thông tin sinh viên"""
+    updateStudent(id: ID!, input: UpdateStudentInput!): Student!
+
+    """Xóa sinh viên"""
+    deleteStudent(id: ID!): Boolean!
+
+    """Tạo semester mới"""
+    createSemester(input: CreateSemesterInput!): Semester!
+
+    """Cập nhật semester"""
+    updateSemester(id: ID!, input: UpdateSemesterInput!): Semester!
+
+    """Xóa semester"""
+    deleteSemester(id: ID!): Boolean!
+
+    """Tạo major mới"""
+    createMajor(input: CreateMajorInput!): Major!
+
+    """Cập nhật major"""
+    updateMajor(id: ID!, input: UpdateMajorInput!): Major!
+
+    """Xóa major"""
+    deleteMajor(id: ID!): Boolean!
+
+    """Tạo faculty mới"""
+    createFaculty(input: CreateFacultyInput!): Faculty!
+
+    """Cập nhật faculty"""
+    updateFaculty(id: ID!, input: UpdateFacultyInput!): Faculty!
+
+    """Xóa faculty"""
+    deleteFaculty(id: ID!): Boolean!
+
+    """Phê duyệt council (cho phép set thời gian)"""
+    approveCouncil(id: ID!, timeStart: Time!): Council!
+
+    """Cập nhật council"""
+    updateCouncil(id: ID!, input: UpdateCouncilInput!): Council!
+
+    """Xóa council"""
+    deleteCouncil(id: ID!): Boolean!
+
+    """Phê duyệt topic lần 2 (approved_2)"""
+    approveTopic(id: ID!): Topic!
+
+    """Từ chối topic"""
+    rejectTopic(id: ID!, reason: String): Topic!
+
+    """Cập nhật topic"""
+    updateTopic(id: ID!, input: UpdateTopicInput!): Topic!
+
+    """Xóa topic"""
+    deleteTopic(id: ID!): Boolean!
+}
+
+# Response types with pagination
+type TeacherListResponse {
+    total: Int!
+    data: [Teacher!]!
+}
+
+type StudentListResponse {
+    total: Int!
+    data: [Student!]!
+}
+
+type SemesterListResponse {
+    total: Int!
+    data: [Semester!]!
+}
+
+type MajorListResponse {
+    total: Int!
+    data: [Major!]!
+}
+
+type FacultyListResponse {
+    total: Int!
+    data: [Faculty!]!
+}
+
+type TopicListResponse {
+    total: Int!
+    data: [Topic!]!
+}
+
+type EnrollmentListResponse {
+    total: Int!
+    data: [Enrollment!]!
+}
+
+type CouncilListResponse {
+    total: Int!
+    data: [Council!]!
+}
+
+# Input types for mutations
+input CreateTeacherInput {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender!
+    majorCode: String!
+    semesterCode: String!
+}
+
+input UpdateTeacherInput {
+    email: String
+    username: String
+    gender: Gender
+    majorCode: String
+    semesterCode: String
+}
+
+input CreateStudentInput {
+    id: ID!
+    email: String!
+    phone: String!
+    username: String!
+    gender: Gender!
+    majorCode: String!
+    classCode: String
+    semesterCode: String!
+}
+
+input UpdateStudentInput {
+    email: String
+    phone: String
+    username: String
+    gender: Gender
+    majorCode: String
+    classCode: String
+    semesterCode: String
+}
+
+input CreateSemesterInput {
+    id: ID!
+    title: String!
+}
+
+input UpdateSemesterInput {
+    title: String
+}
+
+input CreateMajorInput {
+    id: ID!
+    title: String!
+    facultyCode: String!
+}
+
+input UpdateMajorInput {
+    title: String
+    facultyCode: String
+}
+
+input CreateFacultyInput {
+    id: ID!
+    title: String!
+}
+
+input UpdateFacultyInput {
+    title: String
+}
+
+input UpdateCouncilInput {
+    title: String
+    timeStart: Time
+}
+
+input UpdateTopicInput {
+    title: String
+    status: TopicStatus
+    percentStage1: Int
+    percentStage2: Int
+}

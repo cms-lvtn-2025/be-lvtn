@@ -21,10 +21,20 @@ type CouncilResolver interface {
 	Major(ctx context.Context, obj *model.Council) (*model.Major, error)
 	Semester(ctx context.Context, obj *model.Council) (*model.Semester, error)
 	Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error)
+	TopicCouncils(ctx context.Context, obj *model.Council) ([]*model.TopicCouncil, error)
 }
 type DefenceResolver interface {
 	Council(ctx context.Context, obj *model.Defence) (*model.Council, error)
 	Teacher(ctx context.Context, obj *model.Defence) (*model.Teacher, error)
+	GradeDefences(ctx context.Context, obj *model.Defence) ([]*model.GradeDefence, error)
+}
+type GradeDefenceResolver interface {
+	Defence(ctx context.Context, obj *model.GradeDefence) (*model.Defence, error)
+	Enrollment(ctx context.Context, obj *model.GradeDefence) (*model.Enrollment, error)
+	Criteria(ctx context.Context, obj *model.GradeDefence) ([]*model.GradeDefenceCriterion, error)
+}
+type GradeDefenceCriterionResolver interface {
+	GradeDefence(ctx context.Context, obj *model.GradeDefenceCriterion) (*model.GradeDefence, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -489,7 +499,7 @@ func (ec *executionContext) _Council_topicCouncils(ctx context.Context, field gr
 		field,
 		ec.fieldContext_Council_topicCouncils,
 		func(ctx context.Context) (any, error) {
-			return obj.TopicCouncils, nil
+			return ec.resolvers.Council().TopicCouncils(ctx, obj)
 		},
 		nil,
 		ec.marshalOTopicCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐTopicCouncilᚄ,
@@ -502,8 +512,8 @@ func (ec *executionContext) fieldContext_Council_topicCouncils(_ context.Context
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -929,7 +939,7 @@ func (ec *executionContext) _Defence_gradeDefences(ctx context.Context, field gr
 		field,
 		ec.fieldContext_Defence_gradeDefences,
 		func(ctx context.Context) (any, error) {
-			return obj.GradeDefences, nil
+			return ec.resolvers.Defence().GradeDefences(ctx, obj)
 		},
 		nil,
 		ec.marshalOGradeDefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceᚄ,
@@ -942,8 +952,8 @@ func (ec *executionContext) fieldContext_Defence_gradeDefences(_ context.Context
 	fc = &graphql.FieldContext{
 		Object:     "Defence",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1245,7 +1255,7 @@ func (ec *executionContext) _GradeDefence_defence(ctx context.Context, field gra
 		field,
 		ec.fieldContext_GradeDefence_defence,
 		func(ctx context.Context) (any, error) {
-			return obj.Defence, nil
+			return ec.resolvers.GradeDefence().Defence(ctx, obj)
 		},
 		nil,
 		ec.marshalODefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence,
@@ -1258,8 +1268,8 @@ func (ec *executionContext) fieldContext_GradeDefence_defence(_ context.Context,
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1300,7 +1310,7 @@ func (ec *executionContext) _GradeDefence_enrollment(ctx context.Context, field 
 		field,
 		ec.fieldContext_GradeDefence_enrollment,
 		func(ctx context.Context) (any, error) {
-			return obj.Enrollment, nil
+			return ec.resolvers.GradeDefence().Enrollment(ctx, obj)
 		},
 		nil,
 		ec.marshalOEnrollment2ᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollment,
@@ -1313,8 +1323,8 @@ func (ec *executionContext) fieldContext_GradeDefence_enrollment(_ context.Conte
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1365,7 +1375,7 @@ func (ec *executionContext) _GradeDefence_criteria(ctx context.Context, field gr
 		field,
 		ec.fieldContext_GradeDefence_criteria,
 		func(ctx context.Context) (any, error) {
-			return obj.Criteria, nil
+			return ec.resolvers.GradeDefence().Criteria(ctx, obj)
 		},
 		nil,
 		ec.marshalOGradeDefenceCriterion2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterionᚄ,
@@ -1378,8 +1388,8 @@ func (ec *executionContext) fieldContext_GradeDefence_criteria(_ context.Context
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1677,7 +1687,7 @@ func (ec *executionContext) _GradeDefenceCriterion_gradeDefence(ctx context.Cont
 		field,
 		ec.fieldContext_GradeDefenceCriterion_gradeDefence,
 		func(ctx context.Context) (any, error) {
-			return obj.GradeDefence, nil
+			return ec.resolvers.GradeDefenceCriterion().GradeDefence(ctx, obj)
 		},
 		nil,
 		ec.marshalOGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence,
@@ -1690,8 +1700,8 @@ func (ec *executionContext) fieldContext_GradeDefenceCriterion_gradeDefence(_ co
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefenceCriterion",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1880,7 +1890,38 @@ func (ec *executionContext) _Council(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "topicCouncils":
-			out.Values[i] = ec._Council_topicCouncils(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Council_topicCouncils(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2015,7 +2056,38 @@ func (ec *executionContext) _Defence(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "gradeDefences":
-			out.Values[i] = ec._Defence_gradeDefences(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Defence_gradeDefences(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2053,17 +2125,17 @@ func (ec *executionContext) _GradeDefence(ctx context.Context, sel ast.Selection
 		case "id":
 			out.Values[i] = ec._GradeDefence_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "defenceCode":
 			out.Values[i] = ec._GradeDefence_defenceCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "enrollmentCode":
 			out.Values[i] = ec._GradeDefence_enrollmentCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "note":
 			out.Values[i] = ec._GradeDefence_note(ctx, field, obj)
@@ -2078,11 +2150,104 @@ func (ec *executionContext) _GradeDefence(ctx context.Context, sel ast.Selection
 		case "updatedBy":
 			out.Values[i] = ec._GradeDefence_updatedBy(ctx, field, obj)
 		case "defence":
-			out.Values[i] = ec._GradeDefence_defence(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GradeDefence_defence(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "enrollment":
-			out.Values[i] = ec._GradeDefence_enrollment(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GradeDefence_enrollment(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "criteria":
-			out.Values[i] = ec._GradeDefence_criteria(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GradeDefence_criteria(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2120,12 +2285,12 @@ func (ec *executionContext) _GradeDefenceCriterion(ctx context.Context, sel ast.
 		case "id":
 			out.Values[i] = ec._GradeDefenceCriterion_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "gradeDefenceCode":
 			out.Values[i] = ec._GradeDefenceCriterion_gradeDefenceCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._GradeDefenceCriterion_name(ctx, field, obj)
@@ -2142,7 +2307,38 @@ func (ec *executionContext) _GradeDefenceCriterion(ctx context.Context, sel ast.
 		case "updatedBy":
 			out.Values[i] = ec._GradeDefenceCriterion_updatedBy(ctx, field, obj)
 		case "gradeDefence":
-			out.Values[i] = ec._GradeDefenceCriterion_gradeDefence(ctx, field, obj)
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GradeDefenceCriterion_gradeDefence(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2170,50 +2366,11 @@ func (ec *executionContext) _GradeDefenceCriterion(ctx context.Context, sel ast.
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil(ctx context.Context, sel ast.SelectionSet, v *model.Council) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Council(ctx, sel, v)
+func (ec *executionContext) marshalNCouncil2thailyᚋsrcᚋgraphᚋmodelᚐCouncil(ctx context.Context, sel ast.SelectionSet, v model.Council) graphql.Marshaler {
+	return ec._Council(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence(ctx context.Context, sel ast.SelectionSet, v *model.Defence) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Defence(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefence) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._GradeDefence(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNGradeDefenceCriterion2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefenceCriterion) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._GradeDefenceCriterion(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Council) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
+func (ec *executionContext) marshalNCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncilᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Council) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2255,6 +2412,146 @@ func (ec *executionContext) marshalOCouncil2ᚕᚖthailyᚋsrcᚋgraphᚋmodel�
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalNCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil(ctx context.Context, sel ast.SelectionSet, v *model.Council) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Council(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDefence2thailyᚋsrcᚋgraphᚋmodelᚐDefence(ctx context.Context, sel ast.SelectionSet, v model.Defence) graphql.Marshaler {
+	return ec._Defence(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐDefenceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Defence) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence(ctx context.Context, sel ast.SelectionSet, v *model.Defence) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Defence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGradeDefence2thailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx context.Context, sel ast.SelectionSet, v model.GradeDefence) graphql.Marshaler {
+	return ec._GradeDefence(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGradeDefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GradeDefence) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefence) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GradeDefence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGradeDefenceCriterion2thailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx context.Context, sel ast.SelectionSet, v model.GradeDefenceCriterion) graphql.Marshaler {
+	return ec._GradeDefenceCriterion(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGradeDefenceCriterion2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefenceCriterion) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GradeDefenceCriterion(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCouncil2ᚖthailyᚋsrcᚋgraphᚋmodelᚐCouncil(ctx context.Context, sel ast.SelectionSet, v *model.Council) graphql.Marshaler {
