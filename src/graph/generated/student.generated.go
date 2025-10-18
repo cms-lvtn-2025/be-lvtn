@@ -3689,6 +3689,50 @@ func (ec *executionContext) _StudentTopicSupervisor(ctx context.Context, sel ast
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNStudentDefenceInfo2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentDefenceInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudentDefenceInfo) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNStudentDefenceInfo2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentDefenceInfo(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNStudentDefenceInfo2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentDefenceInfo(ctx context.Context, sel ast.SelectionSet, v *model.StudentDefenceInfo) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -3753,6 +3797,50 @@ func (ec *executionContext) marshalNStudentEnrollment2ᚖthailyᚋsrcᚋgraphᚋ
 	return ec._StudentEnrollment(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNStudentGradeDefence2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentGradeDefenceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudentGradeDefence) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNStudentGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentGradeDefence(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNStudentGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.StudentGradeDefence) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -3761,6 +3849,50 @@ func (ec *executionContext) marshalNStudentGradeDefence2ᚖthailyᚋsrcᚋgraph�
 		return graphql.Null
 	}
 	return ec._StudentGradeDefence(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNStudentTopicSupervisor2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentTopicSupervisorᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudentTopicSupervisor) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNStudentTopicSupervisor2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentTopicSupervisor(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNStudentTopicSupervisor2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentTopicSupervisor(ctx context.Context, sel ast.SelectionSet, v *model.StudentTopicSupervisor) graphql.Marshaler {

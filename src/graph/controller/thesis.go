@@ -431,14 +431,14 @@ func (c *Controller) GetEnrollmentsChild(ctx context.Context, topicCode string) 
 		return nil, fmt.Errorf("no teacher found for semester %s", semester)
 	}
 	var enrolls *pb.ListEnrollmentsResponse
-	var err error
 	if role == "student" {
 		return nil, fmt.Errorf("student role not allowed")
 	} else if role == "teacher" {
-		enrolls, err = c.thesis.GetEnrollmentByTopicCode(ctx, topicCode)
-		if err != nil {
-			return nil, err
-		}
+		//enrolls, err = c.thesis.GetEnrollmentByTopicCode(ctx, topicCode)
+		//if err != nil {
+		//	return nil, err
+		//}
+		return nil, nil
 	}
 
 	return c.pbEnrollmentsToModel(enrolls), nil

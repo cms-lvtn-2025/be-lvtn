@@ -2983,603 +2983,6 @@ func (x *ListTopicsResponse) GetPageSize() int32 {
 	return 0
 }
 
-// ============= TopicSupervisor =============
-type TopicSupervisor struct {
-	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	TeacherSupervisorCode string                 `protobuf:"bytes,2,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3" json:"teacher_supervisor_code,omitempty"`
-	TopicCode             string                 `protobuf:"bytes,3,opt,name=topic_code,json=topicCode,proto3" json:"topic_code,omitempty"`
-	CreatedAt             *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt             *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	CreatedBy             string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	UpdatedBy             string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
-}
-
-func (x *TopicSupervisor) Reset() {
-	*x = TopicSupervisor{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[44]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TopicSupervisor) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TopicSupervisor) ProtoMessage() {}
-
-func (x *TopicSupervisor) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[44]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TopicSupervisor.ProtoReflect.Descriptor instead.
-func (*TopicSupervisor) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{44}
-}
-
-func (x *TopicSupervisor) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *TopicSupervisor) GetTeacherSupervisorCode() string {
-	if x != nil {
-		return x.TeacherSupervisorCode
-	}
-	return ""
-}
-
-func (x *TopicSupervisor) GetTopicCode() string {
-	if x != nil {
-		return x.TopicCode
-	}
-	return ""
-}
-
-func (x *TopicSupervisor) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *TopicSupervisor) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
-func (x *TopicSupervisor) GetCreatedBy() string {
-	if x != nil {
-		return x.CreatedBy
-	}
-	return ""
-}
-
-func (x *TopicSupervisor) GetUpdatedBy() string {
-	if x != nil {
-		return x.UpdatedBy
-	}
-	return ""
-}
-
-type CreateTopicSupervisorRequest struct {
-	state                 protoimpl.MessageState `protogen:"open.v1"`
-	TeacherSupervisorCode string                 `protobuf:"bytes,1,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3" json:"teacher_supervisor_code,omitempty"`
-	TopicCode             string                 `protobuf:"bytes,2,opt,name=topic_code,json=topicCode,proto3" json:"topic_code,omitempty"`
-	CreatedBy             string                 `protobuf:"bytes,3,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
-}
-
-func (x *CreateTopicSupervisorRequest) Reset() {
-	*x = CreateTopicSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[45]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateTopicSupervisorRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateTopicSupervisorRequest) ProtoMessage() {}
-
-func (x *CreateTopicSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[45]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateTopicSupervisorRequest.ProtoReflect.Descriptor instead.
-func (*CreateTopicSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{45}
-}
-
-func (x *CreateTopicSupervisorRequest) GetTeacherSupervisorCode() string {
-	if x != nil {
-		return x.TeacherSupervisorCode
-	}
-	return ""
-}
-
-func (x *CreateTopicSupervisorRequest) GetTopicCode() string {
-	if x != nil {
-		return x.TopicCode
-	}
-	return ""
-}
-
-func (x *CreateTopicSupervisorRequest) GetCreatedBy() string {
-	if x != nil {
-		return x.CreatedBy
-	}
-	return ""
-}
-
-type CreateTopicSupervisorResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	TopicSupervisor *TopicSupervisor       `protobuf:"bytes,1,opt,name=topic_supervisor,json=topicSupervisor,proto3" json:"topic_supervisor,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *CreateTopicSupervisorResponse) Reset() {
-	*x = CreateTopicSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[46]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateTopicSupervisorResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateTopicSupervisorResponse) ProtoMessage() {}
-
-func (x *CreateTopicSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[46]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateTopicSupervisorResponse.ProtoReflect.Descriptor instead.
-func (*CreateTopicSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{46}
-}
-
-func (x *CreateTopicSupervisorResponse) GetTopicSupervisor() *TopicSupervisor {
-	if x != nil {
-		return x.TopicSupervisor
-	}
-	return nil
-}
-
-type GetTopicSupervisorRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetTopicSupervisorRequest) Reset() {
-	*x = GetTopicSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[47]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetTopicSupervisorRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetTopicSupervisorRequest) ProtoMessage() {}
-
-func (x *GetTopicSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[47]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetTopicSupervisorRequest.ProtoReflect.Descriptor instead.
-func (*GetTopicSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{47}
-}
-
-func (x *GetTopicSupervisorRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-type GetTopicSupervisorResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	TopicSupervisor *TopicSupervisor       `protobuf:"bytes,1,opt,name=topic_supervisor,json=topicSupervisor,proto3" json:"topic_supervisor,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *GetTopicSupervisorResponse) Reset() {
-	*x = GetTopicSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[48]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetTopicSupervisorResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetTopicSupervisorResponse) ProtoMessage() {}
-
-func (x *GetTopicSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[48]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetTopicSupervisorResponse.ProtoReflect.Descriptor instead.
-func (*GetTopicSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{48}
-}
-
-func (x *GetTopicSupervisorResponse) GetTopicSupervisor() *TopicSupervisor {
-	if x != nil {
-		return x.TopicSupervisor
-	}
-	return nil
-}
-
-type UpdateTopicSupervisorRequest struct {
-	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	TeacherSupervisorCode *string                `protobuf:"bytes,2,opt,name=teacher_supervisor_code,json=teacherSupervisorCode,proto3,oneof" json:"teacher_supervisor_code,omitempty"`
-	TopicCode             *string                `protobuf:"bytes,3,opt,name=topic_code,json=topicCode,proto3,oneof" json:"topic_code,omitempty"`
-	UpdatedBy             string                 `protobuf:"bytes,4,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
-}
-
-func (x *UpdateTopicSupervisorRequest) Reset() {
-	*x = UpdateTopicSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[49]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateTopicSupervisorRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateTopicSupervisorRequest) ProtoMessage() {}
-
-func (x *UpdateTopicSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[49]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateTopicSupervisorRequest.ProtoReflect.Descriptor instead.
-func (*UpdateTopicSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{49}
-}
-
-func (x *UpdateTopicSupervisorRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *UpdateTopicSupervisorRequest) GetTeacherSupervisorCode() string {
-	if x != nil && x.TeacherSupervisorCode != nil {
-		return *x.TeacherSupervisorCode
-	}
-	return ""
-}
-
-func (x *UpdateTopicSupervisorRequest) GetTopicCode() string {
-	if x != nil && x.TopicCode != nil {
-		return *x.TopicCode
-	}
-	return ""
-}
-
-func (x *UpdateTopicSupervisorRequest) GetUpdatedBy() string {
-	if x != nil {
-		return x.UpdatedBy
-	}
-	return ""
-}
-
-type UpdateTopicSupervisorResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	TopicSupervisor *TopicSupervisor       `protobuf:"bytes,1,opt,name=topic_supervisor,json=topicSupervisor,proto3" json:"topic_supervisor,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *UpdateTopicSupervisorResponse) Reset() {
-	*x = UpdateTopicSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[50]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateTopicSupervisorResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateTopicSupervisorResponse) ProtoMessage() {}
-
-func (x *UpdateTopicSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[50]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateTopicSupervisorResponse.ProtoReflect.Descriptor instead.
-func (*UpdateTopicSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{50}
-}
-
-func (x *UpdateTopicSupervisorResponse) GetTopicSupervisor() *TopicSupervisor {
-	if x != nil {
-		return x.TopicSupervisor
-	}
-	return nil
-}
-
-type DeleteTopicSupervisorRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteTopicSupervisorRequest) Reset() {
-	*x = DeleteTopicSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[51]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteTopicSupervisorRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteTopicSupervisorRequest) ProtoMessage() {}
-
-func (x *DeleteTopicSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[51]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteTopicSupervisorRequest.ProtoReflect.Descriptor instead.
-func (*DeleteTopicSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{51}
-}
-
-func (x *DeleteTopicSupervisorRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-type DeleteTopicSupervisorResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteTopicSupervisorResponse) Reset() {
-	*x = DeleteTopicSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[52]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteTopicSupervisorResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteTopicSupervisorResponse) ProtoMessage() {}
-
-func (x *DeleteTopicSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[52]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteTopicSupervisorResponse.ProtoReflect.Descriptor instead.
-func (*DeleteTopicSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{52}
-}
-
-func (x *DeleteTopicSupervisorResponse) GetSuccess() bool {
-	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-type ListTopicSupervisorsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Search        *common.SearchRequest  `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListTopicSupervisorsRequest) Reset() {
-	*x = ListTopicSupervisorsRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[53]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListTopicSupervisorsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListTopicSupervisorsRequest) ProtoMessage() {}
-
-func (x *ListTopicSupervisorsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[53]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListTopicSupervisorsRequest.ProtoReflect.Descriptor instead.
-func (*ListTopicSupervisorsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{53}
-}
-
-func (x *ListTopicSupervisorsRequest) GetSearch() *common.SearchRequest {
-	if x != nil {
-		return x.Search
-	}
-	return nil
-}
-
-type ListTopicSupervisorsResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	TopicSupervisors []*TopicSupervisor     `protobuf:"bytes,1,rep,name=topic_supervisors,json=topicSupervisors,proto3" json:"topic_supervisors,omitempty"`
-	Total            int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
-	Page             int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize         int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *ListTopicSupervisorsResponse) Reset() {
-	*x = ListTopicSupervisorsResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[54]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListTopicSupervisorsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListTopicSupervisorsResponse) ProtoMessage() {}
-
-func (x *ListTopicSupervisorsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[54]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListTopicSupervisorsResponse.ProtoReflect.Descriptor instead.
-func (*ListTopicSupervisorsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{54}
-}
-
-func (x *ListTopicSupervisorsResponse) GetTopicSupervisors() []*TopicSupervisor {
-	if x != nil {
-		return x.TopicSupervisors
-	}
-	return nil
-}
-
-func (x *ListTopicSupervisorsResponse) GetTotal() int32 {
-	if x != nil {
-		return x.Total
-	}
-	return 0
-}
-
-func (x *ListTopicSupervisorsResponse) GetPage() int32 {
-	if x != nil {
-		return x.Page
-	}
-	return 0
-}
-
-func (x *ListTopicSupervisorsResponse) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
 // ============= TopicCouncil =============
 type TopicCouncil struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -3600,7 +3003,7 @@ type TopicCouncil struct {
 
 func (x *TopicCouncil) Reset() {
 	*x = TopicCouncil{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[55]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3612,7 +3015,7 @@ func (x *TopicCouncil) String() string {
 func (*TopicCouncil) ProtoMessage() {}
 
 func (x *TopicCouncil) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[55]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3625,7 +3028,7 @@ func (x *TopicCouncil) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopicCouncil.ProtoReflect.Descriptor instead.
 func (*TopicCouncil) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{55}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *TopicCouncil) GetId() string {
@@ -3720,7 +3123,7 @@ type CreateTopicCouncilRequest struct {
 
 func (x *CreateTopicCouncilRequest) Reset() {
 	*x = CreateTopicCouncilRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[56]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3732,7 +3135,7 @@ func (x *CreateTopicCouncilRequest) String() string {
 func (*CreateTopicCouncilRequest) ProtoMessage() {}
 
 func (x *CreateTopicCouncilRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[56]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3745,7 +3148,7 @@ func (x *CreateTopicCouncilRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTopicCouncilRequest.ProtoReflect.Descriptor instead.
 func (*CreateTopicCouncilRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{56}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *CreateTopicCouncilRequest) GetTitle() string {
@@ -3806,7 +3209,7 @@ type CreateTopicCouncilResponse struct {
 
 func (x *CreateTopicCouncilResponse) Reset() {
 	*x = CreateTopicCouncilResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[57]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3818,7 +3221,7 @@ func (x *CreateTopicCouncilResponse) String() string {
 func (*CreateTopicCouncilResponse) ProtoMessage() {}
 
 func (x *CreateTopicCouncilResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[57]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3831,7 +3234,7 @@ func (x *CreateTopicCouncilResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTopicCouncilResponse.ProtoReflect.Descriptor instead.
 func (*CreateTopicCouncilResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{57}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *CreateTopicCouncilResponse) GetTopicCouncil() *TopicCouncil {
@@ -3850,7 +3253,7 @@ type GetTopicCouncilRequest struct {
 
 func (x *GetTopicCouncilRequest) Reset() {
 	*x = GetTopicCouncilRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[58]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3862,7 +3265,7 @@ func (x *GetTopicCouncilRequest) String() string {
 func (*GetTopicCouncilRequest) ProtoMessage() {}
 
 func (x *GetTopicCouncilRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[58]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3875,7 +3278,7 @@ func (x *GetTopicCouncilRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTopicCouncilRequest.ProtoReflect.Descriptor instead.
 func (*GetTopicCouncilRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{58}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *GetTopicCouncilRequest) GetId() string {
@@ -3894,7 +3297,7 @@ type GetTopicCouncilResponse struct {
 
 func (x *GetTopicCouncilResponse) Reset() {
 	*x = GetTopicCouncilResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[59]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3906,7 +3309,7 @@ func (x *GetTopicCouncilResponse) String() string {
 func (*GetTopicCouncilResponse) ProtoMessage() {}
 
 func (x *GetTopicCouncilResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[59]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3919,7 +3322,7 @@ func (x *GetTopicCouncilResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTopicCouncilResponse.ProtoReflect.Descriptor instead.
 func (*GetTopicCouncilResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{59}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GetTopicCouncilResponse) GetTopicCouncil() *TopicCouncil {
@@ -3945,7 +3348,7 @@ type UpdateTopicCouncilRequest struct {
 
 func (x *UpdateTopicCouncilRequest) Reset() {
 	*x = UpdateTopicCouncilRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[60]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3957,7 +3360,7 @@ func (x *UpdateTopicCouncilRequest) String() string {
 func (*UpdateTopicCouncilRequest) ProtoMessage() {}
 
 func (x *UpdateTopicCouncilRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[60]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3970,7 +3373,7 @@ func (x *UpdateTopicCouncilRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTopicCouncilRequest.ProtoReflect.Descriptor instead.
 func (*UpdateTopicCouncilRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{60}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *UpdateTopicCouncilRequest) GetId() string {
@@ -4038,7 +3441,7 @@ type UpdateTopicCouncilResponse struct {
 
 func (x *UpdateTopicCouncilResponse) Reset() {
 	*x = UpdateTopicCouncilResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[61]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4050,7 +3453,7 @@ func (x *UpdateTopicCouncilResponse) String() string {
 func (*UpdateTopicCouncilResponse) ProtoMessage() {}
 
 func (x *UpdateTopicCouncilResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[61]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4063,7 +3466,7 @@ func (x *UpdateTopicCouncilResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTopicCouncilResponse.ProtoReflect.Descriptor instead.
 func (*UpdateTopicCouncilResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{61}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *UpdateTopicCouncilResponse) GetTopicCouncil() *TopicCouncil {
@@ -4082,7 +3485,7 @@ type DeleteTopicCouncilRequest struct {
 
 func (x *DeleteTopicCouncilRequest) Reset() {
 	*x = DeleteTopicCouncilRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[62]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4094,7 +3497,7 @@ func (x *DeleteTopicCouncilRequest) String() string {
 func (*DeleteTopicCouncilRequest) ProtoMessage() {}
 
 func (x *DeleteTopicCouncilRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[62]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4107,7 +3510,7 @@ func (x *DeleteTopicCouncilRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTopicCouncilRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTopicCouncilRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{62}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *DeleteTopicCouncilRequest) GetId() string {
@@ -4126,7 +3529,7 @@ type DeleteTopicCouncilResponse struct {
 
 func (x *DeleteTopicCouncilResponse) Reset() {
 	*x = DeleteTopicCouncilResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[63]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4138,7 +3541,7 @@ func (x *DeleteTopicCouncilResponse) String() string {
 func (*DeleteTopicCouncilResponse) ProtoMessage() {}
 
 func (x *DeleteTopicCouncilResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[63]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4151,7 +3554,7 @@ func (x *DeleteTopicCouncilResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTopicCouncilResponse.ProtoReflect.Descriptor instead.
 func (*DeleteTopicCouncilResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{63}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *DeleteTopicCouncilResponse) GetSuccess() bool {
@@ -4170,7 +3573,7 @@ type ListTopicCouncilsRequest struct {
 
 func (x *ListTopicCouncilsRequest) Reset() {
 	*x = ListTopicCouncilsRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[64]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4182,7 +3585,7 @@ func (x *ListTopicCouncilsRequest) String() string {
 func (*ListTopicCouncilsRequest) ProtoMessage() {}
 
 func (x *ListTopicCouncilsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[64]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4195,7 +3598,7 @@ func (x *ListTopicCouncilsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTopicCouncilsRequest.ProtoReflect.Descriptor instead.
 func (*ListTopicCouncilsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{64}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *ListTopicCouncilsRequest) GetSearch() *common.SearchRequest {
@@ -4217,7 +3620,7 @@ type ListTopicCouncilsResponse struct {
 
 func (x *ListTopicCouncilsResponse) Reset() {
 	*x = ListTopicCouncilsResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[65]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4229,7 +3632,7 @@ func (x *ListTopicCouncilsResponse) String() string {
 func (*ListTopicCouncilsResponse) ProtoMessage() {}
 
 func (x *ListTopicCouncilsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[65]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4242,7 +3645,7 @@ func (x *ListTopicCouncilsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTopicCouncilsResponse.ProtoReflect.Descriptor instead.
 func (*ListTopicCouncilsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{65}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ListTopicCouncilsResponse) GetTopicCouncils() []*TopicCouncil {
@@ -4289,7 +3692,7 @@ type TopicCouncilSupervisor struct {
 
 func (x *TopicCouncilSupervisor) Reset() {
 	*x = TopicCouncilSupervisor{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[66]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4301,7 +3704,7 @@ func (x *TopicCouncilSupervisor) String() string {
 func (*TopicCouncilSupervisor) ProtoMessage() {}
 
 func (x *TopicCouncilSupervisor) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[66]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4314,7 +3717,7 @@ func (x *TopicCouncilSupervisor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopicCouncilSupervisor.ProtoReflect.Descriptor instead.
 func (*TopicCouncilSupervisor) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{66}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *TopicCouncilSupervisor) GetId() string {
@@ -4377,7 +3780,7 @@ type CreateTopicCouncilSupervisorRequest struct {
 
 func (x *CreateTopicCouncilSupervisorRequest) Reset() {
 	*x = CreateTopicCouncilSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[67]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4389,7 +3792,7 @@ func (x *CreateTopicCouncilSupervisorRequest) String() string {
 func (*CreateTopicCouncilSupervisorRequest) ProtoMessage() {}
 
 func (x *CreateTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[67]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4402,7 +3805,7 @@ func (x *CreateTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CreateTopicCouncilSupervisorRequest.ProtoReflect.Descriptor instead.
 func (*CreateTopicCouncilSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{67}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *CreateTopicCouncilSupervisorRequest) GetTeacherSupervisorCode() string {
@@ -4435,7 +3838,7 @@ type CreateTopicCouncilSupervisorResponse struct {
 
 func (x *CreateTopicCouncilSupervisorResponse) Reset() {
 	*x = CreateTopicCouncilSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[68]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4447,7 +3850,7 @@ func (x *CreateTopicCouncilSupervisorResponse) String() string {
 func (*CreateTopicCouncilSupervisorResponse) ProtoMessage() {}
 
 func (x *CreateTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[68]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4460,7 +3863,7 @@ func (x *CreateTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use CreateTopicCouncilSupervisorResponse.ProtoReflect.Descriptor instead.
 func (*CreateTopicCouncilSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{68}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *CreateTopicCouncilSupervisorResponse) GetTopicCouncilSupervisor() *TopicCouncilSupervisor {
@@ -4479,7 +3882,7 @@ type GetTopicCouncilSupervisorRequest struct {
 
 func (x *GetTopicCouncilSupervisorRequest) Reset() {
 	*x = GetTopicCouncilSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[69]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4491,7 +3894,7 @@ func (x *GetTopicCouncilSupervisorRequest) String() string {
 func (*GetTopicCouncilSupervisorRequest) ProtoMessage() {}
 
 func (x *GetTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[69]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4504,7 +3907,7 @@ func (x *GetTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTopicCouncilSupervisorRequest.ProtoReflect.Descriptor instead.
 func (*GetTopicCouncilSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{69}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *GetTopicCouncilSupervisorRequest) GetId() string {
@@ -4523,7 +3926,7 @@ type GetTopicCouncilSupervisorResponse struct {
 
 func (x *GetTopicCouncilSupervisorResponse) Reset() {
 	*x = GetTopicCouncilSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[70]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4535,7 +3938,7 @@ func (x *GetTopicCouncilSupervisorResponse) String() string {
 func (*GetTopicCouncilSupervisorResponse) ProtoMessage() {}
 
 func (x *GetTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[70]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4548,7 +3951,7 @@ func (x *GetTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use GetTopicCouncilSupervisorResponse.ProtoReflect.Descriptor instead.
 func (*GetTopicCouncilSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{70}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *GetTopicCouncilSupervisorResponse) GetTopicCouncilSupervisor() *TopicCouncilSupervisor {
@@ -4570,7 +3973,7 @@ type UpdateTopicCouncilSupervisorRequest struct {
 
 func (x *UpdateTopicCouncilSupervisorRequest) Reset() {
 	*x = UpdateTopicCouncilSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[71]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4582,7 +3985,7 @@ func (x *UpdateTopicCouncilSupervisorRequest) String() string {
 func (*UpdateTopicCouncilSupervisorRequest) ProtoMessage() {}
 
 func (x *UpdateTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[71]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4595,7 +3998,7 @@ func (x *UpdateTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use UpdateTopicCouncilSupervisorRequest.ProtoReflect.Descriptor instead.
 func (*UpdateTopicCouncilSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{71}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *UpdateTopicCouncilSupervisorRequest) GetId() string {
@@ -4635,7 +4038,7 @@ type UpdateTopicCouncilSupervisorResponse struct {
 
 func (x *UpdateTopicCouncilSupervisorResponse) Reset() {
 	*x = UpdateTopicCouncilSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[72]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4647,7 +4050,7 @@ func (x *UpdateTopicCouncilSupervisorResponse) String() string {
 func (*UpdateTopicCouncilSupervisorResponse) ProtoMessage() {}
 
 func (x *UpdateTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[72]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4660,7 +4063,7 @@ func (x *UpdateTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use UpdateTopicCouncilSupervisorResponse.ProtoReflect.Descriptor instead.
 func (*UpdateTopicCouncilSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{72}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *UpdateTopicCouncilSupervisorResponse) GetTopicCouncilSupervisor() *TopicCouncilSupervisor {
@@ -4679,7 +4082,7 @@ type DeleteTopicCouncilSupervisorRequest struct {
 
 func (x *DeleteTopicCouncilSupervisorRequest) Reset() {
 	*x = DeleteTopicCouncilSupervisorRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[73]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4691,7 +4094,7 @@ func (x *DeleteTopicCouncilSupervisorRequest) String() string {
 func (*DeleteTopicCouncilSupervisorRequest) ProtoMessage() {}
 
 func (x *DeleteTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[73]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4704,7 +4107,7 @@ func (x *DeleteTopicCouncilSupervisorRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use DeleteTopicCouncilSupervisorRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTopicCouncilSupervisorRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{73}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *DeleteTopicCouncilSupervisorRequest) GetId() string {
@@ -4723,7 +4126,7 @@ type DeleteTopicCouncilSupervisorResponse struct {
 
 func (x *DeleteTopicCouncilSupervisorResponse) Reset() {
 	*x = DeleteTopicCouncilSupervisorResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[74]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4735,7 +4138,7 @@ func (x *DeleteTopicCouncilSupervisorResponse) String() string {
 func (*DeleteTopicCouncilSupervisorResponse) ProtoMessage() {}
 
 func (x *DeleteTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[74]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4748,7 +4151,7 @@ func (x *DeleteTopicCouncilSupervisorResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use DeleteTopicCouncilSupervisorResponse.ProtoReflect.Descriptor instead.
 func (*DeleteTopicCouncilSupervisorResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{74}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *DeleteTopicCouncilSupervisorResponse) GetSuccess() bool {
@@ -4767,7 +4170,7 @@ type ListTopicCouncilSupervisorsRequest struct {
 
 func (x *ListTopicCouncilSupervisorsRequest) Reset() {
 	*x = ListTopicCouncilSupervisorsRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[75]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4779,7 +4182,7 @@ func (x *ListTopicCouncilSupervisorsRequest) String() string {
 func (*ListTopicCouncilSupervisorsRequest) ProtoMessage() {}
 
 func (x *ListTopicCouncilSupervisorsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[75]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4792,7 +4195,7 @@ func (x *ListTopicCouncilSupervisorsRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ListTopicCouncilSupervisorsRequest.ProtoReflect.Descriptor instead.
 func (*ListTopicCouncilSupervisorsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{75}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *ListTopicCouncilSupervisorsRequest) GetSearch() *common.SearchRequest {
@@ -4814,7 +4217,7 @@ type ListTopicCouncilSupervisorsResponse struct {
 
 func (x *ListTopicCouncilSupervisorsResponse) Reset() {
 	*x = ListTopicCouncilSupervisorsResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[76]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4826,7 +4229,7 @@ func (x *ListTopicCouncilSupervisorsResponse) String() string {
 func (*ListTopicCouncilSupervisorsResponse) ProtoMessage() {}
 
 func (x *ListTopicCouncilSupervisorsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[76]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4839,7 +4242,7 @@ func (x *ListTopicCouncilSupervisorsResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ListTopicCouncilSupervisorsResponse.ProtoReflect.Descriptor instead.
 func (*ListTopicCouncilSupervisorsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{76}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ListTopicCouncilSupervisorsResponse) GetTopicCouncilSupervisors() []*TopicCouncilSupervisor {
@@ -4890,7 +4293,7 @@ type GradeReview struct {
 
 func (x *GradeReview) Reset() {
 	*x = GradeReview{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[77]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4902,7 +4305,7 @@ func (x *GradeReview) String() string {
 func (*GradeReview) ProtoMessage() {}
 
 func (x *GradeReview) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[77]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4915,7 +4318,7 @@ func (x *GradeReview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GradeReview.ProtoReflect.Descriptor instead.
 func (*GradeReview) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{77}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *GradeReview) GetId() string {
@@ -5010,7 +4413,7 @@ type CreateGradeReviewRequest struct {
 
 func (x *CreateGradeReviewRequest) Reset() {
 	*x = CreateGradeReviewRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[78]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5022,7 +4425,7 @@ func (x *CreateGradeReviewRequest) String() string {
 func (*CreateGradeReviewRequest) ProtoMessage() {}
 
 func (x *CreateGradeReviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[78]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5035,7 +4438,7 @@ func (x *CreateGradeReviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGradeReviewRequest.ProtoReflect.Descriptor instead.
 func (*CreateGradeReviewRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{78}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *CreateGradeReviewRequest) GetTitle() string {
@@ -5096,7 +4499,7 @@ type CreateGradeReviewResponse struct {
 
 func (x *CreateGradeReviewResponse) Reset() {
 	*x = CreateGradeReviewResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[79]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5108,7 +4511,7 @@ func (x *CreateGradeReviewResponse) String() string {
 func (*CreateGradeReviewResponse) ProtoMessage() {}
 
 func (x *CreateGradeReviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[79]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5121,7 +4524,7 @@ func (x *CreateGradeReviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGradeReviewResponse.ProtoReflect.Descriptor instead.
 func (*CreateGradeReviewResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{79}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *CreateGradeReviewResponse) GetGradeReview() *GradeReview {
@@ -5140,7 +4543,7 @@ type GetGradeReviewRequest struct {
 
 func (x *GetGradeReviewRequest) Reset() {
 	*x = GetGradeReviewRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[80]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5152,7 +4555,7 @@ func (x *GetGradeReviewRequest) String() string {
 func (*GetGradeReviewRequest) ProtoMessage() {}
 
 func (x *GetGradeReviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[80]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5165,7 +4568,7 @@ func (x *GetGradeReviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGradeReviewRequest.ProtoReflect.Descriptor instead.
 func (*GetGradeReviewRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{80}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *GetGradeReviewRequest) GetId() string {
@@ -5184,7 +4587,7 @@ type GetGradeReviewResponse struct {
 
 func (x *GetGradeReviewResponse) Reset() {
 	*x = GetGradeReviewResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[81]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5196,7 +4599,7 @@ func (x *GetGradeReviewResponse) String() string {
 func (*GetGradeReviewResponse) ProtoMessage() {}
 
 func (x *GetGradeReviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[81]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5209,7 +4612,7 @@ func (x *GetGradeReviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGradeReviewResponse.ProtoReflect.Descriptor instead.
 func (*GetGradeReviewResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{81}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *GetGradeReviewResponse) GetGradeReview() *GradeReview {
@@ -5235,7 +4638,7 @@ type UpdateGradeReviewRequest struct {
 
 func (x *UpdateGradeReviewRequest) Reset() {
 	*x = UpdateGradeReviewRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[82]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5247,7 +4650,7 @@ func (x *UpdateGradeReviewRequest) String() string {
 func (*UpdateGradeReviewRequest) ProtoMessage() {}
 
 func (x *UpdateGradeReviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[82]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5260,7 +4663,7 @@ func (x *UpdateGradeReviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateGradeReviewRequest.ProtoReflect.Descriptor instead.
 func (*UpdateGradeReviewRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{82}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *UpdateGradeReviewRequest) GetId() string {
@@ -5328,7 +4731,7 @@ type UpdateGradeReviewResponse struct {
 
 func (x *UpdateGradeReviewResponse) Reset() {
 	*x = UpdateGradeReviewResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[83]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5340,7 +4743,7 @@ func (x *UpdateGradeReviewResponse) String() string {
 func (*UpdateGradeReviewResponse) ProtoMessage() {}
 
 func (x *UpdateGradeReviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[83]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5353,7 +4756,7 @@ func (x *UpdateGradeReviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateGradeReviewResponse.ProtoReflect.Descriptor instead.
 func (*UpdateGradeReviewResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{83}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *UpdateGradeReviewResponse) GetGradeReview() *GradeReview {
@@ -5372,7 +4775,7 @@ type DeleteGradeReviewRequest struct {
 
 func (x *DeleteGradeReviewRequest) Reset() {
 	*x = DeleteGradeReviewRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[84]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5384,7 +4787,7 @@ func (x *DeleteGradeReviewRequest) String() string {
 func (*DeleteGradeReviewRequest) ProtoMessage() {}
 
 func (x *DeleteGradeReviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[84]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5397,7 +4800,7 @@ func (x *DeleteGradeReviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteGradeReviewRequest.ProtoReflect.Descriptor instead.
 func (*DeleteGradeReviewRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{84}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *DeleteGradeReviewRequest) GetId() string {
@@ -5416,7 +4819,7 @@ type DeleteGradeReviewResponse struct {
 
 func (x *DeleteGradeReviewResponse) Reset() {
 	*x = DeleteGradeReviewResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[85]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5428,7 +4831,7 @@ func (x *DeleteGradeReviewResponse) String() string {
 func (*DeleteGradeReviewResponse) ProtoMessage() {}
 
 func (x *DeleteGradeReviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[85]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5441,7 +4844,7 @@ func (x *DeleteGradeReviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteGradeReviewResponse.ProtoReflect.Descriptor instead.
 func (*DeleteGradeReviewResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{85}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *DeleteGradeReviewResponse) GetSuccess() bool {
@@ -5460,7 +4863,7 @@ type ListGradeReviewsRequest struct {
 
 func (x *ListGradeReviewsRequest) Reset() {
 	*x = ListGradeReviewsRequest{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[86]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5472,7 +4875,7 @@ func (x *ListGradeReviewsRequest) String() string {
 func (*ListGradeReviewsRequest) ProtoMessage() {}
 
 func (x *ListGradeReviewsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[86]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5485,7 +4888,7 @@ func (x *ListGradeReviewsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListGradeReviewsRequest.ProtoReflect.Descriptor instead.
 func (*ListGradeReviewsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{86}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *ListGradeReviewsRequest) GetSearch() *common.SearchRequest {
@@ -5507,7 +4910,7 @@ type ListGradeReviewsResponse struct {
 
 func (x *ListGradeReviewsResponse) Reset() {
 	*x = ListGradeReviewsResponse{}
-	mi := &file_proto_thesis_thesis_proto_msgTypes[87]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5519,7 +4922,7 @@ func (x *ListGradeReviewsResponse) String() string {
 func (*ListGradeReviewsResponse) ProtoMessage() {}
 
 func (x *ListGradeReviewsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_thesis_thesis_proto_msgTypes[87]
+	mi := &file_proto_thesis_thesis_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5532,7 +4935,7 @@ func (x *ListGradeReviewsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListGradeReviewsResponse.ProtoReflect.Descriptor instead.
 func (*ListGradeReviewsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{87}
+	return file_proto_thesis_thesis_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *ListGradeReviewsResponse) GetGradeReviews() []*GradeReview {
@@ -5839,53 +5242,6 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\x06topics\x18\x01 \x03(\v2\r.thesis.TopicR\x06topics\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xac\x02\n" +
-	"\x0fTopicSupervisor\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x126\n" +
-	"\x17teacher_supervisor_code\x18\x02 \x01(\tR\x15teacherSupervisorCode\x12\x1d\n" +
-	"\n" +
-	"topic_code\x18\x03 \x01(\tR\ttopicCode\x129\n" +
-	"\n" +
-	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
-	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
-	"\n" +
-	"created_by\x18\x06 \x01(\tR\tcreatedBy\x12\x1d\n" +
-	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedBy\"\x94\x01\n" +
-	"\x1cCreateTopicSupervisorRequest\x126\n" +
-	"\x17teacher_supervisor_code\x18\x01 \x01(\tR\x15teacherSupervisorCode\x12\x1d\n" +
-	"\n" +
-	"topic_code\x18\x02 \x01(\tR\ttopicCode\x12\x1d\n" +
-	"\n" +
-	"created_by\x18\x03 \x01(\tR\tcreatedBy\"c\n" +
-	"\x1dCreateTopicSupervisorResponse\x12B\n" +
-	"\x10topic_supervisor\x18\x01 \x01(\v2\x17.thesis.TopicSupervisorR\x0ftopicSupervisor\"+\n" +
-	"\x19GetTopicSupervisorRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"`\n" +
-	"\x1aGetTopicSupervisorResponse\x12B\n" +
-	"\x10topic_supervisor\x18\x01 \x01(\v2\x17.thesis.TopicSupervisorR\x0ftopicSupervisor\"\xd9\x01\n" +
-	"\x1cUpdateTopicSupervisorRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12;\n" +
-	"\x17teacher_supervisor_code\x18\x02 \x01(\tH\x00R\x15teacherSupervisorCode\x88\x01\x01\x12\"\n" +
-	"\n" +
-	"topic_code\x18\x03 \x01(\tH\x01R\ttopicCode\x88\x01\x01\x12\x1d\n" +
-	"\n" +
-	"updated_by\x18\x04 \x01(\tR\tupdatedByB\x1a\n" +
-	"\x18_teacher_supervisor_codeB\r\n" +
-	"\v_topic_code\"c\n" +
-	"\x1dUpdateTopicSupervisorResponse\x12B\n" +
-	"\x10topic_supervisor\x18\x01 \x01(\v2\x17.thesis.TopicSupervisorR\x0ftopicSupervisor\".\n" +
-	"\x1cDeleteTopicSupervisorRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"9\n" +
-	"\x1dDeleteTopicSupervisorResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"L\n" +
-	"\x1bListTopicSupervisorsRequest\x12-\n" +
-	"\x06search\x18\x01 \x01(\v2\x15.common.SearchRequestR\x06search\"\xab\x01\n" +
-	"\x1cListTopicSupervisorsResponse\x12D\n" +
-	"\x11topic_supervisors\x18\x01 \x03(\v2\x17.thesis.TopicSupervisorR\x10topicSupervisors\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
-	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xdc\x03\n" +
 	"\fTopicCouncil\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
@@ -6095,7 +5451,7 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\n" +
 	"STAGE_DACN\x10\x00\x12\x0e\n" +
 	"\n" +
-	"STAGE_LVTN\x10\x012\xb0\x1b\n" +
+	"STAGE_LVTN\x10\x012\xbe\x17\n" +
 	"\rThesisService\x12L\n" +
 	"\rCreateMidterm\x12\x1c.thesis.CreateMidtermRequest\x1a\x1d.thesis.CreateMidtermResponse\x12C\n" +
 	"\n" +
@@ -6119,12 +5475,7 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\vUpdateTopic\x12\x1a.thesis.UpdateTopicRequest\x1a\x1b.thesis.UpdateTopicResponse\x12F\n" +
 	"\vDeleteTopic\x12\x1a.thesis.DeleteTopicRequest\x1a\x1b.thesis.DeleteTopicResponse\x12C\n" +
 	"\n" +
-	"ListTopics\x12\x19.thesis.ListTopicsRequest\x1a\x1a.thesis.ListTopicsResponse\x12d\n" +
-	"\x15CreateTopicSupervisor\x12$.thesis.CreateTopicSupervisorRequest\x1a%.thesis.CreateTopicSupervisorResponse\x12[\n" +
-	"\x12GetTopicSupervisor\x12!.thesis.GetTopicSupervisorRequest\x1a\".thesis.GetTopicSupervisorResponse\x12d\n" +
-	"\x15UpdateTopicSupervisor\x12$.thesis.UpdateTopicSupervisorRequest\x1a%.thesis.UpdateTopicSupervisorResponse\x12d\n" +
-	"\x15DeleteTopicSupervisor\x12$.thesis.DeleteTopicSupervisorRequest\x1a%.thesis.DeleteTopicSupervisorResponse\x12a\n" +
-	"\x14ListTopicSupervisors\x12#.thesis.ListTopicSupervisorsRequest\x1a$.thesis.ListTopicSupervisorsResponse\x12[\n" +
+	"ListTopics\x12\x19.thesis.ListTopicsRequest\x1a\x1a.thesis.ListTopicsResponse\x12[\n" +
 	"\x12CreateTopicCouncil\x12!.thesis.CreateTopicCouncilRequest\x1a\".thesis.CreateTopicCouncilResponse\x12R\n" +
 	"\x0fGetTopicCouncil\x12\x1e.thesis.GetTopicCouncilRequest\x1a\x1f.thesis.GetTopicCouncilResponse\x12[\n" +
 	"\x12UpdateTopicCouncil\x12!.thesis.UpdateTopicCouncilRequest\x1a\".thesis.UpdateTopicCouncilResponse\x12[\n" +
@@ -6155,7 +5506,7 @@ func file_proto_thesis_thesis_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_thesis_thesis_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_proto_thesis_thesis_proto_msgTypes = make([]protoimpl.MessageInfo, 88)
+var file_proto_thesis_thesis_proto_msgTypes = make([]protoimpl.MessageInfo, 77)
 var file_proto_thesis_thesis_proto_goTypes = []any{
 	(MidtermStatus)(0),                           // 0: thesis.MidtermStatus
 	(FinalStatus)(0),                             // 1: thesis.FinalStatus
@@ -6205,222 +5556,194 @@ var file_proto_thesis_thesis_proto_goTypes = []any{
 	(*DeleteTopicResponse)(nil),                  // 45: thesis.DeleteTopicResponse
 	(*ListTopicsRequest)(nil),                    // 46: thesis.ListTopicsRequest
 	(*ListTopicsResponse)(nil),                   // 47: thesis.ListTopicsResponse
-	(*TopicSupervisor)(nil),                      // 48: thesis.TopicSupervisor
-	(*CreateTopicSupervisorRequest)(nil),         // 49: thesis.CreateTopicSupervisorRequest
-	(*CreateTopicSupervisorResponse)(nil),        // 50: thesis.CreateTopicSupervisorResponse
-	(*GetTopicSupervisorRequest)(nil),            // 51: thesis.GetTopicSupervisorRequest
-	(*GetTopicSupervisorResponse)(nil),           // 52: thesis.GetTopicSupervisorResponse
-	(*UpdateTopicSupervisorRequest)(nil),         // 53: thesis.UpdateTopicSupervisorRequest
-	(*UpdateTopicSupervisorResponse)(nil),        // 54: thesis.UpdateTopicSupervisorResponse
-	(*DeleteTopicSupervisorRequest)(nil),         // 55: thesis.DeleteTopicSupervisorRequest
-	(*DeleteTopicSupervisorResponse)(nil),        // 56: thesis.DeleteTopicSupervisorResponse
-	(*ListTopicSupervisorsRequest)(nil),          // 57: thesis.ListTopicSupervisorsRequest
-	(*ListTopicSupervisorsResponse)(nil),         // 58: thesis.ListTopicSupervisorsResponse
-	(*TopicCouncil)(nil),                         // 59: thesis.TopicCouncil
-	(*CreateTopicCouncilRequest)(nil),            // 60: thesis.CreateTopicCouncilRequest
-	(*CreateTopicCouncilResponse)(nil),           // 61: thesis.CreateTopicCouncilResponse
-	(*GetTopicCouncilRequest)(nil),               // 62: thesis.GetTopicCouncilRequest
-	(*GetTopicCouncilResponse)(nil),              // 63: thesis.GetTopicCouncilResponse
-	(*UpdateTopicCouncilRequest)(nil),            // 64: thesis.UpdateTopicCouncilRequest
-	(*UpdateTopicCouncilResponse)(nil),           // 65: thesis.UpdateTopicCouncilResponse
-	(*DeleteTopicCouncilRequest)(nil),            // 66: thesis.DeleteTopicCouncilRequest
-	(*DeleteTopicCouncilResponse)(nil),           // 67: thesis.DeleteTopicCouncilResponse
-	(*ListTopicCouncilsRequest)(nil),             // 68: thesis.ListTopicCouncilsRequest
-	(*ListTopicCouncilsResponse)(nil),            // 69: thesis.ListTopicCouncilsResponse
-	(*TopicCouncilSupervisor)(nil),               // 70: thesis.TopicCouncilSupervisor
-	(*CreateTopicCouncilSupervisorRequest)(nil),  // 71: thesis.CreateTopicCouncilSupervisorRequest
-	(*CreateTopicCouncilSupervisorResponse)(nil), // 72: thesis.CreateTopicCouncilSupervisorResponse
-	(*GetTopicCouncilSupervisorRequest)(nil),     // 73: thesis.GetTopicCouncilSupervisorRequest
-	(*GetTopicCouncilSupervisorResponse)(nil),    // 74: thesis.GetTopicCouncilSupervisorResponse
-	(*UpdateTopicCouncilSupervisorRequest)(nil),  // 75: thesis.UpdateTopicCouncilSupervisorRequest
-	(*UpdateTopicCouncilSupervisorResponse)(nil), // 76: thesis.UpdateTopicCouncilSupervisorResponse
-	(*DeleteTopicCouncilSupervisorRequest)(nil),  // 77: thesis.DeleteTopicCouncilSupervisorRequest
-	(*DeleteTopicCouncilSupervisorResponse)(nil), // 78: thesis.DeleteTopicCouncilSupervisorResponse
-	(*ListTopicCouncilSupervisorsRequest)(nil),   // 79: thesis.ListTopicCouncilSupervisorsRequest
-	(*ListTopicCouncilSupervisorsResponse)(nil),  // 80: thesis.ListTopicCouncilSupervisorsResponse
-	(*GradeReview)(nil),                          // 81: thesis.GradeReview
-	(*CreateGradeReviewRequest)(nil),             // 82: thesis.CreateGradeReviewRequest
-	(*CreateGradeReviewResponse)(nil),            // 83: thesis.CreateGradeReviewResponse
-	(*GetGradeReviewRequest)(nil),                // 84: thesis.GetGradeReviewRequest
-	(*GetGradeReviewResponse)(nil),               // 85: thesis.GetGradeReviewResponse
-	(*UpdateGradeReviewRequest)(nil),             // 86: thesis.UpdateGradeReviewRequest
-	(*UpdateGradeReviewResponse)(nil),            // 87: thesis.UpdateGradeReviewResponse
-	(*DeleteGradeReviewRequest)(nil),             // 88: thesis.DeleteGradeReviewRequest
-	(*DeleteGradeReviewResponse)(nil),            // 89: thesis.DeleteGradeReviewResponse
-	(*ListGradeReviewsRequest)(nil),              // 90: thesis.ListGradeReviewsRequest
-	(*ListGradeReviewsResponse)(nil),             // 91: thesis.ListGradeReviewsResponse
-	(*timestamppb.Timestamp)(nil),                // 92: google.protobuf.Timestamp
-	(*common.SearchRequest)(nil),                 // 93: common.SearchRequest
+	(*TopicCouncil)(nil),                         // 48: thesis.TopicCouncil
+	(*CreateTopicCouncilRequest)(nil),            // 49: thesis.CreateTopicCouncilRequest
+	(*CreateTopicCouncilResponse)(nil),           // 50: thesis.CreateTopicCouncilResponse
+	(*GetTopicCouncilRequest)(nil),               // 51: thesis.GetTopicCouncilRequest
+	(*GetTopicCouncilResponse)(nil),              // 52: thesis.GetTopicCouncilResponse
+	(*UpdateTopicCouncilRequest)(nil),            // 53: thesis.UpdateTopicCouncilRequest
+	(*UpdateTopicCouncilResponse)(nil),           // 54: thesis.UpdateTopicCouncilResponse
+	(*DeleteTopicCouncilRequest)(nil),            // 55: thesis.DeleteTopicCouncilRequest
+	(*DeleteTopicCouncilResponse)(nil),           // 56: thesis.DeleteTopicCouncilResponse
+	(*ListTopicCouncilsRequest)(nil),             // 57: thesis.ListTopicCouncilsRequest
+	(*ListTopicCouncilsResponse)(nil),            // 58: thesis.ListTopicCouncilsResponse
+	(*TopicCouncilSupervisor)(nil),               // 59: thesis.TopicCouncilSupervisor
+	(*CreateTopicCouncilSupervisorRequest)(nil),  // 60: thesis.CreateTopicCouncilSupervisorRequest
+	(*CreateTopicCouncilSupervisorResponse)(nil), // 61: thesis.CreateTopicCouncilSupervisorResponse
+	(*GetTopicCouncilSupervisorRequest)(nil),     // 62: thesis.GetTopicCouncilSupervisorRequest
+	(*GetTopicCouncilSupervisorResponse)(nil),    // 63: thesis.GetTopicCouncilSupervisorResponse
+	(*UpdateTopicCouncilSupervisorRequest)(nil),  // 64: thesis.UpdateTopicCouncilSupervisorRequest
+	(*UpdateTopicCouncilSupervisorResponse)(nil), // 65: thesis.UpdateTopicCouncilSupervisorResponse
+	(*DeleteTopicCouncilSupervisorRequest)(nil),  // 66: thesis.DeleteTopicCouncilSupervisorRequest
+	(*DeleteTopicCouncilSupervisorResponse)(nil), // 67: thesis.DeleteTopicCouncilSupervisorResponse
+	(*ListTopicCouncilSupervisorsRequest)(nil),   // 68: thesis.ListTopicCouncilSupervisorsRequest
+	(*ListTopicCouncilSupervisorsResponse)(nil),  // 69: thesis.ListTopicCouncilSupervisorsResponse
+	(*GradeReview)(nil),                          // 70: thesis.GradeReview
+	(*CreateGradeReviewRequest)(nil),             // 71: thesis.CreateGradeReviewRequest
+	(*CreateGradeReviewResponse)(nil),            // 72: thesis.CreateGradeReviewResponse
+	(*GetGradeReviewRequest)(nil),                // 73: thesis.GetGradeReviewRequest
+	(*GetGradeReviewResponse)(nil),               // 74: thesis.GetGradeReviewResponse
+	(*UpdateGradeReviewRequest)(nil),             // 75: thesis.UpdateGradeReviewRequest
+	(*UpdateGradeReviewResponse)(nil),            // 76: thesis.UpdateGradeReviewResponse
+	(*DeleteGradeReviewRequest)(nil),             // 77: thesis.DeleteGradeReviewRequest
+	(*DeleteGradeReviewResponse)(nil),            // 78: thesis.DeleteGradeReviewResponse
+	(*ListGradeReviewsRequest)(nil),              // 79: thesis.ListGradeReviewsRequest
+	(*ListGradeReviewsResponse)(nil),             // 80: thesis.ListGradeReviewsResponse
+	(*timestamppb.Timestamp)(nil),                // 81: google.protobuf.Timestamp
+	(*common.SearchRequest)(nil),                 // 82: common.SearchRequest
 }
 var file_proto_thesis_thesis_proto_depIdxs = []int32{
 	0,   // 0: thesis.Midterm.status:type_name -> thesis.MidtermStatus
-	92,  // 1: thesis.Midterm.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 2: thesis.Midterm.updated_at:type_name -> google.protobuf.Timestamp
+	81,  // 1: thesis.Midterm.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 2: thesis.Midterm.updated_at:type_name -> google.protobuf.Timestamp
 	0,   // 3: thesis.CreateMidtermRequest.status:type_name -> thesis.MidtermStatus
 	4,   // 4: thesis.CreateMidtermResponse.midterm:type_name -> thesis.Midterm
 	4,   // 5: thesis.GetMidtermResponse.midterm:type_name -> thesis.Midterm
 	0,   // 6: thesis.UpdateMidtermRequest.status:type_name -> thesis.MidtermStatus
 	4,   // 7: thesis.UpdateMidtermResponse.midterm:type_name -> thesis.Midterm
-	93,  // 8: thesis.ListMidtermsRequest.search:type_name -> common.SearchRequest
+	82,  // 8: thesis.ListMidtermsRequest.search:type_name -> common.SearchRequest
 	4,   // 9: thesis.ListMidtermsResponse.midterms:type_name -> thesis.Midterm
 	1,   // 10: thesis.Final.status:type_name -> thesis.FinalStatus
-	92,  // 11: thesis.Final.completion_date:type_name -> google.protobuf.Timestamp
-	92,  // 12: thesis.Final.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 13: thesis.Final.updated_at:type_name -> google.protobuf.Timestamp
+	81,  // 11: thesis.Final.completion_date:type_name -> google.protobuf.Timestamp
+	81,  // 12: thesis.Final.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 13: thesis.Final.updated_at:type_name -> google.protobuf.Timestamp
 	1,   // 14: thesis.CreateFinalRequest.status:type_name -> thesis.FinalStatus
-	92,  // 15: thesis.CreateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
+	81,  // 15: thesis.CreateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
 	15,  // 16: thesis.CreateFinalResponse.final:type_name -> thesis.Final
 	15,  // 17: thesis.GetFinalResponse.final:type_name -> thesis.Final
 	1,   // 18: thesis.UpdateFinalRequest.status:type_name -> thesis.FinalStatus
-	92,  // 19: thesis.UpdateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
+	81,  // 19: thesis.UpdateFinalRequest.completion_date:type_name -> google.protobuf.Timestamp
 	15,  // 20: thesis.UpdateFinalResponse.final:type_name -> thesis.Final
-	93,  // 21: thesis.ListFinalsRequest.search:type_name -> common.SearchRequest
+	82,  // 21: thesis.ListFinalsRequest.search:type_name -> common.SearchRequest
 	15,  // 22: thesis.ListFinalsResponse.finals:type_name -> thesis.Final
-	92,  // 23: thesis.Enrollment.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 24: thesis.Enrollment.updated_at:type_name -> google.protobuf.Timestamp
+	81,  // 23: thesis.Enrollment.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 24: thesis.Enrollment.updated_at:type_name -> google.protobuf.Timestamp
 	26,  // 25: thesis.CreateEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
 	26,  // 26: thesis.GetEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
 	26,  // 27: thesis.UpdateEnrollmentResponse.enrollment:type_name -> thesis.Enrollment
-	93,  // 28: thesis.ListEnrollmentsRequest.search:type_name -> common.SearchRequest
+	82,  // 28: thesis.ListEnrollmentsRequest.search:type_name -> common.SearchRequest
 	26,  // 29: thesis.ListEnrollmentsResponse.enrollments:type_name -> thesis.Enrollment
 	2,   // 30: thesis.Topic.status:type_name -> thesis.TopicStatus
-	92,  // 31: thesis.Topic.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 32: thesis.Topic.updated_at:type_name -> google.protobuf.Timestamp
+	81,  // 31: thesis.Topic.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 32: thesis.Topic.updated_at:type_name -> google.protobuf.Timestamp
 	2,   // 33: thesis.CreateTopicRequest.status:type_name -> thesis.TopicStatus
 	37,  // 34: thesis.CreateTopicResponse.topic:type_name -> thesis.Topic
 	37,  // 35: thesis.GetTopicResponse.topic:type_name -> thesis.Topic
 	2,   // 36: thesis.UpdateTopicRequest.status:type_name -> thesis.TopicStatus
 	37,  // 37: thesis.UpdateTopicResponse.topic:type_name -> thesis.Topic
-	93,  // 38: thesis.ListTopicsRequest.search:type_name -> common.SearchRequest
+	82,  // 38: thesis.ListTopicsRequest.search:type_name -> common.SearchRequest
 	37,  // 39: thesis.ListTopicsResponse.topics:type_name -> thesis.Topic
-	92,  // 40: thesis.TopicSupervisor.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 41: thesis.TopicSupervisor.updated_at:type_name -> google.protobuf.Timestamp
-	48,  // 42: thesis.CreateTopicSupervisorResponse.topic_supervisor:type_name -> thesis.TopicSupervisor
-	48,  // 43: thesis.GetTopicSupervisorResponse.topic_supervisor:type_name -> thesis.TopicSupervisor
-	48,  // 44: thesis.UpdateTopicSupervisorResponse.topic_supervisor:type_name -> thesis.TopicSupervisor
-	93,  // 45: thesis.ListTopicSupervisorsRequest.search:type_name -> common.SearchRequest
-	48,  // 46: thesis.ListTopicSupervisorsResponse.topic_supervisors:type_name -> thesis.TopicSupervisor
-	3,   // 47: thesis.TopicCouncil.stage:type_name -> thesis.TopicStage
-	92,  // 48: thesis.TopicCouncil.time_start:type_name -> google.protobuf.Timestamp
-	92,  // 49: thesis.TopicCouncil.time_end:type_name -> google.protobuf.Timestamp
-	92,  // 50: thesis.TopicCouncil.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 51: thesis.TopicCouncil.updated_at:type_name -> google.protobuf.Timestamp
-	3,   // 52: thesis.CreateTopicCouncilRequest.stage:type_name -> thesis.TopicStage
-	92,  // 53: thesis.CreateTopicCouncilRequest.time_start:type_name -> google.protobuf.Timestamp
-	92,  // 54: thesis.CreateTopicCouncilRequest.time_end:type_name -> google.protobuf.Timestamp
-	59,  // 55: thesis.CreateTopicCouncilResponse.topic_council:type_name -> thesis.TopicCouncil
-	59,  // 56: thesis.GetTopicCouncilResponse.topic_council:type_name -> thesis.TopicCouncil
-	3,   // 57: thesis.UpdateTopicCouncilRequest.stage:type_name -> thesis.TopicStage
-	92,  // 58: thesis.UpdateTopicCouncilRequest.time_start:type_name -> google.protobuf.Timestamp
-	92,  // 59: thesis.UpdateTopicCouncilRequest.time_end:type_name -> google.protobuf.Timestamp
-	59,  // 60: thesis.UpdateTopicCouncilResponse.topic_council:type_name -> thesis.TopicCouncil
-	93,  // 61: thesis.ListTopicCouncilsRequest.search:type_name -> common.SearchRequest
-	59,  // 62: thesis.ListTopicCouncilsResponse.topic_councils:type_name -> thesis.TopicCouncil
-	92,  // 63: thesis.TopicCouncilSupervisor.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 64: thesis.TopicCouncilSupervisor.updated_at:type_name -> google.protobuf.Timestamp
-	70,  // 65: thesis.CreateTopicCouncilSupervisorResponse.topic_council_supervisor:type_name -> thesis.TopicCouncilSupervisor
-	70,  // 66: thesis.GetTopicCouncilSupervisorResponse.topic_council_supervisor:type_name -> thesis.TopicCouncilSupervisor
-	70,  // 67: thesis.UpdateTopicCouncilSupervisorResponse.topic_council_supervisor:type_name -> thesis.TopicCouncilSupervisor
-	93,  // 68: thesis.ListTopicCouncilSupervisorsRequest.search:type_name -> common.SearchRequest
-	70,  // 69: thesis.ListTopicCouncilSupervisorsResponse.topic_council_supervisors:type_name -> thesis.TopicCouncilSupervisor
-	1,   // 70: thesis.GradeReview.status:type_name -> thesis.FinalStatus
-	92,  // 71: thesis.GradeReview.completion_date:type_name -> google.protobuf.Timestamp
-	92,  // 72: thesis.GradeReview.created_at:type_name -> google.protobuf.Timestamp
-	92,  // 73: thesis.GradeReview.updated_at:type_name -> google.protobuf.Timestamp
-	1,   // 74: thesis.CreateGradeReviewRequest.status:type_name -> thesis.FinalStatus
-	92,  // 75: thesis.CreateGradeReviewRequest.completion_date:type_name -> google.protobuf.Timestamp
-	81,  // 76: thesis.CreateGradeReviewResponse.grade_review:type_name -> thesis.GradeReview
-	81,  // 77: thesis.GetGradeReviewResponse.grade_review:type_name -> thesis.GradeReview
-	1,   // 78: thesis.UpdateGradeReviewRequest.status:type_name -> thesis.FinalStatus
-	92,  // 79: thesis.UpdateGradeReviewRequest.completion_date:type_name -> google.protobuf.Timestamp
-	81,  // 80: thesis.UpdateGradeReviewResponse.grade_review:type_name -> thesis.GradeReview
-	93,  // 81: thesis.ListGradeReviewsRequest.search:type_name -> common.SearchRequest
-	81,  // 82: thesis.ListGradeReviewsResponse.grade_reviews:type_name -> thesis.GradeReview
-	5,   // 83: thesis.ThesisService.CreateMidterm:input_type -> thesis.CreateMidtermRequest
-	7,   // 84: thesis.ThesisService.GetMidterm:input_type -> thesis.GetMidtermRequest
-	9,   // 85: thesis.ThesisService.UpdateMidterm:input_type -> thesis.UpdateMidtermRequest
-	11,  // 86: thesis.ThesisService.DeleteMidterm:input_type -> thesis.DeleteMidtermRequest
-	13,  // 87: thesis.ThesisService.ListMidterms:input_type -> thesis.ListMidtermsRequest
-	16,  // 88: thesis.ThesisService.CreateFinal:input_type -> thesis.CreateFinalRequest
-	18,  // 89: thesis.ThesisService.GetFinal:input_type -> thesis.GetFinalRequest
-	20,  // 90: thesis.ThesisService.UpdateFinal:input_type -> thesis.UpdateFinalRequest
-	22,  // 91: thesis.ThesisService.DeleteFinal:input_type -> thesis.DeleteFinalRequest
-	24,  // 92: thesis.ThesisService.ListFinals:input_type -> thesis.ListFinalsRequest
-	27,  // 93: thesis.ThesisService.CreateEnrollment:input_type -> thesis.CreateEnrollmentRequest
-	29,  // 94: thesis.ThesisService.GetEnrollment:input_type -> thesis.GetEnrollmentRequest
-	31,  // 95: thesis.ThesisService.UpdateEnrollment:input_type -> thesis.UpdateEnrollmentRequest
-	33,  // 96: thesis.ThesisService.DeleteEnrollment:input_type -> thesis.DeleteEnrollmentRequest
-	35,  // 97: thesis.ThesisService.ListEnrollments:input_type -> thesis.ListEnrollmentsRequest
-	38,  // 98: thesis.ThesisService.CreateTopic:input_type -> thesis.CreateTopicRequest
-	40,  // 99: thesis.ThesisService.GetTopic:input_type -> thesis.GetTopicRequest
-	42,  // 100: thesis.ThesisService.UpdateTopic:input_type -> thesis.UpdateTopicRequest
-	44,  // 101: thesis.ThesisService.DeleteTopic:input_type -> thesis.DeleteTopicRequest
-	46,  // 102: thesis.ThesisService.ListTopics:input_type -> thesis.ListTopicsRequest
-	49,  // 103: thesis.ThesisService.CreateTopicSupervisor:input_type -> thesis.CreateTopicSupervisorRequest
-	51,  // 104: thesis.ThesisService.GetTopicSupervisor:input_type -> thesis.GetTopicSupervisorRequest
-	53,  // 105: thesis.ThesisService.UpdateTopicSupervisor:input_type -> thesis.UpdateTopicSupervisorRequest
-	55,  // 106: thesis.ThesisService.DeleteTopicSupervisor:input_type -> thesis.DeleteTopicSupervisorRequest
-	57,  // 107: thesis.ThesisService.ListTopicSupervisors:input_type -> thesis.ListTopicSupervisorsRequest
-	60,  // 108: thesis.ThesisService.CreateTopicCouncil:input_type -> thesis.CreateTopicCouncilRequest
-	62,  // 109: thesis.ThesisService.GetTopicCouncil:input_type -> thesis.GetTopicCouncilRequest
-	64,  // 110: thesis.ThesisService.UpdateTopicCouncil:input_type -> thesis.UpdateTopicCouncilRequest
-	66,  // 111: thesis.ThesisService.DeleteTopicCouncil:input_type -> thesis.DeleteTopicCouncilRequest
-	68,  // 112: thesis.ThesisService.ListTopicCouncils:input_type -> thesis.ListTopicCouncilsRequest
-	71,  // 113: thesis.ThesisService.CreateTopicCouncilSupervisor:input_type -> thesis.CreateTopicCouncilSupervisorRequest
-	73,  // 114: thesis.ThesisService.GetTopicCouncilSupervisor:input_type -> thesis.GetTopicCouncilSupervisorRequest
-	75,  // 115: thesis.ThesisService.UpdateTopicCouncilSupervisor:input_type -> thesis.UpdateTopicCouncilSupervisorRequest
-	77,  // 116: thesis.ThesisService.DeleteTopicCouncilSupervisor:input_type -> thesis.DeleteTopicCouncilSupervisorRequest
-	79,  // 117: thesis.ThesisService.ListTopicCouncilSupervisors:input_type -> thesis.ListTopicCouncilSupervisorsRequest
-	82,  // 118: thesis.ThesisService.CreateGradeReview:input_type -> thesis.CreateGradeReviewRequest
-	84,  // 119: thesis.ThesisService.GetGradeReview:input_type -> thesis.GetGradeReviewRequest
-	86,  // 120: thesis.ThesisService.UpdateGradeReview:input_type -> thesis.UpdateGradeReviewRequest
-	88,  // 121: thesis.ThesisService.DeleteGradeReview:input_type -> thesis.DeleteGradeReviewRequest
-	90,  // 122: thesis.ThesisService.ListGradeReviews:input_type -> thesis.ListGradeReviewsRequest
-	6,   // 123: thesis.ThesisService.CreateMidterm:output_type -> thesis.CreateMidtermResponse
-	8,   // 124: thesis.ThesisService.GetMidterm:output_type -> thesis.GetMidtermResponse
-	10,  // 125: thesis.ThesisService.UpdateMidterm:output_type -> thesis.UpdateMidtermResponse
-	12,  // 126: thesis.ThesisService.DeleteMidterm:output_type -> thesis.DeleteMidtermResponse
-	14,  // 127: thesis.ThesisService.ListMidterms:output_type -> thesis.ListMidtermsResponse
-	17,  // 128: thesis.ThesisService.CreateFinal:output_type -> thesis.CreateFinalResponse
-	19,  // 129: thesis.ThesisService.GetFinal:output_type -> thesis.GetFinalResponse
-	21,  // 130: thesis.ThesisService.UpdateFinal:output_type -> thesis.UpdateFinalResponse
-	23,  // 131: thesis.ThesisService.DeleteFinal:output_type -> thesis.DeleteFinalResponse
-	25,  // 132: thesis.ThesisService.ListFinals:output_type -> thesis.ListFinalsResponse
-	28,  // 133: thesis.ThesisService.CreateEnrollment:output_type -> thesis.CreateEnrollmentResponse
-	30,  // 134: thesis.ThesisService.GetEnrollment:output_type -> thesis.GetEnrollmentResponse
-	32,  // 135: thesis.ThesisService.UpdateEnrollment:output_type -> thesis.UpdateEnrollmentResponse
-	34,  // 136: thesis.ThesisService.DeleteEnrollment:output_type -> thesis.DeleteEnrollmentResponse
-	36,  // 137: thesis.ThesisService.ListEnrollments:output_type -> thesis.ListEnrollmentsResponse
-	39,  // 138: thesis.ThesisService.CreateTopic:output_type -> thesis.CreateTopicResponse
-	41,  // 139: thesis.ThesisService.GetTopic:output_type -> thesis.GetTopicResponse
-	43,  // 140: thesis.ThesisService.UpdateTopic:output_type -> thesis.UpdateTopicResponse
-	45,  // 141: thesis.ThesisService.DeleteTopic:output_type -> thesis.DeleteTopicResponse
-	47,  // 142: thesis.ThesisService.ListTopics:output_type -> thesis.ListTopicsResponse
-	50,  // 143: thesis.ThesisService.CreateTopicSupervisor:output_type -> thesis.CreateTopicSupervisorResponse
-	52,  // 144: thesis.ThesisService.GetTopicSupervisor:output_type -> thesis.GetTopicSupervisorResponse
-	54,  // 145: thesis.ThesisService.UpdateTopicSupervisor:output_type -> thesis.UpdateTopicSupervisorResponse
-	56,  // 146: thesis.ThesisService.DeleteTopicSupervisor:output_type -> thesis.DeleteTopicSupervisorResponse
-	58,  // 147: thesis.ThesisService.ListTopicSupervisors:output_type -> thesis.ListTopicSupervisorsResponse
-	61,  // 148: thesis.ThesisService.CreateTopicCouncil:output_type -> thesis.CreateTopicCouncilResponse
-	63,  // 149: thesis.ThesisService.GetTopicCouncil:output_type -> thesis.GetTopicCouncilResponse
-	65,  // 150: thesis.ThesisService.UpdateTopicCouncil:output_type -> thesis.UpdateTopicCouncilResponse
-	67,  // 151: thesis.ThesisService.DeleteTopicCouncil:output_type -> thesis.DeleteTopicCouncilResponse
-	69,  // 152: thesis.ThesisService.ListTopicCouncils:output_type -> thesis.ListTopicCouncilsResponse
-	72,  // 153: thesis.ThesisService.CreateTopicCouncilSupervisor:output_type -> thesis.CreateTopicCouncilSupervisorResponse
-	74,  // 154: thesis.ThesisService.GetTopicCouncilSupervisor:output_type -> thesis.GetTopicCouncilSupervisorResponse
-	76,  // 155: thesis.ThesisService.UpdateTopicCouncilSupervisor:output_type -> thesis.UpdateTopicCouncilSupervisorResponse
-	78,  // 156: thesis.ThesisService.DeleteTopicCouncilSupervisor:output_type -> thesis.DeleteTopicCouncilSupervisorResponse
-	80,  // 157: thesis.ThesisService.ListTopicCouncilSupervisors:output_type -> thesis.ListTopicCouncilSupervisorsResponse
-	83,  // 158: thesis.ThesisService.CreateGradeReview:output_type -> thesis.CreateGradeReviewResponse
-	85,  // 159: thesis.ThesisService.GetGradeReview:output_type -> thesis.GetGradeReviewResponse
-	87,  // 160: thesis.ThesisService.UpdateGradeReview:output_type -> thesis.UpdateGradeReviewResponse
-	89,  // 161: thesis.ThesisService.DeleteGradeReview:output_type -> thesis.DeleteGradeReviewResponse
-	91,  // 162: thesis.ThesisService.ListGradeReviews:output_type -> thesis.ListGradeReviewsResponse
-	123, // [123:163] is the sub-list for method output_type
-	83,  // [83:123] is the sub-list for method input_type
-	83,  // [83:83] is the sub-list for extension type_name
-	83,  // [83:83] is the sub-list for extension extendee
-	0,   // [0:83] is the sub-list for field type_name
+	3,   // 40: thesis.TopicCouncil.stage:type_name -> thesis.TopicStage
+	81,  // 41: thesis.TopicCouncil.time_start:type_name -> google.protobuf.Timestamp
+	81,  // 42: thesis.TopicCouncil.time_end:type_name -> google.protobuf.Timestamp
+	81,  // 43: thesis.TopicCouncil.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 44: thesis.TopicCouncil.updated_at:type_name -> google.protobuf.Timestamp
+	3,   // 45: thesis.CreateTopicCouncilRequest.stage:type_name -> thesis.TopicStage
+	81,  // 46: thesis.CreateTopicCouncilRequest.time_start:type_name -> google.protobuf.Timestamp
+	81,  // 47: thesis.CreateTopicCouncilRequest.time_end:type_name -> google.protobuf.Timestamp
+	48,  // 48: thesis.CreateTopicCouncilResponse.topic_council:type_name -> thesis.TopicCouncil
+	48,  // 49: thesis.GetTopicCouncilResponse.topic_council:type_name -> thesis.TopicCouncil
+	3,   // 50: thesis.UpdateTopicCouncilRequest.stage:type_name -> thesis.TopicStage
+	81,  // 51: thesis.UpdateTopicCouncilRequest.time_start:type_name -> google.protobuf.Timestamp
+	81,  // 52: thesis.UpdateTopicCouncilRequest.time_end:type_name -> google.protobuf.Timestamp
+	48,  // 53: thesis.UpdateTopicCouncilResponse.topic_council:type_name -> thesis.TopicCouncil
+	82,  // 54: thesis.ListTopicCouncilsRequest.search:type_name -> common.SearchRequest
+	48,  // 55: thesis.ListTopicCouncilsResponse.topic_councils:type_name -> thesis.TopicCouncil
+	81,  // 56: thesis.TopicCouncilSupervisor.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 57: thesis.TopicCouncilSupervisor.updated_at:type_name -> google.protobuf.Timestamp
+	59,  // 58: thesis.CreateTopicCouncilSupervisorResponse.topic_council_supervisor:type_name -> thesis.TopicCouncilSupervisor
+	59,  // 59: thesis.GetTopicCouncilSupervisorResponse.topic_council_supervisor:type_name -> thesis.TopicCouncilSupervisor
+	59,  // 60: thesis.UpdateTopicCouncilSupervisorResponse.topic_council_supervisor:type_name -> thesis.TopicCouncilSupervisor
+	82,  // 61: thesis.ListTopicCouncilSupervisorsRequest.search:type_name -> common.SearchRequest
+	59,  // 62: thesis.ListTopicCouncilSupervisorsResponse.topic_council_supervisors:type_name -> thesis.TopicCouncilSupervisor
+	1,   // 63: thesis.GradeReview.status:type_name -> thesis.FinalStatus
+	81,  // 64: thesis.GradeReview.completion_date:type_name -> google.protobuf.Timestamp
+	81,  // 65: thesis.GradeReview.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 66: thesis.GradeReview.updated_at:type_name -> google.protobuf.Timestamp
+	1,   // 67: thesis.CreateGradeReviewRequest.status:type_name -> thesis.FinalStatus
+	81,  // 68: thesis.CreateGradeReviewRequest.completion_date:type_name -> google.protobuf.Timestamp
+	70,  // 69: thesis.CreateGradeReviewResponse.grade_review:type_name -> thesis.GradeReview
+	70,  // 70: thesis.GetGradeReviewResponse.grade_review:type_name -> thesis.GradeReview
+	1,   // 71: thesis.UpdateGradeReviewRequest.status:type_name -> thesis.FinalStatus
+	81,  // 72: thesis.UpdateGradeReviewRequest.completion_date:type_name -> google.protobuf.Timestamp
+	70,  // 73: thesis.UpdateGradeReviewResponse.grade_review:type_name -> thesis.GradeReview
+	82,  // 74: thesis.ListGradeReviewsRequest.search:type_name -> common.SearchRequest
+	70,  // 75: thesis.ListGradeReviewsResponse.grade_reviews:type_name -> thesis.GradeReview
+	5,   // 76: thesis.ThesisService.CreateMidterm:input_type -> thesis.CreateMidtermRequest
+	7,   // 77: thesis.ThesisService.GetMidterm:input_type -> thesis.GetMidtermRequest
+	9,   // 78: thesis.ThesisService.UpdateMidterm:input_type -> thesis.UpdateMidtermRequest
+	11,  // 79: thesis.ThesisService.DeleteMidterm:input_type -> thesis.DeleteMidtermRequest
+	13,  // 80: thesis.ThesisService.ListMidterms:input_type -> thesis.ListMidtermsRequest
+	16,  // 81: thesis.ThesisService.CreateFinal:input_type -> thesis.CreateFinalRequest
+	18,  // 82: thesis.ThesisService.GetFinal:input_type -> thesis.GetFinalRequest
+	20,  // 83: thesis.ThesisService.UpdateFinal:input_type -> thesis.UpdateFinalRequest
+	22,  // 84: thesis.ThesisService.DeleteFinal:input_type -> thesis.DeleteFinalRequest
+	24,  // 85: thesis.ThesisService.ListFinals:input_type -> thesis.ListFinalsRequest
+	27,  // 86: thesis.ThesisService.CreateEnrollment:input_type -> thesis.CreateEnrollmentRequest
+	29,  // 87: thesis.ThesisService.GetEnrollment:input_type -> thesis.GetEnrollmentRequest
+	31,  // 88: thesis.ThesisService.UpdateEnrollment:input_type -> thesis.UpdateEnrollmentRequest
+	33,  // 89: thesis.ThesisService.DeleteEnrollment:input_type -> thesis.DeleteEnrollmentRequest
+	35,  // 90: thesis.ThesisService.ListEnrollments:input_type -> thesis.ListEnrollmentsRequest
+	38,  // 91: thesis.ThesisService.CreateTopic:input_type -> thesis.CreateTopicRequest
+	40,  // 92: thesis.ThesisService.GetTopic:input_type -> thesis.GetTopicRequest
+	42,  // 93: thesis.ThesisService.UpdateTopic:input_type -> thesis.UpdateTopicRequest
+	44,  // 94: thesis.ThesisService.DeleteTopic:input_type -> thesis.DeleteTopicRequest
+	46,  // 95: thesis.ThesisService.ListTopics:input_type -> thesis.ListTopicsRequest
+	49,  // 96: thesis.ThesisService.CreateTopicCouncil:input_type -> thesis.CreateTopicCouncilRequest
+	51,  // 97: thesis.ThesisService.GetTopicCouncil:input_type -> thesis.GetTopicCouncilRequest
+	53,  // 98: thesis.ThesisService.UpdateTopicCouncil:input_type -> thesis.UpdateTopicCouncilRequest
+	55,  // 99: thesis.ThesisService.DeleteTopicCouncil:input_type -> thesis.DeleteTopicCouncilRequest
+	57,  // 100: thesis.ThesisService.ListTopicCouncils:input_type -> thesis.ListTopicCouncilsRequest
+	60,  // 101: thesis.ThesisService.CreateTopicCouncilSupervisor:input_type -> thesis.CreateTopicCouncilSupervisorRequest
+	62,  // 102: thesis.ThesisService.GetTopicCouncilSupervisor:input_type -> thesis.GetTopicCouncilSupervisorRequest
+	64,  // 103: thesis.ThesisService.UpdateTopicCouncilSupervisor:input_type -> thesis.UpdateTopicCouncilSupervisorRequest
+	66,  // 104: thesis.ThesisService.DeleteTopicCouncilSupervisor:input_type -> thesis.DeleteTopicCouncilSupervisorRequest
+	68,  // 105: thesis.ThesisService.ListTopicCouncilSupervisors:input_type -> thesis.ListTopicCouncilSupervisorsRequest
+	71,  // 106: thesis.ThesisService.CreateGradeReview:input_type -> thesis.CreateGradeReviewRequest
+	73,  // 107: thesis.ThesisService.GetGradeReview:input_type -> thesis.GetGradeReviewRequest
+	75,  // 108: thesis.ThesisService.UpdateGradeReview:input_type -> thesis.UpdateGradeReviewRequest
+	77,  // 109: thesis.ThesisService.DeleteGradeReview:input_type -> thesis.DeleteGradeReviewRequest
+	79,  // 110: thesis.ThesisService.ListGradeReviews:input_type -> thesis.ListGradeReviewsRequest
+	6,   // 111: thesis.ThesisService.CreateMidterm:output_type -> thesis.CreateMidtermResponse
+	8,   // 112: thesis.ThesisService.GetMidterm:output_type -> thesis.GetMidtermResponse
+	10,  // 113: thesis.ThesisService.UpdateMidterm:output_type -> thesis.UpdateMidtermResponse
+	12,  // 114: thesis.ThesisService.DeleteMidterm:output_type -> thesis.DeleteMidtermResponse
+	14,  // 115: thesis.ThesisService.ListMidterms:output_type -> thesis.ListMidtermsResponse
+	17,  // 116: thesis.ThesisService.CreateFinal:output_type -> thesis.CreateFinalResponse
+	19,  // 117: thesis.ThesisService.GetFinal:output_type -> thesis.GetFinalResponse
+	21,  // 118: thesis.ThesisService.UpdateFinal:output_type -> thesis.UpdateFinalResponse
+	23,  // 119: thesis.ThesisService.DeleteFinal:output_type -> thesis.DeleteFinalResponse
+	25,  // 120: thesis.ThesisService.ListFinals:output_type -> thesis.ListFinalsResponse
+	28,  // 121: thesis.ThesisService.CreateEnrollment:output_type -> thesis.CreateEnrollmentResponse
+	30,  // 122: thesis.ThesisService.GetEnrollment:output_type -> thesis.GetEnrollmentResponse
+	32,  // 123: thesis.ThesisService.UpdateEnrollment:output_type -> thesis.UpdateEnrollmentResponse
+	34,  // 124: thesis.ThesisService.DeleteEnrollment:output_type -> thesis.DeleteEnrollmentResponse
+	36,  // 125: thesis.ThesisService.ListEnrollments:output_type -> thesis.ListEnrollmentsResponse
+	39,  // 126: thesis.ThesisService.CreateTopic:output_type -> thesis.CreateTopicResponse
+	41,  // 127: thesis.ThesisService.GetTopic:output_type -> thesis.GetTopicResponse
+	43,  // 128: thesis.ThesisService.UpdateTopic:output_type -> thesis.UpdateTopicResponse
+	45,  // 129: thesis.ThesisService.DeleteTopic:output_type -> thesis.DeleteTopicResponse
+	47,  // 130: thesis.ThesisService.ListTopics:output_type -> thesis.ListTopicsResponse
+	50,  // 131: thesis.ThesisService.CreateTopicCouncil:output_type -> thesis.CreateTopicCouncilResponse
+	52,  // 132: thesis.ThesisService.GetTopicCouncil:output_type -> thesis.GetTopicCouncilResponse
+	54,  // 133: thesis.ThesisService.UpdateTopicCouncil:output_type -> thesis.UpdateTopicCouncilResponse
+	56,  // 134: thesis.ThesisService.DeleteTopicCouncil:output_type -> thesis.DeleteTopicCouncilResponse
+	58,  // 135: thesis.ThesisService.ListTopicCouncils:output_type -> thesis.ListTopicCouncilsResponse
+	61,  // 136: thesis.ThesisService.CreateTopicCouncilSupervisor:output_type -> thesis.CreateTopicCouncilSupervisorResponse
+	63,  // 137: thesis.ThesisService.GetTopicCouncilSupervisor:output_type -> thesis.GetTopicCouncilSupervisorResponse
+	65,  // 138: thesis.ThesisService.UpdateTopicCouncilSupervisor:output_type -> thesis.UpdateTopicCouncilSupervisorResponse
+	67,  // 139: thesis.ThesisService.DeleteTopicCouncilSupervisor:output_type -> thesis.DeleteTopicCouncilSupervisorResponse
+	69,  // 140: thesis.ThesisService.ListTopicCouncilSupervisors:output_type -> thesis.ListTopicCouncilSupervisorsResponse
+	72,  // 141: thesis.ThesisService.CreateGradeReview:output_type -> thesis.CreateGradeReviewResponse
+	74,  // 142: thesis.ThesisService.GetGradeReview:output_type -> thesis.GetGradeReviewResponse
+	76,  // 143: thesis.ThesisService.UpdateGradeReview:output_type -> thesis.UpdateGradeReviewResponse
+	78,  // 144: thesis.ThesisService.DeleteGradeReview:output_type -> thesis.DeleteGradeReviewResponse
+	80,  // 145: thesis.ThesisService.ListGradeReviews:output_type -> thesis.ListGradeReviewsResponse
+	111, // [111:146] is the sub-list for method output_type
+	76,  // [76:111] is the sub-list for method input_type
+	76,  // [76:76] is the sub-list for extension type_name
+	76,  // [76:76] is the sub-list for extension extendee
+	0,   // [0:76] is the sub-list for field type_name
 }
 
 func init() { file_proto_thesis_thesis_proto_init() }
@@ -6438,21 +5761,20 @@ func file_proto_thesis_thesis_proto_init() {
 	file_proto_thesis_thesis_proto_msgTypes[33].OneofWrappers = []any{}
 	file_proto_thesis_thesis_proto_msgTypes[34].OneofWrappers = []any{}
 	file_proto_thesis_thesis_proto_msgTypes[38].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[44].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[45].OneofWrappers = []any{}
 	file_proto_thesis_thesis_proto_msgTypes[49].OneofWrappers = []any{}
-	file_proto_thesis_thesis_proto_msgTypes[55].OneofWrappers = []any{}
-	file_proto_thesis_thesis_proto_msgTypes[56].OneofWrappers = []any{}
 	file_proto_thesis_thesis_proto_msgTypes[60].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[66].OneofWrappers = []any{}
+	file_proto_thesis_thesis_proto_msgTypes[67].OneofWrappers = []any{}
 	file_proto_thesis_thesis_proto_msgTypes[71].OneofWrappers = []any{}
-	file_proto_thesis_thesis_proto_msgTypes[77].OneofWrappers = []any{}
-	file_proto_thesis_thesis_proto_msgTypes[78].OneofWrappers = []any{}
-	file_proto_thesis_thesis_proto_msgTypes[82].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_thesis_thesis_proto_rawDesc), len(file_proto_thesis_thesis_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   88,
+			NumMessages:   77,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

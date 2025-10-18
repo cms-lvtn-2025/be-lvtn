@@ -18,8 +18,6 @@ import (
 // region    ************************** generated!.gotpl **************************
 
 type CouncilResolver interface {
-	Major(ctx context.Context, obj *model.Council) (*model.Major, error)
-	Semester(ctx context.Context, obj *model.Council) (*model.Semester, error)
 	Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error)
 	TopicCouncils(ctx context.Context, obj *model.Council) ([]*model.TopicCouncil, error)
 }
@@ -334,104 +332,6 @@ func (ec *executionContext) fieldContext_Council_updatedBy(_ context.Context, fi
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Council_major(ctx context.Context, field graphql.CollectedField, obj *model.Council) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Council_major,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Council().Major(ctx, obj)
-		},
-		nil,
-		ec.marshalOMajor2ᚖthailyᚋsrcᚋgraphᚋmodelᚐMajor,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Council_major(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Council",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Major_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Major_title(ctx, field)
-			case "facultyCode":
-				return ec.fieldContext_Major_facultyCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Major_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Major_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Major_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Major_updatedBy(ctx, field)
-			case "faculty":
-				return ec.fieldContext_Major_faculty(ctx, field)
-			case "topics":
-				return ec.fieldContext_Major_topics(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Major", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Council_semester(ctx context.Context, field graphql.CollectedField, obj *model.Council) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Council_semester,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Council().Semester(ctx, obj)
-		},
-		nil,
-		ec.marshalOSemester2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSemester,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Council_semester(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Council",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Semester_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Semester_title(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Semester_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Semester_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Semester_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Semester_updatedBy(ctx, field)
-			case "students":
-				return ec.fieldContext_Semester_students(ctx, field)
-			case "teachers":
-				return ec.fieldContext_Semester_teachers(ctx, field)
-			case "topics":
-				return ec.fieldContext_Semester_topics(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Semester", field.Name)
 		},
 	}
 	return fc, nil
@@ -858,10 +758,6 @@ func (ec *executionContext) fieldContext_Defence_council(_ context.Context, fiel
 				return ec.fieldContext_Council_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Council_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Council_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Council_semester(ctx, field)
 			case "defences":
 				return ec.fieldContext_Council_defences(ctx, field)
 			case "topicCouncils":
@@ -917,14 +813,8 @@ func (ec *executionContext) fieldContext_Defence_teacher(_ context.Context, fiel
 				return ec.fieldContext_Teacher_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Teacher_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Teacher_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Teacher_semester(ctx, field)
 			case "roles":
 				return ec.fieldContext_Teacher_roles(ctx, field)
-			case "topicsSupervised":
-				return ec.fieldContext_Teacher_topicsSupervised(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
 		},
@@ -1790,72 +1680,6 @@ func (ec *executionContext) _Council(ctx context.Context, sel ast.SelectionSet, 
 			out.Values[i] = ec._Council_createdBy(ctx, field, obj)
 		case "updatedBy":
 			out.Values[i] = ec._Council_updatedBy(ctx, field, obj)
-		case "major":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Council_major(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "semester":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Council_semester(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "defences":
 			field := field
 
@@ -2542,6 +2366,50 @@ func (ec *executionContext) marshalNGradeDefence2ᚖthailyᚋsrcᚋgraphᚋmodel
 
 func (ec *executionContext) marshalNGradeDefenceCriterion2thailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx context.Context, sel ast.SelectionSet, v model.GradeDefenceCriterion) graphql.Marshaler {
 	return ec._GradeDefenceCriterion(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGradeDefenceCriterion2ᚕᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GradeDefenceCriterion) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGradeDefenceCriterion2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNGradeDefenceCriterion2ᚖthailyᚋsrcᚋgraphᚋmodelᚐGradeDefenceCriterion(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefenceCriterion) graphql.Marshaler {

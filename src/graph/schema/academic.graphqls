@@ -13,13 +13,13 @@ type Faculty {
 type Major {
     id: ID!
     title: String!
-    facultyCode: String!
+    facultyCode: String!  # Chỉ có code, KHÔNG có faculty relationship (tránh circular)
     createdAt: Time
     updatedAt: Time
     createdBy: String
     updatedBy: String
 
-    faculty: Faculty
+    # KHÔNG có faculty - tránh circular query: Major → Faculty → Majors → ...
     topics: [Topic!]
 }
 

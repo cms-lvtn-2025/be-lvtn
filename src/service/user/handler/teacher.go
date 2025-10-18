@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateTeacher creates a new Teacher record
 func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherRequest) (*pb.CreateTeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -34,15 +32,15 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 	if req.SemesterCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-	
+
 	// Convert Gender enum to string
 	GenderValue := pb.Gender_MALE
-	
+
 	GenderValue = req.Gender
 	GenderStr := "male"
 	switch GenderValue {
@@ -53,7 +51,7 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 	case pb.Gender_OTHER:
 		GenderStr = "other"
 	}
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO Teacher (id, email, username, gender, major_code, semester_code, created_by, created_at, updated_at)
@@ -86,18 +84,6 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetTeacher retrieves a Teacher by ID
 func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*pb.GetTeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -116,7 +102,7 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var GenderStr string
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Email,
@@ -148,7 +134,7 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 	default:
 		entity.Gender = pb.Gender_MALE
 	}
-	
+
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -163,18 +149,6 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 		Teacher: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateTeacher updates an existing Teacher
 func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherRequest) (*pb.UpdateTeacherResponse, error) {
@@ -191,12 +165,12 @@ func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherReques
 	if req.Email != nil {
 		updateFields = append(updateFields, "email = ?")
 		args = append(args, *req.Email)
-		
+
 	}
 	if req.Username != nil {
 		updateFields = append(updateFields, "username = ?")
 		args = append(args, *req.Username)
-		
+
 	}
 	if req.Gender != nil {
 		updateFields = append(updateFields, "gender = ?")
@@ -210,19 +184,19 @@ func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherReques
 			GenderStr = "other"
 		}
 		args = append(args, GenderStr)
-		
+
 	}
 	if req.MajorCode != nil {
 		updateFields = append(updateFields, "major_code = ?")
 		args = append(args, *req.MajorCode)
-		
+
 	}
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -255,18 +229,6 @@ func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherReques
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteTeacher deletes a Teacher by ID
 func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherRequest) (*pb.DeleteTeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -295,18 +257,6 @@ func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherReques
 		Success: true,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ListTeachers lists Teachers with pagination and filtering
 func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest) (*pb.ListTeachersResponse, error) {
@@ -337,12 +287,13 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"email": true,
-		"username": true,
-		"gender": true,
-		"major_code": true,
+		"id": true,
+
+		"email":         true,
+		"username":      true,
+		"gender":        true,
+		"major_code":    true,
 		"semester_code": true,
-		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -396,7 +347,7 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var GenderStr string
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Email,
@@ -424,7 +375,7 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 		default:
 			entity.Gender = pb.Gender_MALE
 		}
-		
+
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -449,5 +400,3 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 		PageSize: pageSize,
 	}, nil
 }
-
-

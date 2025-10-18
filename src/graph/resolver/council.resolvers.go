@@ -11,16 +11,6 @@ import (
 	"thaily/src/graph/model"
 )
 
-// Major is the resolver for the major field.
-func (r *councilResolver) Major(ctx context.Context, obj *model.Council) (*model.Major, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
-}
-
-// Semester is the resolver for the semester field.
-func (r *councilResolver) Semester(ctx context.Context, obj *model.Council) (*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
-}
-
 // Defences is the resolver for the defences field.
 func (r *councilResolver) Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error) {
 	panic(fmt.Errorf("not implemented: Defences - defences"))
@@ -84,3 +74,18 @@ type councilResolver struct{ *Resolver }
 type defenceResolver struct{ *Resolver }
 type gradeDefenceResolver struct{ *Resolver }
 type gradeDefenceCriterionResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *councilResolver) Major(ctx context.Context, obj *model.Council) (*model.Major, error) {
+	panic(fmt.Errorf("not implemented: Major - major"))
+}
+func (r *councilResolver) Semester(ctx context.Context, obj *model.Council) (*model.Semester, error) {
+	panic(fmt.Errorf("not implemented: Semester - semester"))
+}
+*/

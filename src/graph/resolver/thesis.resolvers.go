@@ -7,52 +7,23 @@ package resolver
 import (
 	"context"
 	"fmt"
-	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
 
 // Student is the resolver for the student field.
 func (r *enrollmentResolver) Student(ctx context.Context, obj *model.Enrollment) (*model.Student, error) {
-	// TODO: Implement student lookup via dataloader or direct call
-	// For now, return nil to avoid panics
-	return nil, nil
+	panic(fmt.Errorf("not implemented: Student - student"))
 }
 
 // Midterm is the resolver for the midterm field.
 func (r *enrollmentResolver) Midterm(ctx context.Context, obj *model.Enrollment) (*model.Midterm, error) {
-	// Check if MidtermCode is nil or empty
-	if obj.MidtermCode == nil || *obj.MidtermCode == "" {
-		return nil, nil
-	}
-
-	// Try to use DataLoader first
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.MidtermByID != nil {
-		midterm, err := loaders.MidtermByID.Load(ctx, *obj.MidtermCode)
-		if err != nil {
-			// Log error but return nil instead of propagating error
-			// This prevents GraphQL from crashing on partial failures
-			//fmt.Printf("[Resolver] Failed to load midterm %s: %v\n", *obj.MidtermCode, err)
-			return nil, nil
-		}
-		return midterm, nil
-	}
-
-	// Fallback to direct call if DataLoader is not available
-	midterm, err := r.Ctrl.GetMidterm(ctx, obj.MidtermCode)
-	if err != nil {
-		fmt.Printf("[Resolver] Failed to get midterm %s: %v\n", *obj.MidtermCode, err)
-		return nil, nil
-	}
-	return midterm, nil
+	panic(fmt.Errorf("not implemented: Midterm - midterm"))
 }
 
 // Final is the resolver for the final field.
 func (r *enrollmentResolver) Final(ctx context.Context, obj *model.Enrollment) (*model.Final, error) {
-	// TODO: Implement final lookup via dataloader or direct call
-	// For now, return nil to avoid panics
-	return nil, nil
+	panic(fmt.Errorf("not implemented: Final - final"))
 }
 
 // TopicCouncil is the resolver for the topicCouncil field.
@@ -75,29 +46,9 @@ func (r *gradeReviewResolver) Teacher(ctx context.Context, obj *model.GradeRevie
 	panic(fmt.Errorf("not implemented: Teacher - teacher"))
 }
 
-// Major is the resolver for the major field.
-func (r *topicResolver) Major(ctx context.Context, obj *model.Topic) (*model.Major, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
-}
-
-// Semester is the resolver for the semester field.
-func (r *topicResolver) Semester(ctx context.Context, obj *model.Topic) (*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
-}
-
-// Enrollments is the resolver for the enrollments field.
-func (r *topicResolver) Enrollments(ctx context.Context, obj *model.Topic) ([]*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
-}
-
 // Files is the resolver for the files field.
 func (r *topicResolver) Files(ctx context.Context, obj *model.Topic) ([]*model.File, error) {
 	panic(fmt.Errorf("not implemented: Files - files"))
-}
-
-// TopicSupervisors is the resolver for the topicSupervisors field.
-func (r *topicResolver) TopicSupervisors(ctx context.Context, obj *model.Topic) ([]*model.TopicSupervisor, error) {
-	panic(fmt.Errorf("not implemented: TopicSupervisors - topicSupervisors"))
 }
 
 // TopicCouncils is the resolver for the topicCouncils field.
@@ -135,16 +86,6 @@ func (r *topicCouncilSupervisorResolver) TopicCouncil(ctx context.Context, obj *
 	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
 }
 
-// Teacher is the resolver for the teacher field.
-func (r *topicSupervisorResolver) Teacher(ctx context.Context, obj *model.TopicSupervisor) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: Teacher - teacher"))
-}
-
-// Topic is the resolver for the topic field.
-func (r *topicSupervisorResolver) Topic(ctx context.Context, obj *model.TopicSupervisor) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: Topic - topic"))
-}
-
 // Enrollment returns generated.EnrollmentResolver implementation.
 func (r *Resolver) Enrollment() generated.EnrollmentResolver { return &enrollmentResolver{r} }
 
@@ -162,14 +103,23 @@ func (r *Resolver) TopicCouncilSupervisor() generated.TopicCouncilSupervisorReso
 	return &topicCouncilSupervisorResolver{r}
 }
 
-// TopicSupervisor returns generated.TopicSupervisorResolver implementation.
-func (r *Resolver) TopicSupervisor() generated.TopicSupervisorResolver {
-	return &topicSupervisorResolver{r}
-}
-
 type enrollmentResolver struct{ *Resolver }
 type gradeReviewResolver struct{ *Resolver }
 type topicResolver struct{ *Resolver }
 type topicCouncilResolver struct{ *Resolver }
 type topicCouncilSupervisorResolver struct{ *Resolver }
-type topicSupervisorResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *topicResolver) Major(ctx context.Context, obj *model.Topic) (*model.Major, error) {
+	panic(fmt.Errorf("not implemented: Major - major"))
+}
+func (r *topicResolver) Semester(ctx context.Context, obj *model.Topic) (*model.Semester, error) {
+	panic(fmt.Errorf("not implemented: Semester - semester"))
+}
+*/

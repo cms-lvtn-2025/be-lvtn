@@ -405,7 +405,7 @@ func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType
 	}
 
 	// Invalidate file cache
-	_ = h.FileClient.InvalidateAllFileCache(c.Request.Context())
+	//_ = h.FileClient.InvalidateAllFileCache(c.Request.Context())
 
 	response.SuccessWithMessage(c, "File uploaded successfully", gin.H{
 		"file_id":       createResp.File.Id,
@@ -567,7 +567,7 @@ func (h *APIHandler) DeleteFile(c *gin.Context) {
 	// For now, we can update status to deleted or implement DeleteFile
 
 	// Invalidate cache
-	_ = h.FileClient.InvalidateFileCache(c.Request.Context(), fileID)
+	//_ = h.FileClient.InvalidateFileCache(c.Request.Context(), fileID)
 
 	response.SuccessWithMessage(c, "File deleted successfully", gin.H{
 		"file_id": fileID,

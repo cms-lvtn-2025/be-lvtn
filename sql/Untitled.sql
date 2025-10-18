@@ -58,7 +58,7 @@ CREATE TABLE `RoleSystem` (
   `id` varchar(255) PRIMARY KEY,
   `title` varchar(255) NOT NULL,
   `teacher_code` varchar(255) NOT NULL,
-  `role` ENUM ('Academic_affairs_staff', 'Supervisor_lecturer', 'Department_Lecturer', 'Reviewer_Lecturer') NOT NULL,
+  `role` ENUM ('Academic_affairs_staff', 'Teacher', 'Department_Lecturer') NOT NULL,
   `semester_code` varchar(255) NOT NULL,
   `activate` boolean NOT NULL,
   `created_at` datetime NOT NULL,

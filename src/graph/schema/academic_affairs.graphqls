@@ -42,10 +42,10 @@ extend type Query {
     getCouncilDetail(id: ID!): Council
 
     """Lấy danh sách defence của một council"""
-    getDefencesByCouncil(councilId: ID!): [Defence!]!
+    getDefencesByCouncil(councilId: ID!): DefenceListResponse!
 
     """Lấy danh sách grade defence"""
-    getAllGradeDefences(search: SearchRequestInput!): [GradeDefence!]!
+    getAllGradeDefences(search: SearchRequestInput!): GradeDefenceListResponse!
 }
 
 extend type Mutation {
@@ -114,47 +114,6 @@ extend type Mutation {
 
     """Xóa topic"""
     deleteTopic(id: ID!): Boolean!
-}
-
-# Response types with pagination
-type TeacherListResponse {
-    total: Int!
-    data: [Teacher!]!
-}
-
-type StudentListResponse {
-    total: Int!
-    data: [Student!]!
-}
-
-type SemesterListResponse {
-    total: Int!
-    data: [Semester!]!
-}
-
-type MajorListResponse {
-    total: Int!
-    data: [Major!]!
-}
-
-type FacultyListResponse {
-    total: Int!
-    data: [Faculty!]!
-}
-
-type TopicListResponse {
-    total: Int!
-    data: [Topic!]!
-}
-
-type EnrollmentListResponse {
-    total: Int!
-    data: [Enrollment!]!
-}
-
-type CouncilListResponse {
-    total: Int!
-    data: [Council!]!
 }
 
 # Input types for mutations

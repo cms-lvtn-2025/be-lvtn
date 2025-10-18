@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateTopicCouncilSupervisor creates a new TopicCouncilSupervisor record
 func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.CreateTopicCouncilSupervisorRequest) (*pb.CreateTopicCouncilSupervisorResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -28,13 +26,12 @@ func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.Crea
 	if req.TopicCouncilCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "topic_council_code is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-	
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO TopicCouncilSupervisor (id, teacher_supervisor_code, topic_council_code, created_by, created_at, updated_at)
@@ -64,18 +61,6 @@ func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.Crea
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetTopicCouncilSupervisor retrieves a TopicCouncilSupervisor by ID
 func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopicCouncilSupervisorRequest) (*pb.GetTopicCouncilSupervisorResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -93,7 +78,7 @@ func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopi
 	var entity pb.TopicCouncilSupervisor
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.TeacherSupervisorCode,
@@ -111,7 +96,6 @@ func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopi
 		return nil, status.Errorf(codes.Internal, "failed to get topiccouncilsupervisor: %v", err)
 	}
 
-	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -126,18 +110,6 @@ func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopi
 		TopicCouncilSupervisor: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateTopicCouncilSupervisor updates an existing TopicCouncilSupervisor
 func (h *Handler) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.UpdateTopicCouncilSupervisorRequest) (*pb.UpdateTopicCouncilSupervisorResponse, error) {
@@ -154,14 +126,14 @@ func (h *Handler) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.Upda
 	if req.TeacherSupervisorCode != nil {
 		updateFields = append(updateFields, "teacher_supervisor_code = ?")
 		args = append(args, *req.TeacherSupervisorCode)
-		
+
 	}
 	if req.TopicCouncilCode != nil {
 		updateFields = append(updateFields, "topic_council_code = ?")
 		args = append(args, *req.TopicCouncilCode)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -194,18 +166,6 @@ func (h *Handler) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.Upda
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteTopicCouncilSupervisor deletes a TopicCouncilSupervisor by ID
 func (h *Handler) DeleteTopicCouncilSupervisor(ctx context.Context, req *pb.DeleteTopicCouncilSupervisorRequest) (*pb.DeleteTopicCouncilSupervisorResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -234,18 +194,6 @@ func (h *Handler) DeleteTopicCouncilSupervisor(ctx context.Context, req *pb.Dele
 		Success: true,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ListTopicCouncilSupervisors lists TopicCouncilSupervisors with pagination and filtering
 func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListTopicCouncilSupervisorsRequest) (*pb.ListTopicCouncilSupervisorsResponse, error) {
@@ -276,9 +224,10 @@ func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListT
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
+		"id": true,
+
 		"teacher_supervisor_code": true,
-		"topic_council_code": true,
-		
+		"topic_council_code":      true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -331,7 +280,7 @@ func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListT
 		var entity pb.TopicCouncilSupervisor
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.TeacherSupervisorCode,
@@ -345,7 +294,6 @@ func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListT
 			return nil, status.Errorf(codes.Internal, "failed to scan topiccouncilsupervisor: %v", err)
 		}
 
-		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -365,10 +313,8 @@ func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListT
 
 	return &pb.ListTopicCouncilSupervisorsResponse{
 		TopicCouncilSupervisors: entities,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
+		Total:                   total,
+		Page:                    page,
+		PageSize:                pageSize,
 	}, nil
 }
-
-

@@ -323,6 +323,8 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
+		"id": true,
+
 		"title":           true,
 		"major_code":      true,
 		"semester_code":   true,

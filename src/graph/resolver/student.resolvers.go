@@ -32,7 +32,7 @@ func (r *queryResolver) GetMyProfile(ctx context.Context) (*model.Student, error
 }
 
 // GetMyEnrollments is the resolver for the getMyEnrollments field.
-func (r *queryResolver) GetMyEnrollments(ctx context.Context, search *model.SearchRequestInput) ([]*model.StudentEnrollment, error) {
+func (r *queryResolver) GetMyEnrollments(ctx context.Context, search *model.SearchRequestInput) (*model.StudentEnrollmentListResponse, error) {
 	panic(fmt.Errorf("not implemented: GetMyEnrollments - getMyEnrollments"))
 }
 
@@ -42,7 +42,7 @@ func (r *queryResolver) GetMyEnrollmentDetail(ctx context.Context, id string) (*
 }
 
 // GetMySemesters is the resolver for the getMySemesters field.
-func (r *queryResolver) GetMySemesters(ctx context.Context, search *model.SearchRequestInput) ([]*model.Semester, error) {
+func (r *queryResolver) GetMySemesters(ctx context.Context, search *model.SearchRequestInput) (*model.SemesterListResponse, error) {
 	panic(fmt.Errorf("not implemented: GetMySemesters - getMySemesters"))
 }
 
@@ -176,19 +176,3 @@ type studentGradeDefenceResolver struct{ *Resolver }
 type studentTopicResolver struct{ *Resolver }
 type studentTopicCouncilResolver struct{ *Resolver }
 type studentTopicSupervisorResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *studentTeacherInfoResolver) Major(ctx context.Context, obj *model.StudentTeacherInfo) (*model.Major, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
-}
-func (r *Resolver) StudentTeacherInfo() generated.StudentTeacherInfoResolver {
-	return &studentTeacherInfoResolver{r}
-}
-type studentTeacherInfoResolver struct{ *Resolver }
-*/

@@ -187,11 +187,11 @@ func (r *queryResolver) GetCouncilDetail(ctx context.Context, id string) (*model
 }
 
 // GetDefencesByCouncil is the resolver for the getDefencesByCouncil field.
-func (r *queryResolver) GetDefencesByCouncil(ctx context.Context, councilID string) ([]*model.Defence, error) {
+func (r *queryResolver) GetDefencesByCouncil(ctx context.Context, councilID string) (*model.DefenceListResponse, error) {
 	panic(fmt.Errorf("not implemented: GetDefencesByCouncil - getDefencesByCouncil"))
 }
 
 // GetAllGradeDefences is the resolver for the getAllGradeDefences field.
-func (r *queryResolver) GetAllGradeDefences(ctx context.Context, search model.SearchRequestInput) ([]*model.GradeDefence, error) {
+func (r *queryResolver) GetAllGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error) {
 	panic(fmt.Errorf("not implemented: GetAllGradeDefences - getAllGradeDefences"))
 }

@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateFaculty creates a new Faculty record
 func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyRequest) (*pb.CreateFacultyResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -25,13 +23,12 @@ func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyReques
 	if req.Title == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
 	// Prepare fields
-	
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO Faculty (id, title, created_by, created_at, updated_at)
@@ -60,18 +57,6 @@ func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyReques
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetFaculty retrieves a Faculty by ID
 func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*pb.GetFacultyResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -89,7 +74,7 @@ func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*p
 	var entity pb.Faculty
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -106,7 +91,6 @@ func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*p
 		return nil, status.Errorf(codes.Internal, "failed to get faculty: %v", err)
 	}
 
-	
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -121,18 +105,6 @@ func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*p
 		Faculty: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateFaculty updates an existing Faculty
 func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyRequest) (*pb.UpdateFacultyResponse, error) {
@@ -149,9 +121,9 @@ func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyReques
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -184,18 +156,6 @@ func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyReques
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteFaculty deletes a Faculty by ID
 func (h *Handler) DeleteFaculty(ctx context.Context, req *pb.DeleteFacultyRequest) (*pb.DeleteFacultyResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -224,18 +184,6 @@ func (h *Handler) DeleteFaculty(ctx context.Context, req *pb.DeleteFacultyReques
 		Success: true,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ListFaculties lists Facultys with pagination and filtering
 func (h *Handler) ListFaculties(ctx context.Context, req *pb.ListFacultiesRequest) (*pb.ListFacultiesResponse, error) {
@@ -266,8 +214,8 @@ func (h *Handler) ListFaculties(ctx context.Context, req *pb.ListFacultiesReques
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
+		"id":    true,
 		"title": true,
-		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -320,7 +268,7 @@ func (h *Handler) ListFaculties(ctx context.Context, req *pb.ListFacultiesReques
 		var entity pb.Faculty
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -333,7 +281,6 @@ func (h *Handler) ListFaculties(ctx context.Context, req *pb.ListFacultiesReques
 			return nil, status.Errorf(codes.Internal, "failed to scan faculty: %v", err)
 		}
 
-		
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -353,10 +300,8 @@ func (h *Handler) ListFaculties(ctx context.Context, req *pb.ListFacultiesReques
 
 	return &pb.ListFacultiesResponse{
 		Faculties: entities,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
+		Total:     total,
+		Page:      page,
+		PageSize:  pageSize,
 	}, nil
 }
-
-

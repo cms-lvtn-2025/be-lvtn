@@ -8,6 +8,7 @@ import (
 	pb "thaily/proto/academic"
 	"thaily/src/pkg/database"
 	"thaily/src/pkg/logger"
+	"thaily/src/pkg/tls"
 	"thaily/src/service/academic/handler"
 
 	"github.com/joho/godotenv"
@@ -16,7 +17,7 @@ import (
 
 func main() {
 	// Load environment variables
-	if err := godotenv.Load("env/academic.env"); err != nil {
+	if err := godotenv.Load("/home/thaily/code/heheheh_be/env/academic.env"); err != nil {
 		log.Printf("Warning: .env file not found: %v", err)
 	}
 
@@ -32,6 +33,17 @@ func main() {
 	}
 	defer database.CloseDB()
 
+	// Verify TLS certificates exist
+	if err := tls.VerifyCertificatesExist("academic"); err != nil {
+		log.Fatalf("TLS certificate verification failed: %v", err)
+	}
+
+	// Load TLS credentials
+	creds, err := tls.LoadServerTLSCredentials("academic")
+	if err != nil {
+		log.Fatalf("Failed to load TLS credentials: %v", err)
+	}
+
 	// Start gRPC server
 	port := os.Getenv("SERVICE_PORT")
 	if port == "" {
@@ -44,6 +56,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(
+		grpc.Creds(creds),
 		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
 	)
 

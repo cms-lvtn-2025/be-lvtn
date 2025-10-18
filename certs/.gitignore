@@ -1,0 +1,10 @@
+# Ignore all certificate files
+*.key
+*.crt
+*.csr
+*.srl
+*.cnf
+
+# But track the generation script
+!generate-certs.sh
+!README.md

@@ -162,10 +162,8 @@ models:
   # === CORE TYPES ===
   Student:
     fields:
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
+      # KHÔNG có major - tránh circular query: Student → Major → Topics → ... → Student
+      # KHÔNG có semester - tránh circular query: Student → Semester → Students → ...
       enrollments:
         resolver: true  # Security: filter by student_code = current_user.id
 
@@ -173,34 +171,20 @@ models:
     fields:
       roles:
         resolver: true  # Join via dataloader
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
-      topicsSupervised:
-        resolver: true  # Security: filter by supervisor_code = current_user.id
+      # KHÔNG có major - tránh circular query: Teacher → Major → Topics → ...
+      # KHÔNG có semester - tránh circular query: Teacher → Semester → Teachers → ...
+      # KHÔNG có topicsSupervised - Topic_council_supervisor không có topic_code
 
   # === THESIS RELATED ===
   Topic:
     fields:
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
-      enrollments:
-        resolver: true  # Security: check role-based access
+      # KHÔNG có major - tránh circular query: Topic → Major → Topics → ...
+      # KHÔNG có semester - tránh circular query: Topic → Semester → Topics → ...
+      # KHÔNG có enrollments - Enrollment không có topic_code
+      # KHÔNG có topicSupervisors - Topic_council_supervisor không có topic_code
       files:
         resolver: true  # Join via dataloader, security check
-      topicSupervisors:
-        resolver: true  # Join via dataloader
       topicCouncils:
-        resolver: true  # Join via dataloader
-
-  TopicSupervisor:
-    fields:
-      teacher:
-        resolver: true  # Join via dataloader
-      topic:
         resolver: true  # Join via dataloader
 
   TopicCouncil:
@@ -252,10 +236,8 @@ models:
   # === COUNCIL RELATED ===
   Council:
     fields:
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
+      # KHÔNG có major - tránh circular query: Council → Major → Topics → ... → Council
+      # KHÔNG có semester - tránh circular query: Council → Semester → ... → Council
       defences:
         resolver: true  # Join via dataloader
       topicCouncils:
@@ -292,8 +274,7 @@ models:
 
   Major:
     fields:
-      faculty:
-        resolver: true  # Join via dataloader
+      # KHÔNG có faculty - tránh circular query: Major → Faculty → Majors → ...
       topics:
         resolver: true  # Join via dataloader, security check
 
@@ -385,17 +366,20 @@ models:
   # ============================================
   # SUPERVISOR CUSTOM TYPES
   # ============================================
+  SupervisorTopicCouncilAssignment:
+    fields:
+      topicCouncil:
+        resolver: true  # Join via dataloader → SupervisorTopicCouncil
+
   SupervisorTopic:
     fields:
       major:
         resolver: true  # Join via dataloader
       semester:
         resolver: true  # Join via dataloader
-      enrollments:
-        resolver: true  # Join → [SupervisorEnrollment]
+      # KHÔNG có enrollments - Enrollment không có topic_code
+      # KHÔNG có topicSupervisors - Topic_council_supervisor không có topic_code
       files:
-        resolver: true  # Join via dataloader
-      topicSupervisors:
         resolver: true  # Join via dataloader
       topicCouncils:
         resolver: true  # Join → [SupervisorTopicCouncil]
@@ -478,6 +462,11 @@ models:
   # ============================================
   # REVIEWER CUSTOM TYPES
   # ============================================
+  ReviewerGradeReview:
+    fields:
+      enrollment:
+        resolver: true  # Resolve ngược: SELECT * FROM Enrollment WHERE grade_review_code = ?
+
   ReviewerEnrollment:
     fields:
       student:

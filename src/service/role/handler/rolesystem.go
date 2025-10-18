@@ -284,6 +284,8 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
+		"id": true,
+
 		"title":         true,
 		"teacher_code":  true,
 		"role":          true,

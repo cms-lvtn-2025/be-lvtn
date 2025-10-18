@@ -8,6 +8,7 @@ import (
 	pb "thaily/proto/role"
 	"thaily/src/pkg/database"
 	"thaily/src/pkg/logger"
+	"thaily/src/pkg/tls"
 	"thaily/src/service/role/handler"
 
 	"github.com/joho/godotenv"
@@ -16,7 +17,7 @@ import (
 
 func main() {
 	// Load environment variables
-	if err := godotenv.Load("env/role.env"); err != nil {
+	if err := godotenv.Load("/home/thaily/code/heheheh_be/env/role.env"); err != nil {
 		log.Printf("Warning: .env file not found: %v", err)
 	}
 
@@ -32,6 +33,17 @@ func main() {
 	}
 	defer database.CloseDB()
 
+	// Verify TLS certificates exist
+	if err := tls.VerifyCertificatesExist("role"); err != nil {
+		log.Fatalf("TLS certificate verification failed: %v", err)
+	}
+
+	// Load TLS credentials
+	creds, err := tls.LoadServerTLSCredentials("role")
+	if err != nil {
+		log.Fatalf("Failed to load TLS credentials: %v", err)
+	}
+
 	// Start gRPC server
 	port := os.Getenv("SERVICE_PORT")
 	if port == "" {
@@ -44,10 +56,11 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(
-		logger.UnaryServerInterceptor(),
+		grpc.Creds(creds),
+		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
 	)
 
-	h := handler.NewHandler()
+	h := handler.NewHandler(database.GetDB())
 	pb.RegisterRoleServiceServer(grpcServer, h)
 
 	log.Printf("RoleService listening on port %s", port)

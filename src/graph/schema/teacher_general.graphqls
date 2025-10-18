@@ -7,51 +7,51 @@ extend type Query {
     getMyTeacherProfile: Teacher!
 
     # === SUPERVISOR QUERIES (role động qua Topic_council_supervisor) ===
+    # Query từ bảng nguồn: Topic_council_supervisor WHERE teacher_supervisor_code = current_user
 
-    """Lấy danh sách topic mà giáo viên đang hướng dẫn"""
-    getMySupervisedTopics(search: SearchRequestInput): [SupervisorTopic!]!
+    """Lấy danh sách topic council mà giáo viên hướng dẫn"""
+    getMySupervisedTopicCouncils(search: SearchRequestInput): SupervisorTopicCouncilAssignmentListResponse!
 
-    """Lấy chi tiết topic mà giáo viên hướng dẫn"""
-    getMySupervisedTopicDetail(topicId: ID!): SupervisorTopic
-
-    """Lấy danh sách enrollment của các topic mình hướng dẫn"""
-    getMySupervisedEnrollments(search: SearchRequestInput): [SupervisorEnrollment!]!
-
-    """Lấy chi tiết enrollment của sinh viên mình hướng dẫn"""
-    getMySupervisedEnrollmentDetail(enrollmentId: ID!): SupervisorEnrollment
+    """Lấy chi tiết topic council mà giáo viên hướng dẫn"""
+    getMySupervisedTopicCouncilDetail(id: ID!): SupervisorTopicCouncilAssignment
 
     # === COUNCIL MEMBER QUERIES (role động qua Defence) ===
+    # Query từ bảng nguồn: Defence WHERE teacher_code = current_user
 
-    """Lấy danh sách defence mà giáo viên tham gia"""
-    getMyDefenceAssignments(search: SearchRequestInput): [CouncilDefence!]!
+    """Lấy danh sách defence assignments của giáo viên"""
+    getMyDefences(search: SearchRequestInput): CouncilDefenceListResponse!
 
-    """Lấy chi tiết defence"""
-    getMyDefenceDetail(defenceId: ID!): CouncilDefence
-
-    """Lấy danh sách council mà giáo viên tham gia"""
-    getMyCouncils(search: SearchRequestInput): [CouncilMemberCouncil!]!
-
-    """Lấy danh sách topic trong council mà giáo viên tham gia"""
-    getMyCouncilTopics(councilId: ID!): [CouncilTopicCouncil!]!
-
-    """Lấy danh sách enrollment cần chấm trong council"""
-    getMyCouncilEnrollments(councilId: ID!): [CouncilEnrollment!]!
+    """Lấy chi tiết defence assignment"""
+    getMyDefenceDetail(id: ID!): CouncilDefence
 
     # === REVIEWER QUERIES (role động qua Grade_review) ===
+    # Query từ bảng nguồn: Grade_review WHERE teacher_code = current_user
 
-    """Lấy danh sách enrollment được phân công phản biện"""
-    getMyReviewAssignments(search: SearchRequestInput): [ReviewerEnrollment!]!
+    """Lấy danh sách grade review assignments của giáo viên"""
+    getMyGradeReviews(search: SearchRequestInput): ReviewerGradeReviewListResponse!
 
-    """Lấy chi tiết enrollment cần phản biện"""
-    getMyReviewAssignmentDetail(enrollmentId: ID!): ReviewerEnrollment
-
-    """Lấy danh sách grade review của mình"""
-    getMyGradeReviews(search: SearchRequestInput): [GradeReview!]!
+    """Lấy chi tiết grade review assignment"""
+    getMyGradeReviewDetail(id: ID!): ReviewerGradeReview
 }
 
 # ============================================
 # SUPERVISOR TYPES - Giáo viên hướng dẫn
 # ============================================
+
+"""
+Topic_council_supervisor assignment cho Supervisor
+Đây là bảng nguồn - query từ đây: SELECT * FROM Topic_council_supervisor WHERE teacher_supervisor_code = current_user
+"""
+type SupervisorTopicCouncilAssignment {
+    id: ID!
+    teacherSupervisorCode: String!
+    topicCouncilCode: String!
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - resolve sang custom types
+    topicCouncil: SupervisorTopicCouncil
+}
 
 """
 Topic view cho Supervisor
@@ -73,9 +73,10 @@ type SupervisorTopic {
     # Relationships - dùng MajorInfo/SemesterInfo để tránh circular query
     major: MajorInfo
     semester: SemesterInfo
-    enrollments: [SupervisorEnrollment!]
+    # KHÔNG có enrollments vì Enrollment không có topic_code
+    # KHÔNG có topicSupervisors vì Topic_council_supervisor có topic_council_code, không có topic_code
+    # Muốn lấy enrollments hoặc supervisors phải qua topicCouncils[]
     files: [File!]
-    topicSupervisors: [TopicSupervisor!]
     topicCouncils: [SupervisorTopicCouncil!]
 }
 
@@ -219,6 +220,25 @@ type CouncilEnrollment {
 # ============================================
 
 """
+Grade_review assignment cho Reviewer
+Đây là bảng nguồn - query từ đây: SELECT * FROM Grade_review WHERE teacher_code = current_user
+"""
+type ReviewerGradeReview {
+    id: ID!
+    title: String!
+    teacherCode: String!
+    reviewGrade: Int
+    status: FinalStatus!
+    notes: String
+    completionDate: Time
+    createdAt: Time
+    updatedAt: Time
+
+    # Relationships - resolve sang custom types
+    enrollment: ReviewerEnrollment  # Resolve ngược: SELECT * FROM Enrollment WHERE grade_review_code = this.id
+}
+
+"""
 Enrollment view cho Reviewer
 Reviewer được xem để chấm phản biện
 """
@@ -277,14 +297,15 @@ extend type Mutation {
     updateMyTeacherProfile(input: UpdateTeacherProfileInput!): Teacher!
 
     # === SUPERVISOR MUTATIONS ===
+    # Chỉ được chấm enrollment của topic council mình hướng dẫn
 
-    """Cập nhật điểm midterm cho sinh viên (chỉ cho topic mình hướng dẫn)"""
+    """Cập nhật điểm midterm cho sinh viên (verify qua Topic_council_supervisor)"""
     gradeMidterm(enrollmentId: ID!, input: GradeMidtermInput!): Midterm!
 
     """Phản hồi midterm cho sinh viên"""
     feedbackMidterm(midtermId: ID!, feedback: String!): Midterm!
 
-    """Cập nhật điểm final cho sinh viên (chỉ cho topic mình hướng dẫn)"""
+    """Cập nhật điểm final cho sinh viên (verify qua Topic_council_supervisor)"""
     gradeFinal(enrollmentId: ID!, input: GradeFinalInput!): Final!
 
     """Phản hồi final cho sinh viên"""
@@ -303,8 +324,9 @@ extend type Mutation {
     rejectFinalFile(fileId: ID!, reason: String): File!
 
     # === COUNCIL MEMBER MUTATIONS ===
+    # Chỉ được chấm grade defence cho defence assignment của mình
 
-    """Tạo grade defence cho enrollment trong council"""
+    """Tạo grade defence (verify qua Defence)"""
     createGradeDefence(input: CreateGradeDefenceInput!): GradeDefence!
 
     """Cập nhật grade defence"""
@@ -320,15 +342,13 @@ extend type Mutation {
     deleteGradeDefenceCriterion(id: ID!): Boolean!
 
     # === REVIEWER MUTATIONS ===
+    # Chỉ được chấm grade review của mình
 
-    """Tạo grade review cho enrollment"""
-    createGradeReview(enrollmentId: ID!, input: CreateGradeReviewInput!): GradeReview!
-
-    """Cập nhật grade review"""
-    updateGradeReview(id: ID!, input: UpdateGradeReviewInput!): GradeReview!
+    """Cập nhật grade review (verify qua Grade_review.teacher_code)"""
+    updateGradeReview(id: ID!, input: UpdateGradeReviewInput!): ReviewerGradeReview!
 
     """Hoàn thành grade review"""
-    completeGradeReview(id: ID!): GradeReview!
+    completeGradeReview(id: ID!): ReviewerGradeReview!
 }
 
 # Input types
@@ -372,12 +392,6 @@ input UpdateGradeDefenceCriterionInput {
     name: String
     score: String
     maxScore: String
-}
-
-input CreateGradeReviewInput {
-    title: String!
-    reviewGrade: Int!
-    notes: String
 }
 
 input UpdateGradeReviewInput {

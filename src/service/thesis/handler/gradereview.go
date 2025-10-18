@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateGradeReview creates a new GradeReview record
 func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeReviewRequest) (*pb.CreateGradeReviewResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -28,7 +26,7 @@ func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeRevi
 	if req.TeacherCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "teacher_code is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
@@ -41,10 +39,10 @@ func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeRevi
 	if req.Notes != nil {
 		Notes = *req.Notes
 	}
-	
+
 	// Convert Status enum to string
 	StatusValue := pb.FinalStatus_PENDING
-	
+
 	StatusValue = req.Status
 	StatusStr := "pending"
 	switch StatusValue {
@@ -57,7 +55,7 @@ func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeRevi
 	case pb.FinalStatus_COMPLETED:
 		StatusStr = "completed"
 	}
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO GradeReview (id, title, review_grade, teacher_code, status, notes, created_by, created_at, updated_at)
@@ -90,18 +88,6 @@ func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeRevi
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetGradeReview retrieves a GradeReview by ID
 func (h *Handler) GetGradeReview(ctx context.Context, req *pb.GetGradeReviewRequest) (*pb.GetGradeReviewResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -120,7 +106,7 @@ func (h *Handler) GetGradeReview(ctx context.Context, req *pb.GetGradeReviewRequ
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -154,7 +140,7 @@ func (h *Handler) GetGradeReview(ctx context.Context, req *pb.GetGradeReviewRequ
 	default:
 		entity.Status = pb.FinalStatus_PENDING
 	}
-	
+
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -169,18 +155,6 @@ func (h *Handler) GetGradeReview(ctx context.Context, req *pb.GetGradeReviewRequ
 		GradeReview: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateGradeReview updates an existing GradeReview
 func (h *Handler) UpdateGradeReview(ctx context.Context, req *pb.UpdateGradeReviewRequest) (*pb.UpdateGradeReviewResponse, error) {
@@ -197,17 +171,17 @@ func (h *Handler) UpdateGradeReview(ctx context.Context, req *pb.UpdateGradeRevi
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-		
+
 	}
 	if req.ReviewGrade != nil {
 		updateFields = append(updateFields, "review_grade = ?")
 		args = append(args, *req.ReviewGrade)
-		
+
 	}
 	if req.TeacherCode != nil {
 		updateFields = append(updateFields, "teacher_code = ?")
 		args = append(args, *req.TeacherCode)
-		
+
 	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
@@ -223,14 +197,14 @@ func (h *Handler) UpdateGradeReview(ctx context.Context, req *pb.UpdateGradeRevi
 			StatusStr = "completed"
 		}
 		args = append(args, StatusStr)
-		
+
 	}
 	if req.Notes != nil {
 		updateFields = append(updateFields, "notes = ?")
 		args = append(args, *req.Notes)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -263,18 +237,6 @@ func (h *Handler) UpdateGradeReview(ctx context.Context, req *pb.UpdateGradeRevi
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteGradeReview deletes a GradeReview by ID
 func (h *Handler) DeleteGradeReview(ctx context.Context, req *pb.DeleteGradeReviewRequest) (*pb.DeleteGradeReviewResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -303,18 +265,6 @@ func (h *Handler) DeleteGradeReview(ctx context.Context, req *pb.DeleteGradeRevi
 		Success: true,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ListGradeReviews lists GradeReviews with pagination and filtering
 func (h *Handler) ListGradeReviews(ctx context.Context, req *pb.ListGradeReviewsRequest) (*pb.ListGradeReviewsResponse, error) {
@@ -345,12 +295,13 @@ func (h *Handler) ListGradeReviews(ctx context.Context, req *pb.ListGradeReviews
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title": true,
+		"id": true,
+
+		"title":        true,
 		"review_grade": true,
 		"teacher_code": true,
-		"status": true,
-		"notes": true,
-		
+		"status":       true,
+		"notes":        true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -404,7 +355,7 @@ func (h *Handler) ListGradeReviews(ctx context.Context, req *pb.ListGradeReviews
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var StatusStr string
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -434,7 +385,7 @@ func (h *Handler) ListGradeReviews(ctx context.Context, req *pb.ListGradeReviews
 		default:
 			entity.Status = pb.FinalStatus_PENDING
 		}
-		
+
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -454,10 +405,8 @@ func (h *Handler) ListGradeReviews(ctx context.Context, req *pb.ListGradeReviews
 
 	return &pb.ListGradeReviewsResponse{
 		GradeReviews: entities,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
+		Total:        total,
+		Page:         page,
+		PageSize:     pageSize,
 	}, nil
 }
-
-

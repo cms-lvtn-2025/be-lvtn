@@ -35,8 +35,8 @@ type Topic {
     total: Int
     id: ID!
     title: String!
-    majorCode: String!
-    semesterCode: String!
+    majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
+    semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
     status: TopicStatus!
     percentStage1: Int
     percentStage2: Int
@@ -45,25 +45,13 @@ type Topic {
     createdBy: String
     updatedBy: String
 
-    major: Major
-    semester: Semester
-    enrollments: [Enrollment!]
+    # KHÔNG có major - tránh circular query: Topic → Major → Topics → ...
+    # KHÔNG có semester - tránh circular query: Topic → Semester → Topics → ...
+    # KHÔNG có enrollments vì Enrollment không có topic_code
+    # KHÔNG có topicSupervisors vì Topic_council_supervisor có topic_council_code, không có topic_code
+    # Muốn lấy enrollments hoặc supervisors phải qua topicCouncils[]
     files: [File!]
-    topicSupervisors: [TopicSupervisor!]
     topicCouncils: [TopicCouncil!]
-}
-
-type TopicSupervisor {
-    id: ID!
-    teacherSupervisorCode: String!
-    topicCode: String!
-    createdAt: Time
-    updatedAt: Time
-    createdBy: String
-    updatedBy: String
-
-    teacher: Teacher
-    topic: Topic
 }
 
 type TopicCouncil {

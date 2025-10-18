@@ -319,65 +319,6 @@ message ListTopicsResponse {
   int32 page_size = 4;
 }
 
-// ============= TopicSupervisor =============
-message TopicSupervisor {
-  string id = 1;
-  string teacher_supervisor_code = 2;
-  string topic_code = 3;
-  google.protobuf.Timestamp created_at = 4;
-  google.protobuf.Timestamp updated_at = 5;
-  string created_by = 6;
-  string updated_by = 7;
-}
-
-message CreateTopicSupervisorRequest {
-  string teacher_supervisor_code = 1;
-  string topic_code = 2;
-  string created_by = 3;
-}
-
-message CreateTopicSupervisorResponse {
-  TopicSupervisor topic_supervisor = 1;
-}
-
-message GetTopicSupervisorRequest {
-  string id = 1;
-}
-
-message GetTopicSupervisorResponse {
-  TopicSupervisor topic_supervisor = 1;
-}
-
-message UpdateTopicSupervisorRequest {
-  string id = 1;
-  optional string teacher_supervisor_code = 2;
-  optional string topic_code = 3;
-  string updated_by = 4;
-}
-
-message UpdateTopicSupervisorResponse {
-  TopicSupervisor topic_supervisor = 1;
-}
-
-message DeleteTopicSupervisorRequest {
-  string id = 1;
-}
-
-message DeleteTopicSupervisorResponse {
-  bool success = 1;
-}
-
-message ListTopicSupervisorsRequest {
-  common.SearchRequest search = 1;
-}
-
-message ListTopicSupervisorsResponse {
-  repeated TopicSupervisor topic_supervisors = 1;
-  int32 total = 2;
-  int32 page = 3;
-  int32 page_size = 4;
-}
-
 // ============= TopicCouncil =============
 message TopicCouncil {
   string id = 1;
@@ -608,13 +549,6 @@ service ThesisService {
   rpc UpdateTopic(UpdateTopicRequest) returns (UpdateTopicResponse);
   rpc DeleteTopic(DeleteTopicRequest) returns (DeleteTopicResponse);
   rpc ListTopics(ListTopicsRequest) returns (ListTopicsResponse);
-
-  // TopicSupervisor
-  rpc CreateTopicSupervisor(CreateTopicSupervisorRequest) returns (CreateTopicSupervisorResponse);
-  rpc GetTopicSupervisor(GetTopicSupervisorRequest) returns (GetTopicSupervisorResponse);
-  rpc UpdateTopicSupervisor(UpdateTopicSupervisorRequest) returns (UpdateTopicSupervisorResponse);
-  rpc DeleteTopicSupervisor(DeleteTopicSupervisorRequest) returns (DeleteTopicSupervisorResponse);
-  rpc ListTopicSupervisors(ListTopicSupervisorsRequest) returns (ListTopicSupervisorsResponse);
 
   // TopicCouncil
   rpc CreateTopicCouncil(CreateTopicCouncilRequest) returns (CreateTopicCouncilResponse);

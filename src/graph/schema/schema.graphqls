@@ -126,6 +126,159 @@ type SemesterInfo {
     title: String!
 }
 
+# ============================================
+# LIST RESPONSE TYPES - Tất cả list phải có total và data
+# ============================================
+
+type StudentListResponse {
+    total: Int!
+    data: [Student!]!
+}
+
+type TeacherListResponse {
+    total: Int!
+    data: [Teacher!]!
+}
+
+type EnrollmentListResponse {
+    total: Int!
+    data: [Enrollment!]!
+}
+
+type TopicListResponse {
+    total: Int!
+    data: [Topic!]!
+}
+
+type TopicCouncilListResponse {
+    total: Int!
+    data: [TopicCouncil!]!
+}
+
+type TopicCouncilSupervisorListResponse {
+    total: Int!
+    data: [TopicCouncilSupervisor!]!
+}
+
+type FileListResponse {
+    total: Int!
+    data: [File!]!
+}
+
+type RoleSystemListResponse {
+    total: Int!
+    data: [RoleSystem!]!
+}
+
+type MajorListResponse {
+    total: Int!
+    data: [Major!]!
+}
+
+type FacultyListResponse {
+    total: Int!
+    data: [Faculty!]!
+}
+
+type SemesterListResponse {
+    total: Int!
+    data: [Semester!]!
+}
+
+type CouncilListResponse {
+    total: Int!
+    data: [Council!]!
+}
+
+type DefenceListResponse {
+    total: Int!
+    data: [Defence!]!
+}
+
+type GradeDefenceListResponse {
+    total: Int!
+    data: [GradeDefence!]!
+}
+
+type GradeDefenceCriterionListResponse {
+    total: Int!
+    data: [GradeDefenceCriterion!]!
+}
+
+type GradeReviewListResponse {
+    total: Int!
+    data: [GradeReview!]!
+}
+
+type MidtermListResponse {
+    total: Int!
+    data: [Midterm!]!
+}
+
+type FinalListResponse {
+    total: Int!
+    data: [Final!]!
+}
+
+# Student custom type list responses
+type StudentEnrollmentListResponse {
+    total: Int!
+    data: [StudentEnrollment!]!
+}
+
+type StudentGradeDefenceListResponse {
+    total: Int!
+    data: [StudentGradeDefence!]!
+}
+
+type StudentTopicSupervisorListResponse {
+    total: Int!
+    data: [StudentTopicSupervisor!]!
+}
+
+type StudentDefenceInfoListResponse {
+    total: Int!
+    data: [StudentDefenceInfo!]!
+}
+
+# Supervisor custom type list responses
+type SupervisorTopicCouncilAssignmentListResponse {
+    total: Int!
+    data: [SupervisorTopicCouncilAssignment!]!
+}
+
+type SupervisorEnrollmentListResponse {
+    total: Int!
+    data: [SupervisorEnrollment!]!
+}
+
+type SupervisorTopicCouncilListResponse {
+    total: Int!
+    data: [SupervisorTopicCouncil!]!
+}
+
+# Council Member custom type list responses
+type CouncilDefenceListResponse {
+    total: Int!
+    data: [CouncilDefence!]!
+}
+
+type CouncilTopicCouncilListResponse {
+    total: Int!
+    data: [CouncilTopicCouncil!]!
+}
+
+type CouncilEnrollmentListResponse {
+    total: Int!
+    data: [CouncilEnrollment!]!
+}
+
+# Reviewer custom type list responses
+type ReviewerGradeReviewListResponse {
+    total: Int!
+    data: [ReviewerGradeReview!]!
+}
+
 input FilterConditionInput {
     field: String!
     operator: FilterOperator!

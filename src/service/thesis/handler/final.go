@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateFinal creates a new Final record
 func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (*pb.CreateFinalResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -25,7 +23,7 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 	if req.Title == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
@@ -46,10 +44,10 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 	if req.Notes != nil {
 		Notes = *req.Notes
 	}
-	
+
 	// Convert Status enum to string
 	StatusValue := pb.FinalStatus_PENDING
-	
+
 	StatusValue = req.Status
 	StatusStr := "pending"
 	switch StatusValue {
@@ -62,7 +60,7 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 	case pb.FinalStatus_COMPLETED:
 		StatusStr = "completed"
 	}
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO Final (id, title, supervisor_grade, department_grade, final_grade, status, notes, created_by, created_at, updated_at)
@@ -96,18 +94,6 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetFinal retrieves a Final by ID
 func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.GetFinalResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -126,7 +112,7 @@ func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.Ge
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -161,7 +147,7 @@ func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.Ge
 	default:
 		entity.Status = pb.FinalStatus_PENDING
 	}
-	
+
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -176,18 +162,6 @@ func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.Ge
 		Final: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateFinal updates an existing Final
 func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (*pb.UpdateFinalResponse, error) {
@@ -204,22 +178,22 @@ func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-		
+
 	}
 	if req.SupervisorGrade != nil {
 		updateFields = append(updateFields, "supervisor_grade = ?")
 		args = append(args, *req.SupervisorGrade)
-		
+
 	}
 	if req.DepartmentGrade != nil {
 		updateFields = append(updateFields, "department_grade = ?")
 		args = append(args, *req.DepartmentGrade)
-		
+
 	}
 	if req.FinalGrade != nil {
 		updateFields = append(updateFields, "final_grade = ?")
 		args = append(args, *req.FinalGrade)
-		
+
 	}
 	if req.Status != nil {
 		updateFields = append(updateFields, "status = ?")
@@ -235,14 +209,14 @@ func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (
 			StatusStr = "completed"
 		}
 		args = append(args, StatusStr)
-		
+
 	}
 	if req.Notes != nil {
 		updateFields = append(updateFields, "notes = ?")
 		args = append(args, *req.Notes)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -275,18 +249,6 @@ func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteFinal deletes a Final by ID
 func (h *Handler) DeleteFinal(ctx context.Context, req *pb.DeleteFinalRequest) (*pb.DeleteFinalResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -315,18 +277,6 @@ func (h *Handler) DeleteFinal(ctx context.Context, req *pb.DeleteFinalRequest) (
 		Success: true,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ListFinals lists Finals with pagination and filtering
 func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*pb.ListFinalsResponse, error) {
@@ -357,13 +307,14 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title": true,
+		"id": true,
+
+		"title":            true,
 		"supervisor_grade": true,
 		"department_grade": true,
-		"final_grade": true,
-		"status": true,
-		"notes": true,
-		
+		"final_grade":      true,
+		"status":           true,
+		"notes":            true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -417,7 +368,7 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var StatusStr string
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -448,7 +399,7 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 		default:
 			entity.Status = pb.FinalStatus_PENDING
 		}
-		
+
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -467,11 +418,9 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 	}
 
 	return &pb.ListFinalsResponse{
-		Finals: entities,
+		Finals:   entities,
 		Total:    total,
 		Page:     page,
 		PageSize: pageSize,
 	}, nil
 }
-
-

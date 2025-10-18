@@ -5,16 +5,16 @@ type Student {
     phone: String!
     username: String!
     gender: Gender
-    majorCode: String!
+    majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
     classCode: String
-    semesterCode: String!
+    semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
     createdAt: Time
     updatedAt: Time
     createdBy: String
     updatedBy: String
 
-    major: Major
-    semester: Semester
+    # KHÔNG có major - tránh circular query: Student → Major → Topics → ... → Student
+    # KHÔNG có semester - tránh circular query: Student → Semester → Students → ...
     enrollments: [Enrollment!]
 }
 
@@ -24,16 +24,17 @@ type Teacher {
     email: String!
     username: String!
     gender: Gender
-    majorCode: String!
-    semesterCode: String!
+    majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
+    semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
     createdAt: Time
     updatedAt: Time
     createdBy: String
     updatedBy: String
 
-    major: Major
-    semester: Semester
+    # KHÔNG có major - tránh circular query: Teacher → Major → Topics → ...
+    # KHÔNG có semester - tránh circular query: Teacher → Semester → Teachers → ...
     roles: [RoleSystem!]
-    topicsSupervised: [Topic!]
+    # KHÔNG có topicsSupervised vì Topic_council_supervisor không có topic_code
+    # Muốn lấy topics supervised phải qua Topic_council_supervisor → TopicCouncil → Topic
 }
 

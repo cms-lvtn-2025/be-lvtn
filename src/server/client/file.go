@@ -8,10 +8,10 @@ import (
 
 	pbCommon "thaily/proto/common"
 	pb "thaily/proto/file"
+	"thaily/src/pkg/tls"
 
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GRPCfile struct {
@@ -21,16 +21,21 @@ type GRPCfile struct {
 }
 
 const (
-	// Cache TTL configurations for File
-	fileCacheTTL = 10 * time.Minute // Files are more stable
+	// Cache TTL configurations
+	fileCacheTTL = 15 * time.Minute // Files are relatively stable once uploaded
 
-	// Cache key prefixes for File
+	// Cache key prefixes
 	fileCachePrefix = "file:file:"
 )
 
 func NewGRPCfile(addr string, redisClient *redis.Client) (*GRPCfile, error) {
-	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// Load mTLS credentials
+	creds, err := tls.LoadClientTLSCredentials("file-service")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load TLS credentials: %v", err)
+	}
 
+	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return nil, err
 	}
@@ -43,24 +48,12 @@ func NewGRPCfile(addr string, redisClient *redis.Client) (*GRPCfile, error) {
 	}, nil
 }
 
-// InvalidateFileCache invalidates file-related cache
-func (f *GRPCfile) InvalidateFileCache(ctx context.Context, fileCode string) error {
-	pattern := fmt.Sprintf("%s*%s*", fileCachePrefix, fileCode)
-	return InvalidateCacheByPattern(ctx, f.redisClient, pattern)
-}
+// ============================================
+// FILE METHODS
+// ============================================
 
-// InvalidateAllFileCache invalidates all file-related caches
-func (f *GRPCfile) InvalidateAllFileCache(ctx context.Context) error {
-	pattern := fmt.Sprintf("%s*", fileCachePrefix)
-	return InvalidateCacheByPattern(ctx, f.redisClient, pattern)
-}
-
-// GetFileBySearch retrieves files by search with caching
 func (f *GRPCfile) GetFileBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListFilesResponse, error) {
-	// Generate cache key based on search parameters
 	cacheKey := GenerateCacheKey(fileCachePrefix, search)
-
-	// Try to get from cache
 	var cached pb.ListFilesResponse
 	if hit, _ := GetCachedProto(ctx, f.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for file search")
@@ -68,59 +61,142 @@ func (f *GRPCfile) GetFileBySearch(ctx context.Context, search *pbCommon.SearchR
 	}
 
 	log.Printf("Cache MISS for file search")
-
-	// Cache miss - fetch from database
-	resp, err := f.client.ListFiles(ctx, &pb.ListFilesRequest{
-		Search: search,
-	})
-
+	resp, err := f.client.ListFiles(ctx, &pb.ListFilesRequest{Search: search})
 	if err != nil {
 		return nil, err
 	}
 
-	// Store in cache
 	SetCachedProto(ctx, f.redisClient, cacheKey, resp, fileCacheTTL)
-
 	return resp, nil
 }
 
-// GetFileById retrieves a file by ID with caching
-func (f *GRPCfile) GetFileById(ctx context.Context, fileCode string) (*pb.GetFileResponse, error) {
-	if f.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
-	}
-
-	// Generate cache key
-	cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, fileCode)
-
-	// Try to get from cache
+func (f *GRPCfile) GetFileById(ctx context.Context, id string) (*pb.GetFileResponse, error) {
+	cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, id)
 	var cached pb.GetFileResponse
 	if hit, _ := GetCachedProto(ctx, f.redisClient, cacheKey, &cached); hit {
-		log.Printf("Cache HIT for file: %s", fileCode)
+		log.Printf("Cache HIT for file: %s", id)
 		return &cached, nil
 	}
 
-	log.Printf("Cache MISS for file: %s", fileCode)
-
-	// Cache miss - fetch from database
-	resp, err := f.client.GetFile(ctx, &pb.GetFileRequest{
-		Id: fileCode,
-	})
-
+	log.Printf("Cache MISS for file: %s", id)
+	resp, err := f.client.GetFile(ctx, &pb.GetFileRequest{Id: id})
 	if err != nil {
 		return nil, err
 	}
 
-	// Store in cache
 	SetCachedProto(ctx, f.redisClient, cacheKey, resp, fileCacheTTL)
+	return resp, nil
+}
+
+func (f *GRPCfile) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*pb.CreateFileResponse, error) {
+	resp, err := f.client.CreateFile(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate search caches (new file added)
+	InvalidateCacheByPattern(ctx, f.redisClient, fileCachePrefix+"search:*")
 
 	return resp, nil
 }
 
-// CreateFile
-func (f *GRPCfile) CreateFile(ctx context.Context, request *pb.CreateFileRequest) (*pb.CreateFileResponse, error) {
-	if f.client == nil {
-		return nil, fmt.Errorf("grpc client not initialized")
+func (f *GRPCfile) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*pb.UpdateFileResponse, error) {
+	resp, err := f.client.UpdateFile(ctx, req)
+	if err != nil {
+		return nil, err
 	}
-	return f.client.CreateFile(ctx, request)
+
+	// Invalidate cache
+	if req.Id != "" {
+		cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, req.Id)
+		InvalidateCacheByKey(ctx, f.redisClient, cacheKey)
+		InvalidateCacheByPattern(ctx, f.redisClient, fileCachePrefix+"*")
+	}
+
+	return resp, nil
+}
+
+func (f *GRPCfile) DeleteFile(ctx context.Context, id string) (*pb.DeleteFileResponse, error) {
+	resp, err := f.client.DeleteFile(ctx, &pb.DeleteFileRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, id)
+	InvalidateCacheByKey(ctx, f.redisClient, cacheKey)
+	InvalidateCacheByPattern(ctx, f.redisClient, fileCachePrefix+"*")
+
+	return resp, nil
+}
+
+func (f *GRPCfile) GetFilesByIds(ctx context.Context, ids []string) (*pb.ListFilesResponse, error) {
+	if len(ids) == 0 {
+		return &pb.ListFilesResponse{Files: []*pb.File{}}, nil
+	}
+
+	result := &pb.ListFilesResponse{Files: []*pb.File{}}
+	missingIds := []string{}
+	cacheHits := 0
+
+	// Check Redis cache for each ID
+	for _, id := range ids {
+		cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, id)
+		var cached pb.GetFileResponse
+
+		if hit, _ := GetCachedProto(ctx, f.redisClient, cacheKey, &cached); hit {
+			if cached.File != nil {
+				result.Files = append(result.Files, cached.File)
+				cacheHits++
+			} else {
+				missingIds = append(missingIds, id)
+			}
+		} else {
+			missingIds = append(missingIds, id)
+		}
+	}
+
+	log.Printf("[GetFilesByIds] Total: %d, Cache hits: %d, Database queries needed: %d", len(ids), cacheHits, len(missingIds))
+
+	// Fetch missing IDs from database
+	if len(missingIds) > 0 {
+		resp, err := f.client.ListFiles(ctx, &pb.ListFilesRequest{
+			Search: &pbCommon.SearchRequest{
+				Pagination: &pbCommon.Pagination{
+					Descending: false,
+					Page:       1,
+					PageSize:   int32(len(missingIds)),
+					SortBy:     "id",
+				},
+				Filters: []*pbCommon.FilterCriteria{
+					{
+						Criteria: &pbCommon.FilterCriteria_Condition{
+							Condition: &pbCommon.FilterCondition{
+								Field:    "id",
+								Operator: pbCommon.FilterOperator_IN,
+								Values:   missingIds,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		// Store fetched items to Redis and add to result
+		if resp != nil && resp.Files != nil {
+			for _, file := range resp.Files {
+				if file != nil {
+					cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, file.Id)
+					SetCachedProto(ctx, f.redisClient, cacheKey, &pb.GetFileResponse{File: file}, fileCacheTTL)
+					result.Files = append(result.Files, file)
+				}
+			}
+		}
+	}
+
+	return result, nil
 }

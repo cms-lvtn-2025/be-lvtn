@@ -285,6 +285,7 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
+
 		"id":       true, // Required for DataLoader batch fetching
 		"title":    true,
 		"grade":    true,

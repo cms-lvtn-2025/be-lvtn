@@ -8,6 +8,7 @@ import (
 	pb "thaily/proto/user"
 	"thaily/src/pkg/database"
 	"thaily/src/pkg/logger"
+	"thaily/src/pkg/tls"
 	"thaily/src/service/user/handler"
 
 	"github.com/joho/godotenv"
@@ -32,6 +33,17 @@ func main() {
 	}
 	defer database.CloseDB()
 
+	// Verify TLS certificates exist
+	if err := tls.VerifyCertificatesExist("user"); err != nil {
+		log.Fatalf("TLS certificate verification failed: %v", err)
+	}
+
+	// Load TLS credentials
+	creds, err := tls.LoadServerTLSCredentials("user")
+	if err != nil {
+		log.Fatalf("Failed to load TLS credentials: %v", err)
+	}
+
 	// Start gRPC server
 	port := os.Getenv("SERVICE_PORT")
 	if port == "" {
@@ -44,6 +56,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(
+		grpc.Creds(creds),
 		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
 	)
 

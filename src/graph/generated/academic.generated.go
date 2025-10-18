@@ -21,7 +21,6 @@ type FacultyResolver interface {
 	Majors(ctx context.Context, obj *model.Faculty) ([]*model.Major, error)
 }
 type MajorResolver interface {
-	Faculty(ctx context.Context, obj *model.Major) (*model.Faculty, error)
 	Topics(ctx context.Context, obj *model.Major) ([]*model.Topic, error)
 }
 type SemesterResolver interface {
@@ -254,8 +253,6 @@ func (ec *executionContext) fieldContext_Faculty_majors(_ context.Context, field
 				return ec.fieldContext_Major_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Major_updatedBy(ctx, field)
-			case "faculty":
-				return ec.fieldContext_Major_faculty(ctx, field)
 			case "topics":
 				return ec.fieldContext_Major_topics(ctx, field)
 			}
@@ -468,51 +465,6 @@ func (ec *executionContext) fieldContext_Major_updatedBy(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Major_faculty(ctx context.Context, field graphql.CollectedField, obj *model.Major) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Major_faculty,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Major().Faculty(ctx, obj)
-		},
-		nil,
-		ec.marshalOFaculty2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFaculty,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Major_faculty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Major",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Faculty_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Faculty_title(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Faculty_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Faculty_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Faculty_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Faculty_updatedBy(ctx, field)
-			case "majors":
-				return ec.fieldContext_Faculty_majors(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Faculty", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Major_topics(ctx context.Context, field graphql.CollectedField, obj *model.Major) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -561,16 +513,8 @@ func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field g
 				return ec.fieldContext_Topic_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Topic_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Topic_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Topic_semester(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Topic_enrollments(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "topicSupervisors":
-				return ec.fieldContext_Topic_topicSupervisors(ctx, field)
 			case "topicCouncils":
 				return ec.fieldContext_Topic_topicCouncils(ctx, field)
 			}
@@ -802,10 +746,6 @@ func (ec *executionContext) fieldContext_Semester_students(_ context.Context, fi
 				return ec.fieldContext_Student_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Student_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Student_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Student_semester(ctx, field)
 			case "enrollments":
 				return ec.fieldContext_Student_enrollments(ctx, field)
 			}
@@ -859,14 +799,8 @@ func (ec *executionContext) fieldContext_Semester_teachers(_ context.Context, fi
 				return ec.fieldContext_Teacher_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Teacher_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Teacher_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Teacher_semester(ctx, field)
 			case "roles":
 				return ec.fieldContext_Teacher_roles(ctx, field)
-			case "topicsSupervised":
-				return ec.fieldContext_Teacher_topicsSupervised(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
 		},
@@ -922,16 +856,8 @@ func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, fiel
 				return ec.fieldContext_Topic_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Topic_updatedBy(ctx, field)
-			case "major":
-				return ec.fieldContext_Topic_major(ctx, field)
-			case "semester":
-				return ec.fieldContext_Topic_semester(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Topic_enrollments(ctx, field)
 			case "files":
 				return ec.fieldContext_Topic_files(ctx, field)
-			case "topicSupervisors":
-				return ec.fieldContext_Topic_topicSupervisors(ctx, field)
 			case "topicCouncils":
 				return ec.fieldContext_Topic_topicCouncils(ctx, field)
 			}
@@ -1075,39 +1001,6 @@ func (ec *executionContext) _Major(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Major_createdBy(ctx, field, obj)
 		case "updatedBy":
 			out.Values[i] = ec._Major_updatedBy(ctx, field, obj)
-		case "faculty":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Major_faculty(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "topics":
 			field := field
 
@@ -1491,20 +1384,6 @@ func (ec *executionContext) marshalNSemester2ᚖthailyᚋsrcᚋgraphᚋmodelᚐS
 		return graphql.Null
 	}
 	return ec._Semester(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOFaculty2ᚖthailyᚋsrcᚋgraphᚋmodelᚐFaculty(ctx context.Context, sel ast.SelectionSet, v *model.Faculty) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Faculty(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOMajor2ᚖthailyᚋsrcᚋgraphᚋmodelᚐMajor(ctx context.Context, sel ast.SelectionSet, v *model.Major) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Major(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSemester2ᚖthailyᚋsrcᚋgraphᚋmodelᚐSemester(ctx context.Context, sel ast.SelectionSet, v *model.Semester) graphql.Marshaler {

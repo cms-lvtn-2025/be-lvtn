@@ -166,18 +166,13 @@ func (r *mutationResolver) DeleteGradeDefenceCriterion(ctx context.Context, id s
 	panic(fmt.Errorf("not implemented: DeleteGradeDefenceCriterion - deleteGradeDefenceCriterion"))
 }
 
-// CreateGradeReview is the resolver for the createGradeReview field.
-func (r *mutationResolver) CreateGradeReview(ctx context.Context, enrollmentID string, input model.CreateGradeReviewInput) (*model.GradeReview, error) {
-	panic(fmt.Errorf("not implemented: CreateGradeReview - createGradeReview"))
-}
-
 // UpdateGradeReview is the resolver for the updateGradeReview field.
-func (r *mutationResolver) UpdateGradeReview(ctx context.Context, id string, input model.UpdateGradeReviewInput) (*model.GradeReview, error) {
+func (r *mutationResolver) UpdateGradeReview(ctx context.Context, id string, input model.UpdateGradeReviewInput) (*model.ReviewerGradeReview, error) {
 	panic(fmt.Errorf("not implemented: UpdateGradeReview - updateGradeReview"))
 }
 
 // CompleteGradeReview is the resolver for the completeGradeReview field.
-func (r *mutationResolver) CompleteGradeReview(ctx context.Context, id string) (*model.GradeReview, error) {
+func (r *mutationResolver) CompleteGradeReview(ctx context.Context, id string) (*model.ReviewerGradeReview, error) {
 	panic(fmt.Errorf("not implemented: CompleteGradeReview - completeGradeReview"))
 }
 
@@ -186,64 +181,34 @@ func (r *queryResolver) GetMyTeacherProfile(ctx context.Context) (*model.Teacher
 	panic(fmt.Errorf("not implemented: GetMyTeacherProfile - getMyTeacherProfile"))
 }
 
-// GetMySupervisedTopics is the resolver for the getMySupervisedTopics field.
-func (r *queryResolver) GetMySupervisedTopics(ctx context.Context, search *model.SearchRequestInput) ([]*model.SupervisorTopic, error) {
-	panic(fmt.Errorf("not implemented: GetMySupervisedTopics - getMySupervisedTopics"))
+// GetMySupervisedTopicCouncils is the resolver for the getMySupervisedTopicCouncils field.
+func (r *queryResolver) GetMySupervisedTopicCouncils(ctx context.Context, search *model.SearchRequestInput) (*model.SupervisorTopicCouncilAssignmentListResponse, error) {
+	panic(fmt.Errorf("not implemented: GetMySupervisedTopicCouncils - getMySupervisedTopicCouncils"))
 }
 
-// GetMySupervisedTopicDetail is the resolver for the getMySupervisedTopicDetail field.
-func (r *queryResolver) GetMySupervisedTopicDetail(ctx context.Context, topicID string) (*model.SupervisorTopic, error) {
-	panic(fmt.Errorf("not implemented: GetMySupervisedTopicDetail - getMySupervisedTopicDetail"))
+// GetMySupervisedTopicCouncilDetail is the resolver for the getMySupervisedTopicCouncilDetail field.
+func (r *queryResolver) GetMySupervisedTopicCouncilDetail(ctx context.Context, id string) (*model.SupervisorTopicCouncilAssignment, error) {
+	panic(fmt.Errorf("not implemented: GetMySupervisedTopicCouncilDetail - getMySupervisedTopicCouncilDetail"))
 }
 
-// GetMySupervisedEnrollments is the resolver for the getMySupervisedEnrollments field.
-func (r *queryResolver) GetMySupervisedEnrollments(ctx context.Context, search *model.SearchRequestInput) ([]*model.SupervisorEnrollment, error) {
-	panic(fmt.Errorf("not implemented: GetMySupervisedEnrollments - getMySupervisedEnrollments"))
-}
-
-// GetMySupervisedEnrollmentDetail is the resolver for the getMySupervisedEnrollmentDetail field.
-func (r *queryResolver) GetMySupervisedEnrollmentDetail(ctx context.Context, enrollmentID string) (*model.SupervisorEnrollment, error) {
-	panic(fmt.Errorf("not implemented: GetMySupervisedEnrollmentDetail - getMySupervisedEnrollmentDetail"))
-}
-
-// GetMyDefenceAssignments is the resolver for the getMyDefenceAssignments field.
-func (r *queryResolver) GetMyDefenceAssignments(ctx context.Context, search *model.SearchRequestInput) ([]*model.CouncilDefence, error) {
-	panic(fmt.Errorf("not implemented: GetMyDefenceAssignments - getMyDefenceAssignments"))
+// GetMyDefences is the resolver for the getMyDefences field.
+func (r *queryResolver) GetMyDefences(ctx context.Context, search *model.SearchRequestInput) (*model.CouncilDefenceListResponse, error) {
+	panic(fmt.Errorf("not implemented: GetMyDefences - getMyDefences"))
 }
 
 // GetMyDefenceDetail is the resolver for the getMyDefenceDetail field.
-func (r *queryResolver) GetMyDefenceDetail(ctx context.Context, defenceID string) (*model.CouncilDefence, error) {
+func (r *queryResolver) GetMyDefenceDetail(ctx context.Context, id string) (*model.CouncilDefence, error) {
 	panic(fmt.Errorf("not implemented: GetMyDefenceDetail - getMyDefenceDetail"))
 }
 
-// GetMyCouncils is the resolver for the getMyCouncils field.
-func (r *queryResolver) GetMyCouncils(ctx context.Context, search *model.SearchRequestInput) ([]*model.CouncilMemberCouncil, error) {
-	panic(fmt.Errorf("not implemented: GetMyCouncils - getMyCouncils"))
-}
-
-// GetMyCouncilTopics is the resolver for the getMyCouncilTopics field.
-func (r *queryResolver) GetMyCouncilTopics(ctx context.Context, councilID string) ([]*model.CouncilTopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: GetMyCouncilTopics - getMyCouncilTopics"))
-}
-
-// GetMyCouncilEnrollments is the resolver for the getMyCouncilEnrollments field.
-func (r *queryResolver) GetMyCouncilEnrollments(ctx context.Context, councilID string) ([]*model.CouncilEnrollment, error) {
-	panic(fmt.Errorf("not implemented: GetMyCouncilEnrollments - getMyCouncilEnrollments"))
-}
-
-// GetMyReviewAssignments is the resolver for the getMyReviewAssignments field.
-func (r *queryResolver) GetMyReviewAssignments(ctx context.Context, search *model.SearchRequestInput) ([]*model.ReviewerEnrollment, error) {
-	panic(fmt.Errorf("not implemented: GetMyReviewAssignments - getMyReviewAssignments"))
-}
-
-// GetMyReviewAssignmentDetail is the resolver for the getMyReviewAssignmentDetail field.
-func (r *queryResolver) GetMyReviewAssignmentDetail(ctx context.Context, enrollmentID string) (*model.ReviewerEnrollment, error) {
-	panic(fmt.Errorf("not implemented: GetMyReviewAssignmentDetail - getMyReviewAssignmentDetail"))
-}
-
 // GetMyGradeReviews is the resolver for the getMyGradeReviews field.
-func (r *queryResolver) GetMyGradeReviews(ctx context.Context, search *model.SearchRequestInput) ([]*model.GradeReview, error) {
+func (r *queryResolver) GetMyGradeReviews(ctx context.Context, search *model.SearchRequestInput) (*model.ReviewerGradeReviewListResponse, error) {
 	panic(fmt.Errorf("not implemented: GetMyGradeReviews - getMyGradeReviews"))
+}
+
+// GetMyGradeReviewDetail is the resolver for the getMyGradeReviewDetail field.
+func (r *queryResolver) GetMyGradeReviewDetail(ctx context.Context, id string) (*model.ReviewerGradeReview, error) {
+	panic(fmt.Errorf("not implemented: GetMyGradeReviewDetail - getMyGradeReviewDetail"))
 }
 
 // Student is the resolver for the student field.
@@ -269,6 +234,11 @@ func (r *reviewerEnrollmentResolver) Final(ctx context.Context, obj *model.Revie
 // GradeReview is the resolver for the gradeReview field.
 func (r *reviewerEnrollmentResolver) GradeReview(ctx context.Context, obj *model.ReviewerEnrollment) (*model.GradeReview, error) {
 	panic(fmt.Errorf("not implemented: GradeReview - gradeReview"))
+}
+
+// Enrollment is the resolver for the enrollment field.
+func (r *reviewerGradeReviewResolver) Enrollment(ctx context.Context, obj *model.ReviewerGradeReview) (*model.ReviewerEnrollment, error) {
+	panic(fmt.Errorf("not implemented: Enrollment - enrollment"))
 }
 
 // Major is the resolver for the major field.
@@ -331,19 +301,9 @@ func (r *supervisorTopicResolver) Semester(ctx context.Context, obj *model.Super
 	panic(fmt.Errorf("not implemented: Semester - semester"))
 }
 
-// Enrollments is the resolver for the enrollments field.
-func (r *supervisorTopicResolver) Enrollments(ctx context.Context, obj *model.SupervisorTopic) ([]*model.SupervisorEnrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
-}
-
 // Files is the resolver for the files field.
 func (r *supervisorTopicResolver) Files(ctx context.Context, obj *model.SupervisorTopic) ([]*model.File, error) {
 	panic(fmt.Errorf("not implemented: Files - files"))
-}
-
-// TopicSupervisors is the resolver for the topicSupervisors field.
-func (r *supervisorTopicResolver) TopicSupervisors(ctx context.Context, obj *model.SupervisorTopic) ([]*model.TopicSupervisor, error) {
-	panic(fmt.Errorf("not implemented: TopicSupervisors - topicSupervisors"))
 }
 
 // TopicCouncils is the resolver for the topicCouncils field.
@@ -371,6 +331,11 @@ func (r *supervisorTopicCouncilResolver) Supervisors(ctx context.Context, obj *m
 	panic(fmt.Errorf("not implemented: Supervisors - supervisors"))
 }
 
+// TopicCouncil is the resolver for the topicCouncil field.
+func (r *supervisorTopicCouncilAssignmentResolver) TopicCouncil(ctx context.Context, obj *model.SupervisorTopicCouncilAssignment) (*model.SupervisorTopicCouncil, error) {
+	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
+}
+
 // CouncilDefence returns generated.CouncilDefenceResolver implementation.
 func (r *Resolver) CouncilDefence() generated.CouncilDefenceResolver {
 	return &councilDefenceResolver{r}
@@ -396,6 +361,11 @@ func (r *Resolver) ReviewerEnrollment() generated.ReviewerEnrollmentResolver {
 	return &reviewerEnrollmentResolver{r}
 }
 
+// ReviewerGradeReview returns generated.ReviewerGradeReviewResolver implementation.
+func (r *Resolver) ReviewerGradeReview() generated.ReviewerGradeReviewResolver {
+	return &reviewerGradeReviewResolver{r}
+}
+
 // ReviewerTopic returns generated.ReviewerTopicResolver implementation.
 func (r *Resolver) ReviewerTopic() generated.ReviewerTopicResolver { return &reviewerTopicResolver{r} }
 
@@ -419,13 +389,20 @@ func (r *Resolver) SupervisorTopicCouncil() generated.SupervisorTopicCouncilReso
 	return &supervisorTopicCouncilResolver{r}
 }
 
+// SupervisorTopicCouncilAssignment returns generated.SupervisorTopicCouncilAssignmentResolver implementation.
+func (r *Resolver) SupervisorTopicCouncilAssignment() generated.SupervisorTopicCouncilAssignmentResolver {
+	return &supervisorTopicCouncilAssignmentResolver{r}
+}
+
 type councilDefenceResolver struct{ *Resolver }
 type councilEnrollmentResolver struct{ *Resolver }
 type councilMemberCouncilResolver struct{ *Resolver }
 type councilTopicCouncilResolver struct{ *Resolver }
 type reviewerEnrollmentResolver struct{ *Resolver }
+type reviewerGradeReviewResolver struct{ *Resolver }
 type reviewerTopicResolver struct{ *Resolver }
 type reviewerTopicCouncilResolver struct{ *Resolver }
 type supervisorEnrollmentResolver struct{ *Resolver }
 type supervisorTopicResolver struct{ *Resolver }
 type supervisorTopicCouncilResolver struct{ *Resolver }
+type supervisorTopicCouncilAssignmentResolver struct{ *Resolver }

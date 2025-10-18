@@ -267,6 +267,8 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
+		"id": true,
+
 		"title":              true,
 		"student_code":       true,
 		"topic_council_code": true,

@@ -2,16 +2,16 @@ type Council {
     total: Int
     id: ID!
     title: String!
-    majorCode: String!
-    semesterCode: String!
+    majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
+    semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
     timeStart: Time
     createdAt: Time
     updatedAt: Time
     createdBy: String
     updatedBy: String
 
-    major: Major
-    semester: Semester
+    # KHÔNG có major - tránh circular query
+    # KHÔNG có semester - tránh circular query
     defences: [Defence!]
     topicCouncils: [TopicCouncil!]
 }

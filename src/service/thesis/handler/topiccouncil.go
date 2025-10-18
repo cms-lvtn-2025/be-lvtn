@@ -15,8 +15,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
-
 // CreateTopicCouncil creates a new TopicCouncil record
 func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCouncilRequest) (*pb.CreateTopicCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -28,7 +26,7 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	if req.TopicCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "topic_code is required")
 	}
-	
+
 	// Generate UUID
 	id := uuid.New().String()
 
@@ -37,10 +35,10 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	if req.CouncilCode != nil {
 		CouncilCode = *req.CouncilCode
 	}
-	
+
 	// Convert Stage enum to string
 	StageValue := pb.TopicStage_STAGE_DACN
-	
+
 	StageValue = req.Stage
 	StageStr := "stage_dacn"
 	switch StageValue {
@@ -49,7 +47,7 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	case pb.TopicStage_STAGE_LVTN:
 		StageStr = "stage_lvtn"
 	}
-	
+
 	// Insert into database
 	query := `
 		INSERT INTO TopicCouncil (id, title, stage, topic_code, council_code, created_by, created_at, updated_at)
@@ -81,18 +79,6 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // GetTopicCouncil retrieves a TopicCouncil by ID
 func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRequest) (*pb.GetTopicCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -111,7 +97,7 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StageStr string
-	
+
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
@@ -140,7 +126,7 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 	default:
 		entity.Stage = pb.TopicStage_STAGE_DACN
 	}
-	
+
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -155,18 +141,6 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 		TopicCouncil: &entity,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // UpdateTopicCouncil updates an existing TopicCouncil
 func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCouncilRequest) (*pb.UpdateTopicCouncilResponse, error) {
@@ -183,7 +157,7 @@ func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCou
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-		
+
 	}
 	if req.Stage != nil {
 		updateFields = append(updateFields, "stage = ?")
@@ -195,19 +169,19 @@ func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCou
 			StageStr = "stage_lvtn"
 		}
 		args = append(args, StageStr)
-		
+
 	}
 	if req.TopicCode != nil {
 		updateFields = append(updateFields, "topic_code = ?")
 		args = append(args, *req.TopicCode)
-		
+
 	}
 	if req.CouncilCode != nil {
 		updateFields = append(updateFields, "council_code = ?")
 		args = append(args, *req.CouncilCode)
-		
+
 	}
-	
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}
@@ -240,18 +214,6 @@ func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCou
 	}, nil
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // DeleteTopicCouncil deletes a TopicCouncil by ID
 func (h *Handler) DeleteTopicCouncil(ctx context.Context, req *pb.DeleteTopicCouncilRequest) (*pb.DeleteTopicCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -280,18 +242,6 @@ func (h *Handler) DeleteTopicCouncil(ctx context.Context, req *pb.DeleteTopicCou
 		Success: true,
 	}, nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ListTopicCouncils lists TopicCouncils with pagination and filtering
 func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCouncilsRequest) (*pb.ListTopicCouncilsResponse, error) {
@@ -322,11 +272,12 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"title": true,
-		"stage": true,
-		"topic_code": true,
+		"id": true,
+
+		"title":        true,
+		"stage":        true,
+		"topic_code":   true,
 		"council_code": true,
-		
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereConditions := []string{}
@@ -380,7 +331,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 		var createdAt, updatedAt sql.NullTime
 		var updatedBy sql.NullString
 		var StageStr string
-		
+
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
@@ -405,7 +356,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 		default:
 			entity.Stage = pb.TopicStage_STAGE_DACN
 		}
-		
+
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}
@@ -425,10 +376,8 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 
 	return &pb.ListTopicCouncilsResponse{
 		TopicCouncils: entities,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
+		Total:         total,
+		Page:          page,
+		PageSize:      pageSize,
 	}, nil
 }
-
-

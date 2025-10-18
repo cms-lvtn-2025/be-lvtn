@@ -21,8 +21,6 @@ type Council struct {
 	UpdatedAt     *time.Time      `json:"updatedAt,omitempty"`
 	CreatedBy     *string         `json:"createdBy,omitempty"`
 	UpdatedBy     *string         `json:"updatedBy,omitempty"`
-	Major         *Major          `json:"major,omitempty"`
-	Semester      *Semester       `json:"semester,omitempty"`
 	Defences      []*Defence      `json:"defences,omitempty"`
 	TopicCouncils []*TopicCouncil `json:"topicCouncils,omitempty"`
 }
@@ -39,6 +37,11 @@ type CouncilDefence struct {
 	Council       *CouncilMemberCouncil `json:"council,omitempty"`
 	Teacher       *Teacher              `json:"teacher,omitempty"`
 	GradeDefences []*GradeDefence       `json:"gradeDefences,omitempty"`
+}
+
+type CouncilDefenceListResponse struct {
+	Total int32             `json:"total"`
+	Data  []*CouncilDefence `json:"data"`
 }
 
 // Enrollment view cho Council Member
@@ -59,6 +62,11 @@ type CouncilEnrollment struct {
 	Final            *Final               `json:"final,omitempty"`
 	GradeReview      *GradeReview         `json:"gradeReview,omitempty"`
 	GradeDefences    []*GradeDefence      `json:"gradeDefences,omitempty"`
+}
+
+type CouncilEnrollmentListResponse struct {
+	Total int32                `json:"total"`
+	Data  []*CouncilEnrollment `json:"data"`
 }
 
 type CouncilListResponse struct {
@@ -100,6 +108,11 @@ type CouncilTopicCouncil struct {
 	Supervisors []*TopicCouncilSupervisor `json:"supervisors,omitempty"`
 }
 
+type CouncilTopicCouncilListResponse struct {
+	Total int32                  `json:"total"`
+	Data  []*CouncilTopicCouncil `json:"data"`
+}
+
 type CreateCouncilInput struct {
 	Title        string `json:"title"`
 	MajorCode    string `json:"majorCode"`
@@ -130,12 +143,6 @@ type CreateGradeDefenceInput struct {
 	EnrollmentCode string  `json:"enrollmentCode"`
 	Note           *string `json:"note,omitempty"`
 	TotalScore     *int32  `json:"totalScore,omitempty"`
-}
-
-type CreateGradeReviewInput struct {
-	Title       string  `json:"title"`
-	ReviewGrade int32   `json:"reviewGrade"`
-	Notes       *string `json:"notes,omitempty"`
 }
 
 type CreateMajorInput struct {
@@ -182,6 +189,11 @@ type Defence struct {
 	Council       *Council        `json:"council,omitempty"`
 	Teacher       *Teacher        `json:"teacher,omitempty"`
 	GradeDefences []*GradeDefence `json:"gradeDefences,omitempty"`
+}
+
+type DefenceListResponse struct {
+	Total int32      `json:"total"`
+	Data  []*Defence `json:"data"`
 }
 
 type Enrollment struct {
@@ -238,6 +250,11 @@ type File struct {
 	UpdatedBy *string    `json:"updatedBy,omitempty"`
 }
 
+type FileListResponse struct {
+	Total int32   `json:"total"`
+	Data  []*File `json:"data"`
+}
+
 type FilterConditionInput struct {
 	Field    string         `json:"field"`
 	Operator FilterOperator `json:"operator"`
@@ -269,6 +286,11 @@ type Final struct {
 	UpdatedBy       *string     `json:"updatedBy,omitempty"`
 }
 
+type FinalListResponse struct {
+	Total int32    `json:"total"`
+	Data  []*Final `json:"data"`
+}
+
 type GradeDefence struct {
 	ID             string                   `json:"id"`
 	DefenceCode    string                   `json:"defenceCode"`
@@ -295,6 +317,16 @@ type GradeDefenceCriterion struct {
 	CreatedBy        *string       `json:"createdBy,omitempty"`
 	UpdatedBy        *string       `json:"updatedBy,omitempty"`
 	GradeDefence     *GradeDefence `json:"gradeDefence,omitempty"`
+}
+
+type GradeDefenceCriterionListResponse struct {
+	Total int32                    `json:"total"`
+	Data  []*GradeDefenceCriterion `json:"data"`
+}
+
+type GradeDefenceListResponse struct {
+	Total int32           `json:"total"`
+	Data  []*GradeDefence `json:"data"`
 }
 
 type GradeFinalInput struct {
@@ -324,6 +356,11 @@ type GradeReview struct {
 	Teacher        *Teacher    `json:"teacher,omitempty"`
 }
 
+type GradeReviewListResponse struct {
+	Total int32          `json:"total"`
+	Data  []*GradeReview `json:"data"`
+}
+
 type Major struct {
 	ID          string     `json:"id"`
 	Title       string     `json:"title"`
@@ -332,7 +369,6 @@ type Major struct {
 	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
 	CreatedBy   *string    `json:"createdBy,omitempty"`
 	UpdatedBy   *string    `json:"updatedBy,omitempty"`
-	Faculty     *Faculty   `json:"faculty,omitempty"`
 	Topics      []*Topic   `json:"topics,omitempty"`
 }
 
@@ -360,6 +396,11 @@ type Midterm struct {
 	UpdatedAt *time.Time    `json:"updatedAt,omitempty"`
 	CreatedBy *string       `json:"createdBy,omitempty"`
 	UpdatedBy *string       `json:"updatedBy,omitempty"`
+}
+
+type MidtermListResponse struct {
+	Total int32      `json:"total"`
+	Data  []*Midterm `json:"data"`
 }
 
 type Mutation struct {
@@ -392,6 +433,26 @@ type ReviewerEnrollment struct {
 	Midterm          *Midterm              `json:"midterm,omitempty"`
 	Final            *Final                `json:"final,omitempty"`
 	GradeReview      *GradeReview          `json:"gradeReview,omitempty"`
+}
+
+// Grade_review assignment cho Reviewer
+// Đây là bảng nguồn - query từ đây: SELECT * FROM Grade_review WHERE teacher_code = current_user
+type ReviewerGradeReview struct {
+	ID             string              `json:"id"`
+	Title          string              `json:"title"`
+	TeacherCode    string              `json:"teacherCode"`
+	ReviewGrade    *int32              `json:"reviewGrade,omitempty"`
+	Status         FinalStatus         `json:"status"`
+	Notes          *string             `json:"notes,omitempty"`
+	CompletionDate *time.Time          `json:"completionDate,omitempty"`
+	CreatedAt      *time.Time          `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time          `json:"updatedAt,omitempty"`
+	Enrollment     *ReviewerEnrollment `json:"enrollment,omitempty"`
+}
+
+type ReviewerGradeReviewListResponse struct {
+	Total int32                  `json:"total"`
+	Data  []*ReviewerGradeReview `json:"data"`
 }
 
 // Topic view cho Reviewer
@@ -430,6 +491,11 @@ type RoleSystem struct {
 	UpdatedBy    *string        `json:"updatedBy,omitempty"`
 	Teacher      *Teacher       `json:"teacher,omitempty"`
 	Semester     *Semester      `json:"semester,omitempty"`
+}
+
+type RoleSystemListResponse struct {
+	Total int32         `json:"total"`
+	Data  []*RoleSystem `json:"data"`
 }
 
 type SearchRequestInput struct {
@@ -475,8 +541,6 @@ type Student struct {
 	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
 	CreatedBy    *string       `json:"createdBy,omitempty"`
 	UpdatedBy    *string       `json:"updatedBy,omitempty"`
-	Major        *Major        `json:"major,omitempty"`
-	Semester     *Semester     `json:"semester,omitempty"`
 	Enrollments  []*Enrollment `json:"enrollments,omitempty"`
 }
 
@@ -507,6 +571,11 @@ type StudentDefenceInfo struct {
 	Teacher   *StudentTeacherInfo `json:"teacher,omitempty"`
 }
 
+type StudentDefenceInfoListResponse struct {
+	Total int32                 `json:"total"`
+	Data  []*StudentDefenceInfo `json:"data"`
+}
+
 // Enrollment view cho Student
 // KHÔNG có field 'student' vì student tự query của mình
 type StudentEnrollment struct {
@@ -528,6 +597,11 @@ type StudentEnrollment struct {
 	GradeDefences    []*StudentGradeDefence `json:"gradeDefences,omitempty"`
 }
 
+type StudentEnrollmentListResponse struct {
+	Total int32                `json:"total"`
+	Data  []*StudentEnrollment `json:"data"`
+}
+
 // GradeDefence view cho Student
 // Student xem được điểm defence của mình
 type StudentGradeDefence struct {
@@ -540,6 +614,11 @@ type StudentGradeDefence struct {
 	UpdatedAt      *time.Time               `json:"updatedAt,omitempty"`
 	Criteria       []*GradeDefenceCriterion `json:"criteria,omitempty"`
 	Defence        *StudentDefenceInfo      `json:"defence,omitempty"`
+}
+
+type StudentGradeDefenceListResponse struct {
+	Total int32                  `json:"total"`
+	Data  []*StudentGradeDefence `json:"data"`
 }
 
 type StudentListResponse struct {
@@ -604,6 +683,11 @@ type StudentTopicSupervisor struct {
 	Teacher               *StudentTeacherInfo `json:"teacher,omitempty"`
 }
 
+type StudentTopicSupervisorListResponse struct {
+	Total int32                     `json:"total"`
+	Data  []*StudentTopicSupervisor `json:"data"`
+}
+
 type Subscription struct {
 }
 
@@ -629,26 +713,29 @@ type SupervisorEnrollment struct {
 	GradeDefences    []*GradeDefence         `json:"gradeDefences,omitempty"`
 }
 
+type SupervisorEnrollmentListResponse struct {
+	Total int32                   `json:"total"`
+	Data  []*SupervisorEnrollment `json:"data"`
+}
+
 // Topic view cho Supervisor
 // Supervisor được xem đầy đủ thông tin topic mình hướng dẫn
 type SupervisorTopic struct {
-	ID               string                    `json:"id"`
-	Title            string                    `json:"title"`
-	MajorCode        string                    `json:"majorCode"`
-	SemesterCode     string                    `json:"semesterCode"`
-	Status           TopicStatus               `json:"status"`
-	PercentStage1    *int32                    `json:"percentStage1,omitempty"`
-	PercentStage2    *int32                    `json:"percentStage2,omitempty"`
-	CreatedAt        *time.Time                `json:"createdAt,omitempty"`
-	UpdatedAt        *time.Time                `json:"updatedAt,omitempty"`
-	CreatedBy        *string                   `json:"createdBy,omitempty"`
-	UpdatedBy        *string                   `json:"updatedBy,omitempty"`
-	Major            *MajorInfo                `json:"major,omitempty"`
-	Semester         *SemesterInfo             `json:"semester,omitempty"`
-	Enrollments      []*SupervisorEnrollment   `json:"enrollments,omitempty"`
-	Files            []*File                   `json:"files,omitempty"`
-	TopicSupervisors []*TopicSupervisor        `json:"topicSupervisors,omitempty"`
-	TopicCouncils    []*SupervisorTopicCouncil `json:"topicCouncils,omitempty"`
+	ID            string                    `json:"id"`
+	Title         string                    `json:"title"`
+	MajorCode     string                    `json:"majorCode"`
+	SemesterCode  string                    `json:"semesterCode"`
+	Status        TopicStatus               `json:"status"`
+	PercentStage1 *int32                    `json:"percentStage1,omitempty"`
+	PercentStage2 *int32                    `json:"percentStage2,omitempty"`
+	CreatedAt     *time.Time                `json:"createdAt,omitempty"`
+	UpdatedAt     *time.Time                `json:"updatedAt,omitempty"`
+	CreatedBy     *string                   `json:"createdBy,omitempty"`
+	UpdatedBy     *string                   `json:"updatedBy,omitempty"`
+	Major         *MajorInfo                `json:"major,omitempty"`
+	Semester      *SemesterInfo             `json:"semester,omitempty"`
+	Files         []*File                   `json:"files,omitempty"`
+	TopicCouncils []*SupervisorTopicCouncil `json:"topicCouncils,omitempty"`
 }
 
 // TopicCouncil view cho Supervisor
@@ -668,21 +755,39 @@ type SupervisorTopicCouncil struct {
 	Supervisors []*TopicCouncilSupervisor `json:"supervisors,omitempty"`
 }
 
+// Topic_council_supervisor assignment cho Supervisor
+// Đây là bảng nguồn - query từ đây: SELECT * FROM Topic_council_supervisor WHERE teacher_supervisor_code = current_user
+type SupervisorTopicCouncilAssignment struct {
+	ID                    string                  `json:"id"`
+	TeacherSupervisorCode string                  `json:"teacherSupervisorCode"`
+	TopicCouncilCode      string                  `json:"topicCouncilCode"`
+	CreatedAt             *time.Time              `json:"createdAt,omitempty"`
+	UpdatedAt             *time.Time              `json:"updatedAt,omitempty"`
+	TopicCouncil          *SupervisorTopicCouncil `json:"topicCouncil,omitempty"`
+}
+
+type SupervisorTopicCouncilAssignmentListResponse struct {
+	Total int32                               `json:"total"`
+	Data  []*SupervisorTopicCouncilAssignment `json:"data"`
+}
+
+type SupervisorTopicCouncilListResponse struct {
+	Total int32                     `json:"total"`
+	Data  []*SupervisorTopicCouncil `json:"data"`
+}
+
 type Teacher struct {
-	ID               string        `json:"id"`
-	Email            string        `json:"email"`
-	Username         string        `json:"username"`
-	Gender           *Gender       `json:"gender,omitempty"`
-	MajorCode        string        `json:"majorCode"`
-	SemesterCode     string        `json:"semesterCode"`
-	CreatedAt        *time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt        *time.Time    `json:"updatedAt,omitempty"`
-	CreatedBy        *string       `json:"createdBy,omitempty"`
-	UpdatedBy        *string       `json:"updatedBy,omitempty"`
-	Major            *Major        `json:"major,omitempty"`
-	Semester         *Semester     `json:"semester,omitempty"`
-	Roles            []*RoleSystem `json:"roles,omitempty"`
-	TopicsSupervised []*Topic      `json:"topicsSupervised,omitempty"`
+	ID           string        `json:"id"`
+	Email        string        `json:"email"`
+	Username     string        `json:"username"`
+	Gender       *Gender       `json:"gender,omitempty"`
+	MajorCode    string        `json:"majorCode"`
+	SemesterCode string        `json:"semesterCode"`
+	CreatedAt    *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy    *string       `json:"createdBy,omitempty"`
+	UpdatedBy    *string       `json:"updatedBy,omitempty"`
+	Roles        []*RoleSystem `json:"roles,omitempty"`
 }
 
 type TeacherListResponse struct {
@@ -691,24 +796,20 @@ type TeacherListResponse struct {
 }
 
 type Topic struct {
-	Total            *int32             `json:"total,omitempty"`
-	ID               string             `json:"id"`
-	Title            string             `json:"title"`
-	MajorCode        string             `json:"majorCode"`
-	SemesterCode     string             `json:"semesterCode"`
-	Status           TopicStatus        `json:"status"`
-	PercentStage1    *int32             `json:"percentStage1,omitempty"`
-	PercentStage2    *int32             `json:"percentStage2,omitempty"`
-	CreatedAt        *time.Time         `json:"createdAt,omitempty"`
-	UpdatedAt        *time.Time         `json:"updatedAt,omitempty"`
-	CreatedBy        *string            `json:"createdBy,omitempty"`
-	UpdatedBy        *string            `json:"updatedBy,omitempty"`
-	Major            *Major             `json:"major,omitempty"`
-	Semester         *Semester          `json:"semester,omitempty"`
-	Enrollments      []*Enrollment      `json:"enrollments,omitempty"`
-	Files            []*File            `json:"files,omitempty"`
-	TopicSupervisors []*TopicSupervisor `json:"topicSupervisors,omitempty"`
-	TopicCouncils    []*TopicCouncil    `json:"topicCouncils,omitempty"`
+	Total         *int32          `json:"total,omitempty"`
+	ID            string          `json:"id"`
+	Title         string          `json:"title"`
+	MajorCode     string          `json:"majorCode"`
+	SemesterCode  string          `json:"semesterCode"`
+	Status        TopicStatus     `json:"status"`
+	PercentStage1 *int32          `json:"percentStage1,omitempty"`
+	PercentStage2 *int32          `json:"percentStage2,omitempty"`
+	CreatedAt     *time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt     *time.Time      `json:"updatedAt,omitempty"`
+	CreatedBy     *string         `json:"createdBy,omitempty"`
+	UpdatedBy     *string         `json:"updatedBy,omitempty"`
+	Files         []*File         `json:"files,omitempty"`
+	TopicCouncils []*TopicCouncil `json:"topicCouncils,omitempty"`
 }
 
 type TopicCouncil struct {
@@ -729,6 +830,11 @@ type TopicCouncil struct {
 	Supervisors []*TopicCouncilSupervisor `json:"supervisors,omitempty"`
 }
 
+type TopicCouncilListResponse struct {
+	Total int32           `json:"total"`
+	Data  []*TopicCouncil `json:"data"`
+}
+
 type TopicCouncilSupervisor struct {
 	ID                    string        `json:"id"`
 	TeacherSupervisorCode string        `json:"teacherSupervisorCode"`
@@ -741,21 +847,14 @@ type TopicCouncilSupervisor struct {
 	TopicCouncil          *TopicCouncil `json:"topicCouncil,omitempty"`
 }
 
+type TopicCouncilSupervisorListResponse struct {
+	Total int32                     `json:"total"`
+	Data  []*TopicCouncilSupervisor `json:"data"`
+}
+
 type TopicListResponse struct {
 	Total int32    `json:"total"`
 	Data  []*Topic `json:"data"`
-}
-
-type TopicSupervisor struct {
-	ID                    string     `json:"id"`
-	TeacherSupervisorCode string     `json:"teacherSupervisorCode"`
-	TopicCode             string     `json:"topicCode"`
-	CreatedAt             *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt             *time.Time `json:"updatedAt,omitempty"`
-	CreatedBy             *string    `json:"createdBy,omitempty"`
-	UpdatedBy             *string    `json:"updatedBy,omitempty"`
-	Teacher               *Teacher   `json:"teacher,omitempty"`
-	Topic                 *Topic     `json:"topic,omitempty"`
 }
 
 type UpdateCouncilInput struct {
