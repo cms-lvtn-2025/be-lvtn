@@ -6,12 +6,72 @@ import (
 	"strings"
 	pb "thaily/proto/academic"
 	pbRole "thaily/proto/role"
+	"thaily/src/graph/convert"
 	"thaily/src/graph/helper"
 	"thaily/src/graph/model"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
+
+func (c *Controller) GetMySemesters(ctx context.Context, search *model.SearchRequestInput) (*model.SemesterListResponse, error) {
+	_, mySemesters, _, err := c.GetInfoAllRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var newSearch model.SearchRequestInput
+	if search != nil {
+		newSearch = model.SearchRequestInput{
+			Pagination: search.Pagination,
+			Filters: append([]*model.FilterCriteriaInput{
+				&model.FilterCriteriaInput{
+					Condition: &model.FilterConditionInput{
+						Field:    "id",
+						Operator: model.FilterOperatorIn,
+						Values:   *mySemesters,
+					},
+				},
+			}, search.Filters...),
+		}
+	} else {
+		newSearch = model.SearchRequestInput{
+			Pagination: c.DefaultPagination(),
+			Filters: append([]*model.FilterCriteriaInput{
+				&model.FilterCriteriaInput{
+					Condition: &model.FilterConditionInput{
+						Field:    "id",
+						Operator: model.FilterOperatorIn,
+						Values:   *mySemesters,
+					},
+				},
+			}),
+		}
+	}
+	semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+	return &model.SemesterListResponse{
+		Total: semesters.GetTotal(),
+		Data:  convert.PbSemestersToModel(semesters.Semesters),
+	}, nil
+}
+
+func (c *Controller) GetMajorInfo(ctx context.Context, id string) (*model.MajorInfo, error) {
+	major, err := c.academic.GetMajorById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbMajorToMajorInfo(major.GetMajor()), nil
+}
+
+func (c *Controller) GetSemesterInfo(ctx context.Context, id string) (*model.SemesterInfo, error) {
+	semester, err := c.academic.GetSemesterById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbSemesterToSemesterInfo(semester.GetSemester()), nil
+}
 
 func (c *Controller) pbMajorToModel(resp *pb.GetMajorResponse) *model.Major {
 	if resp == nil {

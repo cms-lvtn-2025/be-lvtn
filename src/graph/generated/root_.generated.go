@@ -593,12 +593,13 @@ type ComplexityRoot struct {
 	}
 
 	StudentDefenceInfo struct {
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Position  func(childComplexity int) int
-		Teacher   func(childComplexity int) int
-		Title     func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Position    func(childComplexity int) int
+		Teacher     func(childComplexity int) int
+		TeacherCode func(childComplexity int) int
+		Title       func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	StudentDefenceInfoListResponse struct {
@@ -4019,6 +4020,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.StudentDefenceInfo.Teacher(childComplexity), true
 
+	case "StudentDefenceInfo.teacher_code":
+		if e.complexity.StudentDefenceInfo.TeacherCode == nil {
+			break
+		}
+
+		return e.complexity.StudentDefenceInfo.TeacherCode(childComplexity), true
+
 	case "StudentDefenceInfo.title":
 		if e.complexity.StudentDefenceInfo.Title == nil {
 			break
@@ -6379,6 +6387,7 @@ Student xem được thông tin thành viên hội đồng
 type StudentDefenceInfo {
     id: ID!
     title: String!
+    teacher_code: String!
     position: DefencePosition!
     createdAt: Time
     updatedAt: Time

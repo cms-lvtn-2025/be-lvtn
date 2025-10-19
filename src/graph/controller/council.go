@@ -1,7 +1,13 @@
 package controller
 
+import (
+	"context"
+	"thaily/src/graph/convert"
+	"thaily/src/graph/model"
+)
+
+// import (
 //
-//import (
 //	"context"
 //	"fmt"
 //	"strings"
@@ -13,8 +19,16 @@ package controller
 //	"time"
 //
 //	"github.com/golang-jwt/jwt/v5"
-//)
 //
+// )
+func (c *Controller) GetDefenceInfoByCouncilId(ctx context.Context, id string) (*model.StudentDefenceInfo, error) {
+	defence, err := c.council.GetDefenceById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbDefenceToStudentDefenceInfo(defence.GetDefence()), nil
+}
+
 //func (c *Controller) pbCouncilsToModel(resp *pb.ListCouncilsResponse) []*model.Council {
 //	if resp == nil {
 //		return nil

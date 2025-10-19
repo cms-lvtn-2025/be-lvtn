@@ -108,18 +108,3 @@ type gradeReviewResolver struct{ *Resolver }
 type topicResolver struct{ *Resolver }
 type topicCouncilResolver struct{ *Resolver }
 type topicCouncilSupervisorResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *topicResolver) Major(ctx context.Context, obj *model.Topic) (*model.Major, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
-}
-func (r *topicResolver) Semester(ctx context.Context, obj *model.Topic) (*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
-}
-*/

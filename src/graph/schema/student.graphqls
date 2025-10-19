@@ -175,6 +175,7 @@ Student xem được thông tin thành viên hội đồng
 type StudentDefenceInfo {
     id: ID!
     title: String!
+    teacher_code: String!
     position: DefencePosition!
     createdAt: Time
     updatedAt: Time

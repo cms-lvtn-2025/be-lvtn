@@ -8162,6 +8162,8 @@ func (ec *executionContext) fieldContext_StudentDefenceInfoListResponse_data(_ c
 				return ec.fieldContext_StudentDefenceInfo_id(ctx, field)
 			case "title":
 				return ec.fieldContext_StudentDefenceInfo_title(ctx, field)
+			case "teacher_code":
+				return ec.fieldContext_StudentDefenceInfo_teacher_code(ctx, field)
 			case "position":
 				return ec.fieldContext_StudentDefenceInfo_position(ctx, field)
 			case "createdAt":

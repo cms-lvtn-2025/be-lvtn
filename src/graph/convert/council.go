@@ -433,9 +433,10 @@ func PbDefenceToStudentDefenceInfo(pb *council.Defence) *model.StudentDefenceInf
 	}
 
 	result := &model.StudentDefenceInfo{
-		ID:       pb.Id,
-		Title:    pb.Title,
-		Position: PbDefencePositionToModel(pb.Position),
+		ID:          pb.Id,
+		Title:       pb.Title,
+		TeacherCode: pb.TeacherCode,
+		Position:    PbDefencePositionToModel(pb.Position),
 	}
 
 	// Handle timestamps
@@ -448,6 +449,20 @@ func PbDefenceToStudentDefenceInfo(pb *council.Defence) *model.StudentDefenceInf
 		result.UpdatedAt = &t
 	}
 
+	return result
+}
+
+func PbDefencesToStudentDefencesInfo(pbs []*council.Defence) []*model.StudentDefenceInfo {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.StudentDefenceInfo, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbDefenceToStudentDefenceInfo(pb))
+		}
+
+	}
 	return result
 }
 

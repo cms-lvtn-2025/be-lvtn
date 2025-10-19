@@ -6,12 +6,68 @@ import (
 	"strings"
 	pbRole "thaily/proto/role"
 	pb "thaily/proto/thesis"
+	"thaily/src/graph/convert"
 	"thaily/src/graph/helper"
 	"thaily/src/graph/model"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
+
+func (c *Controller) GetEnrollmentsForStudent(ctx context.Context, search *model.SearchRequestInput) (*model.StudentEnrollmentListResponse, error) {
+	myId, _, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var newSearch model.SearchRequestInput
+	if search != nil {
+		newSearch = model.SearchRequestInput{
+			Pagination: search.Pagination,
+			Filters: append([]*model.FilterCriteriaInput{
+				&model.FilterCriteriaInput{
+					Condition: &model.FilterConditionInput{
+						Field:    "student_code",
+						Operator: model.FilterOperatorEqual,
+						Values:   []string{*myId},
+					},
+				},
+			}, search.Filters...),
+		}
+	} else {
+		newSearch = model.SearchRequestInput{
+			Pagination: c.DefaultPagination(),
+			Filters: append([]*model.FilterCriteriaInput{
+				&model.FilterCriteriaInput{
+					Condition: &model.FilterConditionInput{
+						Field:    "student_code",
+						Operator: model.FilterOperatorEqual,
+						Values:   []string{*myId},
+					},
+				},
+			}),
+		}
+	}
+	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+	return &model.StudentEnrollmentListResponse{
+		Total: enrollments.GetTotal(),
+		Data:  convert.PbEnrollmentsToStudentEnrollment(enrollments.GetEnrollments()),
+	}, nil
+}
+
+func (c *Controller) GetEnrollmentForStudent(ctx context.Context, id string) (*model.StudentEnrollment, error) {
+	_, _, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
+	enrollment, err := c.thesis.GetEnrollmentById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbEnrollmentToStudentEnrollment(enrollment.GetEnrollment()), nil
+}
 
 func (c *Controller) pbTopicsToModel(resp *pb.ListTopicsResponse) []*model.Topic {
 	if resp == nil {

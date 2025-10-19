@@ -540,6 +540,19 @@ func PbEnrollmentToStudentEnrollment(pb *thesis.Enrollment) *model.StudentEnroll
 	return result
 }
 
+func PbEnrollmentsToStudentEnrollment(pbs []*thesis.Enrollment) []*model.StudentEnrollment {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.StudentEnrollment, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbEnrollmentToStudentEnrollment(pb))
+		}
+	}
+	return result
+}
+
 // PbTopicCouncilToStudentTopicCouncil converts protobuf TopicCouncil to GraphQL StudentTopicCouncil
 func PbTopicCouncilToStudentTopicCouncil(pb *thesis.TopicCouncil) *model.StudentTopicCouncil {
 	if pb == nil {

@@ -7,6 +7,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
@@ -28,42 +29,90 @@ func (r *mutationResolver) UploadFinalFile(ctx context.Context, input model.Uplo
 
 // GetMyProfile is the resolver for the getMyProfile field.
 func (r *queryResolver) GetMyProfile(ctx context.Context) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: GetMyProfile - getMyProfile"))
+	return r.Ctrl.GetStudentByRequest(ctx)
 }
 
 // GetMyEnrollments is the resolver for the getMyEnrollments field.
 func (r *queryResolver) GetMyEnrollments(ctx context.Context, search *model.SearchRequestInput) (*model.StudentEnrollmentListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetMyEnrollments - getMyEnrollments"))
+	return r.Ctrl.GetEnrollmentsForStudent(ctx, search)
 }
 
 // GetMyEnrollmentDetail is the resolver for the getMyEnrollmentDetail field.
 func (r *queryResolver) GetMyEnrollmentDetail(ctx context.Context, id string) (*model.StudentEnrollment, error) {
-	panic(fmt.Errorf("not implemented: GetMyEnrollmentDetail - getMyEnrollmentDetail"))
+	return r.Ctrl.GetEnrollmentForStudent(ctx, id)
 }
 
 // GetMySemesters is the resolver for the getMySemesters field.
 func (r *queryResolver) GetMySemesters(ctx context.Context, search *model.SearchRequestInput) (*model.SemesterListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetMySemesters - getMySemesters"))
+	return r.Ctrl.GetMySemesters(ctx, search)
 }
 
 // Major is the resolver for the major field.
 func (r *studentCouncilResolver) Major(ctx context.Context, obj *model.StudentCouncil) (*model.MajorInfo, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MajorInfoById != nil {
+		major, err := loaders.MajorInfoById.Load(ctx, obj.MajorCode)
+		if err != nil {
+			return nil, err
+		}
+		return major, nil
+	}
+	major, err := r.Ctrl.GetMajorInfo(ctx, obj.MajorCode)
+	if err != nil {
+		return nil, err
+	}
+	return major, nil
 }
 
 // Semester is the resolver for the semester field.
 func (r *studentCouncilResolver) Semester(ctx context.Context, obj *model.StudentCouncil) (*model.SemesterInfo, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.SemesterInfoById != nil {
+		semester, err := loaders.SemesterInfoById.Load(ctx, obj.SemesterCode)
+		if err != nil {
+			return nil, err
+		}
+		return semester, nil
+	}
+	semester, err := r.Ctrl.GetSemesterInfo(ctx, obj.MajorCode)
+	if err != nil {
+		return nil, err
+	}
+	return semester, nil
 }
 
 // Defences is the resolver for the defences field.
 func (r *studentCouncilResolver) Defences(ctx context.Context, obj *model.StudentCouncil) ([]*model.StudentDefenceInfo, error) {
-	panic(fmt.Errorf("not implemented: Defences - defences"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.DefenceInfoByCouncilId != nil {
+		defence, err := loaders.DefenceInfoByCouncilId.Load(ctx, obj.ID)
+		if err != nil {
+			return nil, err
+		}
+		return defence, nil
+	}
+	defence, err := r.Ctrl.GetDefenceInfoByCouncilId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return []*model.StudentDefenceInfo{defence}, nil
 }
 
 // Teacher is the resolver for the teacher field.
 func (r *studentDefenceInfoResolver) Teacher(ctx context.Context, obj *model.StudentDefenceInfo) (*model.StudentTeacherInfo, error) {
-	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TeacherInfoById != nil {
+		teacher, err := loaders.TeacherInfoById.Load(ctx, obj.TeacherCode)
+		if err != nil {
+			return nil, err
+		}
+		return teacher, nil
+	}
+	teacher, err := r.Ctrl.GetTeacherInfoById(ctx, obj.TeacherCode)
+	if err != nil {
+		return nil, err
+	}
+	return teacher, nil
 }
 
 // TopicCouncil is the resolver for the topicCouncil field.

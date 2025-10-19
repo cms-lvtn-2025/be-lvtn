@@ -84,8 +84,9 @@ func setupGraphQL(r *gin.Engine, c *container.Container) {
 	// Routes
 	r.GET("/", gin.WrapH(playground.Handler("GraphQL Playground", "/query")))
 	r.Any("/query",
+		graphqlAuthMiddleware(c.Config.JWT, ctrl), // Then handle auth
+
 		dataloaderMiddleware(c), // Inject dataloaders first
-		//graphqlAuthMiddleware(c.Config.JWT, ctrl), // Then handle auth
 		gin.WrapH(srv))
 }
 
@@ -114,6 +115,7 @@ func dataloaderMiddleware(c *container.Container) gin.HandlerFunc {
 			c.Clients.User,
 			c.Clients.Thesis,
 			c.Clients.Council,
+			c.Clients.Academic,
 		)
 
 		// Inject loaders into context

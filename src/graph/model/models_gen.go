@@ -563,12 +563,13 @@ type StudentCouncil struct {
 // Defence info cho Student
 // Student xem được thông tin thành viên hội đồng
 type StudentDefenceInfo struct {
-	ID        string              `json:"id"`
-	Title     string              `json:"title"`
-	Position  DefencePosition     `json:"position"`
-	CreatedAt *time.Time          `json:"createdAt,omitempty"`
-	UpdatedAt *time.Time          `json:"updatedAt,omitempty"`
-	Teacher   *StudentTeacherInfo `json:"teacher,omitempty"`
+	ID          string              `json:"id"`
+	Title       string              `json:"title"`
+	TeacherCode string              `json:"teacher_code"`
+	Position    DefencePosition     `json:"position"`
+	CreatedAt   *time.Time          `json:"createdAt,omitempty"`
+	UpdatedAt   *time.Time          `json:"updatedAt,omitempty"`
+	Teacher     *StudentTeacherInfo `json:"teacher,omitempty"`
 }
 
 type StudentDefenceInfoListResponse struct {

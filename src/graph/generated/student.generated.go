@@ -365,6 +365,8 @@ func (ec *executionContext) fieldContext_StudentCouncil_defences(_ context.Conte
 				return ec.fieldContext_StudentDefenceInfo_id(ctx, field)
 			case "title":
 				return ec.fieldContext_StudentDefenceInfo_title(ctx, field)
+			case "teacher_code":
+				return ec.fieldContext_StudentDefenceInfo_teacher_code(ctx, field)
 			case "position":
 				return ec.fieldContext_StudentDefenceInfo_position(ctx, field)
 			case "createdAt":
@@ -426,6 +428,35 @@ func (ec *executionContext) _StudentDefenceInfo_title(ctx context.Context, field
 }
 
 func (ec *executionContext) fieldContext_StudentDefenceInfo_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StudentDefenceInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _StudentDefenceInfo_teacher_code(ctx context.Context, field graphql.CollectedField, obj *model.StudentDefenceInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_StudentDefenceInfo_teacher_code,
+		func(ctx context.Context) (any, error) {
+			return obj.TeacherCode, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_StudentDefenceInfo_teacher_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "StudentDefenceInfo",
 		Field:      field,
@@ -1430,6 +1461,8 @@ func (ec *executionContext) fieldContext_StudentGradeDefence_defence(_ context.C
 				return ec.fieldContext_StudentDefenceInfo_id(ctx, field)
 			case "title":
 				return ec.fieldContext_StudentDefenceInfo_title(ctx, field)
+			case "teacher_code":
+				return ec.fieldContext_StudentDefenceInfo_teacher_code(ctx, field)
 			case "position":
 				return ec.fieldContext_StudentDefenceInfo_position(ctx, field)
 			case "createdAt":
@@ -2788,6 +2821,11 @@ func (ec *executionContext) _StudentDefenceInfo(ctx context.Context, sel ast.Sel
 			}
 		case "title":
 			out.Values[i] = ec._StudentDefenceInfo_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "teacher_code":
+			out.Values[i] = ec._StudentDefenceInfo_teacher_code(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

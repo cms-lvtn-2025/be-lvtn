@@ -1,9 +1,15 @@
 package controller
 
 import (
+	"context"
+	"fmt"
+	"strings"
 	pb "thaily/proto/common"
+	"thaily/src/graph/helper"
 	"thaily/src/graph/model"
 	"thaily/src/server/client"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Controller struct {
@@ -24,6 +30,19 @@ func NewController(academic *client.GRPCAcadamicClient, council *client.GRPCCoun
 		role:     role,
 		thesis:   thesis,
 		user:     user,
+	}
+}
+
+func (c *Controller) DefaultPagination() *model.PaginationInput {
+	Page := int32(1)
+	PageSize := int32(10)
+	SortBy := "created_at"
+	Descending := true
+	return &model.PaginationInput{
+		Page:       &Page,
+		PageSize:   &PageSize,
+		SortBy:     &SortBy,
+		Descending: &Descending,
 	}
 }
 
@@ -180,4 +199,62 @@ func convertLogicalConditionToPB(cond model.LogicalCondition) pb.LogicalConditio
 	default:
 		return pb.LogicalCondition_AND
 	}
+}
+
+func (c *Controller) GetInfoRequest(ctx context.Context) (id *string, role *string, err error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, nil, fmt.Errorf("not authorized")
+	}
+	roleSystem, ok := claims["role"].(string)
+	if !ok {
+		return nil, nil, fmt.Errorf("not authorized")
+	}
+	semester, ok := ctx.Value("semester").(string)
+
+	idsArr := strings.Split(claims["ids"].(string), ",")
+	fmt.Println(idsArr)
+	myId := ""
+	if semester == "" {
+		myId = strings.Split(idsArr[0], "-")[1]
+	} else {
+		for _, id := range idsArr {
+			if strings.HasPrefix(id, semester+"-") {
+				myId = strings.Split(id, "-")[1]
+			}
+		}
+	}
+	fmt.Println(myId)
+	if myId == "" {
+		return nil, nil, fmt.Errorf("no teacher found for semester %s", semester)
+	}
+
+	return &myId, &roleSystem, nil
+}
+
+func (c *Controller) GetInfoAllRequest(ctx context.Context) (ids *[]string, semesters *[]string, role *string, err error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, nil, nil, fmt.Errorf("not authorized")
+	}
+	roleSystem, ok := claims["role"].(string)
+	if !ok {
+		return nil, nil, nil, fmt.Errorf("not authorized")
+	}
+	idsArr := strings.Split(claims["ids"].(string), ",")
+	var myIds []string
+	var mySemesters []string
+	for _, id := range idsArr {
+		parts := strings.Split(id, "-")
+		if len(parts) == 2 {
+			myIds = append(myIds, strings.Split(id, "-")[1])
+			mySemesters = append(mySemesters, strings.Split(id, "-")[0])
+		}
+
+	}
+	if len(myIds) == 0 {
+		return nil, nil, nil, fmt.Errorf("no id found for semester %s", roleSystem)
+	}
+	return &myIds, &mySemesters, &roleSystem, nil
+
 }
