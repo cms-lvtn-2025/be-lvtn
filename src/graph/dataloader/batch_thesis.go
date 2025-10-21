@@ -3,11 +3,80 @@ package dataloader
 import (
 	"context"
 	"log"
+	pbCommon "thaily/proto/common"
+	"thaily/src/graph/convert"
 
 	pb "thaily/proto/thesis"
 	"thaily/src/graph/model"
 	"thaily/src/server/client"
 )
+
+func createStudentTopicCouncilInfoBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.StudentTopicCouncil] {
+	return func(ctx context.Context, ids []string) (map[string]*model.StudentTopicCouncil, error) {
+		result := make(map[string]*model.StudentTopicCouncil)
+		if len(ids) == 0 {
+			return result, nil
+		}
+		resp, err := client.GetTopicCouncilsByIds(ctx, ids)
+		if err != nil {
+			log.Printf("[DataLoader] Batch fetch failed, falling back to individual: %v", err)
+			for _, id := range ids {
+				topicCouncil, err := client.GetTopicCouncilById(ctx, id)
+				if err != nil {
+					// Skip failed items - don't fail entire batch
+					log.Printf("[DataLoader] Failed to fetch midterm %s: %v", id, err)
+					continue
+				}
+
+				if topicCouncil != nil && topicCouncil.GetTopicCouncil() != nil {
+					result[id] = convert.PbTopicCouncilToStudentTopicCouncil(topicCouncil.GetTopicCouncil())
+				}
+			}
+		}
+		// Map batch results
+		if resp != nil && resp.TopicCouncils != nil {
+			for _, pbTopicCouncil := range resp.TopicCouncils {
+				if pbTopicCouncil != nil {
+					result[pbTopicCouncil.Id] = convert.PbTopicCouncilToStudentTopicCouncil(pbTopicCouncil)
+				}
+			}
+		}
+
+		log.Printf("[DataLoader] Batch loaded %d/%d topic successfully", len(result), len(ids))
+		return result, nil
+	}
+}
+
+func createGradeViewBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.GradeReview] {
+	return func(ctx context.Context, ids []string) (map[string]*model.GradeReview, error) {
+		result := make(map[string]*model.GradeReview)
+		if len(ids) == 0 {
+			return result, nil
+		}
+		resp, err := client.GetGradeReviewsByIds(ctx, ids)
+		if err != nil {
+			log.Printf("[DataLoader] Batch fetch failed, falling back to individual: %v", err)
+			for _, id := range ids {
+				gradeReview, err := client.GetGradeReviewById(ctx, id)
+				if err != nil {
+					log.Printf("[DataLoader] Failed to fetch midterm %s: %v", id, err)
+				}
+				if gradeReview != nil && gradeReview.GetGradeReview() != nil {
+					result[id] = convert.PbGradeReviewToModel(gradeReview.GetGradeReview())
+				}
+			}
+		}
+		if resp != nil && resp.GradeReviews != nil {
+			for _, pbGradeReview := range resp.GradeReviews {
+				if pbGradeReview != nil {
+					result[pbGradeReview.Id] = convert.PbGradeReviewToModel(pbGradeReview)
+				}
+			}
+		}
+		log.Printf("[DataLoader] Batch loaded %d/%d topic successfully", len(result), len(ids))
+		return result, nil
+	}
+}
 
 // createMidtermBatchFunc creates a batch function for loading midterms
 func createMidtermBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.Midterm] {
@@ -93,6 +162,118 @@ func createFinalBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.Fi
 
 		log.Printf("[DataLoader] Batch loaded %d/%d finals successfully", len(result), len(ids))
 		return result, nil
+	}
+}
+
+func createTopicForStudentBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.StudentTopic] {
+	return func(ctx context.Context, ids []string) (map[string]*model.StudentTopic, error) {
+		result := make(map[string]*model.StudentTopic)
+
+		if len(ids) == 0 {
+			return result, nil
+		}
+
+		// Use batch fetching method
+		resp, err := client.GetTopicsByIds(ctx, ids)
+		if err != nil {
+			log.Printf("[DataLoader] Batch fetch failed, falling back to individual: %v", err)
+			// Fallback to individual fetching if batch fails
+			for _, id := range ids {
+				topic, err := client.GetTopicById(ctx, id)
+				if err != nil {
+					log.Printf("[DataLoader] Failed to fetch topic %s: %v", id, err)
+					continue
+				}
+
+				if topic != nil && topic.Topic != nil {
+					result[id] = convert.PbTopicToStudentTopic(topic.Topic)
+				}
+			}
+			log.Printf("[DataLoader] Individual fetch completed: %d/%d successful", len(result), len(ids))
+			return result, nil
+		}
+
+		// Map batch results
+		if resp != nil && resp.Topics != nil {
+			for _, pbTopic := range resp.Topics {
+				if pbTopic != nil {
+					result[pbTopic.Id] = convert.PbTopicToStudentTopic(pbTopic)
+				}
+			}
+		}
+
+		log.Printf("[DataLoader] Batch loaded %d/%d topics successfully", len(result), len(ids))
+		return result, nil
+	}
+}
+
+func createSupervisorForStudentBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.StudentTopicSupervisor] {
+	return func(ctx context.Context, ids []string) (map[string][]*model.StudentTopicSupervisor, error) {
+		result := make(map[string][]*model.StudentTopicSupervisor)
+		if len(ids) == 0 {
+			return result, nil
+		}
+		newSearch := pbCommon.SearchRequest{
+			Pagination: &pbCommon.Pagination{
+				Page:       1,
+				PageSize:   int32(len(ids) * 5),
+				SortBy:     "created_at",
+				Descending: true,
+			},
+			Filters: []*pbCommon.FilterCriteria{
+				{
+					Criteria: &pbCommon.FilterCriteria_Condition{
+						Condition: &pbCommon.FilterCondition{
+							Field:    "topic_council_code",
+							Operator: pbCommon.FilterOperator_IN,
+							Values:   ids,
+						},
+					},
+				},
+			},
+		}
+		resp, err := client.GetTopicCouncilSupervisorBySearch(ctx, &newSearch)
+		if err != nil {
+			log.Printf("[DataLoader] Batch fetch failed, falling back to individual: %v", err)
+			for _, id := range ids {
+				newSearch = pbCommon.SearchRequest{
+					Pagination: &pbCommon.Pagination{
+						Page:       1,
+						PageSize:   int32(len(ids) * 5),
+						SortBy:     "created_at",
+						Descending: true,
+					},
+					Filters: []*pbCommon.FilterCriteria{
+						{
+							Criteria: &pbCommon.FilterCriteria_Condition{
+								Condition: &pbCommon.FilterCondition{
+									Field:    "topic_council_code",
+									Operator: pbCommon.FilterOperator_EQUAL,
+									Values:   []string{id},
+								},
+							},
+						},
+					},
+				}
+				supervisor, err := client.GetTopicCouncilSupervisorBySearch(ctx, &newSearch)
+				if err != nil {
+					log.Printf("[DataLoader] Failed to fetch topic %s: %v", id, err)
+					continue
+				}
+				if supervisor != nil {
+					result[id] = convert.PbTopicCouncilSupervisorsToStudentTopicSupervisors(supervisor.GetTopicCouncilSupervisors())
+				}
+			}
+			return result, err
+		}
+		if resp != nil {
+			for _, supervisor := range resp.GetTopicCouncilSupervisors() {
+				if supervisor != nil {
+					result[supervisor.TopicCouncilCode] = append(result[supervisor.TopicCouncilCode], convert.PbTopicCouncilSupervisorToStudentTopicSupervisor(supervisor))
+				}
+			}
+		}
+		return result, err
 	}
 }
 

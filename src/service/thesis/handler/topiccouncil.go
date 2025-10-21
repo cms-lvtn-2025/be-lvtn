@@ -88,13 +88,13 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 	}
 
 	query := `
-		SELECT id, title, stage, topic_code, council_code, created_at, updated_at, created_by, updated_by
-		FROM TopicCouncil
+		SELECT id, title, stage, topic_code, council_code,time_start, time_end, created_at, updated_at, created_by, updated_by
+		FROM Topic_council
 		WHERE id = ?
 	`
 
 	var entity pb.TopicCouncil
-	var createdAt, updatedAt sql.NullTime
+	var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
 	var updatedBy sql.NullString
 	var StageStr string
 
@@ -104,6 +104,8 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 		&StageStr,
 		&entity.TopicCode,
 		&entity.CouncilCode,
+		&timeStart,
+		&timeEnd,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -132,6 +134,12 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 	}
 	if updatedAt.Valid {
 		entity.UpdatedAt = timestamppb.New(updatedAt.Time)
+	}
+	if timeStart.Valid {
+		entity.TimeStart = timestamppb.New(timeStart.Time)
+	}
+	if timeEnd.Valid {
+		entity.TimeEnd = timestamppb.New(timeEnd.Time)
 	}
 	if updatedBy.Valid {
 		entity.UpdatedBy = updatedBy.String
@@ -222,7 +230,7 @@ func (h *Handler) DeleteTopicCouncil(ctx context.Context, req *pb.DeleteTopicCou
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM TopicCouncil WHERE id = ?`
+	query := `DELETE FROM Topic_council WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -302,7 +310,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 	}
 
 	// Get total count
-	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM TopicCouncil %s", whereClause)
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Topic_council %s", whereClause)
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
@@ -312,8 +320,8 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, stage, topic_code, council_code, created_at, updated_at, created_by, updated_by
-		FROM TopicCouncil
+		SELECT id, title, stage, topic_code, council_code, timeStart, timeEnd, created_at, updated_at, created_by, updated_by
+		FROM Topic_council
 		%s
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?
@@ -328,7 +336,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 	entities := []*pb.TopicCouncil{}
 	for rows.Next() {
 		var entity pb.TopicCouncil
-		var createdAt, updatedAt sql.NullTime
+		var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
 		var updatedBy sql.NullString
 		var StageStr string
 
@@ -338,6 +346,8 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 			&StageStr,
 			&entity.TopicCode,
 			&entity.CouncilCode,
+			&timeStart,
+			&timeEnd,
 			&createdAt,
 			&updatedAt,
 			&entity.CreatedBy,
@@ -362,6 +372,12 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 		}
 		if updatedAt.Valid {
 			entity.UpdatedAt = timestamppb.New(updatedAt.Time)
+		}
+		if timeStart.Valid {
+			entity.TimeStart = timestamppb.New(timeStart.Time)
+		}
+		if timeEnd.Valid {
+			entity.TimeEnd = timestamppb.New(timeEnd.Time)
 		}
 		if updatedBy.Valid {
 			entity.UpdatedBy = updatedBy.String

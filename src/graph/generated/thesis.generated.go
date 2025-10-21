@@ -26,7 +26,7 @@ type EnrollmentResolver interface {
 	GradeDefences(ctx context.Context, obj *model.Enrollment) ([]*model.GradeDefence, error)
 }
 type GradeReviewResolver interface {
-	Teacher(ctx context.Context, obj *model.GradeReview) (*model.Teacher, error)
+	Teacher(ctx context.Context, obj *model.GradeReview) (*model.StudentTeacherInfo, error)
 }
 type TopicResolver interface {
 	Files(ctx context.Context, obj *model.Topic) ([]*model.File, error)
@@ -1383,7 +1383,7 @@ func (ec *executionContext) _GradeReview_teacher(ctx context.Context, field grap
 			return ec.resolvers.GradeReview().Teacher(ctx, obj)
 		},
 		nil,
-		ec.marshalOTeacher2ᚖthailyᚋsrcᚋgraphᚋmodelᚐTeacher,
+		ec.marshalOStudentTeacherInfo2ᚖthailyᚋsrcᚋgraphᚋmodelᚐStudentTeacherInfo,
 		true,
 		false,
 	)
@@ -1398,29 +1398,17 @@ func (ec *executionContext) fieldContext_GradeReview_teacher(_ context.Context, 
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Teacher_id(ctx, field)
+				return ec.fieldContext_StudentTeacherInfo_id(ctx, field)
 			case "email":
-				return ec.fieldContext_Teacher_email(ctx, field)
+				return ec.fieldContext_StudentTeacherInfo_email(ctx, field)
 			case "username":
-				return ec.fieldContext_Teacher_username(ctx, field)
+				return ec.fieldContext_StudentTeacherInfo_username(ctx, field)
 			case "gender":
-				return ec.fieldContext_Teacher_gender(ctx, field)
+				return ec.fieldContext_StudentTeacherInfo_gender(ctx, field)
 			case "majorCode":
-				return ec.fieldContext_Teacher_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Teacher_semesterCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Teacher_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Teacher_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Teacher_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Teacher_updatedBy(ctx, field)
-			case "roles":
-				return ec.fieldContext_Teacher_roles(ctx, field)
+				return ec.fieldContext_StudentTeacherInfo_majorCode(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type StudentTeacherInfo", field.Name)
 		},
 	}
 	return fc, nil

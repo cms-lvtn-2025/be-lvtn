@@ -342,18 +342,18 @@ type GradeMidtermInput struct {
 }
 
 type GradeReview struct {
-	ID             string      `json:"id"`
-	Title          string      `json:"title"`
-	ReviewGrade    *int32      `json:"reviewGrade,omitempty"`
-	TeacherCode    string      `json:"teacherCode"`
-	Status         FinalStatus `json:"status"`
-	Notes          *string     `json:"notes,omitempty"`
-	CompletionDate *time.Time  `json:"completionDate,omitempty"`
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	CreatedBy      *string     `json:"createdBy,omitempty"`
-	UpdatedBy      *string     `json:"updatedBy,omitempty"`
-	Teacher        *Teacher    `json:"teacher,omitempty"`
+	ID             string              `json:"id"`
+	Title          string              `json:"title"`
+	ReviewGrade    *int32              `json:"reviewGrade,omitempty"`
+	TeacherCode    string              `json:"teacherCode"`
+	Status         FinalStatus         `json:"status"`
+	Notes          *string             `json:"notes,omitempty"`
+	CompletionDate *time.Time          `json:"completionDate,omitempty"`
+	CreatedAt      *time.Time          `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time          `json:"updatedAt,omitempty"`
+	CreatedBy      *string             `json:"createdBy,omitempty"`
+	UpdatedBy      *string             `json:"updatedBy,omitempty"`
+	Teacher        *StudentTeacherInfo `json:"teacher,omitempty"`
 }
 
 type GradeReviewListResponse struct {

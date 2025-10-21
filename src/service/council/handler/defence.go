@@ -257,7 +257,7 @@ func (h *Handler) DeleteDefence(ctx context.Context, req *pb.DeleteDefenceReques
 // ListDefences lists Defences with pagination and filtering
 func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest) (*pb.ListDefencesResponse, error) {
 	defer logger.TraceFunction(ctx)()
-
+	fmt.Println(req.Search)
 	// Default pagination
 	page := int32(1)
 	pageSize := int32(10)
@@ -313,6 +313,7 @@ func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest)
 
 	// Get total count
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Defence %s", whereClause)
+	fmt.Println(whereClause)
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
@@ -387,7 +388,7 @@ func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest)
 	if err := rows.Err(); err != nil {
 		return nil, status.Errorf(codes.Internal, "error iterating defences: %v", err)
 	}
-
+	fmt.Println(entities)
 	return &pb.ListDefencesResponse{
 		Defences: entities,
 		Total:    total,

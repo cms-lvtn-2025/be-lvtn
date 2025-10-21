@@ -28,6 +28,61 @@ func (c *Controller) GetDefenceInfoByCouncilId(ctx context.Context, id string) (
 	}
 	return convert.PbDefenceToStudentDefenceInfo(defence.GetDefence()), nil
 }
+func (c *Controller) GetCouncilByIdForStudent(ctx context.Context, id string) (*model.StudentCouncil, error) {
+	council, err := c.council.GetCouncilById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbCouncilToStudentCouncil(council.GetCouncil()), nil
+}
+
+func (c *Controller) GetGradeDefenceInfoByEnrollmentCode(ctx context.Context, enrollmentCode string) ([]*model.StudentGradeDefence, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: append([]*model.FilterCriteriaInput{
+			&model.FilterCriteriaInput{
+				Condition: &model.FilterConditionInput{
+					Field:    "enrollment_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{enrollmentCode},
+				},
+			},
+		}),
+	}
+	gradeDefence, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbGradeDefencesToStudentGradeDefences(gradeDefence.GradeDefences), nil
+}
+
+func (c *Controller) GetGradeDefenceCriterionByDefenceCode(ctx context.Context, defenceCode string) ([]*model.GradeDefenceCriterion, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: append([]*model.FilterCriteriaInput{
+			&model.FilterCriteriaInput{
+				Condition: &model.FilterConditionInput{
+					Field:    "grade_defence_ode",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{defenceCode},
+				},
+			},
+		}),
+	}
+	criterion, err := c.council.GetGradeDefenceCriteriaBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbGradeDefenceCriteriaToModel(criterion.GradeDefenceCriteria), nil
+}
+
+func (c *Controller) GetDefenceInfoById(ctx context.Context, id string) (*model.StudentDefenceInfo, error) {
+	defence, err := c.council.GetDefenceById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbDefenceToStudentDefenceInfo(defence.GetDefence()), nil
+}
 
 //func (c *Controller) pbCouncilsToModel(resp *pb.ListCouncilsResponse) []*model.Council {
 //	if resp == nil {

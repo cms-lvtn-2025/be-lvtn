@@ -588,7 +588,6 @@ func PbTopicCouncilToStudentTopicCouncil(pb *thesis.TopicCouncil) *model.Student
 		t := pb.UpdatedAt.AsTime()
 		result.UpdatedAt = &t
 	}
-
 	return result
 }
 
@@ -638,6 +637,17 @@ func PbTopicCouncilSupervisorToStudentTopicSupervisor(pb *thesis.TopicCouncilSup
 		TeacherSupervisorCode: pb.TeacherSupervisorCode,
 		TopicCouncilCode:      pb.TopicCouncilCode,
 	}
+}
+
+func PbTopicCouncilSupervisorsToStudentTopicSupervisors(pb []*thesis.TopicCouncilSupervisor) []*model.StudentTopicSupervisor {
+	if pb == nil {
+		return nil
+	}
+	result := make([]*model.StudentTopicSupervisor, 0, len(pb))
+	for _, pb := range pb {
+		result = append(result, PbTopicCouncilSupervisorToStudentTopicSupervisor(pb))
+	}
+	return result
 }
 
 // PbCouncilToStudentCouncil converts protobuf Council to GraphQL StudentCouncil

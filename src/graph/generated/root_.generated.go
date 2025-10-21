@@ -6931,7 +6931,7 @@ type GradeReview {
     createdBy: String
     updatedBy: String
 
-    teacher: Teacher
+    teacher: StudentTeacherInfo
 }
 
 `, BuiltIn: false},

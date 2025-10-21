@@ -42,7 +42,7 @@ func (r *enrollmentResolver) GradeDefences(ctx context.Context, obj *model.Enrol
 }
 
 // Teacher is the resolver for the teacher field.
-func (r *gradeReviewResolver) Teacher(ctx context.Context, obj *model.GradeReview) (*model.Teacher, error) {
+func (r *gradeReviewResolver) Teacher(ctx context.Context, obj *model.GradeReview) (*model.StudentTeacherInfo, error) {
 	panic(fmt.Errorf("not implemented: Teacher - teacher"))
 }
 

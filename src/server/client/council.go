@@ -22,16 +22,15 @@ type GRPCCouncil struct {
 
 const (
 	// Cache TTL configurations
-	councilCacheTTL      = 5 * time.Minute
-	defenceCacheTTL      = 5 * time.Minute
-	scheduleCacheTTL     = 5 * time.Minute
-	gradeDefenceCacheTTL = 10 * time.Minute
-
+	councilCacheTTL       = 5 * time.Minute
+	defenceCacheTTL       = 5 * time.Minute
+	gradeDefenceCacheTTL  = 10 * time.Minute
+	gradeDefenceCriterion = 10 * time.Minute
 	// Cache key prefixes
-	councilCachePrefix      = "council:council:"
-	defenceCachePrefix      = "council:defence:"
-	scheduleCachePrefix     = "council:schedule:"
-	gradeDefenceCachePrefix = "council:grade_defence:"
+	councilCachePrefix               = "council:council:"
+	defenceCachePrefix               = "council:defence:"
+	gradeDefenceCachePrefix          = "council:grade_defence:"
+	gradeDefenceCriterionCachePrefix = "council:grade_defence_criterion"
 )
 
 func NewGRPCCouncil(addr string, redisClient *redis.Client) (*GRPCCouncil, error) {
@@ -209,6 +208,7 @@ func (c *GRPCCouncil) GetDefencesBySearch(ctx context.Context, search *pbCommon.
 
 	log.Printf("Cache MISS for defence search")
 	resp, err := c.client.ListDefences(ctx, &pb.ListDefencesRequest{Search: search})
+	fmt.Println("cccccccccccccccc", resp, search)
 	if err != nil {
 		return nil, err
 	}
@@ -508,6 +508,147 @@ func (c *GRPCCouncil) GetGradeDefencesByIds(ctx context.Context, ids []string) (
 					cacheKey := fmt.Sprintf("%s%s", gradeDefenceCachePrefix, gradeDefence.Id)
 					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GetGradeDefenceResponse{GradeDefence: gradeDefence}, gradeDefenceCacheTTL)
 					result.GradeDefences = append(result.GradeDefences, gradeDefence)
+				}
+			}
+		}
+	}
+
+	return result, nil
+}
+
+// ============================================
+// GRADE DEFENCE CRITERION METHODS
+// ============================================
+
+func (c *GRPCCouncil) GetGradeDefenceCriteriaBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListGradeDefenceCriteriaResponse, error) {
+	cacheKey := GenerateCacheKey(gradeDefenceCriterionCachePrefix, search)
+	var cached pb.ListGradeDefenceCriteriaResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for grade defence search")
+		return &cached, nil
+	}
+
+	log.Printf("Cache MISS for grade defence search")
+	resp, err := c.client.ListGradeDefenceCriteria(ctx, &pb.ListGradeDefenceCriteriaRequest{Search: search})
+	if err != nil {
+		return nil, err
+	}
+
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, gradeDefenceCriterion)
+	return resp, nil
+}
+
+func (c *GRPCCouncil) GetGradeCriterionById(ctx context.Context, id string) (*pb.GetGradeDefenceCriterionResponse, error) {
+	cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, id)
+	var cached pb.GetGradeDefenceCriterionResponse
+	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for grade defence: %s", id)
+		return &cached, nil
+	}
+
+	log.Printf("Cache MISS for grade defence: %s", id)
+	resp, err := c.client.GetGradeDefenceCriterion(ctx, &pb.GetGradeDefenceCriterionRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+
+	SetCachedProto(ctx, c.redisClient, cacheKey, resp, gradeDefenceCriterion)
+	return resp, nil
+}
+
+func (c *GRPCCouncil) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.UpdateGradeDefenceCriterionRequest) (*pb.UpdateGradeDefenceCriterionResponse, error) {
+	resp, err := c.client.UpdateGradeDefenceCriterion(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	if req.Id != "" {
+		cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, req.Id)
+		InvalidateCacheByKey(ctx, c.redisClient, cacheKey)
+		InvalidateCacheByPattern(ctx, c.redisClient, gradeDefenceCriterionCachePrefix+"*")
+	}
+
+	return resp, nil
+}
+
+func (c *GRPCCouncil) DeleteGradeDefenceCriterion(ctx context.Context, id string) (*pb.DeleteGradeDefenceCriterionResponse, error) {
+	resp, err := c.client.DeleteGradeDefenceCriterion(ctx, &pb.DeleteGradeDefenceCriterionRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, id)
+	InvalidateCacheByKey(ctx, c.redisClient, cacheKey)
+	InvalidateCacheByPattern(ctx, c.redisClient, gradeDefenceCriterionCachePrefix+"*")
+
+	return resp, nil
+}
+
+func (c *GRPCCouncil) GetGradeDefenceCriteriaByIds(ctx context.Context, ids []string) (*pb.ListGradeDefenceCriteriaResponse, error) {
+	if len(ids) == 0 {
+		return &pb.ListGradeDefenceCriteriaResponse{GradeDefenceCriteria: []*pb.GradeDefenceCriterion{}}, nil
+	}
+
+	result := &pb.ListGradeDefenceCriteriaResponse{GradeDefenceCriteria: []*pb.GradeDefenceCriterion{}}
+	missingIds := []string{}
+	cacheHits := 0
+
+	// Check Redis cache for each ID
+	for _, id := range ids {
+		cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterion, id)
+		var cached pb.GetGradeDefenceCriterionResponse
+
+		if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
+			if cached.GradeDefenceCriterion != nil {
+				result.GradeDefenceCriteria = append(result.GetGradeDefenceCriteria(), cached.GetGradeDefenceCriterion())
+				cacheHits++
+			} else {
+				missingIds = append(missingIds, id)
+			}
+		} else {
+			missingIds = append(missingIds, id)
+		}
+	}
+
+	log.Printf("[GetGradeDefencesByIds] Total: %d, Cache hits: %d, Database queries needed: %d", len(ids), cacheHits, len(missingIds))
+
+	// Fetch missing IDs from database
+	if len(missingIds) > 0 {
+		resp, err := c.client.ListGradeDefenceCriteria(ctx, &pb.ListGradeDefenceCriteriaRequest{
+			Search: &pbCommon.SearchRequest{
+				Pagination: &pbCommon.Pagination{
+					Descending: false,
+					Page:       1,
+					PageSize:   int32(len(missingIds)),
+					SortBy:     "id",
+				},
+				Filters: []*pbCommon.FilterCriteria{
+					{
+						Criteria: &pbCommon.FilterCriteria_Condition{
+							Condition: &pbCommon.FilterCondition{
+								Field:    "id",
+								Operator: pbCommon.FilterOperator_IN,
+								Values:   missingIds,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		// Store fetched items to Redis and add to result
+		if resp != nil && resp.GradeDefenceCriteria != nil {
+			for _, gradeDefenceCriteria := range resp.GetGradeDefenceCriteria() {
+				if gradeDefenceCriteria != nil {
+					cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterion, gradeDefenceCriteria.Id)
+					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GetGradeDefenceCriterionResponse{GradeDefenceCriterion: gradeDefenceCriteria}, gradeDefenceCacheTTL)
+					result.GradeDefenceCriteria = append(result.GradeDefenceCriteria, gradeDefenceCriteria)
 				}
 			}
 		}

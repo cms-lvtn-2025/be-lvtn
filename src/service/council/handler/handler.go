@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	pb "thaily/proto/council"
 )
@@ -21,6 +22,7 @@ func (h *Handler) queryRow(ctx context.Context, query string, args ...interface{
 }
 
 func (h *Handler) query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+	fmt.Println(query, args)
 	return h.db.QueryContext(ctx, query, args...)
 }
 
