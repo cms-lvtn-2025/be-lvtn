@@ -1424,8 +1424,6 @@ func (ec *executionContext) fieldContext_StudentGradeDefence_criteria(_ context.
 				return ec.fieldContext_GradeDefenceCriterion_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_GradeDefenceCriterion_updatedBy(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_GradeDefenceCriterion_gradeDefence(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GradeDefenceCriterion", field.Name)
 		},

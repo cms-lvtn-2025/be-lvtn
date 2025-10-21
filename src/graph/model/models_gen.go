@@ -307,16 +307,15 @@ type GradeDefence struct {
 }
 
 type GradeDefenceCriterion struct {
-	ID               string        `json:"id"`
-	GradeDefenceCode string        `json:"gradeDefenceCode"`
-	Name             *string       `json:"name,omitempty"`
-	Score            *string       `json:"score,omitempty"`
-	MaxScore         *string       `json:"maxScore,omitempty"`
-	CreatedAt        *time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt        *time.Time    `json:"updatedAt,omitempty"`
-	CreatedBy        *string       `json:"createdBy,omitempty"`
-	UpdatedBy        *string       `json:"updatedBy,omitempty"`
-	GradeDefence     *GradeDefence `json:"gradeDefence,omitempty"`
+	ID               string     `json:"id"`
+	GradeDefenceCode string     `json:"gradeDefenceCode"`
+	Name             *string    `json:"name,omitempty"`
+	Score            *string    `json:"score,omitempty"`
+	MaxScore         *string    `json:"maxScore,omitempty"`
+	CreatedAt        *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt        *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy        *string    `json:"createdBy,omitempty"`
+	UpdatedBy        *string    `json:"updatedBy,omitempty"`
 }
 
 type GradeDefenceCriterionListResponse struct {

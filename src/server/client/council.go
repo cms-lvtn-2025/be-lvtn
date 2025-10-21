@@ -30,7 +30,7 @@ const (
 	councilCachePrefix               = "council:council:"
 	defenceCachePrefix               = "council:defence:"
 	gradeDefenceCachePrefix          = "council:grade_defence:"
-	gradeDefenceCriterionCachePrefix = "council:grade_defence_criterion"
+	gradeDefenceCriterionCachePrefix = "council:grade_defence_criterion:"
 )
 
 func NewGRPCCouncil(addr string, redisClient *redis.Client) (*GRPCCouncil, error) {
@@ -597,7 +597,7 @@ func (c *GRPCCouncil) GetGradeDefenceCriteriaByIds(ctx context.Context, ids []st
 
 	// Check Redis cache for each ID
 	for _, id := range ids {
-		cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterion, id)
+		cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, id)
 		var cached pb.GetGradeDefenceCriterionResponse
 
 		if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
@@ -646,7 +646,7 @@ func (c *GRPCCouncil) GetGradeDefenceCriteriaByIds(ctx context.Context, ids []st
 		if resp != nil && resp.GradeDefenceCriteria != nil {
 			for _, gradeDefenceCriteria := range resp.GetGradeDefenceCriteria() {
 				if gradeDefenceCriteria != nil {
-					cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterion, gradeDefenceCriteria.Id)
+					cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, gradeDefenceCriteria.Id)
 					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GetGradeDefenceCriterionResponse{GradeDefenceCriterion: gradeDefenceCriteria}, gradeDefenceCacheTTL)
 					result.GradeDefenceCriteria = append(result.GradeDefenceCriteria, gradeDefenceCriteria)
 				}

@@ -43,7 +43,6 @@ type ResolverRoot interface {
 	Enrollment() EnrollmentResolver
 	Faculty() FacultyResolver
 	GradeDefence() GradeDefenceResolver
-	GradeDefenceCriterion() GradeDefenceCriterionResolver
 	GradeReview() GradeReviewResolver
 	Major() MajorResolver
 	Mutation() MutationResolver
@@ -292,7 +291,6 @@ type ComplexityRoot struct {
 	GradeDefenceCriterion struct {
 		CreatedAt        func(childComplexity int) int
 		CreatedBy        func(childComplexity int) int
-		GradeDefence     func(childComplexity int) int
 		GradeDefenceCode func(childComplexity int) int
 		ID               func(childComplexity int) int
 		MaxScore         func(childComplexity int) int
@@ -1963,13 +1961,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.GradeDefenceCriterion.CreatedBy(childComplexity), true
-
-	case "GradeDefenceCriterion.gradeDefence":
-		if e.complexity.GradeDefenceCriterion.GradeDefence == nil {
-			break
-		}
-
-		return e.complexity.GradeDefenceCriterion.GradeDefence(childComplexity), true
 
 	case "GradeDefenceCriterion.gradeDefenceCode":
 		if e.complexity.GradeDefenceCriterion.GradeDefenceCode == nil {
@@ -5770,8 +5761,6 @@ type GradeDefenceCriterion {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    gradeDefence: GradeDefence
 }
 `, BuiltIn: false},
 	{Name: "../schema/department_lecturer.graphqls", Input: `# Schema dành riêng cho GIÁO VIÊN BỘ MÔN (Department Lecturer)

@@ -2006,8 +2006,6 @@ func (ec *executionContext) fieldContext_GradeDefenceCriterionListResponse_data(
 				return ec.fieldContext_GradeDefenceCriterion_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_GradeDefenceCriterion_updatedBy(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_GradeDefenceCriterion_gradeDefence(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GradeDefenceCriterion", field.Name)
 		},
@@ -5123,8 +5121,6 @@ func (ec *executionContext) fieldContext_Mutation_addGradeDefenceCriterion(ctx c
 				return ec.fieldContext_GradeDefenceCriterion_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_GradeDefenceCriterion_updatedBy(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_GradeDefenceCriterion_gradeDefence(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GradeDefenceCriterion", field.Name)
 		},
@@ -5186,8 +5182,6 @@ func (ec *executionContext) fieldContext_Mutation_updateGradeDefenceCriterion(ct
 				return ec.fieldContext_GradeDefenceCriterion_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_GradeDefenceCriterion_updatedBy(ctx, field)
-			case "gradeDefence":
-				return ec.fieldContext_GradeDefenceCriterion_gradeDefence(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GradeDefenceCriterion", field.Name)
 		},

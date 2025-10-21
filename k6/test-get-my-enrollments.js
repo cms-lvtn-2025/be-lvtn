@@ -9,12 +9,12 @@ export const options = {
             timeUnit: '1s',
             duration: '1m',
             preAllocatedVUs: 10,
-            maxVUs: 500
+            maxVUs: 200
         }
     }
 };
 
-const JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx5dmluaHRoYWkzMjFAZ21haWwuY29tIiwiZXhwIjoxNzYxMDM1MzM3LCJnb29nbGVfaWQiOiIxMDQ4NjUyNzA0NDQwODgzNzQ2MzEiLCJpYXQiOjE3NjEwMzQ0MzcsImlkcyI6IlNFTV8yMDI1XzEtU1RVXzAwMDAwMixTRU1fMjAyNF8yLVNUVV8wMDAwMDMsU0VNXzIwMjNfMi1TVFVfMDAwMDA1LFNFTV8yMDIzXzEtU1RVXzAwMDAwMSwiLCJuYW1lIjoiIiwicm9sZSI6InN0dWRlbnQifQ.KcMi-On5x2aOrNFjy14_lDOcTsXI2lCXObooVI6Rw7c';
+const JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx5dmluaHRoYWkzMjFAZ21haWwuY29tIiwiZXhwIjoxNzYxMDQwMzc3LCJnb29nbGVfaWQiOiIxMDQ4NjUyNzA0NDQwODgzNzQ2MzEiLCJpYXQiOjE3NjEwMzk0NzcsImlkcyI6IlNFTV8yMDI1XzEtU1RVXzAwMDAwMixTRU1fMjAyNF8yLVNUVV8wMDAwMDMsU0VNXzIwMjNfMi1TVFVfMDAwMDA1LFNFTV8yMDIzXzEtU1RVXzAwMDAwMSwiLCJuYW1lIjoiIiwicm9sZSI6InN0dWRlbnQifQ.e8Vq44yoVslzNV23nIRSGIC5ZEgCxEXp4r5KMJ61FF0';
 
 const GRAPHQL_ENDPOINT = 'http://localhost:8080/query';
 

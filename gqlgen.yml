@@ -254,12 +254,11 @@ models:
 
   GradeDefence:
     fields:
-      criteria:
+      defence:
         resolver: true  # Join via dataloader
-
-  GradeDefenceCriterion:
-    fields:
-      gradeDefence:
+      enrollment:
+        resolver: true  # Join via dataloader, security check
+      criteria:
         resolver: true  # Join via dataloader
 
   # === ACADEMIC RELATED ===

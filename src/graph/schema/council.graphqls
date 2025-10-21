@@ -58,6 +58,4 @@ type GradeDefenceCriterion {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    gradeDefence: GradeDefence
 }
