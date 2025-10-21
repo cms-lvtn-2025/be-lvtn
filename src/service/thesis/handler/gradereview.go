@@ -58,7 +58,7 @@ func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeRevi
 
 	// Insert into database
 	query := `
-		INSERT INTO GradeReview (id, title, review_grade, teacher_code, status, notes, created_by, created_at, updated_at)
+		INSERT INTO Grade_review (id, title, review_grade, teacher_code, status, notes, created_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
@@ -98,7 +98,7 @@ func (h *Handler) GetGradeReview(ctx context.Context, req *pb.GetGradeReviewRequ
 
 	query := `
 		SELECT id, title, review_grade, teacher_code, status, notes, created_at, updated_at, created_by, updated_by
-		FROM GradeReview
+		FROM Grade_review
 		WHERE id = ?
 	`
 
@@ -245,7 +245,7 @@ func (h *Handler) DeleteGradeReview(ctx context.Context, req *pb.DeleteGradeRevi
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM GradeReview WHERE id = ?`
+	query := `DELETE FROM Grade_review WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -326,7 +326,7 @@ func (h *Handler) ListGradeReviews(ctx context.Context, req *pb.ListGradeReviews
 	}
 
 	// Get total count
-	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM GradeReview %s", whereClause)
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Grade_review %s", whereClause)
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
@@ -337,7 +337,7 @@ func (h *Handler) ListGradeReviews(ctx context.Context, req *pb.ListGradeReviews
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
 		SELECT id, title, review_grade, teacher_code, status, notes, created_at, updated_at, created_by, updated_by
-		FROM GradeReview
+		FROM Grade_review
 		%s
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?

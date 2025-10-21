@@ -34,7 +34,7 @@ func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.Crea
 
 	// Insert into database
 	query := `
-		INSERT INTO TopicCouncilSupervisor (id, teacher_supervisor_code, topic_council_code, created_by, created_at, updated_at)
+		INSERT INTO Topic_council_supervisor (id, teacher_supervisor_code, topic_council_code, created_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, NOW(), NOW())
 	`
 
@@ -71,7 +71,7 @@ func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopi
 
 	query := `
 		SELECT id, teacher_supervisor_code, topic_council_code, created_at, updated_at, created_by, updated_by
-		FROM TopicCouncilSupervisor
+		FROM Topic_council_supervisor
 		WHERE id = ?
 	`
 
@@ -174,7 +174,7 @@ func (h *Handler) DeleteTopicCouncilSupervisor(ctx context.Context, req *pb.Dele
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM TopicCouncilSupervisor WHERE id = ?`
+	query := `DELETE FROM Topic_council_supervisor WHERE id = ?`
 
 	result, err := h.execQuery(ctx, query, req.Id)
 	if err != nil {
@@ -252,7 +252,7 @@ func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListT
 	}
 
 	// Get total count
-	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM TopicCouncilSupervisor %s", whereClause)
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Topic_council_supervisor %s", whereClause)
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
@@ -263,7 +263,7 @@ func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListT
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
 		SELECT id, teacher_supervisor_code, topic_council_code, created_at, updated_at, created_by, updated_by
-		FROM TopicCouncilSupervisor
+		FROM Topic_council_supervisor
 		%s
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?

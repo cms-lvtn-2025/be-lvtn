@@ -338,7 +338,19 @@ func (r *studentTopicCouncilResolver) Council(ctx context.Context, obj *model.St
 
 // Teacher is the resolver for the teacher field.
 func (r *studentTopicSupervisorResolver) Teacher(ctx context.Context, obj *model.StudentTopicSupervisor) (*model.StudentTeacherInfo, error) {
-	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TeacherInfoById != nil {
+		teachers, err := loaders.TeacherInfoById.Load(ctx, obj.TeacherSupervisorCode)
+		if err != nil {
+			return nil, err
+		}
+		return teachers, nil
+	}
+	teacher, err := r.Ctrl.GetTeacherInfoById(ctx, obj.TeacherSupervisorCode)
+	if err != nil {
+		return nil, err
+	}
+	return teacher, nil
 }
 
 // StudentCouncil returns generated.StudentCouncilResolver implementation.

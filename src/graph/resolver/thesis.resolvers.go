@@ -7,6 +7,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
@@ -43,7 +44,19 @@ func (r *enrollmentResolver) GradeDefences(ctx context.Context, obj *model.Enrol
 
 // Teacher is the resolver for the teacher field.
 func (r *gradeReviewResolver) Teacher(ctx context.Context, obj *model.GradeReview) (*model.StudentTeacherInfo, error) {
-	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TeacherInfoById != nil {
+		teachers, err := loaders.TeacherInfoById.Load(ctx, obj.TeacherCode)
+		if err != nil {
+			return nil, err
+		}
+		return teachers, nil
+	}
+	teacher, err := r.Ctrl.GetTeacherInfoById(ctx, obj.TeacherCode)
+	if err != nil {
+		return nil, err
+	}
+	return teacher, nil
 }
 
 // Files is the resolver for the files field.

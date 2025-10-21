@@ -27,8 +27,6 @@ type DefenceResolver interface {
 	GradeDefences(ctx context.Context, obj *model.Defence) ([]*model.GradeDefence, error)
 }
 type GradeDefenceResolver interface {
-	Defence(ctx context.Context, obj *model.GradeDefence) (*model.Defence, error)
-	Enrollment(ctx context.Context, obj *model.GradeDefence) (*model.Enrollment, error)
 	Criteria(ctx context.Context, obj *model.GradeDefence) ([]*model.GradeDefenceCriterion, error)
 }
 type GradeDefenceCriterionResolver interface {
@@ -1145,7 +1143,7 @@ func (ec *executionContext) _GradeDefence_defence(ctx context.Context, field gra
 		field,
 		ec.fieldContext_GradeDefence_defence,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.GradeDefence().Defence(ctx, obj)
+			return obj.Defence, nil
 		},
 		nil,
 		ec.marshalODefence2ᚖthailyᚋsrcᚋgraphᚋmodelᚐDefence,
@@ -1158,8 +1156,8 @@ func (ec *executionContext) fieldContext_GradeDefence_defence(_ context.Context,
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1200,7 +1198,7 @@ func (ec *executionContext) _GradeDefence_enrollment(ctx context.Context, field 
 		field,
 		ec.fieldContext_GradeDefence_enrollment,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.GradeDefence().Enrollment(ctx, obj)
+			return obj.Enrollment, nil
 		},
 		nil,
 		ec.marshalOEnrollment2ᚖthailyᚋsrcᚋgraphᚋmodelᚐEnrollment,
@@ -1213,8 +1211,8 @@ func (ec *executionContext) fieldContext_GradeDefence_enrollment(_ context.Conte
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -1974,71 +1972,9 @@ func (ec *executionContext) _GradeDefence(ctx context.Context, sel ast.Selection
 		case "updatedBy":
 			out.Values[i] = ec._GradeDefence_updatedBy(ctx, field, obj)
 		case "defence":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._GradeDefence_defence(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			out.Values[i] = ec._GradeDefence_defence(ctx, field, obj)
 		case "enrollment":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._GradeDefence_enrollment(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			out.Values[i] = ec._GradeDefence_enrollment(ctx, field, obj)
 		case "criteria":
 			field := field
 

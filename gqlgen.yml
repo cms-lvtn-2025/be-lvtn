@@ -254,10 +254,6 @@ models:
 
   GradeDefence:
     fields:
-      defence:
-        resolver: true  # Join via dataloader
-      enrollment:
-        resolver: true  # Join via dataloader, security check
       criteria:
         resolver: true  # Join via dataloader
 
