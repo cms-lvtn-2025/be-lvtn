@@ -69,8 +69,8 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 
 	// Insert into database
 	query := `
-		INSERT INTO File (id, title, file, status, table, option, table_id, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO File (id, title, file, status, ` + "`table`" + `, ` + "`option`" + `, table_id, created_by, created_at, updated_at, updated_by)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -81,6 +81,7 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 		TableStr,
 		req.Option,
 		req.TableId,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 
@@ -109,7 +110,7 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 	}
 
 	query := `
-		SELECT id, title, file, status, table, option, table_id, created_at, updated_at, created_by, updated_by
+		SELECT id, title, file, status, ` + "`table`" + `, ` + "`option`" + `, table_id, created_at, updated_at, created_by, updated_by
 		FROM File
 		WHERE id = ?
 	`
@@ -218,7 +219,7 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 
 	}
 	if req.Table != nil {
-		updateFields = append(updateFields, "table = ?")
+		updateFields = append(updateFields, "`table` = ?")
 		TableStr := "topic"
 		switch *req.Table {
 		case pb.TableType_TOPIC:
@@ -234,7 +235,7 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 
 	}
 	if req.Option != nil {
-		updateFields = append(updateFields, "option = ?")
+		updateFields = append(updateFields, "`option` = ?")
 		args = append(args, *req.Option)
 
 	}
@@ -376,7 +377,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, file, status, table, option, table_id, created_at, updated_at, created_by, updated_by
+		SELECT id, title, file, status, `+"`table`"+`, `+"`option`"+`, table_id, created_at, updated_at, created_by, updated_by
 		FROM File
 		%s
 		ORDER BY %s %s

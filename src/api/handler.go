@@ -95,17 +95,15 @@ func (h *APIHandler) RegisterRoutes(r *gin.RouterGroup) {
 	files := r.Group("/files")
 	{
 		// Upload endpoints - require authentication
-		files.POST("/upload/template", AuthMiddleware(h.Config.JWT), h.UploadTemplateFile)
 		files.POST("/upload/list-student", AuthMiddleware(h.Config.JWT), h.UploadListStudentFile)
 		files.POST("/upload/list-teacher", AuthMiddleware(h.Config.JWT), h.UploadListTeacherFile)
 		files.POST("/upload/final", AuthMiddleware(h.Config.JWT), h.UploadFinalFile)
+		files.POST("/upload/midterm", AuthMiddleware(h.Config.JWT), h.UploadFinalFile)
 
 		// Get file info
 		files.GET("/:id", AuthMiddleware(h.Config.JWT), h.GetFile)
 		// Get presigned download URL
 		files.GET("/:id/url", AuthMiddleware(h.Config.JWT), h.GetFileURL)
-		// Get blob URL with temporary token
-		files.GET("/:id/blob-url", AuthMiddleware(h.Config.JWT), h.GetBlobURL)
 		// Delete file
 		files.DELETE("/:id", AuthMiddleware(h.Config.JWT), h.DeleteFile)
 		// List files

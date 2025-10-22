@@ -390,7 +390,7 @@ func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType
 	createResp, err := h.FileClient.CreateFile(c.Request.Context(), &pb.CreateFileRequest{
 		Title:     title,
 		File:      fileURL,
-		Status:    pb.FileStatus_REJECTED,
+		Status:    pb.FileStatus_FILE_PENDING,
 		Table:     tableType,
 		Option:    option,
 		TableId:   tableID,
@@ -471,7 +471,7 @@ func (h *APIHandler) GetFile(c *gin.Context) {
 // GetFileURL generates a presigned URL for file download
 // GET /api/files/:id/url
 func (h *APIHandler) GetFileURL(c *gin.Context) {
-	if h.FileClient == nil || h.MimIo == nil {
+	if h.FileClient == nil {
 		response.InternalError(c, "File service not available")
 		return
 	}
@@ -482,39 +482,74 @@ func (h *APIHandler) GetFileURL(c *gin.Context) {
 		return
 	}
 
-	// Get file metadata
+	// ← THÊM 5 DÒNG NÀY (TỪ GetBlobURL)
+	userInfo, err := h.extractUserInfo(c)
+	if err != nil {
+		response.Unauthorized(c, err.Error())
+		return
+	}
+
 	fileResp, err := h.FileClient.GetFileById(c.Request.Context(), fileID)
 	if err != nil {
 		response.NotFound(c, fmt.Sprintf("File not found: %v", err))
 		return
 	}
 
-	// Extract object path from file URL
-	fileURL := fileResp.File.File
-	parts := strings.Split(fileURL, "/")
-	if len(parts) < 5 {
-		response.InternalError(c, "Invalid file URL format")
+	if !h.canAccessFile(fileResp.File, userInfo) {
+		response.Forbidden(c, "You don't have permission to access this file")
 		return
 	}
+	// ← END 5 DÒNG
 
-	// URL format: http://host:port/bucket/path/to/file
-	// parts: [http:, , host:port, bucket, path, to, file]
-	// We need everything after bucket (index 4 onwards)
-	objectName := strings.Join(parts[4:], "/")
+	// ← THÊM 1 DÒNG: PHÂN BIỆT TYPE
+	urlType := c.Query("type") // "blob" hoặc "" (default)
 
-	// Generate presigned URL
-	presignedURL, err := h.MimIo.GetFileURL(c.Request.Context(), objectName)
-	if err != nil {
-		response.InternalError(c, fmt.Sprintf("Failed to generate download URL: %v", err))
-		return
+	var presignedURL, expiresIn string
+
+	if urlType == "blob" {
+		// ← THÊM 4 DÒNG: BLOB LOGIC
+		token, err := h.generateBlobToken(c, fileID, userInfo)
+		if err != nil {
+			response.InternalError(c, fmt.Sprintf("Failed to generate token: %v", err))
+			return
+		}
+		presignedURL = fmt.Sprintf("%s://%s/api/v1/files/blob?token=%s",
+			getProtocol(c), c.Request.Host, token)
+		expiresIn = "1 hour"
+	} else {
+		// CODE CŨ: PRESIGNED URL
+		objectName := extractObjectName(fileResp.File.File)
+		presignedURL, err = h.MimIo.GetFileURL(c.Request.Context(), objectName)
+		if err != nil {
+			response.InternalError(c, fmt.Sprintf("Failed to generate download URL: %v", err))
+			return
+		}
+		expiresIn = "7 days"
 	}
 
 	response.Success(c, gin.H{
 		"file_id":      fileID,
-		"download_url": presignedURL,
+		"download_url": presignedURL, // ← THỐNG NHẤT TÊN FIELD
 		"filename":     fileResp.File.Title,
-		"expires_in":   "7 days",
+		"expires_in":   expiresIn,
 	})
+}
+
+// Helper
+func getProtocol(c *gin.Context) string {
+	if c.Request.TLS != nil {
+		return "https"
+	}
+	return "http"
+}
+
+// Helper functions
+func extractObjectName(fileURL string) string {
+	parts := strings.Split(fileURL, "/")
+	if len(parts) < 5 {
+		return ""
+	}
+	return strings.Join(parts[4:], "/")
 }
 
 // DeleteFile deletes a file
@@ -602,65 +637,6 @@ func (h *APIHandler) ListFiles(c *gin.Context) {
 }
 
 // GetBlobURL generates a temporary blob URL with token
-// GET /api/files/:id/blob-url
-func (h *APIHandler) GetBlobURL(c *gin.Context) {
-	if h.FileClient == nil {
-		response.InternalError(c, "File service not available")
-		return
-	}
-
-	fileID := c.Param("id")
-	if fileID == "" {
-		response.BadRequest(c, "File ID required")
-		return
-	}
-
-	// Extract user info for authorization
-	userInfo, err := h.extractUserInfo(c)
-	if err != nil {
-		response.Unauthorized(c, err.Error())
-		return
-	}
-
-	// Get file metadata
-	fileResp, err := h.FileClient.GetFileById(c.Request.Context(), fileID)
-	if err != nil {
-		response.NotFound(c, fmt.Sprintf("File not found: %v", err))
-		return
-	}
-
-	// Check if user can access this file
-	if !h.canAccessFile(fileResp.File, userInfo) {
-		response.Forbidden(c, "You don't have permission to access this file")
-		return
-	}
-
-	// Generate blob token (bound to current browser session)
-	token, err := h.generateBlobToken(c, fileID, userInfo)
-	if err != nil {
-		response.InternalError(c, fmt.Sprintf("Failed to generate token: %v", err))
-		return
-	}
-
-	// Build blob URL
-	blobURL := fmt.Sprintf("%s://%s/api/v1/files/blob?token=%s",
-		func() string {
-			if c.Request.TLS != nil {
-				return "https"
-			}
-			return "http"
-		}(),
-		c.Request.Host,
-		token,
-	)
-
-	response.Success(c, gin.H{
-		"file_id":    fileID,
-		"blob_url":   blobURL,
-		"filename":   fileResp.File.Title,
-		"expires_in": "1 hour",
-	})
-}
 
 // GetFileBlob serves file content directly using token
 // GET /api/files/blob?token=xxx

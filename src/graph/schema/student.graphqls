@@ -17,8 +17,6 @@ extend type Query {
 }
 
 extend type Mutation {
-    """Cập nhật thông tin cá nhân sinh viên"""
-    updateMyProfile(input: UpdateStudentProfileInput!): Student!
 
     """Upload file midterm (chỉ sinh viên mới upload được)"""
     uploadMidtermFile(input: UploadFileInput!): File!
@@ -188,11 +186,6 @@ type StudentDefenceInfo {
 # INPUT TYPES
 # ============================================
 
-input UpdateStudentProfileInput {
-    email: String
-    phone: String
-    username: String
-}
 
 input UploadFileInput {
     title: String!
