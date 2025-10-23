@@ -6,3 +6,4 @@ export {
   IFlowOpts,
   IWorkflowModel
 } from './workflow.model';
+export { MinioConfigModel, IMinioConfig, IMinioConfigModel } from './minio.model';
