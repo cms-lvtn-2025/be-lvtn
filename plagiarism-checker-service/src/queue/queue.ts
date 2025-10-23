@@ -1,9 +1,19 @@
-import { Job, FlowProducer, FlowJob, Queue, Worker } from "bullmq";
+import {
+  Job,
+  FlowProducer,
+  FlowJob,
+  Queue,
+  Worker,
+  JobsOptions,
+  FlowOpts,
+} from "bullmq";
 import IORedis from "ioredis";
-import { IService } from "../database/models";
+import { IService, IWorkflow, IWorkflowModel } from "../database/models";
 import { loadGrpcClient } from "./grpc/client-loader";
-
+import vm from "node:vm";
 // Redis connection
+import { v4 as uuidv4 } from "uuid";
+
 const redisConnection = new IORedis({
   host: process.env.REDIS_HOST || "localhost",
   port: parseInt(process.env.REDIS_PORT || "10002"),
@@ -28,6 +38,19 @@ export interface ServiceQueueInfo {
   service?: IService; // Optional - chỉ có khi type = dynamic
 }
 
+export interface Children {
+  serviceName: string;
+  method: string;
+  params: any;
+  options?: JobsOptions;
+  children?: Children[];
+}
+
+export interface FlowJobWithId {
+  id: string;
+  flow: FlowJob;
+}
+
 /**
  * Service Queue Manager - Quản lý queue động cho mỗi service
  */
@@ -38,10 +61,9 @@ export class ServiceQueueManager {
    * Tạo queue và worker cho một service
    */
   createServiceQueue(service: IService): ServiceQueueInfo {
-    const queueName = `${service.name.toLowerCase()}-queue`;
+    const queueName = `${service.name}`;
 
     console.log(`\n🔧 Creating queue for ${service.name}...`);
-
     // Load gRPC client
     const client = loadGrpcClient(service);
 
@@ -81,7 +103,7 @@ export class ServiceQueueManager {
           }
           const children = await job.getChildrenValues();
 
-          if (typeof job.data.params == 'object') {
+          if (typeof job.data.params == "object") {
             Object.entries(job.data.params).forEach(([key, value]) => {
               if (typeof value == "string" && value.startsWith("@bull:")) {
                 // Parse: @bull:file_service-queue:jobId.file.id
@@ -93,7 +115,7 @@ export class ServiceQueueManager {
 
                 // Navigate qua path (file.id)
                 pathParts.forEach((part) => {
-                  if (dataKey && typeof dataKey === 'object') {
+                  if (dataKey && typeof dataKey === "object") {
                     dataKey = dataKey[part];
                   }
                 });
@@ -101,10 +123,9 @@ export class ServiceQueueManager {
                 job.data.params[key] = dataKey;
                 console.log(`   🔄 Resolved ${value} -> ${dataKey}`);
               }
-            })
+            });
           }
           console.log("   📦 Children results:", children);
-          
 
           // Call gRPC method
           const result = await new Promise((resolve, reject) => {
@@ -159,6 +180,73 @@ export class ServiceQueueManager {
 
     return queueInfo;
   }
+  /**
+   * Đăng ký với service mongodb
+   */
+  createServiceWorkflowQueue(WorkflowModel: IWorkflowModel): ServiceQueueInfo {
+    const queueName = `MONGODB_WORKFLOW`;
+
+    const queue = new Queue<ServiceJobData>(queueName, {
+      connection: redisConnection,
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: {
+          type: "exponential",
+          delay: 5000,
+        },
+        removeOnComplete: {
+          count: 100,
+        },
+        removeOnFail: {
+          count: 50,
+        },
+      },
+    });
+
+    // Tạo Worker với MongoDB model
+    const worker = new Worker<ServiceJobData>(
+      queueName,
+      async (job: Job<ServiceJobData>) => {
+        console.log(`\n⚡ [MONGODB] Processing job ${job.id}`);
+        console.log(`   Method: ${job.data.method}`);
+        console.log(`   Params:`, job.data.params);
+
+        try {
+          // Gọi method từ WorkflowModel
+          const method = (WorkflowModel as any)[job.data.method];
+          if (!method) {
+            throw new Error(
+              `Method ${job.data.method} not found on MONGODB_WORKFLOW_QUEUE`
+            );
+          }
+
+          // Call method (bind this context)
+          const result = await method.call(WorkflowModel, job.data.params);
+
+          console.log(`   ✅ Success:`, result);
+          return result;
+        } catch (error: any) {
+          console.error(`   ❌ Error:`, error.message);
+          throw error;
+        }
+      },
+      {
+        connection: redisConnection,
+        concurrency: parseInt(process.env.WORKER_CONCURRENCY || "3"),
+      }
+    );
+    const queueInfo: ServiceQueueInfo = {
+      serviceName: "MONGODB_WORKFLOW",
+      queueName,
+      queue,
+      worker,
+      client: WorkflowModel,
+      type: "static",
+    };
+    this.queues.set("MONGODB_WORKFLOW", queueInfo);
+    console.log(`✅ Queue created for MONGODB_WORKFLOW`);
+    return queueInfo;
+  }
 
   /**
    * Đăng ký static queue với class instance
@@ -174,7 +262,7 @@ export class ServiceQueueManager {
       attempts?: number;
     }
   ): ServiceQueueInfo {
-    const queueName = `${serviceName.toLowerCase()}-queue`;
+    const queueName = `${serviceName}`;
 
     console.log(`\n🔧 Registering static queue for ${serviceName}...`);
 
@@ -203,14 +291,41 @@ export class ServiceQueueManager {
         console.log(`\n⚡ [${serviceName}] Processing job ${job.id}`);
         console.log(`   Method: ${job.data.method}`);
         console.log(`   Params:`, job.data.params);
+        const children = await job.getChildrenValues();
 
         try {
+          console.log("   📦 Children results:", children);
+          if (job.data.method == "EnJob") {
+            return children;
+          }
           // Gọi method từ service instance
           const method = serviceInstance[job.data.method];
           if (!method || typeof method !== "function") {
             throw new Error(
               `Method ${job.data.method} not found on ${serviceName}`
             );
+          }
+          if (typeof job.data.params == "object") {
+            Object.entries(job.data.params).forEach(([key, value]) => {
+              if (typeof value == "string" && value.startsWith("@bull:")) {
+                // Parse: @bull:file_service-queue:jobId.file.id
+                const cleaned = value.replace("@", ""); // bull:file_service-queue:jobId.file.id
+                const [fullJobKey, ...pathParts] = cleaned.split("."); // ["bull:file_service-queue:jobId", "file", "id"]
+
+                // Lấy child result từ children object
+                let dataKey = children[fullJobKey]; // children["bull:file_service-queue:jobId"]
+
+                // Navigate qua path (file.id)
+                pathParts.forEach((part) => {
+                  if (dataKey && typeof dataKey === "object") {
+                    dataKey = dataKey[part];
+                  }
+                });
+
+                job.data.params[key] = dataKey;
+                console.log(`   🔄 Resolved ${value} -> ${dataKey}`);
+              }
+            });
           }
 
           // Call method (bind this context)
@@ -356,122 +471,162 @@ export class QueueService {
     return job;
   }
 
+  async evaluateJob(params: any): Promise<any> {
+    console.log(
+      "params in evaluateJob:",
+      params,
+      typeof params,
+      params.code,
+      params.returnValue
+    );
+    if (typeof params === "object" && params.code && params.returnValue) {
+      const { v4: uuidv4 } = require("uuid");
+      const sandbox = {
+        returnValue: params.returnValue,
+        data: params.data || {},
+        console,
+        createJobWithChildren: this.createJobWithChildren.bind(this),
+        uuidv4,
+        Date,
+      };
+
+      const script = new vm.Script(`
+      (async () => {
+        ${params.code}
+      })()
+    `);
+
+      try {
+        const result = await script.runInNewContext(sandbox);
+        return result;
+      } catch (err) {
+        console.error("Error evaluating code:", err);
+        throw err;
+      }
+    } else {
+      throw new Error(
+        "Invalid params: must include code, data, and returnValue"
+      );
+    }
+  }
+
+  /**
+   * Params add id of child job
+   */
+  public async addIdOfChildJob(params: any, flowJobWithId: FlowJobWithId[]) {
+    if (typeof params === "object") {
+      Object.entries(params).forEach(([key, value]) => {
+        // value have "@__id__{index}:..."
+        if (typeof value == "string" && value.startsWith("@__id__")) {
+          const match = value.match(/^@__id__(\d+):(.*)$/);
+          console.log(match)
+          if (match) {
+            const index = parseInt(match[1], 10);
+            let dataKey = flowJobWithId[index];
+            params[key] = `@bull:${dataKey.flow.queueName}:${dataKey.id}${match[2]?'.':''}${match[2]}`;
+          }
+        }else if (typeof value == "object") {
+          this.addIdOfChildJob(value, flowJobWithId);
+        }
+      });
+    }
+  }
+
   /**
    * Tạo job với child jobs (parent-child relationship)
    * Parent job chờ tất cả child jobs hoàn thành
    */
+  /**
+   * Helper function để tạo FlowJob đệ quy (support nested children)
+   */
+  private buildFlowJob(
+    child: Children,
+    index: number,
+    parentServiceName?: string
+  ): FlowJobWithId {
+    const queueName = `${child.serviceName}`;
+
+    // Đệ quy xử lý children của child (grandchildren)
+    const grandChildren: FlowJobWithId[] | undefined = child.children
+      ? child.children.map((grandChild, idx) =>
+          this.buildFlowJob(grandChild, idx, child.serviceName)
+        )
+      : undefined;
+    const id = uuidv4();
+    console.log(child.params);
+    this.addIdOfChildJob(child.params, grandChildren || []);
+    console.log("After addIdOfChildJob:", child.params);
+    return {
+      id: id,
+      flow: {
+        name: `child-${index}`,
+        queueName,
+        data: {
+          method: child.method,
+          params: child.params,
+          metadata: {
+            serviceName: child.serviceName,
+            parentService: parentServiceName,
+            hasChildren: !!grandChildren,
+          },
+        },
+        opts: {
+          jobId: id,
+          ...child.options,
+        },
+        children: grandChildren?.map((value) => value.flow), // ✅ Nested children support
+      },
+    };
+  }
+
   async createJobWithChildren(
     parentServiceName: string,
     parentMethod: string,
     parentParams: any,
-    children: Array<{
-      id: string;
-      serviceName: string;
-      method: string;
-      params: any;
-    }>
+    children: Children[],
+    options?: JobsOptions,
+    FlowOpts?: FlowOpts
   ): Promise<any> {
-    const queueName = `${parentServiceName.toLowerCase()}-queue`;
+    const queueName = `${parentServiceName}`;
 
-    // Tạo child jobs
-    const childJobs: FlowJob[] = children.map((child, index) => ({
-
-      name: `child-${index}`,
-      queueName: `${child.serviceName.toLowerCase()}-queue`,
-      data: {
-        method: child.method,
-        params: child.params,
-        metadata: {
-          serviceName: child.serviceName,
-          parentService: parentServiceName,
-        },
-      },
-      opts: {
-        jobId: child.id,
-        removeOnComplete: true,
-      }
-    }));
+    // Tạo child jobs với đệ quy support
+    const childJobs: FlowJobWithId[] = children.map((child, index) =>
+      this.buildFlowJob(child, index, parentServiceName)
+    );
 
     // Tạo parent job với children
-    const flow = await this.flowProducer.add({
-      name: "parent",
-      queueName,
-      data: {
-        method: parentMethod,
-        params: parentParams,
-        metadata: {
-          serviceName: parentServiceName,
-          hasChildren: true,
-        },
-      },
-      children: childJobs,
-    });
-
-    console.log(
-      `📝 Created parent job with ${children.length} children for ${parentServiceName}.${parentMethod}`
-    );
-    return flow;
-  }
-
-  /**
-   * Tạo job chain (sequential) - Job B chạy sau khi Job A hoàn thành
-   */
-  async createJobChain(
-    jobs: Array<{
-      serviceName: string;
-      method: string;
-      params: any;
-    }>
-  ): Promise<any> {
-    if (jobs.length === 0) {
-      throw new Error("Job chain must have at least one job");
-    }
-
-    // Build chain từ cuối về đầu
-    let currentFlow: FlowJob | undefined = undefined;
-
-    for (let i = jobs.length - 1; i >= 0; i--) {
-      const job = jobs[i];
-      const queueName = `${job.serviceName.toLowerCase()}-queue`;
-
-      currentFlow = {
-        name: `chain-${i}`,
+    const flow = await this.flowProducer.add(
+      {
+        name: "parent",
         queueName,
         data: {
-          method: job.method,
-          params: job.params,
+          method: parentMethod,
+          params: parentParams,
           metadata: {
-            serviceName: job.serviceName,
-            chainPosition: i,
-            totalChain: jobs.length,
+            serviceName: parentServiceName,
+            hasChildren: true,
           },
         },
-        children: currentFlow ? [currentFlow] : undefined,
-      };
-    }
-
-    const flow = await this.flowProducer.add(currentFlow!);
-
-    console.log(`⛓️  Created job chain with ${jobs.length} jobs`);
-    return flow;
-  }
-
-  /**
-   * Tạo bulk jobs song song cho cùng một service
-   */
-  async createBulkJobs(
-    serviceName: string,
-    method: string,
-    paramsArray: any[]
-  ): Promise<Job<ServiceJobData>[]> {
-    const jobs = await Promise.all(
-      paramsArray.map((params) => this.createJob(serviceName, method, params))
+        children: childJobs.map((value) => value.flow),
+        opts: {
+          ...options,
+        },
+      },
+      FlowOpts
     );
+
+    // Đếm tổng số jobs (bao gồm cả nested)
+    const countJobs = (children: Children[]): number => {
+      return children.reduce((total, child) => {
+        return total + 1 + (child.children ? countJobs(child.children) : 0);
+      }, 0);
+    };
+    const totalJobs = countJobs(children);
 
     console.log(
-      `📦 Created ${jobs.length} bulk jobs for ${serviceName}.${method}`
+      `📝 Created parent job with ${children.length} direct children (${totalJobs} total jobs) for ${parentServiceName}.${parentMethod}`
     );
-    return jobs;
+    return flow;
   }
 
   /**

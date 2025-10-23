@@ -26,6 +26,7 @@ export interface IService extends Document {
   updatedAt: Date;
 }
 
+
 /**
  * Service Model interface for static methods
  */
