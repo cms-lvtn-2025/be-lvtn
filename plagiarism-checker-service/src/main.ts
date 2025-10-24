@@ -90,9 +90,6 @@ async function main() {
     console.log("\n📝 Adding test job to FILE_SERVICE...");
     const { v4: uuidv4 } = require("uuid");
     const childJobId2 = uuidv4();
-    const childJobId1 = uuidv4();
-
-    const parentJobId = uuidv4();
     const nameService = "FILE_SERVICE";
 
     console.log("Child Job ID:", childJobId2);

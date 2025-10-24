@@ -96,6 +96,81 @@ router.get('/workflow/editor/:id?', async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /admin/workflow - Create new workflow
+ */
+router.post('/workflow', async (req: Request, res: Response) => {
+  try {
+    const workflowData = req.body;
+
+    // Validate required fields
+    if (!workflowData.parentServiceName || !workflowData.parentMethod) {
+      return res.status(400).json({
+        error: 'Missing required fields: parentServiceName, parentMethod'
+      });
+    }
+
+    const newWorkflow = await WorkflowModel.create(workflowData);
+
+    res.status(201).json(newWorkflow);
+  } catch (error) {
+    console.error('Error creating workflow:', error);
+    res.status(500).json({ error: 'Failed to create workflow' });
+  }
+});
+
+/**
+ * PUT /admin/workflow/:id - Update existing workflow
+ */
+router.put('/workflow/:id', async (req: Request, res: Response) => {
+  try {
+    const workflowId = req.params.id;
+    const workflowData = req.body;
+
+    // Validate required fields
+    if (!workflowData.parentServiceName || !workflowData.parentMethod) {
+      return res.status(400).json({
+        error: 'Missing required fields: parentServiceName, parentMethod'
+      });
+    }
+
+    const updatedWorkflow = await WorkflowModel.findByIdAndUpdate(
+      workflowId,
+      workflowData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedWorkflow) {
+      return res.status(404).json({ error: 'Workflow not found' });
+    }
+
+    res.json(updatedWorkflow);
+  } catch (error) {
+    console.error('Error updating workflow:', error);
+    res.status(500).json({ error: 'Failed to update workflow' });
+  }
+});
+
+/**
+ * DELETE /admin/workflow/:id - Delete workflow
+ */
+router.delete('/workflow/:id', async (req: Request, res: Response) => {
+  try {
+    const workflowId = req.params.id;
+
+    const deletedWorkflow = await WorkflowModel.findByIdAndDelete(workflowId);
+
+    if (!deletedWorkflow) {
+      return res.status(404).json({ error: 'Workflow not found' });
+    }
+
+    res.json({ success: true, message: 'Workflow deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting workflow:', error);
+    res.status(500).json({ error: 'Failed to delete workflow' });
+  }
+});
+
+/**
  * GET /admin/services - Manager Service Page (SSR)
  */
 router.get('/services', async (req: Request, res: Response) => {

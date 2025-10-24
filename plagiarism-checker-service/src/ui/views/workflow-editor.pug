@@ -149,31 +149,33 @@ html(lang="en")
         //- Main canvas
         .workflow-canvas(style="flex: 1; position: relative; background: #fff; overflow: auto;")
           #canvas(style="width: 100%; height: 100%; position: relative; background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px); background-size: 20px 20px;")
-            //- Workflow nodes sẽ được render ở đây
-            if workflow
-              //- Parent node
-              .workflow-node(
-                id=`node-parent`
-                data-node-id="parent"
-                data-service=workflow.parentServiceName
-                data-method=workflow.parentMethod
-                data-params=JSON.stringify(workflow.parentParams)
-                data-options=JSON.stringify(workflow.options || {})
-                style=`position: absolute; left: 1100px; top: 50px;`
-              )
-                .node-header(style=`background: #3498db;`)
-                  .node-type(title=workflow.parentServiceName) Parent Job
-                  button.node-delete(type="button") ×
-                .node-body
-                  .node-field
-                    strong Service:
-                    span= workflow.parentServiceName
-                  .node-field
-                    strong Method:
-                    span= workflow.parentMethod
-                .node-footer
-                  .node-endpoint.source(data-type="output" title="Output (connect to parent)")
-                  .node-endpoint.target(data-type="input" title="Input (receive from children)")
+            //- Parent node - always render (for new or existing workflow)
+            - var parentService = workflow ? workflow.parentServiceName : 'QUEUE'
+            - var parentMethod = workflow ? workflow.parentMethod : 'EnJob'
+            - var parentParams = workflow ? workflow.parentParams : {}
+            - var parentOptions = workflow ? (workflow.options || {}) : {}
+            .workflow-node#node-parent(
+              data-node-id="parent"
+              data-service=parentService
+              data-method=parentMethod
+              data-params=JSON.stringify(parentParams)
+              data-options=JSON.stringify(parentOptions)
+              style="position: absolute; left: 1100px; top: 50px;"
+            )
+              .node-header(style="background: #27ae60;")
+                .node-type(title=parentService) 🎯 Parent Job
+              .node-body
+                .node-field
+                  strong Service:
+                  span= parentService
+                .node-field
+                  strong Method:
+                  span= parentMethod
+                .node-field(style="margin-top: 12px; text-align: center;")
+                  button.btn.btn-primary(onclick="editParentNode()" style="width: 100%; font-size: 13px; padding: 8px 12px; font-weight: 600;") ✏️ Edit Parent
+              .node-footer
+                .node-endpoint.source(data-type="output" title="Output (connect to parent)")
+                .node-endpoint.target(data-type="input" title="Input (receive from children)")
 
     //- Modal for editing node
     .modal#node-modal(style="display: none;")
