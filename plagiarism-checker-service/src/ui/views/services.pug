@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  .content-header
+    h2 Manager Service
+    p Danh sách các gRPC services và trạng thái kết nối
+  .content
+    if services.length === 0
+      p(style="color: #666;") Không có service nào.
+    else
+      table
+        thead
+          tr
+            th Service Name
+            th Host
+            th Port
+            th Status
+            th Enabled
+            th Last Check
+        tbody
+          each service in services
+            tr
+              td
+                strong= service.name
+              td= service.url
+              td= service.port
+              td
+                if service.healthy
+                  span.status-badge.status-connected Connected
+                else
+                  span.status-badge.status-disconnected Disconnected
+              td
+                if service.enabled
+                  span.status-badge.status-connected Enabled
+                else
+                  span.status-badge.status-disconnected Disabled
+              td= service.lastHealthCheck ? new Date(service.lastHealthCheck).toLocaleString() : 'N/A'

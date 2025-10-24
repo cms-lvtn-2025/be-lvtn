@@ -203,6 +203,7 @@ export class ServiceQueueManager {
       },
     });
 
+    
     // Tạo Worker với MongoDB model
     const worker = new Worker<ServiceJobData>(
       queueName,

@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 import DatabaseConnection from "./database/connection";
-import { ServiceModel, WorkflowModel } from "./database/models";
+import { MinioConfigModel, ServiceModel, WorkflowModel } from "./database/models";
 import { healthCheckAllServices } from "./queue/grpc";
 import { initBullBoard, createBullBoardApp } from "./ui/bull-board";
 import { queueService, serviceQueueManager } from "./queue/queue";
 import { v4 as uuidv4 } from "uuid";
 import cron from 'node-cron';
+import { MinioService } from "./queue/minio";
 
 // Load environment variables
 dotenv.config();
@@ -33,6 +34,7 @@ async function main() {
     console.log(
       `\n🔧 Creating queues for ${servicesToQueue.length} healthy service(s)...`
     );
+  
 
     const queues = servicesToQueue.map((service) => {
       return serviceQueueManager.createServiceQueue(service as any);
@@ -50,6 +52,22 @@ async function main() {
 
     const queueWorkflow =
       serviceQueueManager.createServiceWorkflowQueue(WorkflowModel);
+    
+    const MinioConfig = await MinioConfigModel.find()
+    if (MinioConfig && MinioConfig.length > 0) {
+      for (const config of MinioConfig) {
+        const service = new MinioService(config)
+        const queueMinio = serviceQueueManager.registerStaticQueue(
+          `MINIO_SERVICE_${config._id}`,
+          service,
+          {
+            concurrency: 2,
+            attempts: 3,
+          }
+        );
+        queues.push(queueMinio);
+      }
+    }
     queues.push(queueWorkflow);
     // Khởi tạo Bull Board UI với tất cả queues
     initBullBoard(queues);

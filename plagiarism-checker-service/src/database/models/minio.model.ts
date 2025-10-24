@@ -13,6 +13,11 @@ export interface IMinioConfig extends Document {
   bucketName: string;
   enabled: boolean;
   region?: string;
+  connectionStatus?: {
+    connected: boolean;
+    lastCheck?: Date;
+    error?: string;
+  };
   metadata?: {
     [key: string]: any;
   };
@@ -82,6 +87,18 @@ const MinioConfigSchema: Schema = new Schema(
       type: String,
       default: 'us-east-1',
       trim: true,
+    },
+    connectionStatus: {
+      connected: {
+        type: Boolean,
+        default: false,
+      },
+      lastCheck: {
+        type: Date,
+      },
+      error: {
+        type: String,
+      },
     },
     metadata: {
       type: Schema.Types.Mixed,

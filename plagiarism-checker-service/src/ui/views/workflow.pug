@@ -1,0 +1,62 @@
+extends layout
+
+block content
+  .content-header
+    h2 Workflow Manager
+    p Quản lý và theo dõi workflows
+    .header-actions(style="margin-top: 10px;")
+      a.btn.btn-primary(href="/admin/workflow/editor" style="text-decoration: none; display: inline-block;") + New Workflow
+
+  .content
+    if workflows.length === 0
+      p(style="color: #666;") Không có workflow nào.
+    else
+      table
+        thead
+          tr
+            th Workflow ID
+            th Parent Service
+            th Parent Method
+            th Children Count
+            th Created At
+            th Actions
+        tbody
+          each workflow in workflows
+            tr
+              td
+                strong= workflow._id
+              td= workflow.parentServiceName
+              td= workflow.parentMethod
+              td= workflow.children ? workflow.children.length : 0
+              td= workflow.createdAt ? new Date(workflow.createdAt).toLocaleString() : 'N/A'
+              td
+                a.btn.btn-sm.btn-primary(href=`/admin/workflow/editor/${workflow._id}` style="text-decoration: none; padding: 4px 12px; font-size: 12px; margin-right: 4px;") Edit
+                button.btn.btn-sm.btn-danger(style="padding: 4px 12px; font-size: 12px; background: #e74c3c;") Delete
+
+  style.
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+    .btn-sm {
+      padding: 4px 12px;
+      font-size: 12px;
+    }

@@ -2,7 +2,7 @@ import * as Minio from 'minio';
 import { Readable } from 'stream';
 import PDFDocument from 'pdfkit';
 import { Template1Data } from './document.types';
-import { IMinioConfig } from '../../database/models';
+import { IMinioConfig, MinioConfigModel } from '../../database/models';
 
 export class MinioService {
   private client: Minio.Client;
@@ -33,10 +33,17 @@ export class MinioService {
 
     console.log(`MinIO initialized: ${config.endPoint}:${config.port}`);
 
-    // Ensure bucket exists (fire and forget)
-    this.ensureBucket().catch((err) => {
-      console.error('Error ensuring bucket exists:', err);
-    });
+    // Ensure bucket exists and update connection status
+    this.ensureBucket()
+      .then(async () => {
+        // Update connection status to MongoDB
+        await this.updateConnectionStatus(true);
+      })
+      .catch(async (err) => {
+        console.error('Error ensuring bucket exists:', err);
+        // Update connection status to MongoDB
+        await this.updateConnectionStatus(false, err.message);
+      });
   }
 
   private async ensureBucket(): Promise<void> {
@@ -50,6 +57,24 @@ export class MinioService {
     } catch (error) {
       console.error('Error ensuring bucket exists:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Update connection status trong MongoDB
+   */
+  private async updateConnectionStatus(connected: boolean, error?: string): Promise<void> {
+    try {
+      await MinioConfigModel.findByIdAndUpdate(this.config._id, {
+        connectionStatus: {
+          connected,
+          lastCheck: new Date(),
+          error: error || undefined,
+        },
+      });
+      console.log(`MinIO connection status updated: ${connected ? 'Connected' : 'Disconnected'}`);
+    } catch (err) {
+      console.error('Error updating MinIO connection status:', err);
     }
   }
 
