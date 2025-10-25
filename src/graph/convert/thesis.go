@@ -1064,3 +1064,167 @@ func CreateReviewerGradeReviewListResponse(gradeReviews []*model.ReviewerGradeRe
 		Total: total,
 	}
 }
+
+// ============================================
+// ARRAY CONVERTERS FOR TEACHER VIEWS
+// ============================================
+
+// PbEnrollmentsToSupervisorEnrollments converts array of protobuf Enrollments to GraphQL SupervisorEnrollments
+func PbEnrollmentsToSupervisorEnrollments(pbs []*thesis.Enrollment) []*model.SupervisorEnrollment {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.SupervisorEnrollment, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbEnrollmentToSupervisorEnrollment(pb))
+		}
+	}
+	return result
+}
+
+// PbEnrollmentsToCouncilEnrollments converts array of protobuf Enrollments to GraphQL CouncilEnrollments
+func PbEnrollmentsToCouncilEnrollments(pbs []*thesis.Enrollment) []*model.CouncilEnrollment {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.CouncilEnrollment, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbEnrollmentToCouncilEnrollment(pb))
+		}
+	}
+	return result
+}
+
+// PbEnrollmentToCouncilEnrollment converts protobuf Enrollment to GraphQL CouncilEnrollment
+func PbEnrollmentToCouncilEnrollment(pb *thesis.Enrollment) *model.CouncilEnrollment {
+	if pb == nil {
+		return nil
+	}
+
+	result := &model.CouncilEnrollment{
+		ID:               pb.Id,
+		Title:            pb.Title,
+		StudentCode:      pb.StudentCode,
+		TopicCouncilCode: pb.TopicCouncilCode,
+	}
+
+	// Handle optional codes
+	if pb.FinalCode != nil {
+		result.FinalCode = pb.FinalCode
+	}
+	if pb.GradeReviewCode != nil {
+		result.GradeReviewCode = pb.GradeReviewCode
+	}
+	if pb.MidtermCode != nil {
+		result.MidtermCode = pb.MidtermCode
+	}
+
+	// Handle timestamps
+	if pb.CreatedAt != nil {
+		t := pb.CreatedAt.AsTime()
+		result.CreatedAt = &t
+	}
+	if pb.UpdatedAt != nil {
+		t := pb.UpdatedAt.AsTime()
+		result.UpdatedAt = &t
+	}
+
+	return result
+}
+
+// PbTopicCouncilToCouncilTopicCouncil converts protobuf TopicCouncil to GraphQL CouncilTopicCouncil
+func PbTopicCouncilToCouncilTopicCouncil(pb *thesis.TopicCouncil) *model.CouncilTopicCouncil {
+	if pb == nil {
+		return nil
+	}
+
+	result := &model.CouncilTopicCouncil{
+		ID:        pb.Id,
+		Title:     pb.Title,
+		Stage:     PbTopicStageToModel(pb.Stage),
+		TopicCode: pb.TopicCode,
+	}
+
+	// Handle optional CouncilCode
+	if pb.CouncilCode != nil {
+		result.CouncilCode = pb.CouncilCode
+	}
+
+	// Handle required timestamps
+	if pb.TimeStart != nil {
+		result.TimeStart = pb.TimeStart.AsTime()
+	}
+	if pb.TimeEnd != nil {
+		result.TimeEnd = pb.TimeEnd.AsTime()
+	}
+
+	// Handle optional timestamps
+	if pb.CreatedAt != nil {
+		t := pb.CreatedAt.AsTime()
+		result.CreatedAt = &t
+	}
+	if pb.UpdatedAt != nil {
+		t := pb.UpdatedAt.AsTime()
+		result.UpdatedAt = &t
+	}
+
+	return result
+}
+
+// PbTopicCouncilsToCouncilTopicCouncils converts array of protobuf TopicCouncils to GraphQL CouncilTopicCouncils
+func PbTopicCouncilsToCouncilTopicCouncils(pbs []*thesis.TopicCouncil) []*model.CouncilTopicCouncil {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.CouncilTopicCouncil, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbTopicCouncilToCouncilTopicCouncil(pb))
+		}
+	}
+	return result
+}
+
+// PbTopicCouncilSupervisorsToSupervisorTopicCouncilAssignments converts array of protobuf TopicCouncilSupervisors to GraphQL SupervisorTopicCouncilAssignments
+func PbTopicCouncilSupervisorsToSupervisorTopicCouncilAssignments(pbs []*thesis.TopicCouncilSupervisor) []*model.SupervisorTopicCouncilAssignment {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.SupervisorTopicCouncilAssignment, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbTopicCouncilSupervisorToSupervisorTopicCouncilAssignment(pb))
+		}
+	}
+	return result
+}
+
+// PbGradeReviewsToReviewerGradeReviews converts array of protobuf GradeReviews to GraphQL ReviewerGradeReviews
+func PbGradeReviewsToReviewerGradeReviews(pbs []*thesis.GradeReview) []*model.ReviewerGradeReview {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.ReviewerGradeReview, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbGradeReviewToReviewerGradeReview(pb))
+		}
+	}
+	return result
+}
+
+// PbTopicCouncilsToSupervisorTopicCouncils converts array of protobuf TopicCouncils to GraphQL SupervisorTopicCouncils
+func PbTopicCouncilsToSupervisorTopicCouncils(pbs []*thesis.TopicCouncil) []*model.SupervisorTopicCouncil {
+	if pbs == nil {
+		return nil
+	}
+	result := make([]*model.SupervisorTopicCouncil, 0, len(pbs))
+	for _, pb := range pbs {
+		if pb != nil {
+			result = append(result, PbTopicCouncilToSupervisorTopicCouncil(pb))
+		}
+	}
+	return result
+}

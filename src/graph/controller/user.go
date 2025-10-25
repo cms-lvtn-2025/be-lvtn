@@ -6,27 +6,31 @@ import (
 	"thaily/src/graph/model"
 )
 
-// Student
+// All student-related methods have been moved to controller/student.go
 
-func (c *Controller) GetStudentByRequest(ctx context.Context) (*model.Student, error) {
-	myId, role, err := c.GetInfoRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if myId == nil || role == nil {
-		return nil, nil
-	}
-	student, err := c.user.GetUserById(ctx, *myId)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbStudentToModel(student.GetStudent()), nil
-}
+// ============================================
+// RESOLVER HELPER METHODS
+// ============================================
 
-func (c *Controller) GetTeacherInfoById(ctx context.Context, id string) (*model.StudentTeacherInfo, error) {
-	teacher, err := c.user.GetTeacherById(ctx, id)
+// GetEnrollmentsByStudentId returns all enrollments for a given student
+func (c *Controller) GetEnrollmentsByStudentId(ctx context.Context, studentId string) ([]*model.Enrollment, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "student_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{studentId},
+				},
+			},
+		},
+	}
+
+	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
-	return convert.PbTeacherToStudentTeacherInfo(teacher.GetTeacher()), nil
+
+	return convert.PbEnrollmentsToModel(enrollments.GetEnrollments()), nil
 }

@@ -23,9 +23,14 @@ RUN apk --no-cache add ca-certificates
 # Copy binary from builder
 COPY --from=builder /role-service .
 
-# Create env directory and copy env file
-RUN mkdir -p env
-COPY env/role.env env/role.env
+# Copy certs (needed for TLS)
+COPY certs /app/certs
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/env
+
+# Set environment variable for project root
+ENV PROJECT_ROOT=/app
 
 # Expose port
 EXPOSE 50054

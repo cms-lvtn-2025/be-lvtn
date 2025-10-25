@@ -320,7 +320,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, stage, topic_code, council_code, timeStart, timeEnd, created_at, updated_at, created_by, updated_by
+		SELECT id, title, stage, topic_code, council_code, time_start, time_end, created_at, updated_at, created_by, updated_by
 		FROM Topic_council
 		%s
 		ORDER BY %s %s

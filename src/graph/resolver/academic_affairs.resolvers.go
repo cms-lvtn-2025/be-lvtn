@@ -6,192 +6,227 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"thaily/src/graph/model"
 	"time"
 )
 
+// ============================================
+// MUTATION RESOLVERS - User Management
+// ============================================
+
 // CreateTeacher is the resolver for the createTeacher field.
 func (r *mutationResolver) CreateTeacher(ctx context.Context, input model.CreateTeacherInput) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: CreateTeacher - createTeacher"))
+	return r.Ctrl.CreateTeacher(ctx, input)
 }
 
 // UpdateTeacher is the resolver for the updateTeacher field.
 func (r *mutationResolver) UpdateTeacher(ctx context.Context, id string, input model.UpdateTeacherInput) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: UpdateTeacher - updateTeacher"))
+	return r.Ctrl.UpdateTeacher(ctx, id, input)
 }
 
 // DeleteTeacher is the resolver for the deleteTeacher field.
 func (r *mutationResolver) DeleteTeacher(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteTeacher - deleteTeacher"))
+	return r.Ctrl.DeleteTeacher(ctx, id)
 }
 
 // CreateStudent is the resolver for the createStudent field.
 func (r *mutationResolver) CreateStudent(ctx context.Context, input model.CreateStudentInput) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: CreateStudent - createStudent"))
+	return r.Ctrl.CreateStudent(ctx, input)
 }
 
 // UpdateStudent is the resolver for the updateStudent field.
 func (r *mutationResolver) UpdateStudent(ctx context.Context, id string, input model.UpdateStudentInput) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: UpdateStudent - updateStudent"))
+	return r.Ctrl.UpdateStudent(ctx, id, input)
 }
 
 // DeleteStudent is the resolver for the deleteStudent field.
 func (r *mutationResolver) DeleteStudent(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteStudent - deleteStudent"))
+	return r.Ctrl.DeleteStudent(ctx, id)
 }
+
+// ============================================
+// MUTATION RESOLVERS - Academic Management
+// ============================================
 
 // CreateSemester is the resolver for the createSemester field.
 func (r *mutationResolver) CreateSemester(ctx context.Context, input model.CreateSemesterInput) (*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: CreateSemester - createSemester"))
+	return r.Ctrl.CreateSemester(ctx, input)
 }
 
 // UpdateSemester is the resolver for the updateSemester field.
 func (r *mutationResolver) UpdateSemester(ctx context.Context, id string, input model.UpdateSemesterInput) (*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: UpdateSemester - updateSemester"))
+	return r.Ctrl.UpdateSemester(ctx, id, input)
 }
 
 // DeleteSemester is the resolver for the deleteSemester field.
 func (r *mutationResolver) DeleteSemester(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteSemester - deleteSemester"))
+	return r.Ctrl.DeleteSemester(ctx, id)
 }
 
 // CreateMajor is the resolver for the createMajor field.
 func (r *mutationResolver) CreateMajor(ctx context.Context, input model.CreateMajorInput) (*model.Major, error) {
-	panic(fmt.Errorf("not implemented: CreateMajor - createMajor"))
+	return r.Ctrl.CreateMajor(ctx, input)
 }
 
 // UpdateMajor is the resolver for the updateMajor field.
 func (r *mutationResolver) UpdateMajor(ctx context.Context, id string, input model.UpdateMajorInput) (*model.Major, error) {
-	panic(fmt.Errorf("not implemented: UpdateMajor - updateMajor"))
+	return r.Ctrl.UpdateMajor(ctx, id, input)
 }
 
 // DeleteMajor is the resolver for the deleteMajor field.
 func (r *mutationResolver) DeleteMajor(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteMajor - deleteMajor"))
+	return r.Ctrl.DeleteMajor(ctx, id)
 }
 
 // CreateFaculty is the resolver for the createFaculty field.
 func (r *mutationResolver) CreateFaculty(ctx context.Context, input model.CreateFacultyInput) (*model.Faculty, error) {
-	panic(fmt.Errorf("not implemented: CreateFaculty - createFaculty"))
+	return r.Ctrl.CreateFaculty(ctx, input)
 }
 
 // UpdateFaculty is the resolver for the updateFaculty field.
 func (r *mutationResolver) UpdateFaculty(ctx context.Context, id string, input model.UpdateFacultyInput) (*model.Faculty, error) {
-	panic(fmt.Errorf("not implemented: UpdateFaculty - updateFaculty"))
+	return r.Ctrl.UpdateFaculty(ctx, id, input)
 }
 
 // DeleteFaculty is the resolver for the deleteFaculty field.
 func (r *mutationResolver) DeleteFaculty(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteFaculty - deleteFaculty"))
+	return r.Ctrl.DeleteFaculty(ctx, id)
 }
+
+// ============================================
+// MUTATION RESOLVERS - Council Management
+// ============================================
 
 // ApproveCouncil is the resolver for the approveCouncil field.
 func (r *mutationResolver) ApproveCouncil(ctx context.Context, id string, timeStart time.Time) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: ApproveCouncil - approveCouncil"))
+	return r.Ctrl.ApproveCouncil(ctx, id, timeStart)
 }
 
 // UpdateCouncil is the resolver for the updateCouncil field.
 func (r *mutationResolver) UpdateCouncil(ctx context.Context, id string, input model.UpdateCouncilInput) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: UpdateCouncil - updateCouncil"))
+	return r.Ctrl.UpdateCouncil(ctx, id, input)
 }
 
 // DeleteCouncil is the resolver for the deleteCouncil field.
 func (r *mutationResolver) DeleteCouncil(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteCouncil - deleteCouncil"))
+	return r.Ctrl.DeleteCouncil(ctx, id)
 }
+
+// ============================================
+// MUTATION RESOLVERS - Topic Management
+// ============================================
 
 // ApproveTopic is the resolver for the approveTopic field.
 func (r *mutationResolver) ApproveTopic(ctx context.Context, id string) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: ApproveTopic - approveTopic"))
+	return r.Ctrl.ApproveTopic(ctx, id)
 }
 
 // RejectTopic is the resolver for the rejectTopic field.
 func (r *mutationResolver) RejectTopic(ctx context.Context, id string, reason *string) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: RejectTopic - rejectTopic"))
+	return r.Ctrl.RejectTopic(ctx, id, reason)
 }
 
 // UpdateTopic is the resolver for the updateTopic field.
 func (r *mutationResolver) UpdateTopic(ctx context.Context, id string, input model.UpdateTopicInput) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: UpdateTopic - updateTopic"))
+	return r.Ctrl.UpdateTopic(ctx, id, input)
 }
 
 // DeleteTopic is the resolver for the deleteTopic field.
 func (r *mutationResolver) DeleteTopic(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteTopic - deleteTopic"))
+	return r.Ctrl.DeleteTopic(ctx, id)
 }
+
+// ============================================
+// QUERY RESOLVERS - User Management
+// ============================================
 
 // GetListTeachers is the resolver for the getListTeachers field.
 func (r *queryResolver) GetListTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetListTeachers - getListTeachers"))
+	return r.Ctrl.GetListTeachers(ctx, search)
 }
 
 // GetListStudents is the resolver for the getListStudents field.
 func (r *queryResolver) GetListStudents(ctx context.Context, search model.SearchRequestInput) (*model.StudentListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetListStudents - getListStudents"))
+	return r.Ctrl.GetListStudents(ctx, search)
 }
 
 // GetStudentDetail is the resolver for the getStudentDetail field.
 func (r *queryResolver) GetStudentDetail(ctx context.Context, id string) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: GetStudentDetail - getStudentDetail"))
+	return r.Ctrl.GetStudentDetail(ctx, id)
 }
 
 // GetTeacherDetail is the resolver for the getTeacherDetail field.
 func (r *queryResolver) GetTeacherDetail(ctx context.Context, id string) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: GetTeacherDetail - getTeacherDetail"))
+	return r.Ctrl.GetTeacherDetail(ctx, id)
 }
+
+// ============================================
+// QUERY RESOLVERS - Academic Management
+// ============================================
 
 // GetAllSemesters is the resolver for the getAllSemesters field.
 func (r *queryResolver) GetAllSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetAllSemesters - getAllSemesters"))
+	return r.Ctrl.GetAllSemesters(ctx, search)
 }
 
 // GetAllMajors is the resolver for the getAllMajors field.
 func (r *queryResolver) GetAllMajors(ctx context.Context, search model.SearchRequestInput) (*model.MajorListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetAllMajors - getAllMajors"))
+	return r.Ctrl.GetAllMajors(ctx, search)
 }
 
 // GetAllFaculties is the resolver for the getAllFaculties field.
 func (r *queryResolver) GetAllFaculties(ctx context.Context, search model.SearchRequestInput) (*model.FacultyListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetAllFaculties - getAllFaculties"))
+	return r.Ctrl.GetAllFaculties(ctx, search)
 }
+
+// ============================================
+// QUERY RESOLVERS - Topic Management
+// ============================================
 
 // GetAllTopics is the resolver for the getAllTopics field.
 func (r *queryResolver) GetAllTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetAllTopics - getAllTopics"))
+	return r.Ctrl.GetAllTopics(ctx, search)
 }
 
 // GetTopicDetail is the resolver for the getTopicDetail field.
 func (r *queryResolver) GetTopicDetail(ctx context.Context, id string) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: GetTopicDetail - getTopicDetail"))
+	return r.Ctrl.GetTopicDetail(ctx, id)
 }
+
+// ============================================
+// QUERY RESOLVERS - Enrollment Management
+// ============================================
 
 // GetAllEnrollments is the resolver for the getAllEnrollments field.
 func (r *queryResolver) GetAllEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetAllEnrollments - getAllEnrollments"))
+	return r.Ctrl.GetAllEnrollments(ctx, search)
 }
 
 // GetEnrollmentDetail is the resolver for the getEnrollmentDetail field.
 func (r *queryResolver) GetEnrollmentDetail(ctx context.Context, id string) (*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: GetEnrollmentDetail - getEnrollmentDetail"))
+	return r.Ctrl.GetEnrollmentDetail(ctx, id)
 }
+
+// ============================================
+// QUERY RESOLVERS - Council Management
+// ============================================
 
 // GetAllCouncils is the resolver for the getAllCouncils field.
 func (r *queryResolver) GetAllCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetAllCouncils - getAllCouncils"))
+	return r.Ctrl.GetAllCouncils(ctx, search)
 }
 
 // GetCouncilDetail is the resolver for the getCouncilDetail field.
 func (r *queryResolver) GetCouncilDetail(ctx context.Context, id string) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: GetCouncilDetail - getCouncilDetail"))
+	return r.Ctrl.GetCouncilDetail(ctx, id)
 }
 
 // GetDefencesByCouncil is the resolver for the getDefencesByCouncil field.
 func (r *queryResolver) GetDefencesByCouncil(ctx context.Context, councilID string) (*model.DefenceListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetDefencesByCouncil - getDefencesByCouncil"))
+	return r.Ctrl.GetDefencesByCouncil(ctx, councilID)
 }
 
 // GetAllGradeDefences is the resolver for the getAllGradeDefences field.
 func (r *queryResolver) GetAllGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetAllGradeDefences - getAllGradeDefences"))
+	return r.Ctrl.GetAllGradeDefences(ctx, search)
 }

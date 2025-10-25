@@ -40,7 +40,7 @@ export function createBullBoardApp() {
   // Serve static files (CSS, JS)
   app.use('/public', express.static(path.join(__dirname, 'public')));
 
-  // Mount admin routes (các trang chính và API endpoints)
+  // Mount admin routes (bao gồm cả SSR pages và API endpoints)
   app.use('/admin', adminRoutes);
 
   // Mount Bull Board UI (iframe source)

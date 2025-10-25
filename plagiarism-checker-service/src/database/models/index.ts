@@ -6,4 +6,9 @@ export {
   IFlowOpts,
   IWorkflowModel
 } from './workflow.model';
+export {
+  CronJobModel,
+  ICronJob,
+  ICronJobModel
+} from './cronjob.model';
 export { MinioConfigModel, IMinioConfig, IMinioConfigModel } from './minio.model';

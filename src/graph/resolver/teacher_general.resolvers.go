@@ -7,94 +7,10 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
-
-// Council is the resolver for the council field.
-func (r *councilDefenceResolver) Council(ctx context.Context, obj *model.CouncilDefence) (*model.CouncilMemberCouncil, error) {
-	panic(fmt.Errorf("not implemented: Council - council"))
-}
-
-// Teacher is the resolver for the teacher field.
-func (r *councilDefenceResolver) Teacher(ctx context.Context, obj *model.CouncilDefence) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: Teacher - teacher"))
-}
-
-// GradeDefences is the resolver for the gradeDefences field.
-func (r *councilDefenceResolver) GradeDefences(ctx context.Context, obj *model.CouncilDefence) ([]*model.GradeDefence, error) {
-	panic(fmt.Errorf("not implemented: GradeDefences - gradeDefences"))
-}
-
-// Student is the resolver for the student field.
-func (r *councilEnrollmentResolver) Student(ctx context.Context, obj *model.CouncilEnrollment) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: Student - student"))
-}
-
-// TopicCouncil is the resolver for the topicCouncil field.
-func (r *councilEnrollmentResolver) TopicCouncil(ctx context.Context, obj *model.CouncilEnrollment) (*model.CouncilTopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
-}
-
-// Midterm is the resolver for the midterm field.
-func (r *councilEnrollmentResolver) Midterm(ctx context.Context, obj *model.CouncilEnrollment) (*model.Midterm, error) {
-	panic(fmt.Errorf("not implemented: Midterm - midterm"))
-}
-
-// Final is the resolver for the final field.
-func (r *councilEnrollmentResolver) Final(ctx context.Context, obj *model.CouncilEnrollment) (*model.Final, error) {
-	panic(fmt.Errorf("not implemented: Final - final"))
-}
-
-// GradeReview is the resolver for the gradeReview field.
-func (r *councilEnrollmentResolver) GradeReview(ctx context.Context, obj *model.CouncilEnrollment) (*model.GradeReview, error) {
-	panic(fmt.Errorf("not implemented: GradeReview - gradeReview"))
-}
-
-// GradeDefences is the resolver for the gradeDefences field.
-func (r *councilEnrollmentResolver) GradeDefences(ctx context.Context, obj *model.CouncilEnrollment) ([]*model.GradeDefence, error) {
-	panic(fmt.Errorf("not implemented: GradeDefences - gradeDefences"))
-}
-
-// Major is the resolver for the major field.
-func (r *councilMemberCouncilResolver) Major(ctx context.Context, obj *model.CouncilMemberCouncil) (*model.MajorInfo, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
-}
-
-// Semester is the resolver for the semester field.
-func (r *councilMemberCouncilResolver) Semester(ctx context.Context, obj *model.CouncilMemberCouncil) (*model.SemesterInfo, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
-}
-
-// Defences is the resolver for the defences field.
-func (r *councilMemberCouncilResolver) Defences(ctx context.Context, obj *model.CouncilMemberCouncil) ([]*model.CouncilDefence, error) {
-	panic(fmt.Errorf("not implemented: Defences - defences"))
-}
-
-// TopicCouncils is the resolver for the topicCouncils field.
-func (r *councilMemberCouncilResolver) TopicCouncils(ctx context.Context, obj *model.CouncilMemberCouncil) ([]*model.CouncilTopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: TopicCouncils - topicCouncils"))
-}
-
-// Topic is the resolver for the topic field.
-func (r *councilTopicCouncilResolver) Topic(ctx context.Context, obj *model.CouncilTopicCouncil) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: Topic - topic"))
-}
-
-// Council is the resolver for the council field.
-func (r *councilTopicCouncilResolver) Council(ctx context.Context, obj *model.CouncilTopicCouncil) (*model.CouncilMemberCouncil, error) {
-	panic(fmt.Errorf("not implemented: Council - council"))
-}
-
-// Enrollments is the resolver for the enrollments field.
-func (r *councilTopicCouncilResolver) Enrollments(ctx context.Context, obj *model.CouncilTopicCouncil) ([]*model.CouncilEnrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
-}
-
-// Supervisors is the resolver for the supervisors field.
-func (r *councilTopicCouncilResolver) Supervisors(ctx context.Context, obj *model.CouncilTopicCouncil) ([]*model.TopicCouncilSupervisor, error) {
-	panic(fmt.Errorf("not implemented: Supervisors - supervisors"))
-}
 
 // UpdateMyTeacherProfile is the resolver for the updateMyTeacherProfile field.
 func (r *mutationResolver) UpdateMyTeacherProfile(ctx context.Context, input model.UpdateTeacherProfileInput) (*model.Teacher, error) {
@@ -178,162 +94,616 @@ func (r *mutationResolver) CompleteGradeReview(ctx context.Context, id string) (
 
 // GetMyTeacherProfile is the resolver for the getMyTeacherProfile field.
 func (r *queryResolver) GetMyTeacherProfile(ctx context.Context) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: GetMyTeacherProfile - getMyTeacherProfile"))
+	return r.Ctrl.GetTeacherByRequest(ctx)
 }
 
 // GetMySupervisedTopicCouncils is the resolver for the getMySupervisedTopicCouncils field.
 func (r *queryResolver) GetMySupervisedTopicCouncils(ctx context.Context, search *model.SearchRequestInput) (*model.SupervisorTopicCouncilAssignmentListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetMySupervisedTopicCouncils - getMySupervisedTopicCouncils"))
+	return r.Ctrl.GetSupervisedTopicCouncils(ctx, search)
 }
 
 // GetMySupervisedTopicCouncilDetail is the resolver for the getMySupervisedTopicCouncilDetail field.
 func (r *queryResolver) GetMySupervisedTopicCouncilDetail(ctx context.Context, id string) (*model.SupervisorTopicCouncilAssignment, error) {
-	panic(fmt.Errorf("not implemented: GetMySupervisedTopicCouncilDetail - getMySupervisedTopicCouncilDetail"))
+	return r.Ctrl.GetSupervisedTopicCouncilDetail(ctx, id)
 }
 
 // GetMyDefences is the resolver for the getMyDefences field.
 func (r *queryResolver) GetMyDefences(ctx context.Context, search *model.SearchRequestInput) (*model.CouncilDefenceListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetMyDefences - getMyDefences"))
+	return r.Ctrl.GetMyDefences(ctx, search)
 }
 
 // GetMyDefenceDetail is the resolver for the getMyDefenceDetail field.
 func (r *queryResolver) GetMyDefenceDetail(ctx context.Context, id string) (*model.CouncilDefence, error) {
-	panic(fmt.Errorf("not implemented: GetMyDefenceDetail - getMyDefenceDetail"))
+	return r.Ctrl.GetMyDefenceDetail(ctx, id)
 }
 
 // GetMyGradeReviews is the resolver for the getMyGradeReviews field.
 func (r *queryResolver) GetMyGradeReviews(ctx context.Context, search *model.SearchRequestInput) (*model.ReviewerGradeReviewListResponse, error) {
-	panic(fmt.Errorf("not implemented: GetMyGradeReviews - getMyGradeReviews"))
+	return r.Ctrl.GetMyGradeReviews(ctx, search)
 }
 
 // GetMyGradeReviewDetail is the resolver for the getMyGradeReviewDetail field.
 func (r *queryResolver) GetMyGradeReviewDetail(ctx context.Context, id string) (*model.ReviewerGradeReview, error) {
-	panic(fmt.Errorf("not implemented: GetMyGradeReviewDetail - getMyGradeReviewDetail"))
+	return r.Ctrl.GetMyGradeReviewDetail(ctx, id)
+}
+
+// Council is the resolver for the council field.
+func (r *councilDefenceResolver) Council(ctx context.Context, obj *model.CouncilDefence) (*model.CouncilMemberCouncil, error) {
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.CouncilMemberById != nil {
+		council, err := loaders.CouncilMemberById.Load(ctx, obj.CouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return council, nil
+	}
+	council, err := r.Ctrl.GetCouncilMemberById(ctx, obj.CouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	return council, nil
+}
+
+// Teacher is the resolver for the teacher field.
+func (r *councilDefenceResolver) Teacher(ctx context.Context, obj *model.CouncilDefence) (*model.Teacher, error) {
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TeacherById != nil {
+		teacher, err := loaders.TeacherById.Load(ctx, obj.TeacherCode)
+		if err != nil {
+			return nil, err
+		}
+		return teacher, nil
+	}
+	teacher, err := r.Ctrl.GetTeacherById(ctx, obj.TeacherCode)
+	if err != nil {
+		return nil, err
+	}
+	return teacher, nil
+}
+
+// GradeDefences is the resolver for the gradeDefences field.
+func (r *councilDefenceResolver) GradeDefences(ctx context.Context, obj *model.CouncilDefence) ([]*model.GradeDefence, error) {
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.GradeDefenceByDefenceId != nil {
+		gradeDefences, err := loaders.GradeDefenceByDefenceId.Load(ctx, obj.ID)
+		if err != nil {
+			return nil, err
+		}
+		return gradeDefences, nil
+	}
+	gradeDefences, err := r.Ctrl.GetGradeDefencesByDefenceId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return gradeDefences, nil
+}
+
+// Student is the resolver for the student field.
+func (r *councilEnrollmentResolver) Student(ctx context.Context, obj *model.CouncilEnrollment) (*model.Student, error) {
+	return r.Ctrl.GetStudentById(ctx, obj.StudentCode)
+}
+
+// TopicCouncil is the resolver for the topicCouncil field.
+func (r *councilEnrollmentResolver) TopicCouncil(ctx context.Context, obj *model.CouncilEnrollment) (*model.CouncilTopicCouncil, error) {
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.CouncilTopicCouncilById != nil {
+		topicCouncil, err := loaders.CouncilTopicCouncilById.Load(ctx, obj.TopicCouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return topicCouncil, nil
+	}
+	topicCouncil, err := r.Ctrl.GetCouncilTopicCouncilById(ctx, obj.TopicCouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	return topicCouncil, nil
+}
+
+// Midterm is the resolver for the midterm field.
+func (r *councilEnrollmentResolver) Midterm(ctx context.Context, obj *model.CouncilEnrollment) (*model.Midterm, error) {
+	if obj.MidtermCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MidtermByID != nil {
+		midterm, err := loaders.MidtermByID.Load(ctx, *obj.MidtermCode)
+		if err != nil {
+			return nil, err
+		}
+		return midterm, nil
+	}
+	midterm, err := r.Ctrl.GetMidtermById(ctx, *obj.MidtermCode)
+	if err != nil {
+		return nil, err
+	}
+	return midterm, nil
+}
+
+// Final is the resolver for the final field.
+func (r *councilEnrollmentResolver) Final(ctx context.Context, obj *model.CouncilEnrollment) (*model.Final, error) {
+	if obj.FinalCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.FinalByID != nil {
+		final, err := loaders.FinalByID.Load(ctx, *obj.FinalCode)
+		if err != nil {
+			return nil, err
+		}
+		return final, nil
+	}
+	final, err := r.Ctrl.GetFinalById(ctx, *obj.FinalCode)
+	if err != nil {
+		return nil, err
+	}
+	return final, nil
+}
+
+// GradeReview is the resolver for the gradeReview field.
+func (r *councilEnrollmentResolver) GradeReview(ctx context.Context, obj *model.CouncilEnrollment) (*model.GradeReview, error) {
+	if obj.GradeReviewCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.GradeViewById != nil {
+		gradeReview, err := loaders.GradeViewById.Load(ctx, *obj.GradeReviewCode)
+		if err != nil {
+			return nil, err
+		}
+		return gradeReview, nil
+	}
+	gradeReview, err := r.Ctrl.GetGradeViewById(ctx, *obj.GradeReviewCode)
+	if err != nil {
+		return nil, err
+	}
+	return gradeReview, nil
+}
+
+// GradeDefences is the resolver for the gradeDefences field.
+func (r *councilEnrollmentResolver) GradeDefences(ctx context.Context, obj *model.CouncilEnrollment) ([]*model.GradeDefence, error) {
+	gradeDefences, err := r.Ctrl.GetGradeDefencesByEnrollmentId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return gradeDefences, nil
+}
+
+// Major is the resolver for the major field.
+func (r *councilMemberCouncilResolver) Major(ctx context.Context, obj *model.CouncilMemberCouncil) (*model.MajorInfo, error) {
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MajorInfoById != nil {
+		major, err := loaders.MajorInfoById.Load(ctx, obj.MajorCode)
+		if err != nil {
+			return nil, err
+		}
+		return major, nil
+	}
+	major, err := r.Ctrl.GetMajorInfo(ctx, obj.MajorCode)
+	if err != nil {
+		return nil, err
+	}
+	return major, nil
+}
+
+// Semester is the resolver for the semester field.
+func (r *councilMemberCouncilResolver) Semester(ctx context.Context, obj *model.CouncilMemberCouncil) (*model.SemesterInfo, error) {
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.SemesterInfoById != nil {
+		semester, err := loaders.SemesterInfoById.Load(ctx, obj.SemesterCode)
+		if err != nil {
+			return nil, err
+		}
+		return semester, nil
+	}
+	semester, err := r.Ctrl.GetSemesterInfo(ctx, obj.SemesterCode)
+	if err != nil {
+		return nil, err
+	}
+	return semester, nil
+}
+
+// Defences is the resolver for the defences field.
+func (r *councilMemberCouncilResolver) Defences(ctx context.Context, obj *model.CouncilMemberCouncil) ([]*model.CouncilDefence, error) {
+	defences, err := r.Ctrl.GetCouncilDefencesByCouncilId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return defences, nil
+}
+
+// TopicCouncils is the resolver for the topicCouncils field.
+func (r *councilMemberCouncilResolver) TopicCouncils(ctx context.Context, obj *model.CouncilMemberCouncil) ([]*model.CouncilTopicCouncil, error) {
+	return r.Ctrl.GetCouncilTopicCouncilsByCouncilId(ctx, obj.ID)
+}
+
+// Topic is the resolver for the topic field.
+func (r *councilTopicCouncilResolver) Topic(ctx context.Context, obj *model.CouncilTopicCouncil) (*model.Topic, error) {
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TopicByID != nil {
+		topic, err := loaders.TopicByID.Load(ctx, obj.TopicCode)
+		if err != nil {
+			return nil, err
+		}
+		return topic, nil
+	}
+	topic, err := r.Ctrl.GetTopicById(ctx, obj.TopicCode)
+	if err != nil {
+		return nil, err
+	}
+	return topic, nil
+}
+
+// Council is the resolver for the council field.
+func (r *councilTopicCouncilResolver) Council(ctx context.Context, obj *model.CouncilTopicCouncil) (*model.CouncilMemberCouncil, error) {
+	if obj.CouncilCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.CouncilMemberById != nil {
+		council, err := loaders.CouncilMemberById.Load(ctx, *obj.CouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return council, nil
+	}
+	council, err := r.Ctrl.GetCouncilMemberById(ctx, *obj.CouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	return council, nil
+}
+
+// Enrollments is the resolver for the enrollments field.
+func (r *councilTopicCouncilResolver) Enrollments(ctx context.Context, obj *model.CouncilTopicCouncil) ([]*model.CouncilEnrollment, error) {
+	return r.Ctrl.GetCouncilEnrollmentsByTopicCouncilId(ctx, obj.ID)
+}
+
+// Supervisors is the resolver for the supervisors field.
+func (r *councilTopicCouncilResolver) Supervisors(ctx context.Context, obj *model.CouncilTopicCouncil) ([]*model.TopicCouncilSupervisor, error) {
+	supervisors, err := r.Ctrl.GetSupervisorsByTopicCouncilId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return supervisors, nil
 }
 
 // Student is the resolver for the student field.
 func (r *reviewerEnrollmentResolver) Student(ctx context.Context, obj *model.ReviewerEnrollment) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: Student - student"))
+	return r.Ctrl.GetStudentById(ctx, obj.StudentCode)
 }
 
 // TopicCouncil is the resolver for the topicCouncil field.
 func (r *reviewerEnrollmentResolver) TopicCouncil(ctx context.Context, obj *model.ReviewerEnrollment) (*model.ReviewerTopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.ReviewerTopicCouncilById != nil {
+		topicCouncil, err := loaders.ReviewerTopicCouncilById.Load(ctx, obj.TopicCouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return topicCouncil, nil
+	}
+	topicCouncil, err := r.Ctrl.GetReviewerTopicCouncilById(ctx, obj.TopicCouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	return topicCouncil, nil
 }
 
 // Midterm is the resolver for the midterm field.
 func (r *reviewerEnrollmentResolver) Midterm(ctx context.Context, obj *model.ReviewerEnrollment) (*model.Midterm, error) {
-	panic(fmt.Errorf("not implemented: Midterm - midterm"))
+	if obj.MidtermCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MidtermByID != nil {
+		midterm, err := loaders.MidtermByID.Load(ctx, *obj.MidtermCode)
+		if err != nil {
+			return nil, err
+		}
+		return midterm, nil
+	}
+	midterm, err := r.Ctrl.GetMidtermById(ctx, *obj.MidtermCode)
+	if err != nil {
+		return nil, err
+	}
+	return midterm, nil
 }
 
 // Final is the resolver for the final field.
 func (r *reviewerEnrollmentResolver) Final(ctx context.Context, obj *model.ReviewerEnrollment) (*model.Final, error) {
-	panic(fmt.Errorf("not implemented: Final - final"))
+	if obj.FinalCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.FinalByID != nil {
+		final, err := loaders.FinalByID.Load(ctx, *obj.FinalCode)
+		if err != nil {
+			return nil, err
+		}
+		return final, nil
+	}
+	final, err := r.Ctrl.GetFinalById(ctx, *obj.FinalCode)
+	if err != nil {
+		return nil, err
+	}
+	return final, nil
 }
 
 // GradeReview is the resolver for the gradeReview field.
 func (r *reviewerEnrollmentResolver) GradeReview(ctx context.Context, obj *model.ReviewerEnrollment) (*model.GradeReview, error) {
-	panic(fmt.Errorf("not implemented: GradeReview - gradeReview"))
+	if obj.GradeReviewCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.GradeViewById != nil {
+		gradeReview, err := loaders.GradeViewById.Load(ctx, *obj.GradeReviewCode)
+		if err != nil {
+			return nil, err
+		}
+		return gradeReview, nil
+	}
+	gradeReview, err := r.Ctrl.GetGradeViewById(ctx, *obj.GradeReviewCode)
+	if err != nil {
+		return nil, err
+	}
+	return gradeReview, nil
 }
 
 // Enrollment is the resolver for the enrollment field.
 func (r *reviewerGradeReviewResolver) Enrollment(ctx context.Context, obj *model.ReviewerGradeReview) (*model.ReviewerEnrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollment - enrollment"))
+	return r.Ctrl.GetReviewerEnrollmentByGradeReviewId(ctx, obj.ID)
 }
 
 // Major is the resolver for the major field.
 func (r *reviewerTopicResolver) Major(ctx context.Context, obj *model.ReviewerTopic) (*model.MajorInfo, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MajorInfoById != nil {
+		major, err := loaders.MajorInfoById.Load(ctx, obj.MajorCode)
+		if err != nil {
+			return nil, err
+		}
+		return major, nil
+	}
+	major, err := r.Ctrl.GetMajorInfo(ctx, obj.MajorCode)
+	if err != nil {
+		return nil, err
+	}
+	return major, nil
 }
 
 // Files is the resolver for the files field.
 func (r *reviewerTopicResolver) Files(ctx context.Context, obj *model.ReviewerTopic) ([]*model.File, error) {
-	panic(fmt.Errorf("not implemented: Files - files"))
+	return r.Ctrl.GetFilesByTopicId(ctx, obj.ID)
 }
 
 // Topic is the resolver for the topic field.
 func (r *reviewerTopicCouncilResolver) Topic(ctx context.Context, obj *model.ReviewerTopicCouncil) (*model.ReviewerTopic, error) {
-	panic(fmt.Errorf("not implemented: Topic - topic"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.ReviewerTopicById != nil {
+		topic, err := loaders.ReviewerTopicById.Load(ctx, obj.TopicCode)
+		if err != nil {
+			return nil, err
+		}
+		return topic, nil
+	}
+	topic, err := r.Ctrl.GetReviewerTopicById(ctx, obj.TopicCode)
+	if err != nil {
+		return nil, err
+	}
+	return topic, nil
 }
 
 // Supervisors is the resolver for the supervisors field.
 func (r *reviewerTopicCouncilResolver) Supervisors(ctx context.Context, obj *model.ReviewerTopicCouncil) ([]*model.TopicCouncilSupervisor, error) {
-	panic(fmt.Errorf("not implemented: Supervisors - supervisors"))
+	supervisors, err := r.Ctrl.GetSupervisorsByTopicCouncilId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return supervisors, nil
 }
 
 // Student is the resolver for the student field.
 func (r *supervisorEnrollmentResolver) Student(ctx context.Context, obj *model.SupervisorEnrollment) (*model.Student, error) {
-	panic(fmt.Errorf("not implemented: Student - student"))
+	return r.Ctrl.GetStudentById(ctx, obj.StudentCode)
 }
 
 // TopicCouncil is the resolver for the topicCouncil field.
 func (r *supervisorEnrollmentResolver) TopicCouncil(ctx context.Context, obj *model.SupervisorEnrollment) (*model.SupervisorTopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.SupervisorTopicCouncilById != nil {
+		topicCouncil, err := loaders.SupervisorTopicCouncilById.Load(ctx, obj.TopicCouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return topicCouncil, nil
+	}
+	topicCouncil, err := r.Ctrl.GetSupervisorTopicCouncilById(ctx, obj.TopicCouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	return topicCouncil, nil
 }
 
 // Midterm is the resolver for the midterm field.
 func (r *supervisorEnrollmentResolver) Midterm(ctx context.Context, obj *model.SupervisorEnrollment) (*model.Midterm, error) {
-	panic(fmt.Errorf("not implemented: Midterm - midterm"))
+	if obj.MidtermCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MidtermByID != nil {
+		midterm, err := loaders.MidtermByID.Load(ctx, *obj.MidtermCode)
+		if err != nil {
+			return nil, err
+		}
+		return midterm, nil
+	}
+	midterm, err := r.Ctrl.GetMidtermById(ctx, *obj.MidtermCode)
+	if err != nil {
+		return nil, err
+	}
+	return midterm, nil
 }
 
 // Final is the resolver for the final field.
 func (r *supervisorEnrollmentResolver) Final(ctx context.Context, obj *model.SupervisorEnrollment) (*model.Final, error) {
-	panic(fmt.Errorf("not implemented: Final - final"))
+	if obj.FinalCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.FinalByID != nil {
+		final, err := loaders.FinalByID.Load(ctx, *obj.FinalCode)
+		if err != nil {
+			return nil, err
+		}
+		return final, nil
+	}
+	final, err := r.Ctrl.GetFinalById(ctx, *obj.FinalCode)
+	if err != nil {
+		return nil, err
+	}
+	return final, nil
 }
 
 // GradeReview is the resolver for the gradeReview field.
 func (r *supervisorEnrollmentResolver) GradeReview(ctx context.Context, obj *model.SupervisorEnrollment) (*model.GradeReview, error) {
-	panic(fmt.Errorf("not implemented: GradeReview - gradeReview"))
+	if obj.GradeReviewCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.GradeViewById != nil {
+		gradeReview, err := loaders.GradeViewById.Load(ctx, *obj.GradeReviewCode)
+		if err != nil {
+			return nil, err
+		}
+		return gradeReview, nil
+	}
+	gradeReview, err := r.Ctrl.GetGradeViewById(ctx, *obj.GradeReviewCode)
+	if err != nil {
+		return nil, err
+	}
+	return gradeReview, nil
 }
 
 // GradeDefences is the resolver for the gradeDefences field.
 func (r *supervisorEnrollmentResolver) GradeDefences(ctx context.Context, obj *model.SupervisorEnrollment) ([]*model.GradeDefence, error) {
-	panic(fmt.Errorf("not implemented: GradeDefences - gradeDefences"))
+	gradeDefences, err := r.Ctrl.GetGradeDefencesByEnrollmentId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return gradeDefences, nil
 }
 
 // Major is the resolver for the major field.
 func (r *supervisorTopicResolver) Major(ctx context.Context, obj *model.SupervisorTopic) (*model.MajorInfo, error) {
-	panic(fmt.Errorf("not implemented: Major - major"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MajorInfoById != nil {
+		major, err := loaders.MajorInfoById.Load(ctx, obj.MajorCode)
+		if err != nil {
+			return nil, err
+		}
+		return major, nil
+	}
+	major, err := r.Ctrl.GetMajorInfo(ctx, obj.MajorCode)
+	if err != nil {
+		return nil, err
+	}
+	return major, nil
 }
 
 // Semester is the resolver for the semester field.
 func (r *supervisorTopicResolver) Semester(ctx context.Context, obj *model.SupervisorTopic) (*model.SemesterInfo, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.SemesterInfoById != nil {
+		semester, err := loaders.SemesterInfoById.Load(ctx, obj.SemesterCode)
+		if err != nil {
+			return nil, err
+		}
+		return semester, nil
+	}
+	semester, err := r.Ctrl.GetSemesterInfo(ctx, obj.SemesterCode)
+	if err != nil {
+		return nil, err
+	}
+	return semester, nil
 }
 
 // Files is the resolver for the files field.
 func (r *supervisorTopicResolver) Files(ctx context.Context, obj *model.SupervisorTopic) ([]*model.File, error) {
-	panic(fmt.Errorf("not implemented: Files - files"))
+	return r.Ctrl.GetFilesByTopicId(ctx, obj.ID)
 }
 
 // TopicCouncils is the resolver for the topicCouncils field.
 func (r *supervisorTopicResolver) TopicCouncils(ctx context.Context, obj *model.SupervisorTopic) ([]*model.SupervisorTopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: TopicCouncils - topicCouncils"))
+	return r.Ctrl.GetSupervisorTopicCouncilsByTopicId(ctx, obj.ID)
 }
 
 // Topic is the resolver for the topic field.
 func (r *supervisorTopicCouncilResolver) Topic(ctx context.Context, obj *model.SupervisorTopicCouncil) (*model.SupervisorTopic, error) {
-	panic(fmt.Errorf("not implemented: Topic - topic"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.SupervisorTopicById != nil {
+		topic, err := loaders.SupervisorTopicById.Load(ctx, obj.TopicCode)
+		if err != nil {
+			return nil, err
+		}
+		return topic, nil
+	}
+	topic, err := r.Ctrl.GetSupervisorTopicById(ctx, obj.TopicCode)
+	if err != nil {
+		return nil, err
+	}
+	return topic, nil
 }
 
 // Council is the resolver for the council field.
 func (r *supervisorTopicCouncilResolver) Council(ctx context.Context, obj *model.SupervisorTopicCouncil) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: Council - council"))
+	if obj.CouncilCode == nil {
+		return nil, nil
+	}
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.CouncilByID != nil {
+		council, err := loaders.CouncilByID.Load(ctx, *obj.CouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return council, nil
+	}
+	council, err := r.Ctrl.GetCouncilById(ctx, *obj.CouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	return council, nil
 }
 
 // Enrollments is the resolver for the enrollments field.
 func (r *supervisorTopicCouncilResolver) Enrollments(ctx context.Context, obj *model.SupervisorTopicCouncil) ([]*model.SupervisorEnrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
+	return r.Ctrl.GetSupervisorEnrollmentsByTopicCouncilId(ctx, obj.ID)
 }
 
 // Supervisors is the resolver for the supervisors field.
 func (r *supervisorTopicCouncilResolver) Supervisors(ctx context.Context, obj *model.SupervisorTopicCouncil) ([]*model.TopicCouncilSupervisor, error) {
-	panic(fmt.Errorf("not implemented: Supervisors - supervisors"))
+	supervisors, err := r.Ctrl.GetSupervisorsByTopicCouncilId(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return supervisors, nil
 }
 
 // TopicCouncil is the resolver for the topicCouncil field.
 func (r *supervisorTopicCouncilAssignmentResolver) TopicCouncil(ctx context.Context, obj *model.SupervisorTopicCouncilAssignment) (*model.SupervisorTopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: TopicCouncil - topicCouncil"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.SupervisorTopicCouncilById != nil {
+		topicCouncil, err := loaders.SupervisorTopicCouncilById.Load(ctx, obj.TopicCouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return topicCouncil, nil
+	}
+	topicCouncil, err := r.Ctrl.GetSupervisorTopicCouncilById(ctx, obj.TopicCouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	return topicCouncil, nil
 }
 
 // CouncilDefence returns generated.CouncilDefenceResolver implementation.

@@ -6,34 +6,66 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
 
+// ============================================
+// FACULTY RESOLVERS - Nested Fields
+// ============================================
+
 // Majors is the resolver for the majors field.
 func (r *facultyResolver) Majors(ctx context.Context, obj *model.Faculty) ([]*model.Major, error) {
-	panic(fmt.Errorf("not implemented: Majors - majors"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.MajorByFacultyId != nil {
+		return loaders.MajorByFacultyId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetMajorsByFacultyId(ctx, obj.ID)
 }
+
+// ============================================
+// MAJOR RESOLVERS - Nested Fields
+// ============================================
 
 // Topics is the resolver for the topics field.
 func (r *majorResolver) Topics(ctx context.Context, obj *model.Major) ([]*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: Topics - topics"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TopicByMajorId != nil {
+		return loaders.TopicByMajorId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetTopicsByMajorId(ctx, obj.ID)
 }
+
+// ============================================
+// SEMESTER RESOLVERS - Nested Fields
+// ============================================
 
 // Students is the resolver for the students field.
 func (r *semesterResolver) Students(ctx context.Context, obj *model.Semester) ([]*model.Student, error) {
-	panic(fmt.Errorf("not implemented: Students - students"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.StudentBySemesterId != nil {
+		return loaders.StudentBySemesterId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetStudentsBySemesterId(ctx, obj.ID)
 }
 
 // Teachers is the resolver for the teachers field.
 func (r *semesterResolver) Teachers(ctx context.Context, obj *model.Semester) ([]*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: Teachers - teachers"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TeacherBySemesterId != nil {
+		return loaders.TeacherBySemesterId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetTeachersBySemesterId(ctx, obj.ID)
 }
 
 // Topics is the resolver for the topics field.
 func (r *semesterResolver) Topics(ctx context.Context, obj *model.Semester) ([]*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: Topics - topics"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TopicBySemesterId != nil {
+		return loaders.TopicBySemesterId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetTopicsBySemesterId(ctx, obj.ID)
 }
 
 // Faculty returns generated.FacultyResolver implementation.

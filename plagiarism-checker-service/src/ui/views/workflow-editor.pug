@@ -223,7 +223,9 @@ html(lang="en")
 
             .form-group(id="code-group" style="display: none;")
               label Code (TypeScript)
-              textarea#node-code.form-control(rows="15" placeholder="// Write your code here")
+                span(style="color: red; font-weight: bold;") *
+              textarea#node-code.form-control(rows="15" placeholder="// Write your code here\n// Example:\n// const result = await someFunction();\n// return result;")
+              small(style="color: #e74c3c; font-size: 11px; font-weight: 600;") Required for evaluateJob method
         .modal-footer
           button#cancel-node.btn.btn-secondary Cancel
           button#save-node.btn.btn-primary Save

@@ -1,9 +1,73 @@
 import express, { Request, Response } from 'express';
-import { ServiceModel, MinioConfigModel, WorkflowModel } from '../database/models';
+import { ServiceModel, MinioConfigModel, WorkflowModel, CronJobModel } from '../database/models';
 import { MinioService } from '../queue/minio';
 import { serviceQueueManager } from '../queue/queue';
+import { cronJobService } from '../queue/cronjob-service';
 
 const router = express.Router();
+
+/**
+ * Helper: Parse workflow data (convert string params to objects)
+ */
+function parseWorkflowData(data: any): any {
+  // Parse parentParams if it's a string
+  if (typeof data.parentParams === 'string') {
+    try {
+      data.parentParams = JSON.parse(data.parentParams);
+    } catch (e) {
+      console.warn('Failed to parse parentParams:', e);
+    }
+  }
+
+  // Parse children recursively
+  if (data.children && Array.isArray(data.children)) {
+    data.children = data.children.map((child: any) => {
+      // Parse child params
+      if (typeof child.params === 'string') {
+        try {
+          // Try to parse as JSON
+          child.params = JSON.parse(child.params);
+        } catch (e) {
+          // If parsing fails, try to eval as JavaScript object literal
+          try {
+            // Use Function constructor to safely evaluate object literal
+            child.params = new Function('return (' + child.params + ')')();
+          } catch (e2) {
+            console.warn('Failed to parse child.params:', child.params, e2);
+            // Keep as string if all parsing fails
+          }
+        }
+      }
+
+      // Parse child options
+      if (typeof child.options === 'string') {
+        try {
+          child.options = JSON.parse(child.options);
+        } catch (e) {
+          child.options = {};
+        }
+      }
+
+      // Recursively parse nested children
+      if (child.children && Array.isArray(child.children)) {
+        child.children = parseWorkflowData({ children: child.children }).children;
+      }
+
+      return child;
+    });
+  }
+
+  // Parse options
+  if (typeof data.options === 'string') {
+    try {
+      data.options = JSON.parse(data.options);
+    } catch (e) {
+      data.options = {};
+    }
+  }
+
+  return data;
+}
 
 /**
  * GET /admin - BullMQ Dashboard (main page)
@@ -23,10 +87,22 @@ router.get('/workflow', async (req: Request, res: Response) => {
   try {
     const workflows = await WorkflowModel.find({}).sort({ createdAt: -1 }).lean();
 
+    // Lấy cron jobs cho mỗi workflow
+    const workflowsWithCronJobs = await Promise.all(
+      workflows.map(async (workflow) => {
+        const cronJob = await CronJobModel.findOne({ WL_id: workflow._id.toString() }).lean();
+        return {
+          ...workflow,
+          cronJob: cronJob || null,
+          hasCronJob: !!cronJob
+        };
+      })
+    );
+
     res.render('workflow', {
       title: 'Workflow Manager',
       currentTab: 'workflow',
-      workflows: workflows
+      workflows: workflowsWithCronJobs
     });
   } catch (error) {
     console.error('Error fetching workflows:', error);
@@ -100,7 +176,7 @@ router.get('/workflow/editor/:id?', async (req: Request, res: Response) => {
  */
 router.post('/workflow', async (req: Request, res: Response) => {
   try {
-    const workflowData = req.body;
+    let workflowData = req.body;
 
     // Validate required fields
     if (!workflowData.parentServiceName || !workflowData.parentMethod) {
@@ -108,6 +184,11 @@ router.post('/workflow', async (req: Request, res: Response) => {
         error: 'Missing required fields: parentServiceName, parentMethod'
       });
     }
+
+    // Parse workflow data (convert string params to objects)
+    workflowData = parseWorkflowData(workflowData);
+
+    console.log('Creating workflow:', JSON.stringify(workflowData, null, 2));
 
     const newWorkflow = await WorkflowModel.create(workflowData);
 
@@ -124,7 +205,7 @@ router.post('/workflow', async (req: Request, res: Response) => {
 router.put('/workflow/:id', async (req: Request, res: Response) => {
   try {
     const workflowId = req.params.id;
-    const workflowData = req.body;
+    let workflowData = req.body;
 
     // Validate required fields
     if (!workflowData.parentServiceName || !workflowData.parentMethod) {
@@ -132,6 +213,13 @@ router.put('/workflow/:id', async (req: Request, res: Response) => {
         error: 'Missing required fields: parentServiceName, parentMethod'
       });
     }
+
+    // Parse workflow data (convert string params to objects)
+    workflowData = parseWorkflowData(workflowData);
+
+    console.log('Updating workflow:', workflowId, JSON.stringify(workflowData, null, 2));
+    console.log('First child params type:', typeof workflowData.children?.[0]?.params);
+    console.log('First child params value:', workflowData.children?.[0]?.params);
 
     const updatedWorkflow = await WorkflowModel.findByIdAndUpdate(
       workflowId,
@@ -213,6 +301,197 @@ router.get('/minio', async (req: Request, res: Response) => {
       currentTab: 'minio',
       minioConfigs: [],
       error: 'Failed to load MinIO configs'
+    });
+  }
+});
+
+// ==========================================
+// CronJob API Routes
+// ==========================================
+
+/**
+ * GET /admin/api/cronjobs
+ * Lấy tất cả cron jobs
+ */
+router.get('/api/cronjobs', async (req: Request, res: Response) => {
+  try {
+    const cronJobs = await cronJobService.getAllCronJobs();
+    res.json({
+      success: true,
+      data: cronJobs,
+      count: cronJobs.length,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * GET /admin/api/cronjobs/with-workflow
+ * Lấy tất cả cron jobs kèm thông tin workflow
+ */
+router.get('/api/cronjobs/with-workflow', async (req: Request, res: Response) => {
+  try {
+    const cronJobs = await cronJobService.getCronJobsWithWorkflow();
+    res.json({
+      success: true,
+      data: cronJobs,
+      count: cronJobs.length,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * GET /admin/api/cronjobs/workflow/:workflowId
+ * Lấy cron job theo workflow ID
+ */
+router.get('/api/cronjobs/workflow/:workflowId', async (req: Request, res: Response) => {
+  try {
+    const { workflowId } = req.params;
+    const cronJob = await cronJobService.getCronJobByWorkflowId(workflowId);
+
+    if (!cronJob) {
+      return res.status(404).json({
+        success: false,
+        error: 'CronJob not found for this workflow',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: cronJob,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * POST /admin/api/cronjobs
+ * Tạo cron job mới
+ * Body: { workflowId: string, schedule: string, enabled?: boolean }
+ */
+router.post('/api/cronjobs', async (req: Request, res: Response) => {
+  try {
+    const { workflowId, schedule, enabled } = req.body;
+
+    if (!workflowId || !schedule) {
+      return res.status(400).json({
+        success: false,
+        error: 'workflowId and schedule are required',
+      });
+    }
+
+    const cronJob = await cronJobService.createCronJob({
+      workflowId,
+      schedule,
+      enabled,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: cronJob,
+      message: 'CronJob created successfully',
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * PUT /admin/api/cronjobs/:id
+ * Cập nhật cron job
+ * Body: { schedule?: string, enabled?: boolean }
+ */
+router.put('/api/cronjobs/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { schedule, enabled } = req.body;
+    console.log('Update cron job:', id, schedule, enabled);
+    const cronJob = await cronJobService.updateCronJob(id, {
+      schedule,
+      enabled,
+    });
+
+
+
+    res.json({
+      success: true,
+      data: cronJob,
+      message: 'CronJob updated successfully',
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * DELETE /admin/api/cronjobs/:id
+ * Xóa cron job
+ */
+router.delete('/api/cronjobs/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await cronJobService.deleteCronJob(id);
+
+    res.json({
+      success: true,
+      message: 'CronJob deleted successfully',
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * PATCH /admin/api/cronjobs/:id/toggle
+ * Enable/Disable cron job
+ * Body: { enabled: boolean }
+ */
+router.patch('/api/cronjobs/:id/toggle', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { enabled } = req.body;
+    console.log('Toggle cron job:', id, enabled);
+
+    if (enabled === undefined) {
+      return res.status(400).json({
+        success: false,
+        error: 'enabled field is required',
+      });
+    }
+
+    const cronJob = await cronJobService.toggleCronJob(id, enabled);
+
+    res.json({
+      success: true,
+      data: cronJob,
+      message: `CronJob ${enabled ? "enabled" : "disabled"} successfully`,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
     });
   }
 });

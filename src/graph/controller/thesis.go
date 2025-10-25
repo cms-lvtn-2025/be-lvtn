@@ -14,128 +14,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func (c *Controller) GetEnrollmentsForStudent(ctx context.Context, search *model.SearchRequestInput) (*model.StudentEnrollmentListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var newSearch model.SearchRequestInput
-	if search != nil {
-		newSearch = model.SearchRequestInput{
-			Pagination: search.Pagination,
-			Filters: append([]*model.FilterCriteriaInput{
-				&model.FilterCriteriaInput{
-					Condition: &model.FilterConditionInput{
-						Field:    "student_code",
-						Operator: model.FilterOperatorEqual,
-						Values:   []string{*myId},
-					},
-				},
-			}, search.Filters...),
-		}
-	} else {
-		newSearch = model.SearchRequestInput{
-			Pagination: c.DefaultPagination(),
-			Filters: append([]*model.FilterCriteriaInput{
-				&model.FilterCriteriaInput{
-					Condition: &model.FilterConditionInput{
-						Field:    "student_code",
-						Operator: model.FilterOperatorEqual,
-						Values:   []string{*myId},
-					},
-				},
-			}),
-		}
-	}
-	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
-	if err != nil {
-		return nil, err
-	}
-	return &model.StudentEnrollmentListResponse{
-		Total: enrollments.GetTotal(),
-		Data:  convert.PbEnrollmentsToStudentEnrollment(enrollments.GetEnrollments()),
-	}, nil
-}
-
-func (c *Controller) GetEnrollmentForStudent(ctx context.Context, id string) (*model.StudentEnrollment, error) {
-	_, _, err := c.GetInfoRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-	enrollment, err := c.thesis.GetEnrollmentById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbEnrollmentToStudentEnrollment(enrollment.GetEnrollment()), nil
-}
-
-func (c *Controller) GetTopicCouncilForStudent(ctx context.Context, id string) (*model.StudentTopicCouncil, error) {
-	_, _, err := c.GetInfoRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-	topicCouncil, err := c.thesis.GetTopicCouncilById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbTopicCouncilToStudentTopicCouncil(topicCouncil.GetTopicCouncil()), nil
-}
-
-func (c *Controller) GetTopicForStudent(ctx context.Context, id string) (*model.StudentTopic, error) {
-	_, _, err := c.GetInfoRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-	topic, err := c.thesis.GetTopicById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbTopicToStudentTopic(topic.GetTopic()), nil
-}
-
-func (c *Controller) GetMidtermById(ctx context.Context, id string) (*model.Midterm, error) {
-	midterm, err := c.thesis.GetMidtermById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbMidtermToModel(midterm.GetMidterm()), nil
-}
-
-func (c *Controller) GetFinalById(ctx context.Context, id string) (*model.Final, error) {
-	final, err := c.thesis.GetFinalById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbFinalToModel(final.GetFinal()), nil
-}
-
-func (c *Controller) GetGradeViewById(ctx context.Context, id string) (*model.GradeReview, error) {
-	gradeReview, err := c.thesis.GetGradeReviewById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbGradeReviewToModel(gradeReview.GetGradeReview()), nil
-}
-
-func (c *Controller) GetSupervisorByTopicId(ctx context.Context, topicCouncilCode string) ([]*model.StudentTopicSupervisor, error) {
-	newSearch := model.SearchRequestInput{
-		Pagination: c.DefaultPagination(),
-		Filters: append([]*model.FilterCriteriaInput{
-			&model.FilterCriteriaInput{
-				Condition: &model.FilterConditionInput{
-					Field:    "topic_council_code",
-					Operator: model.FilterOperatorEqual,
-					Values:   []string{topicCouncilCode},
-				},
-			},
-		}),
-	}
-	supervisor, err := c.thesis.GetTopicCouncilSupervisorBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbTopicCouncilSupervisorsToStudentTopicSupervisors(supervisor.GetTopicCouncilSupervisors()), nil
-}
+// Student-related methods (GetEnrollmentsForStudent, GetTopicForStudent, GetMidtermById, etc.)
+// have been moved to controller/student.go
 
 func (c *Controller) pbTopicsToModel(resp *pb.ListTopicsResponse) []*model.Topic {
 	if resp == nil {
@@ -483,30 +363,6 @@ func (c *Controller) GetTopics(ctx context.Context, search model.SearchRequestIn
 	return c.pbTopicsToModel(topics), nil
 }
 
-func (c *Controller) GetTopicById(ctx context.Context, id *string) (*model.Topic, error) {
-	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
-	if !ok {
-		return nil, fmt.Errorf("not authorized")
-	}
-	role, ok := claims["role"].(string)
-	if !ok {
-		return nil, fmt.Errorf("not authorized")
-	}
-	if id == nil {
-		return nil, nil
-	}
-	if role == "student" {
-		topic, err := c.thesis.GetTopicById(ctx, *id)
-		if err != nil {
-			return nil, err
-		}
-		return c.pbTopicToModel(topic), nil
-	} else {
-		return nil, fmt.Errorf("no teacher found for student role %s", role)
-	}
-	return nil, nil
-}
-
 func (c *Controller) GetTopicByIdForSchedule(ctx context.Context, id *string) (*model.Topic, error) {
 	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
 	if !ok {
@@ -646,4 +502,241 @@ func (c *Controller) GetFinal(ctx context.Context, finalCode *string) (*model.Fi
 		return nil, err
 	}
 	return c.pbFinalToModel(final), err
+}
+
+// ============================================
+// RESOLVER HELPER METHODS
+// ============================================
+
+// GetTopicsByMajorId returns all topics for a given major
+func (c *Controller) GetTopicsByMajorId(ctx context.Context, majorId string) ([]*model.Topic, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "major_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{majorId},
+				},
+			},
+		},
+	}
+
+	topics, err := c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTopicsToModel(topics.GetTopics()), nil
+}
+
+// GetTopicsBySemesterId returns all topics for a given semester
+func (c *Controller) GetTopicsBySemesterId(ctx context.Context, semesterId string) ([]*model.Topic, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{semesterId},
+				},
+			},
+		},
+	}
+
+	topics, err := c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTopicsToModel(topics.GetTopics()), nil
+}
+
+// GetStudentById returns a student by ID
+func (c *Controller) GetStudentById(ctx context.Context, id string) (*model.Student, error) {
+	student, err := c.user.GetUserById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbStudentToModel(student.GetStudent()), nil
+}
+
+// GetTeacherById returns a teacher by ID
+func (c *Controller) GetTeacherById(ctx context.Context, id string) (*model.Teacher, error) {
+	teacher, err := c.user.GetTeacherById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbTeacherToModel(teacher.GetTeacher()), nil
+}
+
+// GetTopicById returns a topic by ID
+func (c *Controller) GetTopicById(ctx context.Context, id string) (*model.Topic, error) {
+	topic, err := c.thesis.GetTopicById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbTopicToModel(topic.GetTopic()), nil
+}
+
+// GetMidtermById returns a midterm by ID
+func (c *Controller) GetMidtermById(ctx context.Context, id string) (*model.Midterm, error) {
+	midterm, err := c.thesis.GetMidtermById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbMidtermToModel(midterm.GetMidterm()), nil
+}
+
+// GetFinalById returns a final by ID
+func (c *Controller) GetFinalById(ctx context.Context, id string) (*model.Final, error) {
+	final, err := c.thesis.GetFinalById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbFinalToModel(final.GetFinal()), nil
+}
+
+// GetTopicCouncilById returns a topic council by ID
+func (c *Controller) GetTopicCouncilById(ctx context.Context, id string) (*model.TopicCouncil, error) {
+	topicCouncil, err := c.thesis.GetTopicCouncilById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbTopicCouncilToModel(topicCouncil.GetTopicCouncil()), nil
+}
+
+// GetGradeReviewById returns a grade review by ID
+func (c *Controller) GetGradeReviewById(ctx context.Context, id string) (*model.GradeReview, error) {
+	gradeReview, err := c.thesis.GetGradeReviewById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbGradeReviewToModel(gradeReview.GetGradeReview()), nil
+}
+
+// GetGradeDefencesByEnrollmentId returns all grade defences for a given enrollment
+func (c *Controller) GetGradeDefencesByEnrollmentId(ctx context.Context, enrollmentId string) ([]*model.GradeDefence, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "enrollment_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{enrollmentId},
+				},
+			},
+		},
+	}
+
+	gradeDefences, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbGradeDefencesToModel(gradeDefences.GetGradeDefences()), nil
+}
+
+// GetFilesByTopicId returns all files for a given topic
+func (c *Controller) GetFilesByTopicId(ctx context.Context, topicId string) ([]*model.File, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "topic_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{topicId},
+				},
+			},
+		},
+	}
+
+	files, err := c.file.GetFileBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbFilesToModel(files.GetFiles()), nil
+}
+
+// GetTopicCouncilsByTopicId returns all topic councils for a given topic
+func (c *Controller) GetTopicCouncilsByTopicId(ctx context.Context, topicId string) ([]*model.TopicCouncil, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "topic_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{topicId},
+				},
+			},
+		},
+	}
+
+	topicCouncils, err := c.thesis.GetTopicCouncilBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTopicCouncilsToModel(topicCouncils.GetTopicCouncils()), nil
+}
+
+// GetEnrollmentsByTopicCouncilId returns all enrollments for a given topic council
+func (c *Controller) GetEnrollmentsByTopicCouncilId(ctx context.Context, topicCouncilId string) ([]*model.Enrollment, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "topic_council_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{topicCouncilId},
+				},
+			},
+		},
+	}
+
+	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbEnrollmentsToModel(enrollments.GetEnrollments()), nil
+}
+
+// GetSupervisorsByTopicCouncilId returns all supervisors for a given topic council
+func (c *Controller) GetSupervisorsByTopicCouncilId(ctx context.Context, topicCouncilId string) ([]*model.TopicCouncilSupervisor, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "topic_council_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{topicCouncilId},
+				},
+			},
+		},
+	}
+
+	supervisors, err := c.thesis.GetTopicCouncilSupervisorBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTopicCouncilSupervisorsToModel(supervisors.GetTopicCouncilSupervisors()), nil
+}
+
+// GetEnrollmentById returns an enrollment by ID
+func (c *Controller) GetEnrollmentById(ctx context.Context, id string) (*model.Enrollment, error) {
+	enrollment, err := c.thesis.GetEnrollmentById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbEnrollmentToModel(enrollment.GetEnrollment()), nil
 }

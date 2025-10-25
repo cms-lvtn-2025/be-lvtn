@@ -6,106 +6,133 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"thaily/src/graph/model"
 )
 
+// ============================================
+// MUTATION RESOLVERS - Council Management
+// ============================================
+
 // CreateCouncil is the resolver for the createCouncil field.
 func (r *mutationResolver) CreateCouncil(ctx context.Context, input model.CreateCouncilInput) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: CreateCouncil - createCouncil"))
+	return r.Ctrl.CreateCouncil(ctx, input)
 }
 
 // UpdateDepartmentCouncil is the resolver for the updateDepartmentCouncil field.
 func (r *mutationResolver) UpdateDepartmentCouncil(ctx context.Context, id string, input model.UpdateCouncilInput) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: UpdateDepartmentCouncil - updateDepartmentCouncil"))
+	return r.Ctrl.UpdateDepartmentCouncil(ctx, id, input)
 }
 
 // AddDefenceToCouncil is the resolver for the addDefenceToCouncil field.
 func (r *mutationResolver) AddDefenceToCouncil(ctx context.Context, input model.CreateDefenceInput) (*model.Defence, error) {
-	panic(fmt.Errorf("not implemented: AddDefenceToCouncil - addDefenceToCouncil"))
+	return r.Ctrl.AddDefenceToCouncil(ctx, input)
 }
 
 // RemoveDefenceFromCouncil is the resolver for the removeDefenceFromCouncil field.
 func (r *mutationResolver) RemoveDefenceFromCouncil(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: RemoveDefenceFromCouncil - removeDefenceFromCouncil"))
+	return r.Ctrl.RemoveDefenceFromCouncil(ctx, id)
 }
+
+// ============================================
+// MUTATION RESOLVERS - Topic Management
+// ============================================
 
 // ApproveTopicStage1 is the resolver for the approveTopicStage1 field.
 func (r *mutationResolver) ApproveTopicStage1(ctx context.Context, id string) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: ApproveTopicStage1 - approveTopicStage1"))
+	return r.Ctrl.ApproveTopicStage1(ctx, id)
 }
 
 // RejectTopicStage1 is the resolver for the rejectTopicStage1 field.
 func (r *mutationResolver) RejectTopicStage1(ctx context.Context, id string, reason *string) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: RejectTopicStage1 - rejectTopicStage1"))
+	return r.Ctrl.RejectTopicStage1(ctx, id, reason)
 }
 
 // AssignTopicToCouncil is the resolver for the assignTopicToCouncil field.
 func (r *mutationResolver) AssignTopicToCouncil(ctx context.Context, topicCouncilID string, councilID string) (*model.TopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: AssignTopicToCouncil - assignTopicToCouncil"))
+	return r.Ctrl.AssignTopicToCouncil(ctx, topicCouncilID, councilID)
 }
+
+// ============================================
+// QUERY RESOLVERS - User Management
+// ============================================
 
 // GetDepartmentTeachers is the resolver for the getDepartmentTeachers field.
 func (r *queryResolver) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) ([]*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentTeachers - getDepartmentTeachers"))
+	return r.Ctrl.GetDepartmentTeachers(ctx, search)
 }
 
 // GetDepartmentStudents is the resolver for the getDepartmentStudents field.
 func (r *queryResolver) GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) ([]*model.Student, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentStudents - getDepartmentStudents"))
+	return r.Ctrl.GetDepartmentStudents(ctx, search)
 }
+
+// ============================================
+// QUERY RESOLVERS - Academic Management
+// ============================================
 
 // GetDepartmentSemesters is the resolver for the getDepartmentSemesters field.
 func (r *queryResolver) GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentSemesters - getDepartmentSemesters"))
+	return r.Ctrl.GetDepartmentSemesters(ctx, search)
 }
 
 // GetDepartmentMajors is the resolver for the getDepartmentMajors field.
 func (r *queryResolver) GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) ([]*model.Major, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentMajors - getDepartmentMajors"))
+	return r.Ctrl.GetDepartmentMajors(ctx, search)
 }
 
 // GetDepartmentFaculties is the resolver for the getDepartmentFaculties field.
 func (r *queryResolver) GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) ([]*model.Faculty, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentFaculties - getDepartmentFaculties"))
+	return r.Ctrl.GetDepartmentFaculties(ctx, search)
 }
+
+// ============================================
+// QUERY RESOLVERS - Topic Management
+// ============================================
 
 // GetDepartmentTopics is the resolver for the getDepartmentTopics field.
 func (r *queryResolver) GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentTopics - getDepartmentTopics"))
+	return r.Ctrl.GetDepartmentTopics(ctx, search)
 }
 
 // GetDepartmentTopicDetail is the resolver for the getDepartmentTopicDetail field.
 func (r *queryResolver) GetDepartmentTopicDetail(ctx context.Context, id string) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentTopicDetail - getDepartmentTopicDetail"))
+	return r.Ctrl.GetDepartmentTopicDetail(ctx, id)
 }
+
+// ============================================
+// QUERY RESOLVERS - Enrollment Management
+// ============================================
 
 // GetDepartmentEnrollments is the resolver for the getDepartmentEnrollments field.
 func (r *queryResolver) GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentEnrollments - getDepartmentEnrollments"))
+	return r.Ctrl.GetDepartmentEnrollments(ctx, search)
 }
 
 // GetDepartmentEnrollmentDetail is the resolver for the getDepartmentEnrollmentDetail field.
 func (r *queryResolver) GetDepartmentEnrollmentDetail(ctx context.Context, id string) (*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentEnrollmentDetail - getDepartmentEnrollmentDetail"))
+	return r.Ctrl.GetDepartmentEnrollmentDetail(ctx, id)
 }
+
+// ============================================
+// QUERY RESOLVERS - Council Management
+// ============================================
 
 // GetDepartmentCouncils is the resolver for the getDepartmentCouncils field.
 func (r *queryResolver) GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentCouncils - getDepartmentCouncils"))
+	return r.Ctrl.GetDepartmentCouncils(ctx, search)
 }
 
 // GetDepartmentCouncilDetail is the resolver for the getDepartmentCouncilDetail field.
 func (r *queryResolver) GetDepartmentCouncilDetail(ctx context.Context, id string) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentCouncilDetail - getDepartmentCouncilDetail"))
+	return r.Ctrl.GetDepartmentCouncilDetail(ctx, id)
 }
 
 // GetDepartmentDefences is the resolver for the getDepartmentDefences field.
 func (r *queryResolver) GetDepartmentDefences(ctx context.Context, councilID string) ([]*model.Defence, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentDefences - getDepartmentDefences"))
+	return r.Ctrl.GetDepartmentDefences(ctx, councilID)
 }
 
 // GetDepartmentGradeDefences is the resolver for the getDepartmentGradeDefences field.
 func (r *queryResolver) GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) ([]*model.GradeDefence, error) {
-	panic(fmt.Errorf("not implemented: GetDepartmentGradeDefences - getDepartmentGradeDefences"))
+	return r.Ctrl.GetDepartmentGradeDefences(ctx, search)
 }

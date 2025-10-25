@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"thaily/src/graph/helper"
-	"thaily/src/pkg/response"
+	"thaily/src/response"
 	"time"
 
 	pb "thaily/proto/file"

@@ -6,49 +6,113 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
 
+// ============================================
+// COUNCIL RESOLVERS - Nested Fields
+// ============================================
+
 // Defences is the resolver for the defences field.
 func (r *councilResolver) Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error) {
-	panic(fmt.Errorf("not implemented: Defences - defences"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.DefenceByCouncilId != nil {
+		return loaders.DefenceByCouncilId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetDefencesByCouncilId(ctx, obj.ID)
 }
 
 // TopicCouncils is the resolver for the topicCouncils field.
 func (r *councilResolver) TopicCouncils(ctx context.Context, obj *model.Council) ([]*model.TopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: TopicCouncils - topicCouncils"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TopicCouncilByCouncilId != nil {
+		return loaders.TopicCouncilByCouncilId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetTopicCouncilsByCouncilId(ctx, obj.ID)
 }
+
+// ============================================
+// DEFENCE RESOLVERS - Nested Fields
+// ============================================
 
 // Council is the resolver for the council field.
 func (r *defenceResolver) Council(ctx context.Context, obj *model.Defence) (*model.Council, error) {
-	panic(fmt.Errorf("not implemented: Council - council"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.CouncilByID != nil {
+		council, err := loaders.CouncilByID.Load(ctx, obj.CouncilCode)
+		if err != nil {
+			return nil, err
+		}
+		return council, nil
+	}
+
+	return r.Ctrl.GetCouncilById(ctx, obj.CouncilCode)
 }
 
 // Teacher is the resolver for the teacher field.
 func (r *defenceResolver) Teacher(ctx context.Context, obj *model.Defence) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TeacherById != nil {
+		teacher, err := loaders.TeacherById.Load(ctx, obj.TeacherCode)
+		if err != nil {
+			return nil, err
+		}
+		return teacher, nil
+	}
+
+	return r.Ctrl.GetTeacherById(ctx, obj.TeacherCode)
 }
 
 // GradeDefences is the resolver for the gradeDefences field.
 func (r *defenceResolver) GradeDefences(ctx context.Context, obj *model.Defence) ([]*model.GradeDefence, error) {
-	panic(fmt.Errorf("not implemented: GradeDefences - gradeDefences"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.GradeDefenceByDefenceId != nil {
+		gradeDefences, err := loaders.GradeDefenceByDefenceId.Load(ctx, obj.ID)
+		if err != nil {
+			return nil, err
+		}
+		return gradeDefences, nil
+	}
+
+	return r.Ctrl.GetGradeDefencesByDefenceId(ctx, obj.ID)
 }
+
+// ============================================
+// GRADE DEFENCE RESOLVERS - Nested Fields
+// ============================================
 
 // Defence is the resolver for the defence field.
 func (r *gradeDefenceResolver) Defence(ctx context.Context, obj *model.GradeDefence) (*model.Defence, error) {
-	panic(fmt.Errorf("not implemented: Defence - defence"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.DefenceById != nil {
+		return loaders.DefenceById.Load(ctx, obj.DefenceCode)
+	}
+	return r.Ctrl.GetDefenceById(ctx, obj.DefenceCode)
 }
 
 // Enrollment is the resolver for the enrollment field.
 func (r *gradeDefenceResolver) Enrollment(ctx context.Context, obj *model.GradeDefence) (*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollment - enrollment"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.EnrollmentById != nil {
+		return loaders.EnrollmentById.Load(ctx, obj.EnrollmentCode)
+	}
+	return r.Ctrl.GetEnrollmentById(ctx, obj.EnrollmentCode)
 }
 
 // Criteria is the resolver for the criteria field.
 func (r *gradeDefenceResolver) Criteria(ctx context.Context, obj *model.GradeDefence) ([]*model.GradeDefenceCriterion, error) {
-	panic(fmt.Errorf("not implemented: Criteria - criteria"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.GradeDefenceCriteriaByDefenceId != nil {
+		criteria, err := loaders.GradeDefenceCriteriaByDefenceId.Load(ctx, obj.ID)
+		if err != nil {
+			return nil, err
+		}
+		return criteria, nil
+	}
+
+	return r.Ctrl.GetGradeDefenceCriteriaByGradeDefenceId(ctx, obj.ID)
 }
 
 // Council returns generated.CouncilResolver implementation.

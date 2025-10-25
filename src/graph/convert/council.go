@@ -2,7 +2,6 @@ package convert
 
 import (
 	"thaily/proto/council"
-	"thaily/proto/thesis"
 	"thaily/src/graph/model"
 )
 
@@ -331,95 +330,6 @@ func PbDefencesToCouncilDefences(pbs []*council.Defence) []*model.CouncilDefence
 		}
 	}
 	return result
-}
-
-// PbEnrollmentToCouncilEnrollment converts protobuf Enrollment (from thesis) to GraphQL CouncilEnrollment
-func PbEnrollmentToCouncilEnrollment(pb *thesis.Enrollment) *model.CouncilEnrollment {
-	if pb == nil {
-		return nil
-	}
-
-	result := &model.CouncilEnrollment{
-		ID:               pb.Id,
-		Title:            pb.Title,
-		StudentCode:      pb.StudentCode,
-		TopicCouncilCode: pb.TopicCouncilCode,
-	}
-
-	// Handle optional codes
-	if pb.FinalCode != nil {
-		result.FinalCode = pb.FinalCode
-	}
-	if pb.GradeReviewCode != nil {
-		result.GradeReviewCode = pb.GradeReviewCode
-	}
-	if pb.MidtermCode != nil {
-		result.MidtermCode = pb.MidtermCode
-	}
-
-	// Handle timestamps
-	if pb.CreatedAt != nil {
-		t := pb.CreatedAt.AsTime()
-		result.CreatedAt = &t
-	}
-	if pb.UpdatedAt != nil {
-		t := pb.UpdatedAt.AsTime()
-		result.UpdatedAt = &t
-	}
-
-	return result
-}
-
-// PbTopicCouncilToCouncilTopicCouncil converts protobuf TopicCouncil (from thesis) to GraphQL CouncilTopicCouncil
-func PbTopicCouncilToCouncilTopicCouncil(pb *thesis.TopicCouncil) *model.CouncilTopicCouncil {
-	if pb == nil {
-		return nil
-	}
-
-	result := &model.CouncilTopicCouncil{
-		ID:        pb.Id,
-		Title:     pb.Title,
-		Stage:     pbTopicStageToModelFromThesis(pb.Stage),
-		TopicCode: pb.TopicCode,
-	}
-
-	// Handle optional CouncilCode
-	if pb.CouncilCode != nil {
-		result.CouncilCode = pb.CouncilCode
-	}
-
-	// Handle required timestamps
-	if pb.TimeStart != nil {
-		result.TimeStart = pb.TimeStart.AsTime()
-	}
-	if pb.TimeEnd != nil {
-		result.TimeEnd = pb.TimeEnd.AsTime()
-	}
-
-	// Handle optional timestamps
-	if pb.CreatedAt != nil {
-		t := pb.CreatedAt.AsTime()
-		result.CreatedAt = &t
-	}
-	if pb.UpdatedAt != nil {
-		t := pb.UpdatedAt.AsTime()
-		result.UpdatedAt = &t
-	}
-
-	return result
-}
-
-// pbTopicStageToModelFromThesis converts protobuf TopicStage (from thesis) to GraphQL TopicStage
-// This is a helper function for council.go to avoid importing thesis converters
-func pbTopicStageToModelFromThesis(pb thesis.TopicStage) model.TopicStage {
-	switch pb {
-	case thesis.TopicStage_STAGE_DACN:
-		return model.TopicStageStageDacn
-	case thesis.TopicStage_STAGE_LVTN:
-		return model.TopicStageStageLvtn
-	default:
-		return model.TopicStageStageDacn
-	}
 }
 
 // ============================================

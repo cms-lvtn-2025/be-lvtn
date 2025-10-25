@@ -2,86 +2,131 @@ package controller
 
 import (
 	"context"
+	"thaily/proto/common"
 	"thaily/src/graph/convert"
 	"thaily/src/graph/model"
 )
 
-// import (
-//
-//	"context"
-//	"fmt"
-//	"strings"
-//	pb "thaily/proto/council"
-//	pbRole "thaily/proto/role"
-//	pbUser "thaily/proto/user"
-//	"thaily/src/graph/helper"
-//	"thaily/src/graph/model"
-//	"time"
-//
-//	"github.com/golang-jwt/jwt/v5"
-//
-// )
-func (c *Controller) GetDefenceInfoByCouncilId(ctx context.Context, id string) (*model.StudentDefenceInfo, error) {
-	defence, err := c.council.GetDefenceById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbDefenceToStudentDefenceInfo(defence.GetDefence()), nil
-}
-func (c *Controller) GetCouncilByIdForStudent(ctx context.Context, id string) (*model.StudentCouncil, error) {
+// Student-related methods (GetDefenceInfoByCouncilId, GetCouncilByIdForStudent, etc.)
+// have been moved to controller/student.go
+
+// ============================================
+// RESOLVER HELPER METHODS
+// ============================================
+
+// GetCouncilById returns a council by ID
+func (c *Controller) GetCouncilById(ctx context.Context, id string) (*model.Council, error) {
 	council, err := c.council.GetCouncilById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return convert.PbCouncilToStudentCouncil(council.GetCouncil()), nil
+	return convert.PbCouncilToModel(council.GetCouncil()), nil
 }
 
-func (c *Controller) GetGradeDefenceInfoByEnrollmentCode(ctx context.Context, enrollmentCode string) ([]*model.StudentGradeDefence, error) {
+// GetDefencesByCouncilId returns all defences for a given council
+func (c *Controller) GetDefencesByCouncilId(ctx context.Context, councilId string) ([]*model.Defence, error) {
 	newSearch := model.SearchRequestInput{
 		Pagination: c.DefaultPagination(),
-		Filters: append([]*model.FilterCriteriaInput{
-			&model.FilterCriteriaInput{
+		Filters: []*model.FilterCriteriaInput{
+			{
 				Condition: &model.FilterConditionInput{
-					Field:    "enrollment_code",
+					Field:    "council_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{enrollmentCode},
+					Values:   []string{councilId},
 				},
 			},
-		}),
+		},
 	}
-	gradeDefence, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+
+	defences, err := c.council.GetDefencesBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
-	return convert.PbGradeDefencesToStudentGradeDefences(gradeDefence.GradeDefences), nil
+
+	return convert.PbDefencesToModel(defences.GetDefences()), nil
 }
 
-func (c *Controller) GetGradeDefenceCriterionByDefenceCode(ctx context.Context, defenceCode string) ([]*model.GradeDefenceCriterion, error) {
+// GetTopicCouncilsByCouncilId returns all topic councils for a given council
+func (c *Controller) GetTopicCouncilsByCouncilId(ctx context.Context, councilId string) ([]*model.TopicCouncil, error) {
 	newSearch := model.SearchRequestInput{
 		Pagination: c.DefaultPagination(),
-		Filters: append([]*model.FilterCriteriaInput{
-			&model.FilterCriteriaInput{
+		Filters: []*model.FilterCriteriaInput{
+			{
 				Condition: &model.FilterConditionInput{
-					Field:    "grade_defence_ode",
+					Field:    "council_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{defenceCode},
+					Values:   []string{councilId},
 				},
 			},
-		}),
+		},
 	}
-	criterion, err := c.council.GetGradeDefenceCriteriaBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+
+	topicCouncils, err := c.thesis.GetTopicCouncilBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
-	return convert.PbGradeDefenceCriteriaToModel(criterion.GradeDefenceCriteria), nil
+
+	return convert.PbTopicCouncilsToModel(topicCouncils.GetTopicCouncils()), nil
 }
 
-func (c *Controller) GetDefenceInfoById(ctx context.Context, id string) (*model.StudentDefenceInfo, error) {
+// GetGradeDefencesByDefenceId returns all grade defences for a given defence
+func (c *Controller) GetGradeDefencesByDefenceId(ctx context.Context, defenceId string) ([]*model.GradeDefence, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "defence_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{defenceId},
+				},
+			},
+		},
+	}
+
+	gradeDefences, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbGradeDefencesToModel(gradeDefences.GetGradeDefences()), nil
+}
+
+// GetDefenceById returns a defence by ID
+func (c *Controller) GetDefenceById(ctx context.Context, id string) (*model.Defence, error) {
 	defence, err := c.council.GetDefenceById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return convert.PbDefenceToStudentDefenceInfo(defence.GetDefence()), nil
+	return convert.PbDefenceToModel(defence.GetDefence()), nil
+}
+
+// GetGradeDefenceCriteriaByGradeDefenceId returns all criteria for a given grade defence
+func (c *Controller) GetGradeDefenceCriteriaByGradeDefenceId(ctx context.Context, gradeDefenceId string) ([]*model.GradeDefenceCriterion, error) {
+	newSearch := &common.SearchRequest{
+		Pagination: &common.Pagination{
+			Page:     1,
+			PageSize: 100,
+		},
+		Filters: []*common.FilterCriteria{
+			{
+				Criteria: &common.FilterCriteria_Condition{
+					Condition: &common.FilterCondition{
+						Field:    "grade_defence_code",
+						Operator: common.FilterOperator_EQUAL,
+						Values:   []string{gradeDefenceId},
+					},
+				},
+			},
+		},
+	}
+
+	criteria, err := c.council.GetGradeDefenceCriteriaBySearch(ctx, newSearch)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbGradeDefenceCriteriaToModel(criteria.GetGradeDefenceCriteria()), nil
 }
 
 //func (c *Controller) pbCouncilsToModel(resp *pb.ListCouncilsResponse) []*model.Council {

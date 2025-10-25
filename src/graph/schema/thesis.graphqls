@@ -44,7 +44,7 @@ type Topic {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
+    
     # KHÔNG có major - tránh circular query: Topic → Major → Topics → ...
     # KHÔNG có semester - tránh circular query: Topic → Semester → Topics → ...
     # KHÔNG có enrollments vì Enrollment không có topic_code

@@ -23,9 +23,14 @@ RUN apk --no-cache add ca-certificates
 # Copy binary from builder
 COPY --from=builder /academic-service .
 
-# Create env directory and copy env file
-RUN mkdir -p env
-COPY env/academic.env env/academic.env
+# Copy certs (needed for TLS)
+COPY certs /app/certs
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/env
+
+# Set environment variable for project root
+ENV PROJECT_ROOT=/app
 
 # Expose port
 EXPOSE 50051

@@ -14,64 +14,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func (c *Controller) GetMySemesters(ctx context.Context, search *model.SearchRequestInput) (*model.SemesterListResponse, error) {
-	_, mySemesters, _, err := c.GetInfoAllRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var newSearch model.SearchRequestInput
-	if search != nil {
-		newSearch = model.SearchRequestInput{
-			Pagination: search.Pagination,
-			Filters: append([]*model.FilterCriteriaInput{
-				&model.FilterCriteriaInput{
-					Condition: &model.FilterConditionInput{
-						Field:    "id",
-						Operator: model.FilterOperatorIn,
-						Values:   *mySemesters,
-					},
-				},
-			}, search.Filters...),
-		}
-	} else {
-		newSearch = model.SearchRequestInput{
-			Pagination: c.DefaultPagination(),
-			Filters: append([]*model.FilterCriteriaInput{
-				&model.FilterCriteriaInput{
-					Condition: &model.FilterConditionInput{
-						Field:    "id",
-						Operator: model.FilterOperatorIn,
-						Values:   *mySemesters,
-					},
-				},
-			}),
-		}
-	}
-	semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
-	if err != nil {
-		return nil, err
-	}
-	return &model.SemesterListResponse{
-		Total: semesters.GetTotal(),
-		Data:  convert.PbSemestersToModel(semesters.Semesters),
-	}, nil
-}
-
-func (c *Controller) GetMajorInfo(ctx context.Context, id string) (*model.MajorInfo, error) {
-	major, err := c.academic.GetMajorById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbMajorToMajorInfo(major.GetMajor()), nil
-}
-
-func (c *Controller) GetSemesterInfo(ctx context.Context, id string) (*model.SemesterInfo, error) {
-	semester, err := c.academic.GetSemesterById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbSemesterToSemesterInfo(semester.GetSemester()), nil
-}
+// Student-related methods (GetMySemesters, GetMajorInfo, GetSemesterInfo)
+// have been moved to controller/student.go
 
 func (c *Controller) pbMajorToModel(resp *pb.GetMajorResponse) *model.Major {
 	if resp == nil {
@@ -269,4 +213,86 @@ func (c *Controller) GetSemesters(ctx context.Context, search model.SearchReques
 		return nil, err
 	}
 	return c.pbSemestersToModel(semesters), nil
+}
+
+// ============================================
+// RESOLVER HELPER METHODS
+// ============================================
+
+// GetMajorsByFacultyId returns all majors for a given faculty
+func (c *Controller) GetMajorsByFacultyId(ctx context.Context, facultyId string) ([]*model.Major, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "faculty_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{facultyId},
+				},
+			},
+		},
+	}
+
+	majors, err := c.academic.GetMajorsBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbMajorsToModel(majors.GetMajors()), nil
+}
+
+// GetStudentsBySemesterId returns all students for a given semester
+func (c *Controller) GetStudentsBySemesterId(ctx context.Context, semesterId string) ([]*model.Student, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{semesterId},
+				},
+			},
+		},
+	}
+
+	students, err := c.user.GetStudentsBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbStudentsToModel(students.GetStudents()), nil
+}
+
+// GetTeachersBySemesterId returns all teachers for a given semester
+func (c *Controller) GetTeachersBySemesterId(ctx context.Context, semesterId string) ([]*model.Teacher, error) {
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{semesterId},
+				},
+			},
+		},
+	}
+
+	teachers, err := c.user.GetTeachersBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTeachersToModel(teachers.GetTeachers()), nil
+}
+
+// GetSemesterById returns a semester by ID
+func (c *Controller) GetSemesterById(ctx context.Context, id string) (*model.Semester, error) {
+	semester, err := c.academic.GetSemesterById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbSemesterToModel(semester.GetSemester()), nil
 }

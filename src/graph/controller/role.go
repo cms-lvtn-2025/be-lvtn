@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	pb "thaily/proto/role"
+	"thaily/src/graph/convert"
 	"thaily/src/graph/model"
 	"time"
 )
@@ -83,4 +84,17 @@ func (c *Controller) GetRole(ctx context.Context, teacherId string) ([]*model.Ro
 	}
 
 	return c.pbRoleToModel(ctx, role), nil
+}
+
+// ============================================
+// RESOLVER HELPER METHODS
+// ============================================
+
+// GetRolesByTeacherId returns all roles for a given teacher
+func (c *Controller) GetRolesByTeacherId(ctx context.Context, teacherId string) ([]*model.RoleSystem, error) {
+	roles, err := c.role.GetAllRoleByTeacherId(ctx, teacherId)
+	if err != nil {
+		return nil, err
+	}
+	return convert.PbRoleSystemsToModel(roles.GetRoleSystems()), nil
 }

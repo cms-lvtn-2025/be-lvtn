@@ -8,11 +8,12 @@ import {
   FlowOpts,
 } from "bullmq";
 import IORedis from "ioredis";
-import { IService, IWorkflow, IWorkflowModel } from "../database/models";
+import { IService, IWorkflow, IWorkflowModel, WorkflowModel } from "../database/models";
 import { loadGrpcClient } from "./grpc/client-loader";
 import vm from "node:vm";
 // Redis connection
 import { v4 as uuidv4 } from "uuid";
+import { options } from "pdfkit";
 
 const redisConnection = new IORedis({
   host: process.env.REDIS_HOST || "localhost",
@@ -203,7 +204,7 @@ export class ServiceQueueManager {
       },
     });
 
-    
+
     // Tạo Worker với MongoDB model
     const worker = new Worker<ServiceJobData>(
       queueName,
@@ -391,14 +392,15 @@ export class ServiceQueueManager {
    */
   async addJob(
     serviceName: string,
-    data: ServiceJobData
+    data: ServiceJobData,
+    options?: JobsOptions
   ): Promise<Job<ServiceJobData>> {
     const queueInfo = this.queues.get(serviceName);
     if (!queueInfo) {
       throw new Error(`Queue for service ${serviceName} not found`);
     }
 
-    const job = await queueInfo.queue.add("grpc-call", data);
+    const job = await queueInfo.queue.add("grpc-call", data, options);
     console.log(`📝 Added job ${job.id} to ${serviceName} queue`);
     return job;
   }
@@ -450,12 +452,7 @@ export class QueueService {
     serviceName: string,
     method: string,
     params: any,
-    _options?: {
-      jobId?: string;
-      delay?: number;
-      priority?: number;
-      attempts?: number;
-    }
+    options?: JobsOptions
   ): Promise<Job<ServiceJobData>> {
     const jobData: ServiceJobData = {
       method,
@@ -464,9 +461,10 @@ export class QueueService {
         serviceName,
         createdAt: new Date().toISOString(),
       },
+      
     };
 
-    const job = await serviceQueueManager.addJob(serviceName, jobData);
+    const job = await serviceQueueManager.addJob(serviceName, jobData, options);
 
     console.log(`📝 Created job ${job.id} for ${serviceName}.${method}`);
     return job;
@@ -489,6 +487,7 @@ export class QueueService {
         createJobWithChildren: this.createJobWithChildren.bind(this),
         uuidv4,
         Date,
+        findById: WorkflowModel.findById.bind(WorkflowModel),
       };
 
       const script = new vm.Script(`

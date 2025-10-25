@@ -6,19 +6,35 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
 
+// ============================================
+// STUDENT RESOLVERS - Nested Fields
+// ============================================
+
 // Enrollments is the resolver for the enrollments field.
 func (r *studentResolver) Enrollments(ctx context.Context, obj *model.Student) ([]*model.Enrollment, error) {
-	panic(fmt.Errorf("not implemented: Enrollments - enrollments"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.EnrollmentByStudentId != nil {
+		return loaders.EnrollmentByStudentId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetEnrollmentsByStudentId(ctx, obj.ID)
 }
+
+// ============================================
+// TEACHER RESOLVERS - Nested Fields
+// ============================================
 
 // Roles is the resolver for the roles field.
 func (r *teacherResolver) Roles(ctx context.Context, obj *model.Teacher) ([]*model.RoleSystem, error) {
-	panic(fmt.Errorf("not implemented: Roles - roles"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.RolesByTeacherId != nil {
+		return loaders.RolesByTeacherId.Load(ctx, obj.ID)
+	}
+	return r.Ctrl.GetRolesByTeacherId(ctx, obj.ID)
 }
 
 // Student returns generated.StudentResolver implementation.

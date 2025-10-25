@@ -1,12 +1,19 @@
 import dotenv from "dotenv";
 import DatabaseConnection from "./database/connection";
-import { MinioConfigModel, ServiceModel, WorkflowModel } from "./database/models";
+import {
+  MinioConfigModel,
+  ServiceModel,
+  WorkflowModel,
+} from "./database/models";
 import { healthCheckAllServices } from "./queue/grpc";
 import { initBullBoard, createBullBoardApp } from "./ui/bull-board";
 import { queueService, serviceQueueManager } from "./queue/queue";
 import { v4 as uuidv4 } from "uuid";
-import cron from 'node-cron';
+import cron from "node-cron";
 import { MinioService } from "./queue/minio";
+import CronJobModel from "./database/models/cronjob.model";
+import { options } from "pdfkit";
+import { initializeCronJobs, cleanupCronJobs } from "./queue/cronjob-init";
 
 // Load environment variables
 dotenv.config();
@@ -34,7 +41,6 @@ async function main() {
     console.log(
       `\n🔧 Creating queues for ${servicesToQueue.length} healthy service(s)...`
     );
-  
 
     const queues = servicesToQueue.map((service) => {
       return serviceQueueManager.createServiceQueue(service as any);
@@ -52,11 +58,11 @@ async function main() {
 
     const queueWorkflow =
       serviceQueueManager.createServiceWorkflowQueue(WorkflowModel);
-    
-    const MinioConfig = await MinioConfigModel.find()
+
+    const MinioConfig = await MinioConfigModel.find();
     if (MinioConfig && MinioConfig.length > 0) {
       for (const config of MinioConfig) {
-        const service = new MinioService(config)
+        const service = new MinioService(config);
         const queueMinio = serviceQueueManager.registerStaticQueue(
           `MINIO_SERVICE_${config._id}`,
           service,
@@ -69,8 +75,12 @@ async function main() {
       }
     }
     queues.push(queueWorkflow);
+
     // Khởi tạo Bull Board UI với tất cả queues
     initBullBoard(queues);
+
+    // Khởi tạo CronJobs (xóa old jobs, tạo lại từ database)
+    await initializeCronJobs();
 
     // Start Bull Board UI
     const bullBoardApp = createBullBoardApp();
@@ -87,52 +97,86 @@ async function main() {
     //   await queueService.createJobWithChildren(WorkflowData.parentServiceName, WorkflowData.parentMethod, WorkflowData.parentParams, WorkflowData.children, WorkflowData.options);
     // }
     // Example: Thêm test job vào FILE_SERVICE queue
-    console.log("\n📝 Adding test job to FILE_SERVICE...");
+    // console.log("\n📝 Adding test job to FILE_SERVICE...");
     const { v4: uuidv4 } = require("uuid");
-    const childJobId2 = uuidv4();
-    const nameService = "FILE_SERVICE";
 
-    console.log("Child Job ID:", childJobId2);
+    // CronJobModel.watch().on("change", async (change) => {
+    //   console.log("CronJob collection changed:", change);
+    //   if (
+    //     change.operationType === "insert" ||
+    //     change.operationType === "update" ||
+    //     change.operationType === "replace" ||
+    //     change.operationType === "delete"
+    //   ) {
+    //     const cronJobId = change.documentKey._id;
+    //     const cronJob = await CronJobModel.findById(cronJobId);
+    //     if (cronJob && cronJob.enabled) {
+    //       // type update replace => xóa cronjob củ, tạo cái mới
+    //       // type insert => tạo mới
+    //       // type delete => xóa cronjob
+    //       if (
+    //         change.operationType === "update" ||
+    //         change.operationType === "replace"
+    //       ) {
+    //         if (cronJob.idJobCureent) {
+    //           console.log(
+    //             `Removing existing job with ID: ${cronJob.idJobCureent}`
+    //           );
+    //           await queueService.cancelJob("QUEUE", cronJob.idJobCureent);
+    //           await CreateCronJob(cronJob);
+    //         }
+    //       } else if (change.operationType === "insert") {
+    //         await CreateCronJob(cronJob);
+    //       } else if (change.operationType === "delete") {
+    //         if (cronJob.idJobCureent) {
+    //           console.log(
+    //             `Removing existing job with ID: ${cronJob.idJobCureent}`
+    //           );
+    //           await queueService.cancelJob("QUEUE", cronJob.idJobCureent);
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
+   
 
-    cron.schedule("* * * * *", async () => {
-      await queueService.createJobWithChildren(
-      "QUEUE",
-      "EnJob",
-      {
-        // Reference kết quả từ child job (custom syntax với @bull:)
-        id: `@bull:${nameService}:${childJobId2}.file.id`,
-        status: "APPROVED",
-      },
-      [
-        {
-          serviceName: "QUEUE",
-          method: "evaluateJob",
-          params: {
-            code: `
-                console.log("xxxxxxxxxxxxxxxxxxxxx", returnValue)
-                await createJobWithChildren(returnValue.parentServiceName, returnValue.parentMethod, returnValue.parentParams, returnValue.children, returnValue.options);
-                return "Successfully created child jobs for each file."
-              `,
-            returnValue: `@__id__0:`,
-          },
-          children: [
-            {
-              serviceName: "MONGODB_WORKFLOW",
-              method: "findById",
-              params: "68f9d792133085ee4f6900b4",
-            },
-          ],
-        },
-      ],
-      {
-        repeat: {
-          pattern: "* * * * *", // Chạy mỗi phút
-        },
-      }
-    );
-    })
-
-    
+    // cron.schedule("* * * * *", async () => {
+    //   await queueService.createJobWithChildren(
+    //   "QUEUE",
+    //   "EnJob",
+    //   {
+    //     // Reference kết quả từ child job (custom syntax với @bull:)
+    //     id: `@bull:${nameService}:${childJobId2}.file.id`,
+    //     status: "APPROVED",
+    //   },
+    //   [
+    //     {
+    //       serviceName: "QUEUE",
+    //       method: "evaluateJob",
+    //       params: {
+    //         code: `
+    //             console.log("xxxxxxxxxxxxxxxxxxxxx", returnValue)
+    //             await createJobWithChildren(returnValue.parentServiceName, returnValue.parentMethod, returnValue.parentParams, returnValue.children, returnValue.options);
+    //             return "Successfully created child jobs for each file."
+    //           `,
+    //         returnValue: `@__id__0:`,
+    //       },
+    //       children: [
+    //         {
+    //           serviceName: "MONGODB_WORKFLOW",
+    //           method: "findById",
+    //           params: "68f9d792133085ee4f6900b4",
+    //         },
+    //       ],
+    //     },
+    //   ],
+    //   {
+    //     repeat: {
+    //       pattern: "* * * * *", // Chạy mỗi phút
+    //     },
+    //   }
+    // );
+    // })
 
     console.log("\n✨ Application is running...");
     console.log(`   - ${servicesToQueue.length} service queue(s) active`);
@@ -147,6 +191,7 @@ async function main() {
 // Handle graceful shutdown
 process.on("SIGINT", async () => {
   console.log("\n\n🛑 Shutting down gracefully...");
+  await cleanupCronJobs();
   await queueService.close();
   await serviceQueueManager.closeAll();
   await DatabaseConnection.disconnect();
@@ -155,6 +200,7 @@ process.on("SIGINT", async () => {
 
 process.on("SIGTERM", async () => {
   console.log("\n\n🛑 Shutting down gracefully...");
+  await cleanupCronJobs();
   await queueService.close();
   await serviceQueueManager.closeAll();
   await DatabaseConnection.disconnect();

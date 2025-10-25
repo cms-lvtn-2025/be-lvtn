@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"thaily/src/auth"
-	"thaily/src/pkg/response"
+	"thaily/src/response"
 
 	"github.com/gin-gonic/gin"
 )

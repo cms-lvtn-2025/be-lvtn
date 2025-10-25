@@ -6,19 +6,40 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"thaily/src/graph/dataloader"
 	"thaily/src/graph/generated"
 	"thaily/src/graph/model"
 )
 
+// ============================================
+// ROLE SYSTEM RESOLVERS - Nested Fields
+// ============================================
+
 // Teacher is the resolver for the teacher field.
 func (r *roleSystemResolver) Teacher(ctx context.Context, obj *model.RoleSystem) (*model.Teacher, error) {
-	panic(fmt.Errorf("not implemented: Teacher - teacher"))
+	if obj.TeacherCode == nil {
+		return nil, nil
+	}
+
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.TeacherById != nil {
+		teacher, err := loaders.TeacherById.Load(ctx, *obj.TeacherCode)
+		if err != nil {
+			return nil, err
+		}
+		return teacher, nil
+	}
+
+	return r.Ctrl.GetTeacherById(ctx, *obj.TeacherCode)
 }
 
 // Semester is the resolver for the semester field.
 func (r *roleSystemResolver) Semester(ctx context.Context, obj *model.RoleSystem) (*model.Semester, error) {
-	panic(fmt.Errorf("not implemented: Semester - semester"))
+	loaders := dataloader.GetLoaders(ctx)
+	if loaders != nil && loaders.SemesterById != nil {
+		return loaders.SemesterById.Load(ctx, obj.SemesterCode)
+	}
+	return r.Ctrl.GetSemesterById(ctx, obj.SemesterCode)
 }
 
 // RoleSystem returns generated.RoleSystemResolver implementation.

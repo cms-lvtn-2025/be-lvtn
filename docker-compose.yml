@@ -1,102 +1,237 @@
 version: '3.8'
 
 services:
+  # MySQL Database
   mysql:
     image: mysql:8.0
     container_name: thesis_mysql
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: thesis_management
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
     ports:
-      - "3306:3306"
+      - "${DB_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - thesis_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: thesis_redis
+    env_file:
+      - .env
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - thesis_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB
+  mongodb:
+    image: mongo:7
+    container_name: thesis_mongodb
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - thesis_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: thesis_minio
+    env_file:
+      - .env
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MIN_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MIN_SECRET_KEY}
+    ports:
+      - "${MIN_PORT}:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - thesis_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Academic Service
   academic:
     build:
       context: .
       dockerfile: docker/academic.Dockerfile
     container_name: academic_service
-    ports:
-      - "50051:50051"
+    env_file:
+      - env/academic.env
     environment:
       - DB_HOST=mysql
+      - DB_PORT=3306
+      - PROJECT_ROOT=/app
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./env:/home/thaily/code/heheheh_be/env:ro
+      - ./logs:/app/logs
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - thesis_network
+    restart: unless-stopped
 
+  # Council Service
   council:
     build:
       context: .
       dockerfile: docker/council.Dockerfile
     container_name: council_service
-    ports:
-      - "50052:50052"
+    env_file:
+      - env/council.env
     environment:
       - DB_HOST=mysql
+      - DB_PORT=3306
+      - PROJECT_ROOT=/app
+    ports:
+      - "50052:50052"
+    volumes:
+      - ./env:/home/thaily/code/heheheh_be/env:ro
+      - ./logs:/app/logs
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - thesis_network
+    restart: unless-stopped
 
+  # File Service
   file:
     build:
       context: .
       dockerfile: docker/file.Dockerfile
     container_name: file_service
-    ports:
-      - "50053:50053"
+    env_file:
+      - env/file.env
     environment:
       - DB_HOST=mysql
+      - DB_PORT=3306
+      - PROJECT_ROOT=/app
+    ports:
+      - "50053:50053"
+    volumes:
+      - ./env:/home/thaily/code/heheheh_be/env:ro
+      - ./logs:/app/logs
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     networks:
       - thesis_network
+    restart: unless-stopped
 
+  # Role Service
   role:
     build:
       context: .
       dockerfile: docker/role.Dockerfile
     container_name: role_service
-    ports:
-      - "50054:50054"
+    env_file:
+      - env/role.env
     environment:
       - DB_HOST=mysql
+      - DB_PORT=3306
+      - PROJECT_ROOT=/app
+    ports:
+      - "50054:50054"
+    volumes:
+      - ./env:/home/thaily/code/heheheh_be/env:ro
+      - ./logs:/app/logs
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - thesis_network
+    restart: unless-stopped
 
+  # Thesis Service
   thesis:
     build:
       context: .
       dockerfile: docker/thesis.Dockerfile
     container_name: thesis_service
-    ports:
-      - "50055:50055"
+    env_file:
+      - env/thesis.env
     environment:
       - DB_HOST=mysql
+      - DB_PORT=3306
+      - PROJECT_ROOT=/app
+    ports:
+      - "50055:50055"
+    volumes:
+      - ./env:/home/thaily/code/heheheh_be/env:ro
+      - ./logs:/app/logs
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - thesis_network
+    restart: unless-stopped
 
+  # User Service
   user:
     build:
       context: .
       dockerfile: docker/user.Dockerfile
     container_name: user_service
-    ports:
-      - "50056:50056"
+    env_file:
+      - env/user.env
     environment:
       - DB_HOST=mysql
+      - DB_PORT=3306
+      - PROJECT_ROOT=/app
+    ports:
+      - "50056:50056"
+    volumes:
+      - ./env:/home/thaily/code/heheheh_be/env:ro
+      - ./logs:/app/logs
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - thesis_network
+    restart: unless-stopped
 
 networks:
   thesis_network:
@@ -104,3 +239,6 @@ networks:
 
 volumes:
   mysql_data:
+  redis_data:
+  mongodb_data:
+  minio_data:

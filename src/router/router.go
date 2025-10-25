@@ -116,6 +116,8 @@ func dataloaderMiddleware(c *container.Container) gin.HandlerFunc {
 			c.Clients.Thesis,
 			c.Clients.Council,
 			c.Clients.Academic,
+			c.Clients.Role,
+			c.Clients.File,
 		)
 
 		// Inject loaders into context
