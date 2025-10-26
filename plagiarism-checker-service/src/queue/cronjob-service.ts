@@ -137,7 +137,7 @@ export class CronJobService {
       const queueInfo = serviceQueueManager.getServiceQueue("QUEUE");
       if (queueInfo) {
         const repeatableJobs = await queueInfo.queue.getRepeatableJobs();
-        console.log(`   Found ${repeatableJobs.length} repeatable jobs in queue`);
+        // console.log(`   Found ${repeatableJobs.length} repeatable jobs in queue`);
 
         for (const job of repeatableJobs) {
           console.log(`   Checking job: pattern=${job.pattern}, id=${job.id}, key=${job.key}`);
