@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"thaily/src/service/pkg/tls"
 	"time"
 
-	pbCommon "thaily/proto/common"
 	pb "thaily/proto/academic"
-	"thaily/src/pkg/tls"
+	pbCommon "thaily/proto/common"
 
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"

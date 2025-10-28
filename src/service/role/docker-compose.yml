@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  role:
+    build:
+      context: ../../..
+      dockerfile: src/service/role/Dockerfile
+    image: thaily/lvtn-role:latest
+    container_name: role_service
+    env_file:
+      - role.env
+    ports:
+      - "50054:50054"
+    volumes:
+      - .:/app/service:ro
+      - ../../../logs:/app/logs
+    networks:
+      - role_network
+    restart: unless-stopped
+
+networks:
+  role_network:
+    driver: bridge

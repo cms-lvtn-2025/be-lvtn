@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"thaily/src/config"
+	"thaily/src/server/config"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  thesis:
+    build:
+      context: ../../..
+      dockerfile: src/service/thesis/Dockerfile
+    image: thaily/lvtn-thesis:latest
+    container_name: thesis_service
+    env_file:
+      - thesis.env
+    ports:
+      - "50055:50055"
+    volumes:
+      - .:/app/service:ro
+      - ../../../logs:/app/logs
+    networks:
+      - thesis_network
+    restart: unless-stopped
+
+networks:
+  thesis_network:
+    driver: bridge

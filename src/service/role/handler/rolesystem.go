@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 	pb "thaily/proto/role"
-	"thaily/src/pkg/helper"
-	"thaily/src/pkg/logger"
+	"thaily/src/service/pkg/helper"
+	"thaily/src/service/pkg/logger"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"

@@ -1,0 +1,1 @@
+{"duration_ms":9,"method":"/council.CouncilService/ListCouncils","queries":[],"request_id":"17257aaa-ed17-40e9-916b-e4706d48624e","service_name":"council-service","success":true,"timestamp":"2025-10-20T10:24:38+07:00","trace":{"function_name":"ListCouncils","duration_ms":9}}

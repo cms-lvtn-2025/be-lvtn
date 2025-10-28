@@ -16,8 +16,16 @@ go.work
 
 # Environment variables
 .env
+*.env
+!*.env.example
 env/*.env
 !env/*.env.example
+
+# TLS Certificates and Keys (SECURITY)
+*.key
+*.crt
+*.cnf
+*.pem
 
 # IDE
 .idea/
@@ -31,8 +39,11 @@ src/service/*/role
 src/service/*/thesis
 src/service/*/user
 
-*.md
-*.yml
-
+# Logs
 *.log
-*.json
+logs/
+
+# Don't ignore important config files
+!.github/workflows/*.yml
+!docker-compose*.yml
+!**/docker-compose*.yml

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"thaily/src/config"
+	"thaily/src/server/config"
 	"time"
 
 	"github.com/redis/go-redis/v9"

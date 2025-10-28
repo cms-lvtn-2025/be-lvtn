@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-
-	"thaily/src/config"
-	"thaily/src/pkg/container"
-	"thaily/src/router"
+	"thaily/src/server/config"
+	"thaily/src/server/router"
+	"thaily/src/service/pkg/container"
 )
 
 func main() {

@@ -4,11 +4,11 @@ import (
 	"log"
 	"net"
 	"os"
+	"thaily/src/service/pkg/database"
+	logger2 "thaily/src/service/pkg/logger"
+	"thaily/src/service/pkg/tls"
 
 	pb "thaily/proto/file"
-	"thaily/src/pkg/database"
-	"thaily/src/pkg/logger"
-	"thaily/src/pkg/tls"
 	"thaily/src/service/file/handler"
 
 	"github.com/joho/godotenv"
@@ -17,15 +17,15 @@ import (
 
 func main() {
 	// Load environment variables
-	if err := godotenv.Load("/home/thaily/code/heheheh_be/env/file.env"); err != nil {
+	if err := godotenv.Load("./file.env"); err != nil {
 		log.Printf("Warning: .env file not found: %v", err)
 	}
 
 	// Initialize file logger
-	if err := logger.InitFileLogger("file-service", "log"); err != nil {
+	if err := logger2.InitFileLogger("file-service", "log"); err != nil {
 		log.Fatalf("Failed to initialize file logger: %v", err)
 	}
-	defer logger.GetFileLogger().Close()
+	defer logger2.GetFileLogger().Close()
 
 	// Initialize database
 	if err := database.InitDB(); err != nil {
@@ -57,7 +57,7 @@ func main() {
 
 	grpcServer := grpc.NewServer(
 		grpc.Creds(creds),
-		grpc.UnaryInterceptor(logger.UnaryServerInterceptor()),
+		grpc.UnaryInterceptor(logger2.UnaryServerInterceptor()),
 	)
 
 	h := handler.NewHandler(database.GetDB())

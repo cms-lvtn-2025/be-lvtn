@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ../..
+      dockerfile: src/server/Dockerfile
+    image: thaily/lvtn-server:latest
+    container_name: graphql_gateway
+    env_file:
+      - .server.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./certs:/app/certs:ro
+      - ../../logs:/app/logs
+    networks:
+      - server_network
+    depends_on:
+      - academic
+      - council
+      - file
+      - role
+      - thesis
+      - user
+    restart: unless-stopped
+
+  # Service dependencies (external references)
+  academic:
+    image: thaily/lvtn-academic:latest
+    container_name: academic_service
+    networks:
+      - server_network
+    external: true
+
+  council:
+    image: thaily/lvtn-council:latest
+    container_name: council_service
+    networks:
+      - server_network
+    external: true
+
+  file:
+    image: thaily/lvtn-file:latest
+    container_name: file_service
+    networks:
+      - server_network
+    external: true
+
+  role:
+    image: thaily/lvtn-role:latest
+    container_name: role_service
+    networks:
+      - server_network
+    external: true
+
+  thesis:
+    image: thaily/lvtn-thesis:latest
+    container_name: thesis_service
+    networks:
+      - server_network
+    external: true
+
+  user:
+    image: thaily/lvtn-user:latest
+    container_name: user_service
+    networks:
+      - server_network
+    external: true
+
+networks:
+  server_network:
+    driver: bridge

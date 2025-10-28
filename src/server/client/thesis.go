@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"thaily/src/service/pkg/tls"
 	"time"
 
 	pbCommon "thaily/proto/common"
 	pb "thaily/proto/thesis"
-	"thaily/src/pkg/tls"
 
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
@@ -22,21 +22,21 @@ type GRPCthesis struct {
 
 const (
 	// Cache TTL configurations
-	topicCacheTTL               = 5 * time.Minute
-	enrollmentCacheTTL          = 2 * time.Minute
-	midtermCacheTTL             = 10 * time.Minute
-	finalCacheTTL               = 10 * time.Minute
-	gradeReviewCacheTTL         = 10 * time.Minute
-	topicCouncilCacheTTL        = 5 * time.Minute
+	topicCacheTTL                  = 5 * time.Minute
+	enrollmentCacheTTL             = 2 * time.Minute
+	midtermCacheTTL                = 10 * time.Minute
+	finalCacheTTL                  = 10 * time.Minute
+	gradeReviewCacheTTL            = 10 * time.Minute
+	topicCouncilCacheTTL           = 5 * time.Minute
 	topicCouncilSupervisorCacheTTL = 5 * time.Minute
 
 	// Cache key prefixes
-	topicCachePrefix               = "thesis:topic:"
-	enrollmentCachePrefix          = "thesis:enrollment:"
-	midtermCachePrefix             = "thesis:midterm:"
-	finalCachePrefix               = "thesis:final:"
-	gradeReviewCachePrefix         = "thesis:grade_review:"
-	topicCouncilCachePrefix        = "thesis:topic_council:"
+	topicCachePrefix                  = "thesis:topic:"
+	enrollmentCachePrefix             = "thesis:enrollment:"
+	midtermCachePrefix                = "thesis:midterm:"
+	finalCachePrefix                  = "thesis:final:"
+	gradeReviewCachePrefix            = "thesis:grade_review:"
+	topicCouncilCachePrefix           = "thesis:topic_council:"
 	topicCouncilSupervisorCachePrefix = "thesis:topic_council_supervisor:"
 )
 

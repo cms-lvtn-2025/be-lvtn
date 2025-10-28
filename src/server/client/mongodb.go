@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"thaily/src/config"
+	"thaily/src/server/config"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"

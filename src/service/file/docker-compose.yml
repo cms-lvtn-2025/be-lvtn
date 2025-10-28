@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  file:
+    build:
+      context: ../../..
+      dockerfile: src/service/file/Dockerfile
+    image: thaily/lvtn-file:latest
+    container_name: file_service
+    env_file:
+      - file.env
+    ports:
+      - "50053:50053"
+    volumes:
+      - .:/app/service:ro
+      - ../../../logs:/app/logs
+    networks:
+      - file_network
+    restart: unless-stopped
+
+networks:
+  file_network:
+    driver: bridge

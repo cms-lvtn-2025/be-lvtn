@@ -1,0 +1,4 @@
+*.env
+*.cnf
+*.crt
+*.key

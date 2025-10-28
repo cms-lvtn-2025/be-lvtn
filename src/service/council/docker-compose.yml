@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  council:
+    build:
+      context: ../../..
+      dockerfile: src/service/council/Dockerfile
+    image: thaily/lvtn-council:latest
+    container_name: council_service
+    env_file:
+      - council.env
+    ports:
+      - "50052:50052"
+    volumes:
+      - .:/app/service:ro
+      - ../../../logs:/app/logs
+    networks:
+      - council_network
+    restart: unless-stopped
+
+networks:
+  council_network:
+    driver: bridge
