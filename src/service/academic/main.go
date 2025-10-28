@@ -17,7 +17,7 @@ import (
 
 func main() {
 	// Load environment variables
-	if err := godotenv.Load("/home/thaily/code/heheheh_be/env/academic.env"); err != nil {
+	if err := godotenv.Load("./academic.env"); err != nil {
 		log.Printf("Warning: .env file not found: %v", err)
 	}
 	// Initialize file logger
