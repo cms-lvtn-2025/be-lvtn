@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"thaily/src/graph/helper"
+	"thaily/src/server/graph/helper"
 	"thaily/src/server/config"
 
 	"github.com/gin-gonic/gin"

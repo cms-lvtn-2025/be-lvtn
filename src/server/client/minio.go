@@ -38,7 +38,7 @@ func (s *ServiceMinIo) ensureBucket() error {
 }
 
 func NewServiceMinIo(cfg config.MinioConfig) (*ServiceMinIo, error) {
-	client, err := minio.New(cfg.Endpont, &minio.Options{
+	client, err := minio.New(cfg.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(cfg.AccessKey, cfg.SecretKey, ""),
 		Secure: cfg.UseSSL,
 	})
@@ -74,11 +74,11 @@ func (s *ServiceMinIo) UploadFile(ctx context.Context, objectName string, reader
 	}
 
 	// Generate file URL
-	fileURL := fmt.Sprintf("%s/%s/%s", s.config.Endpont, bucketName, objectName)
+	fileURL := fmt.Sprintf("%s/%s/%s", s.config.Endpoint, bucketName, objectName)
 	if s.config.UseSSL {
-		fileURL = fmt.Sprintf("https://%s/%s/%s", s.config.Endpont, bucketName, objectName)
+		fileURL = fmt.Sprintf("https://%s/%s/%s", s.config.Endpoint, bucketName, objectName)
 	} else {
-		fileURL = fmt.Sprintf("http://%s/%s/%s", s.config.Endpont, bucketName, objectName)
+		fileURL = fmt.Sprintf("http://%s/%s/%s", s.config.Endpoint, bucketName, objectName)
 	}
 
 	log.Printf("File uploaded successfully: %s", fileURL)

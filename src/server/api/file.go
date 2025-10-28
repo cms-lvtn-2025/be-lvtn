@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
-	"thaily/src/graph/helper"
+	"thaily/src/server/graph/helper"
 	"thaily/src/server/response"
 	"time"
 
