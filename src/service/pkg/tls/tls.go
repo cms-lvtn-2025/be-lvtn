@@ -14,7 +14,7 @@ import (
 // For client certificates (typically in certs/clients/)
 func GetCertsPath() string {
 	// Development: use CERTS_PATH env var
-	if os.Getenv("CODE") == "Development" {
+	if os.Getenv("CODE") != "PRODUCTION" {
 		if certsPath := os.Getenv("CERTS_PATH"); certsPath != "" {
 			return certsPath
 		}
@@ -28,7 +28,7 @@ func GetCertsPath() string {
 // For server certificates (service-specific certs)
 func GetServiceCertsPath(serviceName string) string {
 	// Development: use SERVICE_CERT_PATH env var
-	if os.Getenv("CODE") == "Development" {
+	if os.Getenv("CODE") != "PRODUCTION" {
 		if certPath := os.Getenv("SERVICE_CERT_PATH"); certPath != "" {
 			return "../" + serviceName + certPath
 		}
@@ -41,7 +41,7 @@ func GetServiceCertsPath(serviceName string) string {
 // GetServiceCACertPath returns the path to CA certificate for service
 func GetServiceCACertPath(serviceName string) string {
 	// Development: use SERVICE_CA_CERT env var
-	if os.Getenv("CODE") == "Development" {
+	if os.Getenv("CODE") != "PRODUCTION" {
 		if caCertPath := os.Getenv("SERVICE_CA_CERT"); caCertPath != "" {
 			return "../" + serviceName + caCertPath + "/ca.crt"
 		}
