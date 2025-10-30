@@ -35,7 +35,7 @@ func LoadServerTLSCredentials(serviceName string) (credentials.TransportCredenti
 
 	// Try SERVICE_CERT_PATH env var first
 	if certPath := os.Getenv("SERVICE_CERT_PATH"); certPath != "" {
-		basePath = certPath
+		basePath = "../" + serviceName + certPath
 	} else if _, err := os.Stat("/app/service"); err == nil {
 		// Docker: mounted at /app/service
 		basePath = "/app/service"
@@ -58,7 +58,7 @@ func LoadServerTLSCredentials(serviceName string) (credentials.TransportCredenti
 
 	// Try SERVICE_CA_CERT env var first
 	if caCertPath := os.Getenv("SERVICE_CA_CERT"); caCertPath != "" {
-		caCert = caCertPath
+		caCert = "../" + serviceName + caCertPath + "/ca.crt"
 	} else if _, err := os.Stat("/app/service/ca.crt"); err == nil {
 		// Docker: ca.crt in service folder
 		caCert = "/app/service/ca.crt"
@@ -164,7 +164,7 @@ func VerifyCertificatesExist(serviceName string) error {
 
 	// Try SERVICE_CERT_PATH env var first
 	if certPath := os.Getenv("SERVICE_CERT_PATH"); certPath != "" {
-		basePath = certPath
+		basePath = "../" + serviceName + certPath
 	} else if _, err := os.Stat("/app/service"); err == nil {
 		// Docker: mounted at /app/service
 		basePath = "/app/service"
