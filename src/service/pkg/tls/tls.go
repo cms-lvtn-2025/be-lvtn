@@ -13,36 +13,48 @@ import (
 // GetCertsPath returns the path to certs directory
 // For client certificates (typically in certs/clients/)
 func GetCertsPath() string {
-	// Try environment variable first
-	if certsPath := os.Getenv("CERTS_PATH"); certsPath != "" {
-		return certsPath
+	// Development: use CERTS_PATH env var
+	if os.Getenv("CODE") == "Development" {
+		if certsPath := os.Getenv("CERTS_PATH"); certsPath != "" {
+			return certsPath
+		}
 	}
 
-	// Docker default
-	if _, err := os.Stat("/app/certs"); err == nil {
-		return "/app/certs"
+	// Production: use Docker default
+	return "/app/certs"
+}
+
+// GetServiceCertsPath returns the path to service certificates directory
+// For server certificates (service-specific certs)
+func GetServiceCertsPath(serviceName string) string {
+	// Development: use SERVICE_CERT_PATH env var
+	if os.Getenv("CODE") == "Development" {
+		if certPath := os.Getenv("SERVICE_CERT_PATH"); certPath != "" {
+			return "../" + serviceName + certPath
+		}
 	}
 
-	// Local fallback
-	return filepath.Join(os.Getenv("HOME"), "code", "heheheh_be", "certs")
+	// Production: use Docker path
+	return "/app/service"
+}
+
+// GetServiceCACertPath returns the path to CA certificate for service
+func GetServiceCACertPath(serviceName string) string {
+	// Development: use SERVICE_CA_CERT env var
+	if os.Getenv("CODE") == "Development" {
+		if caCertPath := os.Getenv("SERVICE_CA_CERT"); caCertPath != "" {
+			return "../" + serviceName + caCertPath + "/ca.crt"
+		}
+	}
+
+	// Production: use Docker path
+	return "/app/service/ca.crt"
 }
 
 // LoadServerTLSCredentials loads server TLS credentials for mTLS
 // serviceName should be one of: user, council, thesis, academic, role, file
 func LoadServerTLSCredentials(serviceName string) (credentials.TransportCredentials, error) {
-	// Get cert path from env var or use default
-	var basePath string
-
-	// Try SERVICE_CERT_PATH env var first
-	if certPath := os.Getenv("SERVICE_CERT_PATH"); certPath != "" {
-		basePath = "../" + serviceName + certPath
-	} else if _, err := os.Stat("/app/service"); err == nil {
-		// Docker: mounted at /app/service
-		basePath = "/app/service"
-	} else {
-		// Local fallback - certs in src/service/{service_name}/
-		basePath = filepath.Join(os.Getenv("HOME"), "code", "heheheh_be", "src", "service", serviceName)
-	}
+	basePath := GetServiceCertsPath(serviceName)
 
 	// Load server certificate and private key
 	serverCert := filepath.Join(basePath, fmt.Sprintf("%s-server.crt", serviceName))
@@ -54,18 +66,7 @@ func LoadServerTLSCredentials(serviceName string) (credentials.TransportCredenti
 	}
 
 	// Load CA certificate for client verification
-	var caCert string
-
-	// Try SERVICE_CA_CERT env var first
-	if caCertPath := os.Getenv("SERVICE_CA_CERT"); caCertPath != "" {
-		caCert = "../" + serviceName + caCertPath + "/ca.crt"
-	} else if _, err := os.Stat("/app/service/ca.crt"); err == nil {
-		// Docker: ca.crt in service folder
-		caCert = "/app/service/ca.crt"
-	} else {
-		// Local: ca.crt in certs/ca/ folder
-		caCert = filepath.Join(os.Getenv("HOME"), "code", "heheheh_be", "certs", "ca", "ca.crt")
-	}
+	caCert := GetServiceCACertPath(serviceName)
 
 	caPool := x509.NewCertPool()
 
@@ -159,19 +160,7 @@ func LoadClientTLSCredentialsInsecure(serverName string) (credentials.TransportC
 
 // VerifyCertificatesExist checks if required certificate files exist
 func VerifyCertificatesExist(serviceName string) error {
-	// Get cert path from env var or use default
-	var basePath string
-
-	// Try SERVICE_CERT_PATH env var first
-	if certPath := os.Getenv("SERVICE_CERT_PATH"); certPath != "" {
-		basePath = "../" + serviceName + certPath
-	} else if _, err := os.Stat("/app/service"); err == nil {
-		// Docker: mounted at /app/service
-		basePath = "/app/service"
-	} else {
-		// Local fallback - certs in src/service/{service_name}/
-		basePath = filepath.Join(os.Getenv("HOME"), "code", "heheheh_be", "src", "service", serviceName)
-	}
+	basePath := GetServiceCertsPath(serviceName)
 
 	// Check service certificates
 	if serviceName != "" {
