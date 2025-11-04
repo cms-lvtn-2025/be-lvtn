@@ -46,32 +46,32 @@ func initClients(cfg *config.Config) (*Clients, error) {
 		return nil, fmt.Errorf("redis client: %w", err)
 	}
 
-	academic, err := client.NewGRPCAcadamicClient(fmt.Sprintf("%s:%s", cfg.Services.Academic.Endpont, cfg.Services.Academic.Port), redis.GetClient())
+	academic, err := client.NewGRPCAcadamicClient(fmt.Sprintf("%s:%s", cfg.Services.Academic.Endpoint, cfg.Services.Academic.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("academic client: %w", err)
 	}
 
-	council, err := client.NewGRPCCouncil(fmt.Sprintf("%s:%s", cfg.Services.Council.Endpont, cfg.Services.Council.Port), redis.GetClient())
+	council, err := client.NewGRPCCouncil(fmt.Sprintf("%s:%s", cfg.Services.Council.Endpoint, cfg.Services.Council.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("council client: %w", err)
 	}
 
-	file, err := client.NewGRPCfile(fmt.Sprintf("%s:%s", cfg.Services.File.Endpont, cfg.Services.File.Port), redis.GetClient())
+	file, err := client.NewGRPCfile(fmt.Sprintf("%s:%s", cfg.Services.File.Endpoint, cfg.Services.File.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("file client: %w", err)
 	}
 
-	role, err := client.NewGRPCRole(fmt.Sprintf("%s:%s", cfg.Services.Role.Endpont, cfg.Services.Role.Port), redis.GetClient())
+	role, err := client.NewGRPCRole(fmt.Sprintf("%s:%s", cfg.Services.Role.Endpoint, cfg.Services.Role.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("role client: %w", err)
 	}
 
-	thesis, err := client.NewGRPCthesis(fmt.Sprintf("%s:%s", cfg.Services.Thesis.Endpont, cfg.Services.Thesis.Port), redis.GetClient())
+	thesis, err := client.NewGRPCthesis(fmt.Sprintf("%s:%s", cfg.Services.Thesis.Endpoint, cfg.Services.Thesis.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("thesis client: %w", err)
 	}
 
-	user, err := client.NewGRPCUser(fmt.Sprintf("%s:%s", cfg.Services.User.Endpont, cfg.Services.User.Port), redis.GetClient())
+	user, err := client.NewGRPCUser(fmt.Sprintf("%s:%s", cfg.Services.User.Endpoint, cfg.Services.User.Port), redis.GetClient())
 	if err != nil {
 		return nil, fmt.Errorf("user client: %w", err)
 	}

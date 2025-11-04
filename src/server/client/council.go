@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"thaily/src/service/pkg/tls"
+	"thaily/src/server/pkg/tls"
 	"time"
 
 	pbCommon "thaily/proto/common"
