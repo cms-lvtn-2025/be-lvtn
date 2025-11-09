@@ -152,7 +152,7 @@ router.get('/workflow/editor/:id?', async (req: Request, res: Response) => {
           service: q.service
         }))
     };
-
+    console.log(servicesList.static);
     res.render('workflow-editor', {
       title: 'Workflow Editor',
       currentTab: 'workflow',

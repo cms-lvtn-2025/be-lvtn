@@ -80,18 +80,46 @@ export class MinioService {
 
   /**
    * Upload file từ Buffer vào MinIO
-   * @param buffer - Buffer của file cần upload
-   * @param filename - Tên file trong MinIO
-   * @param contentType - Content type của file (default: application/octet-stream)
+   * @param params - { buffer: Buffer, filename: string, folder?: string, contentType?: string }
    * @returns Object name (path) trong MinIO
    */
   public async uploadBuffer(
-    buffer: Buffer,
-    filename: string,
-    contentType: string = 'application/octet-stream'
+    params: {
+      buffer: Buffer | any;
+      filename: string;
+      folder?: {
+        afterSemester?: string;
+        semester?: string;
+        beforeSemester?: string;
+      };
+      contentType?: string;
+    }
   ): Promise<string> {
     try {
-      const objectName = `${Date.now()}-${filename}`;
+      let { buffer, filename, folder, contentType = 'application/octet-stream' } = params;
+
+      if (!(buffer instanceof Buffer)) {
+        buffer = Buffer.from(buffer);
+      }
+
+      // Build object name with optional folder prefix
+      let objectName: string;
+      if (folder) {
+        // Normalize folder path (remove leading/trailing slashes)
+        const normalizedFolder = [
+          folder.beforeSemester,
+          folder.semester,
+          folder.afterSemester
+        ]
+          .filter(part => part && part.trim() !== '')
+          .map(part => part!.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
+          .join('/');
+        objectName = `${normalizedFolder}/${Date.now()}-${filename}`;
+      } else {
+        objectName = `${Date.now()}-${filename}`;
+      }
+
+      console.log(`📤 Uploading to MinIO: ${objectName}`);
       const stream = Readable.from(buffer);
 
       const metaData = {
@@ -119,9 +147,9 @@ export class MinioService {
    * @param objectName - Tên object trong MinIO
    * @returns Buffer của file
    */
-  public async getFile(objectName: string): Promise<Buffer> {
+  public async getFile(params: { objectName: string }): Promise<Buffer> {
     try {
-      const dataStream = await this.client.getObject(this.bucketName, objectName);
+      const dataStream = await this.client.getObject(this.bucketName, params.objectName);
       const chunks: Buffer[] = [];
 
       return new Promise((resolve, reject) => {
@@ -153,10 +181,10 @@ export class MinioService {
    * Xóa file từ MinIO
    * @param objectName - Tên object cần xóa
    */
-  public async deleteFile(objectName: string): Promise<void> {
+  public async deleteFile(params: { objectName: string }): Promise<void> {
     try {
-      await this.client.removeObject(this.bucketName, objectName);
-      console.log(`File deleted successfully: ${objectName}`);
+      await this.client.removeObject(this.bucketName, params.objectName);
+      console.log(`File deleted successfully: ${params.objectName}`);
     } catch (error) {
       console.error('Error deleting file:', error);
       throw error;
@@ -204,9 +232,9 @@ export class MinioService {
    * @param prefix - Filter theo prefix (optional)
    * @returns Mảng thông tin files
    */
-  public async listFiles(prefix?: string): Promise<Minio.BucketItem[]> {
+  public async listFiles(params: { prefix?: string }): Promise<Minio.BucketItem[]> {
     try {
-      const stream = this.client.listObjects(this.bucketName, prefix, true);
+      const stream = this.client.listObjects(this.bucketName, params.prefix, true);
       const files: any[] = [];
 
       return new Promise((resolve, reject) => {
@@ -252,11 +280,68 @@ export class MinioService {
   }
 
   /**
+   * Normalize data từ database sang Template1Data format
+   */
+  private normalizeTemplate1Data(data: any): Template1Data {
+    // If already in correct format, return as is
+    if (data.thesisTitle && data.teachers && data.students &&
+        typeof data.teachers[0]?.name === 'string' &&
+        typeof data.students[0]?.name === 'string') {
+      return data as Template1Data;
+    }
+
+    // Map from database format
+    return {
+      semester: data.semester || '1',
+      academicYear: data.academicYear || '2024-2025',
+
+      thesisTitle: {
+        vietnamese: data.thesisTitle?.vietnamese || data.major?.title || 'Chưa có tên đề tài',
+        english: data.thesisTitle?.english || data.major?.title || 'No thesis title',
+      },
+
+      company: data.company ? {
+        name: data.company.name || '',
+        address: data.company.address || '',
+        websiteLink: data.company.websiteLink || '',
+        representativeName: data.company.representativeName || '',
+      } : undefined,
+
+      // Map teachers from database format (có thể là array of teacher objects)
+      teachers: (data.teachers || []).map((t: any) => ({
+        name: t.name || t.username || t.id || 'Chưa có tên',
+        email: t.email || '',
+      })),
+
+      // Map students from database format
+      students: (data.students || []).map((s: any) => ({
+        name: s.name || s.username || s.id || 'Chưa có tên',
+        studentId: s.studentId || s.id || '',
+        program: s.program || data.programType || 'CQ',
+      })),
+
+      // Map major
+      major: data.major?.title || data.major || 'Khoa học máy tính',
+
+      programLanguage: data.programLanguage || 'Tiếng Việt',
+      programType: data.programType || 'CQ',
+
+      description: data.description || '',
+    };
+  }
+
+  /**
    * Tạo PDF từ Template 1 data và trả về Buffer
-   * @param data - Data cho template 1
+   * @param data - Data cho template 1 (có thể là Template1Data hoặc raw data từ DB)
    * @returns Promise<Buffer> - PDF buffer
    */
-  public async generateTemplate1PDF(data: Template1Data): Promise<Buffer> {
+  public async generateTemplate1PDF(data: any): Promise<Buffer> {
+    console.log('Generating PDF for Template 1...', data);
+
+    // Normalize data to Template1Data format
+    const normalizedData: Template1Data = this.normalizeTemplate1Data(data);
+    console.log('Normalized data:', normalizedData);
+
     return new Promise((resolve, reject) => {
       try {
         const doc = new PDFDocument({
@@ -277,7 +362,7 @@ export class MinioService {
         doc.on('error', reject);
 
         // Generate PDF content
-        this.renderTemplate1(doc, data);
+        this.renderTemplate1(doc, normalizedData);
 
         // Finalize PDF
         doc.end();

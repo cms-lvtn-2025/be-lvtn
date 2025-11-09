@@ -236,3 +236,49 @@
   outline: none;
   border-color: #3498db;
 }
+
+/* Canvas panning */
+.workflow-canvas {
+  cursor: grab;
+  user-select: none;
+}
+
+.workflow-canvas:active {
+  cursor: grabbing;
+}
+
+/* Ensure node palette stays on top */
+.node-palette {
+  position: relative;
+  z-index: 1000 !important;
+  background: #f8f9fa;
+}
+
+/* Ensure canvas container is below palette and creates new stacking context */
+.workflow-canvas {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Always show scrollbars on webkit browsers */
+.workflow-canvas::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.workflow-canvas::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.workflow-canvas::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+}
+
+.workflow-canvas::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

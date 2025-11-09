@@ -8,7 +8,13 @@ import {
   FlowOpts,
 } from "bullmq";
 import IORedis from "ioredis";
-import { IService, IWorkflow, IWorkflowModel, WorkflowModel } from "../database/models";
+import {
+  IService,
+  IWorkflow,
+  IWorkflowChildren,
+  IWorkflowModel,
+  WorkflowModel,
+} from "../database/models";
 import { loadGrpcClient } from "./grpc/client-loader";
 import vm from "node:vm";
 // Redis connection
@@ -103,36 +109,43 @@ export class ServiceQueueManager {
             );
           }
           const children = await job.getChildrenValues();
-
-          if (typeof job.data.params == "object") {
-            Object.entries(job.data.params).forEach(([key, value]) => {
+          const addDataForObject = (obj: any, data: any) => {
+            if (!obj || typeof obj !== "object") return;
+            for (const key in obj) {
+              const value = obj[key];
+              // Parse: @bull:file_service-queue:jobId.file.id
               if (typeof value == "string" && value.startsWith("@bull:")) {
-                // Parse: @bull:file_service-queue:jobId.file.id
                 const cleaned = value.replace("@", ""); // bull:file_service-queue:jobId.file.id
                 const [fullJobKey, ...pathParts] = cleaned.split("."); // ["bull:file_service-queue:jobId", "file", "id"]
-
                 // Lấy child result từ children object
-                let dataKey = children[fullJobKey]; // children["bull:file_service-queue:jobId"]
-
+                let dataKey = data[fullJobKey]; // children["bull:file_service-queue:jobId"]
                 // Navigate qua path (file.id)
                 pathParts.forEach((part) => {
                   if (dataKey && typeof dataKey === "object") {
                     dataKey = dataKey[part];
                   }
                 });
-
-                job.data.params[key] = dataKey;
-                console.log(`   🔄 Resolved ${value} -> ${dataKey}`);
+                obj[key] = dataKey;
+                console.log(`   🔄 Resolved ${value} -> ${dataKey} with key ${key}`);
+              } else if (typeof value === "object") {
+                addDataForObject(value, data);
+              } else if (Array.isArray(value)) {
+                value.forEach((item: any) => {
+                  addDataForObject(item, data);
+                });
               }
-            });
+            }
+          };
+          if (typeof job.data.params == "object") {
+            addDataForObject(job.data.params, children);
           }
-          console.log("   📦 Children results:", children);
+          console.log("   📦 Children results:", children, job.data.params.params);
 
           // Call gRPC method
           const result = await new Promise((resolve, reject) => {
             method.call(
               client,
-              job.data.params,
+              job.data.params.params,
               (error: any, response: any) => {
                 if (error) {
                   reject(error);
@@ -142,9 +155,15 @@ export class ServiceQueueManager {
               }
             );
           });
+          let results: any = {
+            result: result,
+          };
+          if (job.data.params?.data) {
+            results.data = job.data.params?.data;
+          }
 
-          console.log(`   ✅ Success:`, result);
-          return result;
+          console.log(`   ✅ Success:`, results);
+          return results;
         } catch (error: any) {
           console.error(`   ❌ Error:`, error.message);
           throw error;
@@ -204,7 +223,6 @@ export class ServiceQueueManager {
       },
     });
 
-
     // Tạo Worker với MongoDB model
     const worker = new Worker<ServiceJobData>(
       queueName,
@@ -223,10 +241,20 @@ export class ServiceQueueManager {
           }
 
           // Call method (bind this context)
-          const result = await method.call(WorkflowModel, job.data.params);
+          const result = await method.call(
+            WorkflowModel,
+            job.data.params.params
+          );
 
-          console.log(`   ✅ Success:`, result);
-          return result;
+          let results: any = {
+            result: result,
+          };
+          if (job.data.params?.data) {
+            results.data = job.data.params?.data;
+          }
+
+          console.log(`   ✅ Success:`, results);
+          return results;
         } catch (error: any) {
           console.error(`   ❌ Error:`, error.message);
           throw error;
@@ -264,7 +292,7 @@ export class ServiceQueueManager {
       attempts?: number;
     }
   ): ServiceQueueInfo {
-    const queueName = `${serviceName}`;
+    const queueName = serviceName;
 
     console.log(`\n🔧 Registering static queue for ${serviceName}...`);
 
@@ -307,15 +335,17 @@ export class ServiceQueueManager {
               `Method ${job.data.method} not found on ${serviceName}`
             );
           }
-          if (typeof job.data.params == "object") {
-            Object.entries(job.data.params).forEach(([key, value]) => {
+          const addDataForObject = (obj: any, data: any) => {
+            if (!obj || typeof obj !== "object") return;
+            for (const key in obj) {
+              const value = obj[key];
+              //  // Parse: @bull:file_service-queue:jobId.file.id
               if (typeof value == "string" && value.startsWith("@bull:")) {
-                // Parse: @bull:file_service-queue:jobId.file.id
                 const cleaned = value.replace("@", ""); // bull:file_service-queue:jobId.file.id
                 const [fullJobKey, ...pathParts] = cleaned.split("."); // ["bull:file_service-queue:jobId", "file", "id"]
 
                 // Lấy child result từ children object
-                let dataKey = children[fullJobKey]; // children["bull:file_service-queue:jobId"]
+                let dataKey = data[fullJobKey]; // children["bull:file_service-queue:jobId"]
 
                 // Navigate qua path (file.id)
                 pathParts.forEach((part) => {
@@ -324,17 +354,34 @@ export class ServiceQueueManager {
                   }
                 });
 
-                job.data.params[key] = dataKey;
+                obj[key] = dataKey;
                 console.log(`   🔄 Resolved ${value} -> ${dataKey}`);
+              } else if (typeof value === "object") {
+                addDataForObject(value, data);
+              } else if (Array.isArray(value)) {
+                value.forEach((item: any) => {
+                  addDataForObject(item, data);
+                });
               }
-            });
+            }
+          };
+          if (typeof job.data.params == "object") {
+            addDataForObject(job.data.params, children);
           }
 
           // Call method (bind this context)
-          const result = await method.call(serviceInstance, job.data.params);
-
+          const result =
+            job.data.method == "evaluateJob"
+              ? await method.call(serviceInstance, job.data.params)
+              : await method.call(serviceInstance, job.data.params.params);
           console.log(`   ✅ Success:`, result);
-          return result;
+          let results: any = {
+            result: result,
+          };
+          if (job.data.params?.data) {
+            results.data = job.data.params?.data;
+          }
+          return results;
         } catch (error: any) {
           console.error(`   ❌ Error:`, error.message);
           throw error;
@@ -358,7 +405,7 @@ export class ServiceQueueManager {
     });
 
     const queueInfo: ServiceQueueInfo = {
-      serviceName: serviceName.toUpperCase(),
+      serviceName: serviceName,
       queueName,
       queue,
       worker,
@@ -461,7 +508,6 @@ export class QueueService {
         serviceName,
         createdAt: new Date().toISOString(),
       },
-      
     };
 
     const job = await serviceQueueManager.addJob(serviceName, jobData, options);
@@ -488,6 +534,7 @@ export class QueueService {
         uuidv4,
         Date,
         findById: WorkflowModel.findById.bind(WorkflowModel),
+        addDataForWorkFlow: this.addDataForWorkFlow.bind(this),
       };
 
       const script = new vm.Script(`
@@ -498,6 +545,7 @@ export class QueueService {
 
       try {
         const result = await script.runInNewContext(sandbox);
+
         return result;
       } catch (err) {
         console.error("Error evaluating code:", err);
@@ -510,6 +558,72 @@ export class QueueService {
     }
   }
 
+  public addDataForObject(obj: any, data: any) {
+    if (!obj || typeof obj !== "object") return;
+    for (const key in obj) {
+      const value = obj[key];
+      // value have "@__data__:file.createdBy.fullName"
+      if (typeof value == "string" && value.startsWith("@__data__:")) {
+        const cleaned = value.replace("@__data__:", ""); // file.createdBy.fullName
+        const [fullJobKey, ...pathParts] = cleaned.split("."); // ["file", "createdBy", "fullName"]
+        if (fullJobKey === "") {
+          obj[key] = data;
+        } else {
+          // Lấy child result từ children object
+          let dataKey = data[fullJobKey]; // children["file"]
+
+          // Navigate qua path (file.id)
+          pathParts.forEach((part) => {
+            if (dataKey && typeof dataKey === "object") {
+              dataKey = dataKey[part];
+            }
+          });
+          obj[key] = dataKey;
+        }
+      } else if (typeof value === "object") {
+        this.addDataForObject(value, data);
+      }
+    }
+  }
+
+  public addDataForWorkFlowChildren(children: IWorkflowChildren[], data: any) {
+    for (const child of children) {
+      if (child.params && typeof child.params === "object") {
+        this.addDataForObject(child.params, data);
+      }
+      if (child.children && Array.isArray(child.children)) {
+        this.addDataForWorkFlowChildren(child.children, data);
+      }
+    }
+  }
+
+  public addDataForWorkFlow(workFlow: IWorkflow, data: any) {
+    if (typeof data !== "object") return;
+    if (workFlow.parentParams && typeof workFlow.parentParams === "object") {
+      Object.entries(workFlow.parentParams).forEach(([key, value]) => {
+        // value have "@__data__:file.createdBy.fullName"
+        if (typeof value == "string" && value.startsWith("@__data__:")) {
+          const cleaned = value.replace("@__data__:", ""); // file.createdBy.fullName
+          const [fullJobKey, ...pathParts] = cleaned.split("."); // ["file", "createdBy", "fullName"]
+          if (fullJobKey === "") {
+            workFlow.parentParams[key] = data;
+          } else {
+            // Lấy child result từ children object
+            let dataKey = data[fullJobKey]; // children["file"]
+            // Navigate qua path (file.id)
+            pathParts.forEach((part) => {
+              if (dataKey && typeof dataKey === "object") {
+                dataKey = dataKey[part];
+              }
+            });
+            workFlow.parentParams[key] = dataKey;
+          }
+        }
+      });
+    }
+    this.addDataForWorkFlowChildren(workFlow.children, data);
+  }
+
   /**
    * Params add id of child job
    */
@@ -519,13 +633,15 @@ export class QueueService {
         // value have "@__id__{index}:..."
         if (typeof value == "string" && value.startsWith("@__id__")) {
           const match = value.match(/^@__id__(\d+):(.*)$/);
-          console.log(match)
+          console.log(match);
           if (match) {
             const index = parseInt(match[1], 10);
             let dataKey = flowJobWithId[index];
-            params[key] = `@bull:${dataKey.flow.queueName}:${dataKey.id}${match[2]?'.':''}${match[2]}`;
+            params[key] = `@bull:${dataKey.flow.queueName}:${dataKey.id}${
+              match[2] ? "." : ""
+            }${match[2]}`;
           }
-        }else if (typeof value == "object") {
+        } else if (typeof value == "object") {
           this.addIdOfChildJob(value, flowJobWithId);
         }
       });
