@@ -122,11 +122,11 @@ func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemReques
 
 	// Convert Role string to enum
 	switch RoleStr {
-	case "academic_affairs_staff":
+	case "Academic_affairs_staff":
 		entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-	case "department_lecturer":
+	case "Department_lecturer":
 		entity.Role = pb.RoleType_DEPARTMENT_LECTURER
-	case "teacher":
+	case "Teacher":
 		entity.Role = pb.RoleType_TEACHER
 	default:
 		entity.Role = pb.RoleType_TEACHER
