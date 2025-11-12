@@ -15,13 +15,13 @@ import {
   IWorkflowModel,
   WorkflowModel,
 } from "../database/models";
-import { loadGrpcClient } from "./grpc/client-loader";
 import vm from "node:vm";
 // Redis connection
 import { v4 as uuidv4 } from "uuid";
 import { options } from "pdfkit";
+import { ManagerExternalService } from "./external/main";
 
-const redisConnection = new IORedis({
+export const redisConnection = new IORedis({
   host: process.env.REDIS_HOST || "localhost",
   port: parseInt(process.env.REDIS_PORT || "10002"),
   password: process.env.REDIS_PASSWORD || undefined,
@@ -63,142 +63,29 @@ export interface FlowJobWithId {
  */
 export class ServiceQueueManager {
   private queues: Map<string, ServiceQueueInfo> = new Map();
+  private externalServiceManager: ManagerExternalService;
 
+  constructor() {
+    this.externalServiceManager = new ManagerExternalService();
+  }
   /**
    * Tạo queue và worker cho một service
    */
-  createServiceQueue(service: IService): ServiceQueueInfo {
-    const queueName = `${service.name}`;
-
-    console.log(`\n🔧 Creating queue for ${service.name}...`);
-    // Load gRPC client
-    const client = loadGrpcClient(service);
-
-    // Tạo Queue
-    const queue = new Queue<ServiceJobData>(queueName, {
-      connection: redisConnection,
-      defaultJobOptions: {
-        attempts: 3,
-        backoff: {
-          type: "exponential",
-          delay: 5000,
-        },
-        removeOnComplete: {
-          count: 100,
-        },
-        removeOnFail: {
-          count: 50,
-        },
-      },
-    });
-
-    // Tạo Worker với gRPC client
-    const worker = new Worker<ServiceJobData>(
-      queueName,
-      async (job: Job<ServiceJobData>) => {
-        console.log(`\n⚡ [${service.name}] Processing job ${job.id}`);
-        console.log(`   Method: ${job.data.method}`);
-        console.log(`   Params:`, job.data.params);
-
-        try {
-          // Gọi gRPC method động
-          const method = client[job.data.method];
-          if (!method) {
-            throw new Error(
-              `Method ${job.data.method} not found on ${service.name}`
-            );
-          }
-          const children = await job.getChildrenValues();
-          const addDataForObject = (obj: any, data: any) => {
-            if (!obj || typeof obj !== "object") return;
-            for (const key in obj) {
-              const value = obj[key];
-              // Parse: @bull:file_service-queue:jobId.file.id
-              if (typeof value == "string" && value.startsWith("@bull:")) {
-                const cleaned = value.replace("@", ""); // bull:file_service-queue:jobId.file.id
-                const [fullJobKey, ...pathParts] = cleaned.split("."); // ["bull:file_service-queue:jobId", "file", "id"]
-                // Lấy child result từ children object
-                let dataKey = data[fullJobKey]; // children["bull:file_service-queue:jobId"]
-                // Navigate qua path (file.id)
-                pathParts.forEach((part) => {
-                  if (dataKey && typeof dataKey === "object") {
-                    dataKey = dataKey[part];
-                  }
-                });
-                obj[key] = dataKey;
-                console.log(`   🔄 Resolved ${value} -> ${dataKey} with key ${key}`);
-              } else if (typeof value === "object") {
-                addDataForObject(value, data);
-              } else if (Array.isArray(value)) {
-                value.forEach((item: any) => {
-                  addDataForObject(item, data);
-                });
-              }
-            }
-          };
-          if (typeof job.data.params == "object") {
-            addDataForObject(job.data.params, children);
-          }
-          console.log("   📦 Children results:", children, job.data.params.params);
-
-          // Call gRPC method
-          const result = await new Promise((resolve, reject) => {
-            method.call(
-              client,
-              job.data.params.params,
-              (error: any, response: any) => {
-                if (error) {
-                  reject(error);
-                } else {
-                  resolve(response);
-                }
-              }
-            );
-          });
-          let results: any = {
-            result: result,
-          };
-          if (job.data.params?.data) {
-            results.data = job.data.params?.data;
-          }
-
-          console.log(`   ✅ Success:`, results);
-          return results;
-        } catch (error: any) {
-          console.error(`   ❌ Error:`, error.message);
-          throw error;
-        }
-      },
-      {
-        connection: redisConnection,
-        concurrency: parseInt(process.env.WORKER_CONCURRENCY || "3"),
-      }
-    );
-
-    // Event listeners
-    worker.on("completed", (job) => {
-      console.log(`✨ [${service.name}] Job ${job.id} completed`);
-    });
-
-    worker.on("failed", (job, err) => {
-      console.error(`❌ [${service.name}] Job ${job?.id} failed:`, err.message);
-    });
-
-    const queueInfo: ServiceQueueInfo = {
+  async createServiceQueue(service: IService): Promise<ServiceQueueInfo> {
+    this.externalServiceManager.registerExternalService(service);
+    const queue = await this.externalServiceManager.createQueue(service);
+    return {
       serviceName: service.name,
-      queueName,
+      queueName: service.name,
       queue,
-      worker,
-      client,
+      worker: await this.externalServiceManager.getWorker(service),
+      client: this.externalServiceManager.getClient(service),
       type: "dynamic",
-      service,
-    };
+    };  
+  }
 
-    this.queues.set(service.name, queueInfo);
-
-    console.log(`✅ Queue created for ${service.name}`);
-
-    return queueInfo;
+  async healthCheckAndUpdateServiceQueue(service: IService): Promise<boolean> {
+    return this.externalServiceManager.healthCheckAndUpdateService(service);
   }
   /**
    * Đăng ký với service mongodb

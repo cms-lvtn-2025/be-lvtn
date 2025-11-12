@@ -1,6 +1,6 @@
-import { CronJobModel } from "../database/models";
+import { CronJobModel } from "../../database/models";
 import { cronJobService } from "./cronjob-service";
-import { serviceQueueManager } from "./queue";
+import { serviceQueueManager } from "../queue";
 
 /**
  * Khởi tạo lại tất cả CronJobs khi server start

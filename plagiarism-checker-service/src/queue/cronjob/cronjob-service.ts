@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { CronJobModel, ICronJob, WorkflowModel } from "../database/models";
-import { queueService, serviceQueueManager } from "./queue";
+import { CronJobModel, ICronJob, WorkflowModel } from "../../database/models";
+import { queueService, serviceQueueManager } from "../queue";
 
 /**
  * CronJob Service - Quản lý cron jobs cho workflows

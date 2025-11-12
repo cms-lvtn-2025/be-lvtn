@@ -5,15 +5,10 @@ import {
   ServiceModel,
   WorkflowModel,
 } from "./database/models";
-import { healthCheckAllServices } from "./queue/grpc";
 import { initBullBoard, createBullBoardApp } from "./ui/bull-board";
-import { queueService, serviceQueueManager } from "./queue/queue";
-import { v4 as uuidv4 } from "uuid";
-import cron from "node-cron";
+import { queueService, ServiceQueueInfo, serviceQueueManager } from "./queue/queue";
 import { MinioService } from "./queue/minio";
-import CronJobModel from "./database/models/cronjob.model";
-import { options } from "pdfkit";
-import { initializeCronJobs, cleanupCronJobs } from "./queue/cronjob-init";
+import { initializeCronJobs, cleanupCronJobs } from "./queue/cronjob/cronjob-init";
 
 // Load environment variables
 dotenv.config();
@@ -32,19 +27,20 @@ async function main() {
     // Load tất cả enabled services từ database
     const allServices = await ServiceModel.find({ enabled: true });
     console.log(`\n📊 Found ${allServices.length} enabled service(s)`);
+    
 
-    // Health check tất cả services và update database
-    const healthyServices = await healthCheckAllServices(allServices);
+    const queuesTmp = await Promise.all(allServices.map(async (service) => {
+      const serviceQueue = await serviceQueueManager.createServiceQueue(service as any);
+      const check = await serviceQueueManager.healthCheckAndUpdateServiceQueue(service as any);
+      if (check) {
+        return serviceQueue;
+      }
+      return undefined;
+    })) ;
 
-    // Chỉ tạo queue cho services healthy
-    const servicesToQueue = healthyServices.filter((s) => s.healthy);
-    console.log(
-      `\n🔧 Creating queues for ${servicesToQueue.length} healthy service(s)...`
-    );
-
-    const queues = servicesToQueue.map((service) => {
-      return serviceQueueManager.createServiceQueue(service as any);
-    });
+    const queues = queuesTmp.filter((queue) => queue !== undefined) as ServiceQueueInfo[];
+    const queueWorkflow = await serviceQueueManager.createServiceWorkflowQueue(WorkflowModel);
+    queues.push(queueWorkflow);
 
     const queuesStatic = serviceQueueManager.registerStaticQueue(
       "QUEUE",
@@ -55,9 +51,6 @@ async function main() {
       }
     );
     queues.push(queuesStatic);
-
-    const queueWorkflow =
-      serviceQueueManager.createServiceWorkflowQueue(WorkflowModel);
 
     const MinioConfig = await MinioConfigModel.find();
     if (MinioConfig && MinioConfig.length > 0) {
@@ -74,10 +67,8 @@ async function main() {
         queues.push(queueMinio);
       }
     }
-    queues.push(queueWorkflow);
-
     // Khởi tạo Bull Board UI với tất cả queues
-    initBullBoard(queues);
+    initBullBoard(queues.filter((queue) => queue !== undefined) as ServiceQueueInfo[]);
 
     // Khởi tạo CronJobs (xóa old jobs, tạo lại từ database)
     await initializeCronJobs();
@@ -179,7 +170,7 @@ async function main() {
     // })
 
     console.log("\n✨ Application is running...");
-    console.log(`   - ${servicesToQueue.length} service queue(s) active`);
+    console.log(`   - ${queues.filter((queue) => queue !== undefined).length} service queue(s) active`);
     console.log(`   - Bull Board UI running on port ${port}`);
     console.log("\nPress Ctrl+C to exit\n");
   } catch (error) {

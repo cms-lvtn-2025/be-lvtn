@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { ServiceModel, MinioConfigModel, WorkflowModel, CronJobModel } from '../database/models';
 import { MinioService } from '../queue/minio';
 import { serviceQueueManager } from '../queue/queue';
-import { cronJobService } from '../queue/cronjob-service';
+import { cronJobService } from '../queue/cronjob/cronjob-service';
 
 const router = express.Router();
 
