@@ -1,1 +1,0 @@
-{"duration_ms":2,"method":"/academic.AcademicService/ListSemesters","queries":[],"request_id":"e8255cc5-df84-49e4-a48a-d0cdafdf761f","service_name":"academic-service","success":true,"timestamp":"2025-11-14T00:20:06+07:00","trace":{"function_name":"ListSemesters","duration_ms":2}}
