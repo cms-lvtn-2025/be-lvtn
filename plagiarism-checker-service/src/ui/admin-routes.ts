@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { ServiceModel, MinioConfigModel, WorkflowModel, CronJobModel } from '../database/models';
+import { ServiceModel, MinioConfigModel, WorkflowModel, CronJobModel, IService } from '../database/models';
 import { MinioService } from '../queue/minio';
 import { serviceQueueManager } from '../queue/queue';
 import { cronJobService } from '../queue/cronjob/cronjob-service';
@@ -277,6 +277,213 @@ router.get('/services', async (req: Request, res: Response) => {
       currentTab: 'services',
       services: [],
       error: 'Failed to load services'
+    });
+  }
+});
+
+/**
+ * POST /admin/api/services - Create a new service
+ */
+router.post('/api/services', async (req: Request, res: Response) => {
+  try {
+    const {
+      name,
+      url,
+      port,
+      protocol,
+      protoPath,
+      protoPackage,
+      enabled = false,
+    } = req.body;
+
+    if (!name || !url || !port || !protocol) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: name, url, port, protocol',
+      });
+    }
+
+    const service = new ServiceModel({
+      name,
+      url,
+      port,
+      protocol,
+      protoPath,
+      protoPackage,
+      enabled,
+    });
+
+    await service.save();
+
+    let warning: string | null = null;
+
+    if (service.enabled) {
+      try {
+        await serviceQueueManager.createServiceQueue(service as IService);
+        await serviceQueueManager.healthCheckAndUpdateServiceQueue(
+          service as IService
+        );
+      } catch (error: any) {
+        warning = error.message || 'Failed to initialize service queue';
+        await serviceQueueManager
+          .deleteServiceQueue(service as IService)
+          .catch(() => undefined);
+        await ServiceModel.updateOne(
+          { _id: service._id },
+          {
+            $set: {
+              enabled: false,
+              healthy: false,
+            },
+          }
+        );
+      }
+    }
+
+    const freshService = await ServiceModel.findById(service._id).lean();
+
+    return res.status(201).json({
+      success: true,
+      data: freshService,
+      warning: warning || undefined,
+    });
+  } catch (error: any) {
+    console.error('Error creating service:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to create service',
+    });
+  }
+});
+
+/**
+ * PATCH /admin/api/services/:id/toggle - Enable or disable a service
+ */
+router.patch('/api/services/:id/toggle', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { enabled } = req.body;
+
+    if (typeof enabled !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        error: 'Field "enabled" must be boolean',
+      });
+    }
+
+    const service = await ServiceModel.findById(id);
+
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        error: 'Service not found',
+      });
+    }
+
+    if (enabled === service.enabled) {
+      const freshService = await ServiceModel.findById(id).lean();
+      return res.json({
+        success: true,
+        data: freshService,
+      });
+    }
+
+    if (enabled) {
+      try {
+        await serviceQueueManager.toggleServiceQueue(
+          service as IService,
+          true
+        );
+        await ServiceModel.updateOne(
+          { _id: service._id },
+          {
+            $set: {
+              enabled: true,
+            },
+          }
+        );
+        await serviceQueueManager.healthCheckAndUpdateServiceQueue(
+          service as IService
+        );
+      } catch (error: any) {
+        console.error(`Error enabling service ${service.name}:`, error);
+        return res.status(500).json({
+          success: false,
+          error: error.message || 'Failed to enable service',
+        });
+      }
+    } else {
+      try {
+        await serviceQueueManager.toggleServiceQueue(
+          service as IService,
+          false
+        );
+        await ServiceModel.updateOne(
+          { _id: service._id },
+          {
+            $set: {
+              enabled: false,
+              healthy: false,
+            },
+          }
+        );
+      } catch (error: any) {
+        console.error(`Error disabling service ${service.name}:`, error);
+        return res.status(500).json({
+          success: false,
+          error: error.message || 'Failed to disable service',
+        });
+      }
+    }
+
+    const freshService = await ServiceModel.findById(id).lean();
+
+    return res.json({
+      success: true,
+      data: freshService,
+    });
+  } catch (error: any) {
+    console.error('Error toggling service:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to toggle service',
+    });
+  }
+});
+
+/**
+ * DELETE /admin/api/services/:id - Remove a service
+ */
+router.delete('/api/services/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const service = await ServiceModel.findById(id);
+
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        error: 'Service not found',
+      });
+    }
+
+    try {
+      await serviceQueueManager.deleteServiceQueue(service as IService);
+    } catch (error) {
+      console.warn(`Failed to clean up queues for ${service.name}:`, error);
+    }
+
+    await ServiceModel.findByIdAndDelete(id);
+
+    return res.json({
+      success: true,
+      message: 'Service deleted successfully',
+    });
+  } catch (error: any) {
+    console.error('Error deleting service:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to delete service',
     });
   }
 });

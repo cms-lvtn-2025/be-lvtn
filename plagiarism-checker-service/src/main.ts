@@ -4,11 +4,22 @@ import {
   MinioConfigModel,
   ServiceModel,
   WorkflowModel,
+  IService,
 } from "./database/models";
 import { initBullBoard, createBullBoardApp } from "./ui/bull-board";
-import { queueService, ServiceQueueInfo, serviceQueueManager } from "./queue/queue";
+import {
+  queueService,
+  serviceQueueManager,
+  serviceQueueEvents,
+} from "./queue/queue";
 import { MinioService } from "./queue/minio";
 import { initializeCronJobs, cleanupCronJobs } from "./queue/cronjob/cronjob-init";
+
+const refreshBullBoardQueues = () => {
+  initBullBoard(serviceQueueManager.getAllQueues());
+};
+
+serviceQueueEvents.on("queuesChanged", refreshBullBoardQueues);
 
 // Load environment variables
 dotenv.config();
@@ -29,20 +40,23 @@ async function main() {
     console.log(`\n📊 Found ${allServices.length} enabled service(s)`);
     
 
-    const queuesTmp = await Promise.all(allServices.map(async (service) => {
-      const serviceQueue = await serviceQueueManager.createServiceQueue(service as any);
-      const check = await serviceQueueManager.healthCheckAndUpdateServiceQueue(service as any);
-      if (check) {
-        return serviceQueue;
-      }
-      return undefined;
-    })) ;
+    await Promise.all(
+      allServices.map(async (service) => {
+        await serviceQueueManager.createServiceQueue(service as IService);
+        const check =
+          await serviceQueueManager.healthCheckAndUpdateServiceQueue(
+            service as IService
+          );
+        if (!check) {
+          console.warn(
+            `⚠️ ${service.name} failed initial health check. Queue created but marked unhealthy`
+          );
+        }
+      })
+    );
+    await serviceQueueManager.createServiceWorkflowQueue(WorkflowModel);
 
-    const queues = queuesTmp.filter((queue) => queue !== undefined) as ServiceQueueInfo[];
-    const queueWorkflow = await serviceQueueManager.createServiceWorkflowQueue(WorkflowModel);
-    queues.push(queueWorkflow);
-
-    const queuesStatic = serviceQueueManager.registerStaticQueue(
+    serviceQueueManager.registerStaticQueue(
       "QUEUE",
       queueService,
       {
@@ -50,13 +64,12 @@ async function main() {
         attempts: 3,
       }
     );
-    queues.push(queuesStatic);
 
     const MinioConfig = await MinioConfigModel.find();
     if (MinioConfig && MinioConfig.length > 0) {
       for (const config of MinioConfig) {
         const service = new MinioService(config);
-        const queueMinio = serviceQueueManager.registerStaticQueue(
+        serviceQueueManager.registerStaticQueue(
           `MINIO_SERVICE_${config._id}`,
           service,
           {
@@ -64,11 +77,10 @@ async function main() {
             attempts: 3,
           }
         );
-        queues.push(queueMinio);
       }
     }
     // Khởi tạo Bull Board UI với tất cả queues
-    initBullBoard(queues.filter((queue) => queue !== undefined) as ServiceQueueInfo[]);
+    refreshBullBoardQueues();
 
     // Khởi tạo CronJobs (xóa old jobs, tạo lại từ database)
     await initializeCronJobs();
@@ -170,7 +182,9 @@ async function main() {
     // })
 
     console.log("\n✨ Application is running...");
-    console.log(`   - ${queues.filter((queue) => queue !== undefined).length} service queue(s) active`);
+    console.log(
+      `   - ${serviceQueueManager.getAllQueues().length} service queue(s) active`
+    );
     console.log(`   - Bull Board UI running on port ${port}`);
     console.log("\nPress Ctrl+C to exit\n");
   } catch (error) {

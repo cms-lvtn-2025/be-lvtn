@@ -277,19 +277,7 @@ func (h *Handler) ListEnrollments(ctx context.Context, req *pb.ListEnrollmentsRe
 		"midterm_code":       true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereConditions := []string{}
-		for _, filter := range req.Search.Filters {
-			if filter.GetCondition() != nil {
-				condition := filter.GetCondition()
-				if _, ok := whiteMap[condition.Field]; !ok {
-					continue
-				}
-				whereConditions = append(whereConditions, helper.BuildFilterCondition(condition, &args))
-			}
-		}
-		if len(whereConditions) > 0 {
-			whereClause = "WHERE " + strings.Join(whereConditions, " AND ")
-		}
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
 	}
 
 	// Build ORDER BY clause

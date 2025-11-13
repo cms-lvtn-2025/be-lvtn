@@ -66,6 +66,7 @@ func NewGRPCthesis(addr string, redisClient *redis.Client) (*GRPCthesis, error) 
 
 func (t *GRPCthesis) GetTopicBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListTopicsResponse, error) {
 	cacheKey := GenerateCacheKey(topicCachePrefix, search)
+	fmt.Println("xxxxxxxxxxxxxx", search)
 	var cached pb.ListTopicsResponse
 	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for topic search")

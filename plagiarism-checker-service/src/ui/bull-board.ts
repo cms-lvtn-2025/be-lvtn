@@ -10,18 +10,29 @@ import adminRoutes from './admin-routes';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath(process.env.BULL_BOARD_PATH || '/admin/queues');
 
+const buildQueueAdapters = (queues: ServiceQueueInfo[]) =>
+  queues.map(info => new BullMQAdapter(info.queue));
+
+let bullBoardInitialized = false;
+let bullBoardController: ReturnType<typeof createBullBoard> | null = null;
+
 /**
- * Khởi tạo Bull Board với danh sách queues động
+ * Khởi tạo hoặc đồng bộ Bull Board với danh sách queues động
  */
 export function initBullBoard(queues: ServiceQueueInfo[]) {
-  const queueAdapters = queues.map(info => new BullMQAdapter(info.queue));
+  const queueAdapters = buildQueueAdapters(queues);
 
-  createBullBoard({
-    queues: queueAdapters,
-    serverAdapter: serverAdapter,
-  });
-
-  console.log(`🎨 Bull Board initialized with ${queues.length} queue(s)`);
+  if (!bullBoardInitialized) {
+    bullBoardController = createBullBoard({
+      queues: queueAdapters,
+      serverAdapter: serverAdapter,
+    });
+    bullBoardInitialized = true;
+    console.log(`🎨 Bull Board initialized with ${queues.length} queue(s)`);
+  } else {
+    bullBoardController?.setQueues(queueAdapters);
+    console.log(`🔄 Bull Board updated with ${queues.length} queue(s)`);
+  }
 }
 
 /**

@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { Job, Queue, Worker } from "bullmq";
+import { DefaultJobOptions, Job, Queue, Worker } from "bullmq";
 import { redisConnection, ServiceJobData } from "../../queue";
 
 interface GrpcSetting {
@@ -22,7 +22,6 @@ export class GrpcService extends ExternalService {
     this.name = "grpc";
     this.version = "v.0.0.1";
   }
-
   private loadSetting(service: IService): GrpcSetting {
     try {
       if (!service.protoPath || !service.protoPackage) {
@@ -91,7 +90,6 @@ export class GrpcService extends ExternalService {
       );
     }
   }
-
   private async waitForConnection(
     channel: grpc.Channel,
     timeoutMs: number
@@ -219,7 +217,6 @@ export class GrpcService extends ExternalService {
       }
     }
   }
-
   private addDataForObject = (obj: any, data: any) => {
     if (!obj || typeof obj !== "object") return;
     for (const key in obj) {
@@ -247,7 +244,6 @@ export class GrpcService extends ExternalService {
       }
     }
   };
-
   private async createQueueWorker(): Promise<any> {
     const check = await this.healthCheckAndUpdateClient();
     if (!check) {
@@ -323,27 +319,29 @@ export class GrpcService extends ExternalService {
 
   public async createQueue(): Promise<any> {
     this.queue = this.queue ? await this.deleteQueue() : undefined
+    const options: DefaultJobOptions = this.service.options || {
+      attempts: 3,
+      backoff: {
+        type: "exponential",
+        delay: 5000,
+      },
+      removeOnComplete: {
+        count: 100,
+      },
+      removeOnFail: {
+        count: 50,
+      },
+    }
     this.queue = new Queue<ServiceJobData>(this.service.name, {
       connection: redisConnection,
-      defaultJobOptions: {
-        attempts: 3,
-        backoff: {
-          type: "exponential",
-          delay: 5000,
-        },
-        removeOnComplete: {
-          count: 100,
-        },
-        removeOnFail: {
-          count: 50,
-        },
-      },
+      defaultJobOptions: options,
     });
     await this.createQueueWorker();
     await this.eventWorker();
     return this.queue;
   }
   public async deleteQueue(): Promise<any> {
+    this.worker?.close();
     this.queue?.close();
     this.queue = undefined;
     return this.queue;

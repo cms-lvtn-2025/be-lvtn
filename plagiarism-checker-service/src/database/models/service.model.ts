@@ -1,3 +1,4 @@
+import { DefaultJobOptions } from 'bullmq';
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 /**
@@ -20,6 +21,7 @@ export interface IService extends Document {
   protoPackage?: string;
   enabled: boolean;
   healthy: boolean;
+  options?: DefaultJobOptions;
   metadata?: IServiceMetadata;
   lastHealthCheck?: Date;
   createdAt: Date;

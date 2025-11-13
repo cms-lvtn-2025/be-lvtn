@@ -24,6 +24,7 @@ export interface IFlowOpts {
  */
 export interface IWorkflow extends Document {
   id?: string;
+  name: string;
   parentServiceName: string;
   parentMethod: string;
   parentParams: any;

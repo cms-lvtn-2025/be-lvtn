@@ -39,14 +39,14 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 	RoleValue := pb.RoleType_ACADEMIC_AFFAIRS_STAFF
 
 	RoleValue = req.Role
-	RoleStr := "academic_affairs_staff"
+	RoleStr := "Academic_affairs_staff"
 	switch RoleValue {
 	case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
-		RoleStr = "academic_affairs_staff"
+		RoleStr = "Academic_affairs_staff"
 	case pb.RoleType_DEPARTMENT_LECTURER:
-		RoleStr = "department_lecturer"
+		RoleStr = "Department_lecturer"
 	case pb.RoleType_TEACHER:
-		RoleStr = "teacher"
+		RoleStr = "Teacher"
 	}
 
 	// Insert into database
@@ -171,14 +171,14 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 	}
 	if req.Role != nil {
 		updateFields = append(updateFields, "role = ?")
-		RoleStr := "academic_affairs_staff"
+		RoleStr := "Academic_affairs_staff"
 		switch *req.Role {
 		case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
-			RoleStr = "academic_affairs_staff"
+			RoleStr = "Academic_affairs_staff"
 		case pb.RoleType_DEPARTMENT_LECTURER:
-			RoleStr = "department_lecturer"
+			RoleStr = "Department_lecturer"
 		case pb.RoleType_TEACHER:
-			RoleStr = "teacher"
+			RoleStr = "Teacher"
 		}
 		args = append(args, RoleStr)
 
@@ -293,19 +293,7 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 		"activate":      true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereConditions := []string{}
-		for _, filter := range req.Search.Filters {
-			if filter.GetCondition() != nil {
-				condition := filter.GetCondition()
-				if _, ok := whiteMap[condition.Field]; !ok {
-					continue
-				}
-				whereConditions = append(whereConditions, helper.BuildFilterCondition(condition, &args))
-			}
-		}
-		if len(whereConditions) > 0 {
-			whereClause = "WHERE " + strings.Join(whereConditions, " AND ")
-		}
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
 	}
 
 	// Build ORDER BY clause
@@ -363,11 +351,11 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 
 		// Convert Role string to enum
 		switch RoleStr {
-		case "academic_affairs_staff":
+		case "Academic_affairs_staff":
 			entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-		case "department_lecturer":
+		case "Department_lecturer":
 			entity.Role = pb.RoleType_DEPARTMENT_LECTURER
-		case "teacher":
+		case "Teacher":
 			entity.Role = pb.RoleType_TEACHER
 		default:
 			entity.Role = pb.RoleType_TEACHER

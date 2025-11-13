@@ -17,6 +17,7 @@ block content
         thead
           tr
             th Workflow ID
+            th Workflow Name
             th Parent Service
             th Parent Method
             th Children Count
@@ -29,6 +30,7 @@ block content
             tr
               td
                 strong= workflow._id
+              td= workflow.name
               td= workflow.parentServiceName
               td= workflow.parentMethod
               td= workflow.children ? workflow.children.length : 0

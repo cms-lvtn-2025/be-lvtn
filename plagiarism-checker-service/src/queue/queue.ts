@@ -20,6 +20,7 @@ import vm from "node:vm";
 import { v4 as uuidv4 } from "uuid";
 import { options } from "pdfkit";
 import { ManagerExternalService } from "./external/main";
+import { EventEmitter } from "events";
 
 export const redisConnection = new IORedis({
   host: process.env.REDIS_HOST || "localhost",
@@ -28,6 +29,8 @@ export const redisConnection = new IORedis({
   db: parseInt(process.env.REDIS_DB || "0"),
   maxRetriesPerRequest: null,
 });
+
+export const serviceQueueEvents = new EventEmitter();
 
 export interface ServiceJobData {
   method: string;
@@ -68,24 +71,123 @@ export class ServiceQueueManager {
   constructor() {
     this.externalServiceManager = new ManagerExternalService();
   }
+
+  private findQueueEntryByServiceId(
+    serviceId: string
+  ): [string, ServiceQueueInfo] | undefined {
+    for (const entry of this.queues.entries()) {
+      const queueInfo = entry[1];
+      const queueServiceId = queueInfo.service?._id?.toString();
+      if (queueServiceId === serviceId) {
+        return entry;
+      }
+    }
+    return undefined;
+  }
+
+  getQueueByServiceId(serviceId: string): ServiceQueueInfo | undefined {
+    const entry = this.findQueueEntryByServiceId(serviceId);
+    return entry ? entry[1] : undefined;
+  }
   /**
    * Tạo queue và worker cho một service
    */
   async createServiceQueue(service: IService): Promise<ServiceQueueInfo> {
     this.externalServiceManager.registerExternalService(service);
     const queue = await this.externalServiceManager.createQueue(service);
-    return {
+    const queueInfo: ServiceQueueInfo = {
       serviceName: service.name,
       queueName: service.name,
       queue,
       worker: await this.externalServiceManager.getWorker(service),
       client: this.externalServiceManager.getClient(service),
       type: "dynamic",
-    };  
+      service,
+    }; 
+    this.queues.set(service.name, queueInfo);
+    serviceQueueEvents.emit("queuesChanged");
+    return queueInfo;
   }
 
   async healthCheckAndUpdateServiceQueue(service: IService): Promise<boolean> {
     return this.externalServiceManager.healthCheckAndUpdateService(service);
+  }
+
+  async toggleServiceQueue(
+    service: IService,
+    enable: boolean
+  ): Promise<ServiceQueueInfo | null> {
+    if (enable) {
+      return this.createServiceQueue(service);
+    }
+
+    await this.deleteServiceQueue(service);
+    return null;
+  }
+
+  async deleteServiceQueue(service: IService): Promise<void> {
+    let queueKey: string | undefined = service.name;
+    let existing = this.queues.get(service.name);
+
+    if ((!existing || !queueKey) && service._id) {
+      const entry = this.findQueueEntryByServiceId(service._id.toString());
+      if (entry) {
+        queueKey = entry[0];
+        existing = entry[1];
+      }
+    }
+
+    await this.externalServiceManager.deleteQueue(service).catch(
+      (error: unknown) => {
+        const message =
+          error instanceof Error ? error.message : JSON.stringify(error);
+        console.warn(
+          `Failed to delete external queue for ${service.name}:`,
+          message
+        );
+      }
+    );
+
+    await this.externalServiceManager.disconnectService(service).catch(
+      (error: unknown) => {
+        const message =
+          error instanceof Error ? error.message : JSON.stringify(error);
+        console.warn(
+          `Failed to disconnect external service for ${service.name}:`,
+          message
+        );
+      }
+    );
+
+    await this.externalServiceManager.unregisterService(service).catch(
+      (error: unknown) => {
+        const message =
+          error instanceof Error ? error.message : JSON.stringify(error);
+        console.warn(
+          `Failed to unregister external service for ${service.name}:`,
+          message
+        );
+      }
+    );
+
+    if (existing) {
+      try {
+        await existing.worker.close();
+      } catch (error) {
+        console.warn(`Failed to close worker for ${service.name}:`, error);
+      }
+
+      try {
+        await existing.queue.close();
+      } catch (error) {
+        console.warn(`Failed to close queue for ${service.name}:`, error);
+      }
+
+      if (queueKey) {
+        this.queues.delete(queueKey);
+      }
+      serviceQueueEvents.emit("queuesChanged");
+    }
   }
   /**
    * Đăng ký với service mongodb
@@ -303,6 +405,7 @@ export class ServiceQueueManager {
     this.queues.set(serviceName.toUpperCase(), queueInfo);
 
     console.log(`✅ Static queue created for ${serviceName}`);
+    serviceQueueEvents.emit("queuesChanged");
 
     return queueInfo;
   }
@@ -486,7 +589,7 @@ export class QueueService {
 
   public addDataForWorkFlow(workFlow: IWorkflow, data: any) {
     if (typeof data !== "object") return;
-    if (workFlow.parentParams && typeof workFlow.parentParams === "object") {
+    if (workFlow?.parentParams && typeof workFlow.parentParams === "object") {
       Object.entries(workFlow.parentParams).forEach(([key, value]) => {
         // value have "@__data__:file.createdBy.fullName"
         if (typeof value == "string" && value.startsWith("@__data__:")) {
@@ -612,6 +715,7 @@ export class QueueService {
         },
         children: childJobs.map((value) => value.flow),
         opts: {
+
           ...options,
         },
       },
