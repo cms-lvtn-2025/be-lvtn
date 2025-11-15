@@ -15,6 +15,38 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+const (
+	roleAcademicAffairsStr    = "academic_affairs_staff"
+	roleDepartmentLecturerStr = "department_lecturer"
+	roleTeacherStr            = "teacher"
+)
+
+func roleToString(role pb.RoleType) string {
+	switch role {
+	case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
+		return roleAcademicAffairsStr
+	case pb.RoleType_DEPARTMENT_LECTURER:
+		return roleDepartmentLecturerStr
+	case pb.RoleType_TEACHER:
+		return roleTeacherStr
+	default:
+		return roleTeacherStr
+	}
+}
+
+func stringToRole(roleStr string) pb.RoleType {
+	switch strings.ToLower(roleStr) {
+	case roleAcademicAffairsStr:
+		return pb.RoleType_ACADEMIC_AFFAIRS_STAFF
+	case roleDepartmentLecturerStr:
+		return pb.RoleType_DEPARTMENT_LECTURER
+	case roleTeacherStr:
+		return pb.RoleType_TEACHER
+	default:
+		return pb.RoleType_TEACHER
+	}
+}
+
 // CreateRoleSystem creates a new RoleSystem record
 func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystemRequest) (*pb.CreateRoleSystemResponse, error) {
 	defer logger.TraceFunction(ctx)()
@@ -33,21 +65,7 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 	// Generate UUID
 	id := uuid.New().String()
 
-	// Prepare fields
-
-	// Convert Role enum to string
-	RoleValue := pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-
-	RoleValue = req.Role
-	RoleStr := "Academic_affairs_staff"
-	switch RoleValue {
-	case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
-		RoleStr = "Academic_affairs_staff"
-	case pb.RoleType_DEPARTMENT_LECTURER:
-		RoleStr = "Department_lecturer"
-	case pb.RoleType_TEACHER:
-		RoleStr = "Teacher"
-	}
+	roleStr := roleToString(req.Role)
 
 	// Insert into database
 	query := `
@@ -59,7 +77,7 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 		id,
 		req.Title,
 		req.TeacherCode,
-		RoleStr,
+		roleStr,
 		req.SemesterCode,
 		req.Activate,
 		req.CreatedBy,
@@ -120,17 +138,7 @@ func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemReques
 		return nil, status.Errorf(codes.Internal, "failed to get rolesystem: %v", err)
 	}
 
-	// Convert Role string to enum
-	switch RoleStr {
-	case "Academic_affairs_staff":
-		entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-	case "Department_lecturer":
-		entity.Role = pb.RoleType_DEPARTMENT_LECTURER
-	case "Teacher":
-		entity.Role = pb.RoleType_TEACHER
-	default:
-		entity.Role = pb.RoleType_TEACHER
-	}
+	entity.Role = stringToRole(RoleStr)
 
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
@@ -171,16 +179,7 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 	}
 	if req.Role != nil {
 		updateFields = append(updateFields, "role = ?")
-		RoleStr := "Academic_affairs_staff"
-		switch *req.Role {
-		case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
-			RoleStr = "Academic_affairs_staff"
-		case pb.RoleType_DEPARTMENT_LECTURER:
-			RoleStr = "Department_lecturer"
-		case pb.RoleType_TEACHER:
-			RoleStr = "Teacher"
-		}
-		args = append(args, RoleStr)
+		args = append(args, roleToString(*req.Role))
 
 	}
 	if req.SemesterCode != nil {
@@ -349,17 +348,7 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 			return nil, status.Errorf(codes.Internal, "failed to scan rolesystem: %v", err)
 		}
 
-		// Convert Role string to enum
-		switch RoleStr {
-		case "Academic_affairs_staff":
-			entity.Role = pb.RoleType_ACADEMIC_AFFAIRS_STAFF
-		case "Department_lecturer":
-			entity.Role = pb.RoleType_DEPARTMENT_LECTURER
-		case "Teacher":
-			entity.Role = pb.RoleType_TEACHER
-		default:
-			entity.Role = pb.RoleType_TEACHER
-		}
+		entity.Role = stringToRole(RoleStr)
 
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)

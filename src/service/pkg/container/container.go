@@ -38,6 +38,18 @@ func New(cfg *config.Config) (*Container, error) {
 	}, nil
 }
 
+// NewTest returns a lightweight container for integration tests without connecting to external services.
+func NewTest(cfg *config.Config) (*Container, error) {
+	if cfg == nil {
+		return nil, fmt.Errorf("config is nil")
+	}
+
+	return &Container{
+		Config:  cfg,
+		Clients: &Clients{},
+	}, nil
+}
+
 func initClients(cfg *config.Config) (*Clients, error) {
 
 	// Initialize Redis client

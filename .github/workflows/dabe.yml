@@ -7,9 +7,17 @@ on:
 
 env:
   DOCKER_USERNAME: thaily
+  GO_VERSION: '1.24'
 
 jobs:
+  # Run tests before building
+  run-tests:
+    name: Run Tests
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+
   build-and-push:
+    needs: run-tests
     runs-on: ubuntu-latest
 
     strategy:

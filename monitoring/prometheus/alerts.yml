@@ -1,0 +1,163 @@
+groups:
+  - name: lvtn_alerts
+    rules:
+      # Service Health Alerts
+      - alert: ServiceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 30 seconds."
+
+      - alert: ServiceUnhealthy
+        expr: service_health == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Service {{ $labels.service }} is unhealthy"
+          description: "Service {{ $labels.service }} has been reporting unhealthy status for more than 1 minute."
+
+      # GraphQL Performance Alerts
+      - alert: HighGraphQLErrorRate
+        expr: rate(graphql_requests_total{status="error"}[5m]) / rate(graphql_requests_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High GraphQL error rate"
+          description: "GraphQL error rate is {{ $value | humanizePercentage }} for operation {{ $labels.operation }}"
+
+      - alert: SlowGraphQLRequests
+        expr: histogram_quantile(0.95, rate(graphql_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow GraphQL requests"
+          description: "95th percentile of GraphQL request duration is {{ $value }}s for operation {{ $labels.operation }}"
+
+      - alert: HighGraphQLRequestRate
+        expr: rate(graphql_requests_total[5m]) > 100
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "High GraphQL request rate"
+          description: "GraphQL request rate is {{ $value }} requests/sec"
+
+      # Database Performance Alerts
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(database_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile of database query duration is {{ $value }}s for service {{ $labels.service }}"
+
+      - alert: HighDatabaseErrorRate
+        expr: rate(database_queries_total{status="error"}[5m]) / rate(database_queries_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database error rate"
+          description: "Database error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+
+      # gRPC Service Alerts
+      - alert: HighGRPCErrorRate
+        expr: rate(grpc_requests_total{status="error"}[5m]) / rate(grpc_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High gRPC error rate"
+          description: "gRPC error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+
+      - alert: SlowGRPCRequests
+        expr: histogram_quantile(0.95, rate(grpc_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow gRPC requests"
+          description: "95th percentile of gRPC request duration is {{ $value }}s for service {{ $labels.service }}"
+
+      # System Resource Alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}% on instance {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}% on instance {{ $labels.instance }}"
+
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space usage is {{ $value }}% on {{ $labels.mountpoint }} of instance {{ $labels.instance }}"
+
+      # Business Logic Alerts
+      - alert: NoThesisSubmissions
+        expr: rate(thesis_operations_total{operation="submission"}[1h]) == 0
+        for: 2h
+        labels:
+          severity: info
+        annotations:
+          summary: "No thesis submissions in the last 2 hours"
+          description: "There have been no thesis submissions in the last 2 hours, which might indicate an issue."
+
+      - alert: HighFileUploadFailures
+        expr: rate(file_operations_total{operation="upload", status="error"}[5m]) / rate(file_operations_total{operation="upload"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High file upload failure rate"
+          description: "File upload failure rate is {{ $value | humanizePercentage }}"
+
+      # Custom Application Alerts
+      - alert: TooManyActiveConnections
+        expr: graphql_active_connections > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Too many active GraphQL connections"
+          description: "There are {{ $value }} active GraphQL connections, which might indicate a connection leak."
+
+      - alert: UnusualFieldResolutionTime
+        expr: histogram_quantile(0.95, rate(graphql_field_resolution_duration_seconds_bucket[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Unusual field resolution time"
+          description: "95th percentile field resolution time is {{ $value }}s for field {{ $labels.field_name }}"
+
+      # Database Connection Alerts
+      - alert: DatabaseConnectionPoolExhausted
+        expr: database_queries_total - database_queries_total offset 5m == 0 and up{job=~".*-service"} == 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection pool might be exhausted"
+          description: "No database queries processed by {{ $labels.service }} for 2 minutes while service is up"

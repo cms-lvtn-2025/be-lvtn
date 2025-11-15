@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Pre-commit hook for running tests
+# Install: ln -s ../../.githooks/pre-commit .git/hooks/pre-commit
+
+echo "🔍 Running pre-commit checks..."
+
+# Run gofmt
+echo "Checking code formatting..."
+unformatted=$(gofmt -l .)
+if [ -n "$unformatted" ]; then
+    echo "❌ These files need formatting:"
+    echo "$unformatted"
+    echo ""
+    echo "Run: go fmt ./..."
+    exit 1
+fi
+echo "✅ Code formatting OK"
+
+# Run go vet
+echo "Running go vet..."
+if ! go vet ./...; then
+    echo "❌ go vet failed"
+    exit 1
+fi
+echo "✅ go vet OK"
+
+# Run quick tests for changed services
+echo "Running quick tests for changed services..."
+changed_services=$(git diff --cached --name-only | grep "src/service/" | cut -d/ -f3 | sort -u)
+
+if [ -n "$changed_services" ]; then
+    for service in $changed_services; do
+        if [ -d "src/service/$service/tests" ]; then
+            echo "Testing $service..."
+            cd "src/service/$service"
+            if ! go test ./tests/unit/... -short -timeout=30s; then
+                echo "❌ Tests failed for $service"
+                exit 1
+            fi
+            cd - > /dev/null
+        fi
+    done
+    echo "✅ All tests passed"
+else
+    echo "ℹ️  No service changes detected"
+fi
+
+echo "✅ Pre-commit checks passed!"

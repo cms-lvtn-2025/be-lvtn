@@ -38,6 +38,20 @@ func New(cfg *config.Config) (*Container, error) {
 	}, nil
 }
 
+// NewTest creates a minimal container for integration tests without initializing external clients.
+// External services are not required for the current GraphQL/HTTP integration coverage, so the
+// returned container simply carries the configuration and empty client placeholders.
+func NewTest(cfg *config.Config) (*Container, error) {
+	if cfg == nil {
+		return nil, fmt.Errorf("config is nil")
+	}
+
+	return &Container{
+		Config:  cfg,
+		Clients: &Clients{},
+	}, nil
+}
+
 func initClients(cfg *config.Config) (*Clients, error) {
 
 	// Initialize Redis client

@@ -17,8 +17,9 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Port string
-	Mode string
+	Port               string
+	Mode               string
+	DisableGraphQLAuth bool
 }
 
 type ServiceConfig struct {
@@ -102,8 +103,9 @@ func Load() (*Config, error) {
 
 	cfg := &Config{
 		Server: ServerConfig{
-			Port: getEnv("PORT", "8081"),
-			Mode: getEnv("GIN_MODE", "release"),
+			Port:               getEnv("PORT", "8081"),
+			Mode:               getEnv("GIN_MODE", "release"),
+			DisableGraphQLAuth: getEnvAsBool("DISABLE_GRAPHQL_AUTH", false),
 		},
 		Services: ServiceMap{
 			Academic: ServiceConfig{
@@ -194,4 +196,18 @@ func getEnvAsInt(key string, defaultValue int) int {
 		return defaultValue
 	}
 	return value
+}
+
+func getEnvAsBool(key string, defaultValue bool) bool {
+	valueStr := os.Getenv(key)
+	if valueStr == "" {
+		return defaultValue
+	}
+	if valueStr == "1" || valueStr == "true" || valueStr == "TRUE" || valueStr == "True" {
+		return true
+	}
+	if valueStr == "0" || valueStr == "false" || valueStr == "FALSE" || valueStr == "False" {
+		return false
+	}
+	return defaultValue
 }

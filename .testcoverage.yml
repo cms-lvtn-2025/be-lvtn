@@ -1,0 +1,21 @@
+# Test coverage thresholds
+profile: coverage.out
+threshold:
+  file: 80
+  package: 75
+  total: 80
+
+# Files to exclude from coverage
+exclude:
+  - "**/*_test.go"
+  - "**/tests/**"
+  - "**/*.pb.go"
+  - "**/*.pb.gw.go"
+  - "**/generated/**"
+  - "**/mocks/**"
+  - "**/vendor/**"
+  - "**/tmp-*/**"
+
+# Coverage report format
+output:
+  format: badges
