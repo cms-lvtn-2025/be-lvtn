@@ -14,6 +14,7 @@ import (
 
 // GetEnrollmentsByStudentId returns all enrollments for a given student
 func (c *Controller) GetEnrollmentsByStudentId(ctx context.Context, studentId string) ([]*model.Enrollment, error) {
+
 	newSearch := model.SearchRequestInput{
 		Pagination: c.DefaultPagination(),
 		Filters: []*model.FilterCriteriaInput{

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/server/graph/convert"
 	convert2 "thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
@@ -108,6 +109,14 @@ func (c *Controller) GetAllFaculties(ctx context.Context, search model.SearchReq
 
 // GetAllTopics returns all topics with pagination
 func (c *Controller) GetAllTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error) {
+	_, role, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if role == nil || (*role) != "teacher" {
+		return nil, fmt.Errorf("No teacher role %s", *role)
+	}
+
 	topics, err := c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
@@ -121,6 +130,13 @@ func (c *Controller) GetAllTopics(ctx context.Context, search model.SearchReques
 
 // GetTopicDetail returns topic detail by ID
 func (c *Controller) GetTopicDetail(ctx context.Context, id string) (*model.Topic, error) {
+	_, role, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if role == nil || (*role) == "teacher" {
+		return nil, fmt.Errorf("No teacher")
+	}
 	topic, err := c.thesis.GetTopicById(ctx, id)
 	if err != nil {
 		return nil, err

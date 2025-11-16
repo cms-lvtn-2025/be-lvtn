@@ -74,22 +74,25 @@ func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*p
 	}
 
 	query := `
-		SELECT id, title, major_code, semester_code, created_at, updated_at, created_by, updated_by
+		SELECT id, title, major_code, semester_code, time_start, created_at, updated_at, created_by, updated_by
 		FROM Council
 		WHERE id = ?
 	`
 
 	var entity pb.Council
-	var createdAt, updatedAt sql.NullTime
+	var createdAt, updatedAt, timeStart sql.NullTime
 	var updatedBy sql.NullString
 
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.MajorCode,
+
 		&entity.SemesterCode,
+		&timeStart,
 		&createdAt,
 		&updatedAt,
+
 		&entity.CreatedBy,
 		&updatedBy,
 	)
@@ -100,7 +103,9 @@ func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*p
 		}
 		return nil, status.Errorf(codes.Internal, "failed to get council: %v", err)
 	}
-
+	if timeStart.Valid {
+		entity.TimeStart = timestamppb.New(timeStart.Time)
+	}
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -260,7 +265,7 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, major_code, semester_code, created_at, updated_at, created_by, updated_by
+		SELECT id, title, major_code, semester_code,time_start, created_at, updated_at, created_by, updated_by
 		FROM Council
 		%s
 		ORDER BY %s %s
@@ -276,14 +281,16 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 	entities := []*pb.Council{}
 	for rows.Next() {
 		var entity pb.Council
-		var createdAt, updatedAt sql.NullTime
+		var createdAt, updatedAt, timeStart sql.NullTime
 		var updatedBy sql.NullString
 
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
 			&entity.MajorCode,
+
 			&entity.SemesterCode,
+			&timeStart,
 			&createdAt,
 			&updatedAt,
 			&entity.CreatedBy,
@@ -292,7 +299,9 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to scan council: %v", err)
 		}
-
+		if timeStart.Valid {
+			entity.TimeStart = timestamppb.New(timeStart.Time)
+		}
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}

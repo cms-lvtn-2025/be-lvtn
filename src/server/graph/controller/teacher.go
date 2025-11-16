@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	pb "thaily/proto/common"
 	"thaily/src/server/graph/convert"
 	convert2 "thaily/src/server/graph/convert"
@@ -76,7 +77,10 @@ func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *mod
 }
 
 func (c *Controller) GetSupervisedTopicCouncilDetail(ctx context.Context, id string) (*model.SupervisorTopicCouncilAssignment, error) {
-	_, _, err := c.GetInfoRequest(ctx)
+	_, role, err := c.GetInfoRequest(ctx)
+	if role == nil || (*role) != "teacher" {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +94,10 @@ func (c *Controller) GetSupervisedTopicCouncilDetail(ctx context.Context, id str
 }
 
 func (c *Controller) GetSupervisorTopicCouncilById(ctx context.Context, id string) (*model.SupervisorTopicCouncil, error) {
+	_, _, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
 	topicCouncil, err := c.thesis.GetTopicCouncilById(ctx, id)
 	if err != nil {
 		return nil, err
@@ -98,6 +106,14 @@ func (c *Controller) GetSupervisorTopicCouncilById(ctx context.Context, id strin
 }
 
 func (c *Controller) GetSupervisorTopicById(ctx context.Context, id string) (*model.SupervisorTopic, error) {
+	// role teacher
+	_, role, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if role == nil || (*role) != "teacher" {
+		return nil, fmt.Errorf("Not teacher")
+	}
 	topic, err := c.thesis.GetTopicById(ctx, id)
 	if err != nil {
 		return nil, err

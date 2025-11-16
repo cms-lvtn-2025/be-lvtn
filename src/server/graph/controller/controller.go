@@ -67,6 +67,7 @@ func (c *Controller) ConvertSearchRequestToPB(input model.SearchRequestInput) *p
 				req.Filters = append(req.Filters, convertFilterCriteriaToPB(filter))
 			}
 		}
+
 	}
 
 	return req
@@ -230,6 +231,29 @@ func (c *Controller) GetInfoRequest(ctx context.Context) (id *string, role *stri
 	}
 
 	return &myId, &roleSystem, nil
+}
+
+func (c *Controller) RbacInfo(ctx context.Context, roleCheck model.RoleSystemRole) (id *string, check bool, err error) {
+	myId, role, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, false, err
+	}
+	if role == nil {
+		return nil, false, fmt.Errorf("no teacher found for role %s", roleCheck)
+	}
+	roles, err := c.GetRole(ctx, *myId)
+	if err != nil {
+		return nil, false, err
+	}
+	if roles == nil {
+		return nil, false, fmt.Errorf("no teacher found for role %s", roleCheck)
+	}
+	for _, role := range roles {
+		if roleCheck == role.Role {
+			return myId, true, nil
+		}
+	}
+	return nil, false, fmt.Errorf("no teacher found for role %s", roleCheck)
 }
 
 func (c *Controller) GetInfoAllRequest(ctx context.Context) (ids *[]string, semesters *[]string, role *string, err error) {
