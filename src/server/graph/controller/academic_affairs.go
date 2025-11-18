@@ -20,6 +20,13 @@ import (
 
 // GetListTeachers returns all teachers with pagination
 func (c *Controller) GetListTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	teachers, err := c.user.GetTeachersBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
@@ -33,6 +40,13 @@ func (c *Controller) GetListTeachers(ctx context.Context, search model.SearchReq
 
 // GetListStudents returns all students with pagination
 func (c *Controller) GetListStudents(ctx context.Context, search model.SearchRequestInput) (*model.StudentListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	students, err := c.user.GetStudentsBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
@@ -46,6 +60,13 @@ func (c *Controller) GetListStudents(ctx context.Context, search model.SearchReq
 
 // GetStudentDetail returns student detail by ID
 func (c *Controller) GetStudentDetail(ctx context.Context, id string) (*model.Student, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	student, err := c.user.GetUserById(ctx, id)
 	if err != nil {
 		return nil, err
@@ -56,6 +77,13 @@ func (c *Controller) GetStudentDetail(ctx context.Context, id string) (*model.St
 
 // GetTeacherDetail returns teacher detail by ID
 func (c *Controller) GetTeacherDetail(ctx context.Context, id string) (*model.Teacher, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	teacher, err := c.user.GetTeacherById(ctx, id)
 	if err != nil {
 		return nil, err
@@ -70,6 +98,13 @@ func (c *Controller) GetTeacherDetail(ctx context.Context, id string) (*model.Te
 
 // GetAllSemesters returns all semesters with pagination
 func (c *Controller) GetAllSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
@@ -83,6 +118,13 @@ func (c *Controller) GetAllSemesters(ctx context.Context, search model.SearchReq
 
 // GetAllMajors returns all majors with pagination
 func (c *Controller) GetAllMajors(ctx context.Context, search model.SearchRequestInput) (*model.MajorListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	majors, err := c.academic.GetMajorsBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
@@ -97,9 +139,20 @@ func (c *Controller) GetAllMajors(ctx context.Context, search model.SearchReques
 // GetAllFaculties returns all faculties with pagination
 func (c *Controller) GetAllFaculties(ctx context.Context, search model.SearchRequestInput) (*model.FacultyListResponse, error) {
 	// TODO: Implement when GetFacultiesBySearch is available in gRPC client
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+	faculties, err := c.academic.GetFacultiesBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	if err != nil {
+		return nil, err
+	}
 	return &model.FacultyListResponse{
-		Total: 0,
-		Data:  []*model.Faculty{},
+		Total: faculties.GetTotal(),
+		Data:  convert.PbFacultiesToModel(faculties.GetFaculties()),
 	}, nil
 }
 
@@ -109,6 +162,13 @@ func (c *Controller) GetAllFaculties(ctx context.Context, search model.SearchReq
 
 // GetAllTopics returns all topics with pagination
 func (c *Controller) GetAllTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	_, role, err := c.GetInfoRequest(ctx)
 	if err != nil {
 		return nil, err

@@ -24,10 +24,11 @@ const (
 	// Cache TTL configurations
 	majorCacheTTL    = 30 * time.Minute // Majors are very stable
 	semesterCacheTTL = 15 * time.Minute // Semesters are relatively stable
-
+	facultyCacheTTL  = 15 * time.Minute // Faculties are relatively stable
 	// Cache key prefixes
 	majorCachePrefix    = "academic:major:"
 	semesterCachePrefix = "academic:semester:"
+	facultyCachePrefix  = "academic:faculty:"
 )
 
 func NewGRPCAcadamicClient(addr string, redisClient *redis.Client) (*GRPCAcadamicClient, error) {
@@ -324,6 +325,147 @@ func (g *GRPCAcadamicClient) GetSemestersByIds(ctx context.Context, ids []string
 					cacheKey := fmt.Sprintf("%s%s", semesterCachePrefix, semester.Id)
 					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.GetSemesterResponse{Semester: semester}, semesterCacheTTL)
 					result.Semesters = append(result.Semesters, semester)
+				}
+			}
+		}
+	}
+
+	return result, nil
+}
+
+// ============================================
+// FACULTY METHODS
+// ============================================
+
+func (g *GRPCAcadamicClient) GetFacultiesBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListFacultiesResponse, error) {
+	cacheKey := GenerateCacheKey(majorCachePrefix, search)
+	var cached pb.ListFacultiesResponse
+	if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for major search")
+		return &cached, nil
+	}
+
+	log.Printf("Cache MISS for major search")
+	resp, err := g.client.ListFaculties(ctx, &pb.ListFacultiesRequest{Search: search})
+	if err != nil {
+		return nil, err
+	}
+
+	SetCachedProto(ctx, g.redisClient, cacheKey, resp, majorCacheTTL)
+	return resp, nil
+}
+
+func (g *GRPCAcadamicClient) GetFacultyById(ctx context.Context, id string) (*pb.GetFacultyResponse, error) {
+	cacheKey := fmt.Sprintf("%s%s", facultyCachePrefix, id)
+	var cached pb.GetFacultyResponse
+	if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
+		log.Printf("Cache HIT for Faculty: %s", id)
+		return &cached, nil
+	}
+
+	log.Printf("Cache MISS for Faculty: %s", id)
+	resp, err := g.client.GetFaculty(ctx, &pb.GetFacultyRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+
+	SetCachedProto(ctx, g.redisClient, cacheKey, resp, facultyCacheTTL)
+	return resp, nil
+}
+
+func (g *GRPCAcadamicClient) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyRequest) (*pb.UpdateFacultyResponse, error) {
+	resp, err := g.client.UpdateFaculty(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	if req.Id != "" {
+		cacheKey := fmt.Sprintf("%s%s", facultyCachePrefix, req.Id)
+		InvalidateCacheByKey(ctx, g.redisClient, cacheKey)
+		InvalidateCacheByPattern(ctx, g.redisClient, facultyCachePrefix+"*")
+	}
+
+	return resp, nil
+}
+
+func (g *GRPCAcadamicClient) DeleteFaculty(ctx context.Context, id string) (*pb.DeleteFacultyResponse, error) {
+	resp, err := g.client.DeleteFaculty(ctx, &pb.DeleteFacultyRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	cacheKey := fmt.Sprintf("%s%s", facultyCachePrefix, id)
+	InvalidateCacheByKey(ctx, g.redisClient, cacheKey)
+	InvalidateCacheByPattern(ctx, g.redisClient, facultyCachePrefix+"*")
+
+	return resp, nil
+}
+
+func (g *GRPCAcadamicClient) GetFacultiesByIds(ctx context.Context, ids []string) (*pb.ListFacultiesResponse, error) {
+	if len(ids) == 0 {
+		return &pb.ListFacultiesResponse{Faculties: []*pb.Faculty{}}, nil
+	}
+
+	result := &pb.ListFacultiesResponse{Faculties: []*pb.Faculty{}}
+	missingIds := []string{}
+	cacheHits := 0
+
+	// Check Redis cache for each ID
+	for _, id := range ids {
+		cacheKey := fmt.Sprintf("%s%s", majorCachePrefix, id)
+		var cached pb.GetFacultyResponse
+
+		if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
+			if cached.Faculty != nil {
+				result.Faculties = append(result.Faculties, cached.Faculty)
+				cacheHits++
+			} else {
+				missingIds = append(missingIds, id)
+			}
+		} else {
+			missingIds = append(missingIds, id)
+		}
+	}
+
+	log.Printf("[GetFacultiesByIds] Total: %d, Cache hits: %d, Database queries needed: %d", len(ids), cacheHits, len(missingIds))
+
+	// Fetch missing IDs from database
+	if len(missingIds) > 0 {
+		resp, err := g.client.ListFaculties(ctx, &pb.ListFacultiesRequest{
+			Search: &pbCommon.SearchRequest{
+				Pagination: &pbCommon.Pagination{
+					Descending: false,
+					Page:       1,
+					PageSize:   int32(len(missingIds)),
+					SortBy:     "id",
+				},
+				Filters: []*pbCommon.FilterCriteria{
+					{
+						Criteria: &pbCommon.FilterCriteria_Condition{
+							Condition: &pbCommon.FilterCondition{
+								Field:    "id",
+								Operator: pbCommon.FilterOperator_IN,
+								Values:   missingIds,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		// Store fetched items to Redis and add to result
+		if resp != nil && resp.Faculties != nil {
+			for _, faculty := range resp.Faculties {
+				if faculty != nil {
+					cacheKey := fmt.Sprintf("%s%s", facultyCachePrefix, faculty.Id)
+					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.GetFacultyResponse{Faculty: faculty}, facultyCacheTTL)
+					result.Faculties = append(result.Faculties, faculty)
 				}
 			}
 		}

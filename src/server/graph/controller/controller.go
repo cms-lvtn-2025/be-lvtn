@@ -238,7 +238,7 @@ func (c *Controller) RbacInfo(ctx context.Context, roleCheck model.RoleSystemRol
 	if err != nil {
 		return nil, false, err
 	}
-	if role == nil {
+	if role == nil || (*role) != "teacher" {
 		return nil, false, fmt.Errorf("no teacher found for role %s", roleCheck)
 	}
 	roles, err := c.GetRole(ctx, *myId)

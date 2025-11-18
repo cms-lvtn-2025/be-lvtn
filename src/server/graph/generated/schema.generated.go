@@ -84,19 +84,19 @@ type QueryResolver interface {
 	GetCouncilDetail(ctx context.Context, id string) (*model.Council, error)
 	GetDefencesByCouncil(ctx context.Context, councilID string) (*model.DefenceListResponse, error)
 	GetAllGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error)
-	GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) ([]*model.Teacher, error)
-	GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) ([]*model.Student, error)
-	GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error)
-	GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) ([]*model.Major, error)
-	GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) ([]*model.Faculty, error)
-	GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error)
+	GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error)
+	GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) (*model.StudentListResponse, error)
+	GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error)
+	GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) (*model.MajorListResponse, error)
+	GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) (*model.FacultyListResponse, error)
+	GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error)
 	GetDepartmentTopicDetail(ctx context.Context, id string) (*model.Topic, error)
-	GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error)
+	GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error)
 	GetDepartmentEnrollmentDetail(ctx context.Context, id string) (*model.Enrollment, error)
-	GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error)
+	GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error)
 	GetDepartmentCouncilDetail(ctx context.Context, id string) (*model.Council, error)
-	GetDepartmentDefences(ctx context.Context, councilID string) ([]*model.Defence, error)
-	GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) ([]*model.GradeDefence, error)
+	GetDepartmentDefences(ctx context.Context, councilID string) (*model.DefenceListResponse, error)
+	GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error)
 	GetMyProfile(ctx context.Context) (*model.Student, error)
 	GetMyEnrollments(ctx context.Context, search *model.SearchRequestInput) (*model.StudentEnrollmentListResponse, error)
 	GetMyEnrollmentDetail(ctx context.Context, id string) (*model.StudentEnrollment, error)
@@ -6145,7 +6145,7 @@ func (ec *executionContext) _Query_getDepartmentTeachers(ctx context.Context, fi
 			return ec.resolvers.Query().GetDepartmentTeachers(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNTeacher2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTeacherᚄ,
+		ec.marshalNTeacherListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTeacherListResponse,
 		true,
 		true,
 	)
@@ -6159,30 +6159,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentTeachers(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Teacher_id(ctx, field)
-			case "email":
-				return ec.fieldContext_Teacher_email(ctx, field)
-			case "username":
-				return ec.fieldContext_Teacher_username(ctx, field)
-			case "gender":
-				return ec.fieldContext_Teacher_gender(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Teacher_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Teacher_semesterCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Teacher_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Teacher_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Teacher_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Teacher_updatedBy(ctx, field)
-			case "roles":
-				return ec.fieldContext_Teacher_roles(ctx, field)
+			case "total":
+				return ec.fieldContext_TeacherListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_TeacherListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type TeacherListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6210,7 +6192,7 @@ func (ec *executionContext) _Query_getDepartmentStudents(ctx context.Context, fi
 			return ec.resolvers.Query().GetDepartmentStudents(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNStudent2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentᚄ,
+		ec.marshalNStudentListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentListResponse,
 		true,
 		true,
 	)
@@ -6224,34 +6206,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentStudents(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Student_id(ctx, field)
-			case "email":
-				return ec.fieldContext_Student_email(ctx, field)
-			case "phone":
-				return ec.fieldContext_Student_phone(ctx, field)
-			case "username":
-				return ec.fieldContext_Student_username(ctx, field)
-			case "gender":
-				return ec.fieldContext_Student_gender(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Student_majorCode(ctx, field)
-			case "classCode":
-				return ec.fieldContext_Student_classCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Student_semesterCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Student_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Student_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Student_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Student_updatedBy(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Student_enrollments(ctx, field)
+			case "total":
+				return ec.fieldContext_StudentListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_StudentListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Student", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type StudentListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6279,7 +6239,7 @@ func (ec *executionContext) _Query_getDepartmentSemesters(ctx context.Context, f
 			return ec.resolvers.Query().GetDepartmentSemesters(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNSemester2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemesterᚄ,
+		ec.marshalNSemesterListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemesterListResponse,
 		true,
 		true,
 	)
@@ -6293,26 +6253,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentSemesters(ctx contex
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Semester_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Semester_title(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Semester_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Semester_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Semester_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Semester_updatedBy(ctx, field)
-			case "students":
-				return ec.fieldContext_Semester_students(ctx, field)
-			case "teachers":
-				return ec.fieldContext_Semester_teachers(ctx, field)
-			case "topics":
-				return ec.fieldContext_Semester_topics(ctx, field)
+			case "total":
+				return ec.fieldContext_SemesterListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_SemesterListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Semester", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SemesterListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6340,7 +6286,7 @@ func (ec *executionContext) _Query_getDepartmentMajors(ctx context.Context, fiel
 			return ec.resolvers.Query().GetDepartmentMajors(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNMajor2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajorᚄ,
+		ec.marshalNMajorListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajorListResponse,
 		true,
 		true,
 	)
@@ -6354,24 +6300,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentMajors(ctx context.C
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Major_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Major_title(ctx, field)
-			case "facultyCode":
-				return ec.fieldContext_Major_facultyCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Major_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Major_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Major_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Major_updatedBy(ctx, field)
-			case "topics":
-				return ec.fieldContext_Major_topics(ctx, field)
+			case "total":
+				return ec.fieldContext_MajorListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_MajorListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Major", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type MajorListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6399,7 +6333,7 @@ func (ec *executionContext) _Query_getDepartmentFaculties(ctx context.Context, f
 			return ec.resolvers.Query().GetDepartmentFaculties(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNFaculty2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFacultyᚄ,
+		ec.marshalNFacultyListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFacultyListResponse,
 		true,
 		true,
 	)
@@ -6413,22 +6347,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentFaculties(ctx contex
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Faculty_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Faculty_title(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Faculty_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Faculty_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Faculty_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Faculty_updatedBy(ctx, field)
-			case "majors":
-				return ec.fieldContext_Faculty_majors(ctx, field)
+			case "total":
+				return ec.fieldContext_FacultyListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_FacultyListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Faculty", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type FacultyListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6456,7 +6380,7 @@ func (ec *executionContext) _Query_getDepartmentTopics(ctx context.Context, fiel
 			return ec.resolvers.Query().GetDepartmentTopics(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNTopic2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicᚄ,
+		ec.marshalNTopicListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicListResponse,
 		true,
 		true,
 	)
@@ -6471,35 +6395,11 @@ func (ec *executionContext) fieldContext_Query_getDepartmentTopics(ctx context.C
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "total":
-				return ec.fieldContext_Topic_total(ctx, field)
-			case "id":
-				return ec.fieldContext_Topic_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Topic_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "status":
-				return ec.fieldContext_Topic_status(ctx, field)
-			case "percentStage1":
-				return ec.fieldContext_Topic_percentStage1(ctx, field)
-			case "percentStage2":
-				return ec.fieldContext_Topic_percentStage2(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Topic_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Topic_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Topic_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Topic_updatedBy(ctx, field)
-			case "files":
-				return ec.fieldContext_Topic_files(ctx, field)
-			case "topicCouncils":
-				return ec.fieldContext_Topic_topicCouncils(ctx, field)
+				return ec.fieldContext_TopicListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_TopicListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type TopicListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6598,7 +6498,7 @@ func (ec *executionContext) _Query_getDepartmentEnrollments(ctx context.Context,
 			return ec.resolvers.Query().GetDepartmentEnrollments(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNEnrollment2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐEnrollmentᚄ,
+		ec.marshalNEnrollmentListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐEnrollmentListResponse,
 		true,
 		true,
 	)
@@ -6612,42 +6512,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentEnrollments(ctx cont
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Enrollment_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Enrollment_title(ctx, field)
-			case "studentCode":
-				return ec.fieldContext_Enrollment_studentCode(ctx, field)
-			case "topicCouncilCode":
-				return ec.fieldContext_Enrollment_topicCouncilCode(ctx, field)
-			case "finalCode":
-				return ec.fieldContext_Enrollment_finalCode(ctx, field)
-			case "gradeReviewCode":
-				return ec.fieldContext_Enrollment_gradeReviewCode(ctx, field)
-			case "midtermCode":
-				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Enrollment_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Enrollment_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Enrollment_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Enrollment_updatedBy(ctx, field)
-			case "student":
-				return ec.fieldContext_Enrollment_student(ctx, field)
-			case "midterm":
-				return ec.fieldContext_Enrollment_midterm(ctx, field)
-			case "final":
-				return ec.fieldContext_Enrollment_final(ctx, field)
-			case "topicCouncil":
-				return ec.fieldContext_Enrollment_topicCouncil(ctx, field)
-			case "gradeReview":
-				return ec.fieldContext_Enrollment_gradeReview(ctx, field)
-			case "gradeDefences":
-				return ec.fieldContext_Enrollment_gradeDefences(ctx, field)
+			case "total":
+				return ec.fieldContext_EnrollmentListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_EnrollmentListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type EnrollmentListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6752,7 +6622,7 @@ func (ec *executionContext) _Query_getDepartmentCouncils(ctx context.Context, fi
 			return ec.resolvers.Query().GetDepartmentCouncils(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNCouncil2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncilᚄ,
+		ec.marshalNCouncilListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncilListResponse,
 		true,
 		true,
 	)
@@ -6767,31 +6637,11 @@ func (ec *executionContext) fieldContext_Query_getDepartmentCouncils(ctx context
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "total":
-				return ec.fieldContext_Council_total(ctx, field)
-			case "id":
-				return ec.fieldContext_Council_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Council_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Council_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Council_semesterCode(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_Council_timeStart(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Council_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Council_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Council_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Council_updatedBy(ctx, field)
-			case "defences":
-				return ec.fieldContext_Council_defences(ctx, field)
-			case "topicCouncils":
-				return ec.fieldContext_Council_topicCouncils(ctx, field)
+				return ec.fieldContext_CouncilListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_CouncilListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CouncilListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6886,7 +6736,7 @@ func (ec *executionContext) _Query_getDepartmentDefences(ctx context.Context, fi
 			return ec.resolvers.Query().GetDepartmentDefences(ctx, fc.Args["councilId"].(string))
 		},
 		nil,
-		ec.marshalNDefence2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐDefenceᚄ,
+		ec.marshalNDefenceListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐDefenceListResponse,
 		true,
 		true,
 	)
@@ -6900,32 +6750,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentDefences(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Defence_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Defence_title(ctx, field)
-			case "councilCode":
-				return ec.fieldContext_Defence_councilCode(ctx, field)
-			case "teacherCode":
-				return ec.fieldContext_Defence_teacherCode(ctx, field)
-			case "position":
-				return ec.fieldContext_Defence_position(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Defence_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Defence_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Defence_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Defence_updatedBy(ctx, field)
-			case "council":
-				return ec.fieldContext_Defence_council(ctx, field)
-			case "teacher":
-				return ec.fieldContext_Defence_teacher(ctx, field)
-			case "gradeDefences":
-				return ec.fieldContext_Defence_gradeDefences(ctx, field)
+			case "total":
+				return ec.fieldContext_DefenceListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_DefenceListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Defence", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type DefenceListResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -6953,7 +6783,7 @@ func (ec *executionContext) _Query_getDepartmentGradeDefences(ctx context.Contex
 			return ec.resolvers.Query().GetDepartmentGradeDefences(ctx, fc.Args["search"].(model.SearchRequestInput))
 		},
 		nil,
-		ec.marshalNGradeDefence2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeDefenceᚄ,
+		ec.marshalNGradeDefenceListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeDefenceListResponse,
 		true,
 		true,
 	)
@@ -6967,32 +6797,12 @@ func (ec *executionContext) fieldContext_Query_getDepartmentGradeDefences(ctx co
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_GradeDefence_id(ctx, field)
-			case "defenceCode":
-				return ec.fieldContext_GradeDefence_defenceCode(ctx, field)
-			case "enrollmentCode":
-				return ec.fieldContext_GradeDefence_enrollmentCode(ctx, field)
-			case "note":
-				return ec.fieldContext_GradeDefence_note(ctx, field)
-			case "totalScore":
-				return ec.fieldContext_GradeDefence_totalScore(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_GradeDefence_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_GradeDefence_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_GradeDefence_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_GradeDefence_updatedBy(ctx, field)
-			case "defence":
-				return ec.fieldContext_GradeDefence_defence(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_GradeDefence_enrollment(ctx, field)
-			case "criteria":
-				return ec.fieldContext_GradeDefence_criteria(ctx, field)
+			case "total":
+				return ec.fieldContext_GradeDefenceListResponse_total(ctx, field)
+			case "data":
+				return ec.fieldContext_GradeDefenceListResponse_data(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type GradeDefence", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GradeDefenceListResponse", field.Name)
 		},
 	}
 	defer func() {

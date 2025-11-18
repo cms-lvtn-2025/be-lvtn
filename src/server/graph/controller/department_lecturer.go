@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"thaily/src/server/graph/convert"
-	convert2 "thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
 )
 
@@ -18,7 +17,7 @@ import (
 // ============================================
 
 // GetDepartmentTeachers returns all teachers in the department
-func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) ([]*model.Teacher, error) {
+func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
 	myId, _, err := c.GetInfoRequest(ctx)
 	if err != nil {
 		return nil, err
@@ -51,11 +50,14 @@ func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.Sea
 		return nil, err
 	}
 
-	return convert.PbTeachersToModel(teachers.GetTeachers()), nil
+	return &model.TeacherListResponse{
+		Total: teachers.GetTotal(),
+		Data:  convert.PbTeachersToModel(teachers.GetTeachers()),
+	}, nil
 }
 
 // GetDepartmentStudents returns all students in the department
-func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) ([]*model.Student, error) {
+func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) (*model.StudentListResponse, error) {
 	myId, _, err := c.GetInfoRequest(ctx)
 	if err != nil {
 		return nil, err
@@ -88,7 +90,10 @@ func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.Sea
 		return nil, err
 	}
 
-	return convert.PbStudentsToModel(students.GetStudents()), nil
+	return &model.StudentListResponse{
+		Total: students.GetTotal(),
+		Data:  convert.PbStudentsToModel(students.GetStudents()),
+	}, nil
 }
 
 // ============================================
@@ -96,17 +101,20 @@ func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.Sea
 // ============================================
 
 // GetDepartmentSemesters returns all semesters
-func (c *Controller) GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error) {
+func (c *Controller) GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error) {
 	semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
 
-	return convert.PbSemestersToModel(semesters.GetSemesters()), nil
+	return &model.SemesterListResponse{
+		Total: semesters.GetTotal(),
+		Data:  convert.PbSemestersToModel(semesters.GetSemesters()),
+	}, nil
 }
 
 // GetDepartmentMajors returns all majors in the department
-func (c *Controller) GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) ([]*model.Major, error) {
+func (c *Controller) GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) (*model.MajorListResponse, error) {
 	myId, _, err := c.GetInfoRequest(ctx)
 	if err != nil {
 		return nil, err
@@ -139,13 +147,19 @@ func (c *Controller) GetDepartmentMajors(ctx context.Context, search model.Searc
 		return nil, err
 	}
 
-	return convert.PbMajorsToModel(majors.GetMajors()), nil
+	return &model.MajorListResponse{
+		Total: majors.GetTotal(),
+		Data:  convert.PbMajorsToModel(majors.GetMajors()),
+	}, nil
 }
 
 // GetDepartmentFaculties returns all faculties
-func (c *Controller) GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) ([]*model.Faculty, error) {
+func (c *Controller) GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) (*model.FacultyListResponse, error) {
 	// TODO: Implement when GetFacultiesBySearch is available in gRPC client
-	return []*model.Faculty{}, nil
+	return &model.FacultyListResponse{
+		Total: 0,
+		Data:  []*model.Faculty{},
+	}, nil
 }
 
 // ============================================
@@ -153,7 +167,7 @@ func (c *Controller) GetDepartmentFaculties(ctx context.Context, search model.Se
 // ============================================
 
 // GetDepartmentTopics returns all topics in the department
-func (c *Controller) GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error) {
+func (c *Controller) GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error) {
 	myId, _, err := c.GetInfoRequest(ctx)
 	if err != nil {
 		return nil, err
@@ -186,7 +200,10 @@ func (c *Controller) GetDepartmentTopics(ctx context.Context, search model.Searc
 		return nil, err
 	}
 
-	return convert2.PbTopicsToModel(topics.GetTopics()), nil
+	return &model.TopicListResponse{
+		Total: topics.GetTotal(),
+		Data:  convert.PbTopicsToModel(topics.GetTopics()),
+	}, nil
 }
 
 // GetDepartmentTopicDetail returns topic detail by ID
@@ -196,7 +213,7 @@ func (c *Controller) GetDepartmentTopicDetail(ctx context.Context, id string) (*
 		return nil, err
 	}
 
-	return convert2.PbTopicToModel(topic.GetTopic()), nil
+	return convert.PbTopicToModel(topic.GetTopic()), nil
 }
 
 // ============================================
@@ -204,7 +221,7 @@ func (c *Controller) GetDepartmentTopicDetail(ctx context.Context, id string) (*
 // ============================================
 
 // GetDepartmentEnrollments returns all enrollments in the department
-func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error) {
+func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error) {
 	myId, _, err := c.GetInfoRequest(ctx)
 	if err != nil {
 		return nil, err
@@ -244,7 +261,10 @@ func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.
 	}
 
 	if len(topicIDs) == 0 {
-		return []*model.Enrollment{}, nil
+		return &model.EnrollmentListResponse{
+			Total: 0,
+			Data:  []*model.Enrollment{},
+		}, nil
 	}
 
 	// Filter enrollments by topic IDs through topic_council
@@ -253,7 +273,10 @@ func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.
 		return nil, err
 	}
 
-	return convert2.PbEnrollmentsToModel(enrollments.GetEnrollments()), nil
+	return &model.EnrollmentListResponse{
+		Total: enrollments.GetTotal(),
+		Data:  convert.PbEnrollmentsToModel(enrollments.GetEnrollments()),
+	}, nil
 }
 
 // GetDepartmentEnrollmentDetail returns enrollment detail by ID
@@ -263,7 +286,7 @@ func (c *Controller) GetDepartmentEnrollmentDetail(ctx context.Context, id strin
 		return nil, err
 	}
 
-	return convert2.PbEnrollmentToModel(enrollment.GetEnrollment()), nil
+	return convert.PbEnrollmentToModel(enrollment.GetEnrollment()), nil
 }
 
 // ============================================
@@ -271,7 +294,7 @@ func (c *Controller) GetDepartmentEnrollmentDetail(ctx context.Context, id strin
 // ============================================
 
 // GetDepartmentCouncils returns all councils in the department
-func (c *Controller) GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
+func (c *Controller) GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
 	myId, _, err := c.GetInfoRequest(ctx)
 	if err != nil {
 		return nil, err
@@ -304,7 +327,10 @@ func (c *Controller) GetDepartmentCouncils(ctx context.Context, search model.Sea
 		return nil, err
 	}
 
-	return convert.PbCouncilsToModel(councils.GetCouncils()), nil
+	return &model.CouncilListResponse{
+		Total: councils.GetTotal(),
+		Data:  convert.PbCouncilsToModel(councils.GetCouncils()),
+	}, nil
 }
 
 // GetDepartmentCouncilDetail returns council detail by ID
@@ -318,7 +344,7 @@ func (c *Controller) GetDepartmentCouncilDetail(ctx context.Context, id string) 
 }
 
 // GetDepartmentDefences returns all defences of a council
-func (c *Controller) GetDepartmentDefences(ctx context.Context, councilID string) ([]*model.Defence, error) {
+func (c *Controller) GetDepartmentDefences(ctx context.Context, councilID string) (*model.DefenceListResponse, error) {
 	newSearch := model.SearchRequestInput{
 		Pagination: c.DefaultPagination(),
 		Filters: []*model.FilterCriteriaInput{
@@ -337,17 +363,23 @@ func (c *Controller) GetDepartmentDefences(ctx context.Context, councilID string
 		return nil, err
 	}
 
-	return convert.PbDefencesToModel(defences.GetDefences()), nil
+	return &model.DefenceListResponse{
+		Total: defences.GetTotal(),
+		Data:  convert.PbDefencesToModel(defences.GetDefences()),
+	}, nil
 }
 
 // GetDepartmentGradeDefences returns all grade defences
-func (c *Controller) GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) ([]*model.GradeDefence, error) {
+func (c *Controller) GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error) {
 	gradeDefences, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
 
-	return convert.PbGradeDefencesToModel(gradeDefences.GetGradeDefences()), nil
+	return &model.GradeDefenceListResponse{
+		Total: gradeDefences.GetTotal(),
+		Data:  convert.PbGradeDefencesToModel(gradeDefences.GetGradeDefences()),
+	}, nil
 }
 
 // ============================================

@@ -45,32 +45,32 @@ func (r *mutationResolver) AssignTopicToCouncil(ctx context.Context, topicCounci
 }
 
 // GetDepartmentTeachers is the resolver for the getDepartmentTeachers field.
-func (r *queryResolver) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) ([]*model.Teacher, error) {
+func (r *queryResolver) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
 	return r.Ctrl.GetDepartmentTeachers(ctx, search)
 }
 
 // GetDepartmentStudents is the resolver for the getDepartmentStudents field.
-func (r *queryResolver) GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) ([]*model.Student, error) {
+func (r *queryResolver) GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) (*model.StudentListResponse, error) {
 	return r.Ctrl.GetDepartmentStudents(ctx, search)
 }
 
 // GetDepartmentSemesters is the resolver for the getDepartmentSemesters field.
-func (r *queryResolver) GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) ([]*model.Semester, error) {
+func (r *queryResolver) GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error) {
 	return r.Ctrl.GetDepartmentSemesters(ctx, search)
 }
 
 // GetDepartmentMajors is the resolver for the getDepartmentMajors field.
-func (r *queryResolver) GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) ([]*model.Major, error) {
+func (r *queryResolver) GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) (*model.MajorListResponse, error) {
 	return r.Ctrl.GetDepartmentMajors(ctx, search)
 }
 
 // GetDepartmentFaculties is the resolver for the getDepartmentFaculties field.
-func (r *queryResolver) GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) ([]*model.Faculty, error) {
+func (r *queryResolver) GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) (*model.FacultyListResponse, error) {
 	return r.Ctrl.GetDepartmentFaculties(ctx, search)
 }
 
 // GetDepartmentTopics is the resolver for the getDepartmentTopics field.
-func (r *queryResolver) GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) ([]*model.Topic, error) {
+func (r *queryResolver) GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error) {
 	return r.Ctrl.GetDepartmentTopics(ctx, search)
 }
 
@@ -80,7 +80,7 @@ func (r *queryResolver) GetDepartmentTopicDetail(ctx context.Context, id string)
 }
 
 // GetDepartmentEnrollments is the resolver for the getDepartmentEnrollments field.
-func (r *queryResolver) GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) ([]*model.Enrollment, error) {
+func (r *queryResolver) GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error) {
 	return r.Ctrl.GetDepartmentEnrollments(ctx, search)
 }
 
@@ -90,7 +90,7 @@ func (r *queryResolver) GetDepartmentEnrollmentDetail(ctx context.Context, id st
 }
 
 // GetDepartmentCouncils is the resolver for the getDepartmentCouncils field.
-func (r *queryResolver) GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) ([]*model.Council, error) {
+func (r *queryResolver) GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
 	return r.Ctrl.GetDepartmentCouncils(ctx, search)
 }
 
@@ -100,11 +100,11 @@ func (r *queryResolver) GetDepartmentCouncilDetail(ctx context.Context, id strin
 }
 
 // GetDepartmentDefences is the resolver for the getDepartmentDefences field.
-func (r *queryResolver) GetDepartmentDefences(ctx context.Context, councilID string) ([]*model.Defence, error) {
+func (r *queryResolver) GetDepartmentDefences(ctx context.Context, councilID string) (*model.DefenceListResponse, error) {
 	return r.Ctrl.GetDepartmentDefences(ctx, councilID)
 }
 
 // GetDepartmentGradeDefences is the resolver for the getDepartmentGradeDefences field.
-func (r *queryResolver) GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) ([]*model.GradeDefence, error) {
+func (r *queryResolver) GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error) {
 	return r.Ctrl.GetDepartmentGradeDefences(ctx, search)
 }
