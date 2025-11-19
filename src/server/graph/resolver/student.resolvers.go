@@ -32,11 +32,6 @@ func (r *queryResolver) GetMyEnrollments(ctx context.Context, search *model.Sear
 	return r.Ctrl.GetEnrollmentsForStudent(ctx, search)
 }
 
-// GetMyEnrollmentDetail is the resolver for the getMyEnrollmentDetail field.
-func (r *queryResolver) GetMyEnrollmentDetail(ctx context.Context, id string) (*model.StudentEnrollment, error) {
-	return r.Ctrl.GetEnrollmentForStudent(ctx, id)
-}
-
 // GetMySemesters is the resolver for the getMySemesters field.
 func (r *queryResolver) GetMySemesters(ctx context.Context, search *model.SearchRequestInput) (*model.SemesterListResponse, error) {
 	return r.Ctrl.GetMySemesters(ctx, search)

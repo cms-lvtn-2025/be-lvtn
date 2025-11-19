@@ -8106,13 +8106,6 @@ func (ec *executionContext) marshalOCouncilDefence2ᚕᚖthailyᚋsrcᚋserver�
 	return ret
 }
 
-func (ec *executionContext) marshalOCouncilDefence2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncilDefence(ctx context.Context, sel ast.SelectionSet, v *model.CouncilDefence) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._CouncilDefence(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalOCouncilEnrollment2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncilEnrollmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.CouncilEnrollment) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -8226,13 +8219,6 @@ func (ec *executionContext) marshalOReviewerEnrollment2ᚖthailyᚋsrcᚋserver�
 		return graphql.Null
 	}
 	return ec._ReviewerEnrollment(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOReviewerGradeReview2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐReviewerGradeReview(ctx context.Context, sel ast.SelectionSet, v *model.ReviewerGradeReview) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._ReviewerGradeReview(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOReviewerTopic2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐReviewerTopic(ctx context.Context, sel ast.SelectionSet, v *model.ReviewerTopic) graphql.Marshaler {
@@ -8355,13 +8341,6 @@ func (ec *executionContext) marshalOSupervisorTopicCouncil2ᚖthailyᚋsrcᚋser
 		return graphql.Null
 	}
 	return ec._SupervisorTopicCouncil(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOSupervisorTopicCouncilAssignment2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSupervisorTopicCouncilAssignment(ctx context.Context, sel ast.SelectionSet, v *model.SupervisorTopicCouncilAssignment) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._SupervisorTopicCouncilAssignment(ctx, sel, v)
 }
 
 // endregion ***************************** type.gotpl *****************************

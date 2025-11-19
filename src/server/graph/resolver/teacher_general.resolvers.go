@@ -343,29 +343,14 @@ func (r *queryResolver) GetMySupervisedTopicCouncils(ctx context.Context, search
 	return r.Ctrl.GetSupervisedTopicCouncils(ctx, search)
 }
 
-// GetMySupervisedTopicCouncilDetail is the resolver for the getMySupervisedTopicCouncilDetail field.
-func (r *queryResolver) GetMySupervisedTopicCouncilDetail(ctx context.Context, id string) (*model.SupervisorTopicCouncilAssignment, error) {
-	return r.Ctrl.GetSupervisedTopicCouncilDetail(ctx, id)
-}
-
 // GetMyDefences is the resolver for the getMyDefences field.
 func (r *queryResolver) GetMyDefences(ctx context.Context, search *model.SearchRequestInput) (*model.CouncilDefenceListResponse, error) {
 	return r.Ctrl.GetMyDefences(ctx, search)
 }
 
-// GetMyDefenceDetail is the resolver for the getMyDefenceDetail field.
-func (r *queryResolver) GetMyDefenceDetail(ctx context.Context, id string) (*model.CouncilDefence, error) {
-	return r.Ctrl.GetMyDefenceDetail(ctx, id)
-}
-
 // GetMyGradeReviews is the resolver for the getMyGradeReviews field.
 func (r *queryResolver) GetMyGradeReviews(ctx context.Context, search *model.SearchRequestInput) (*model.ReviewerGradeReviewListResponse, error) {
 	return r.Ctrl.GetMyGradeReviews(ctx, search)
-}
-
-// GetMyGradeReviewDetail is the resolver for the getMyGradeReviewDetail field.
-func (r *queryResolver) GetMyGradeReviewDetail(ctx context.Context, id string) (*model.ReviewerGradeReview, error) {
-	return r.Ctrl.GetMyGradeReviewDetail(ctx, id)
 }
 
 // Student is the resolver for the student field.

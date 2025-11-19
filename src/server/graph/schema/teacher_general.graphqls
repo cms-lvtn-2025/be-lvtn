@@ -12,8 +12,8 @@ extend type Query {
     """Lấy danh sách topic council mà giáo viên hướng dẫn"""
     getMySupervisedTopicCouncils(search: SearchRequestInput): SupervisorTopicCouncilAssignmentListResponse!
 
-    """Lấy chi tiết topic council mà giáo viên hướng dẫn"""
-    getMySupervisedTopicCouncilDetail(id: ID!): SupervisorTopicCouncilAssignment
+    # """Lấy chi tiết topic council mà giáo viên hướng dẫn"""
+    # getMySupervisedTopicCouncilDetail(id: ID!): SupervisorTopicCouncilAssignment
 
     # === COUNCIL MEMBER QUERIES (role động qua Defence) ===
     # Query từ bảng nguồn: Defence WHERE teacher_code = current_user
@@ -21,8 +21,8 @@ extend type Query {
     """Lấy danh sách defence assignments của giáo viên"""
     getMyDefences(search: SearchRequestInput): CouncilDefenceListResponse!
 
-    """Lấy chi tiết defence assignment"""
-    getMyDefenceDetail(id: ID!): CouncilDefence
+    # """Lấy chi tiết defence assignment"""
+    # getMyDefenceDetail(id: ID!): CouncilDefence
 
     # === REVIEWER QUERIES (role động qua Grade_review) ===
     # Query từ bảng nguồn: Grade_review WHERE teacher_code = current_user
@@ -30,8 +30,8 @@ extend type Query {
     """Lấy danh sách grade review assignments của giáo viên"""
     getMyGradeReviews(search: SearchRequestInput): ReviewerGradeReviewListResponse!
 
-    """Lấy chi tiết grade review assignment"""
-    getMyGradeReviewDetail(id: ID!): ReviewerGradeReview
+    # """Lấy chi tiết grade review assignment"""
+    # getMyGradeReviewDetail(id: ID!): ReviewerGradeReview
 }
 
 # ============================================

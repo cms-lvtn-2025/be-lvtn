@@ -211,6 +211,13 @@ func (c *Controller) GetTopicDetail(ctx context.Context, id string) (*model.Topi
 
 // GetAllEnrollments returns all enrollments with pagination
 func (c *Controller) GetAllEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
@@ -224,6 +231,13 @@ func (c *Controller) GetAllEnrollments(ctx context.Context, search model.SearchR
 
 // GetEnrollmentDetail returns enrollment detail by ID
 func (c *Controller) GetEnrollmentDetail(ctx context.Context, id string) (*model.Enrollment, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	enrollment, err := c.thesis.GetEnrollmentById(ctx, id)
 	if err != nil {
 		return nil, err
@@ -238,6 +252,13 @@ func (c *Controller) GetEnrollmentDetail(ctx context.Context, id string) (*model
 
 // GetAllCouncils returns all councils with pagination
 func (c *Controller) GetAllCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	councils, err := c.council.GetCouncilBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
@@ -251,6 +272,13 @@ func (c *Controller) GetAllCouncils(ctx context.Context, search model.SearchRequ
 
 // GetCouncilDetail returns council detail by ID
 func (c *Controller) GetCouncilDetail(ctx context.Context, id string) (*model.Council, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	council, err := c.council.GetCouncilById(ctx, id)
 	if err != nil {
 		return nil, err
@@ -261,6 +289,13 @@ func (c *Controller) GetCouncilDetail(ctx context.Context, id string) (*model.Co
 
 // GetDefencesByCouncil returns all defences of a council
 func (c *Controller) GetDefencesByCouncil(ctx context.Context, councilID string) (*model.DefenceListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	newSearch := model.SearchRequestInput{
 		Pagination: c.DefaultPagination(),
 		Filters: []*model.FilterCriteriaInput{
@@ -287,6 +322,13 @@ func (c *Controller) GetDefencesByCouncil(ctx context.Context, councilID string)
 
 // GetAllGradeDefences returns all grade defences with pagination
 func (c *Controller) GetAllGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error) {
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
 	gradeDefences, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err

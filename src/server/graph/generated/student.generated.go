@@ -3966,13 +3966,6 @@ func (ec *executionContext) marshalOStudentDefenceInfo2ᚖthailyᚋsrcᚋserver�
 	return ec._StudentDefenceInfo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOStudentEnrollment2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentEnrollment(ctx context.Context, sel ast.SelectionSet, v *model.StudentEnrollment) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._StudentEnrollment(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalOStudentGradeDefence2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentGradeDefenceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudentGradeDefence) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null

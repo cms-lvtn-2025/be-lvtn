@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
 )
@@ -16,20 +17,58 @@ import (
 // QUERY METHODS - User Management
 // ============================================
 
-// GetDepartmentTeachers returns all teachers in the department
-func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+func (c *Controller) GetAllMajorByMajorCode(ctx context.Context) ([]string, error) {
+	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
 	if err != nil {
 		return nil, err
 	}
-
-	// Get teacher's major to filter by department
+	if !check {
+		return nil, fmt.Errorf("no department lecturer role")
+	}
 	teacher, err := c.user.GetTeacherById(ctx, *myId)
 	if err != nil {
 		return nil, err
 	}
-
 	majorCode := teacher.GetTeacher().GetMajorCode()
+	major, err := c.academic.GetMajorById(ctx, majorCode)
+	if err != nil {
+		return nil, err
+	}
+	newSearch := model.SearchRequestInput{
+		Pagination: c.DefaultPagination(),
+		Filters: []*model.FilterCriteriaInput{
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "faculty_code",
+					Operator: model.FilterOperatorEqual,
+					Values:   []string{major.GetMajor().GetFacultyCode()},
+				},
+			},
+		},
+	}
+	majors, err := c.academic.GetMajorsBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	if err != nil {
+		return nil, err
+	}
+	majorCodes := make([]string, 0)
+	for _, major := range majors.GetMajors() {
+		majorCodes = append(majorCodes, major.GetId())
+	}
+	return majorCodes, nil
+}
+
+// GetDepartmentTeachers returns all teachers in the department
+func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
+	majorCodes, err := c.GetAllMajorByMajorCode(ctx)
+	if err != nil {
+		return nil, err
+	}
+	semester, ok := ctx.Value("semester").(string)
+	if !ok {
+		return nil, fmt.Errorf("no semester")
+	}
+	fmt.Println("semester", semester)
+	fmt.Println("majorCodes", majorCodes)
 
 	// Add major filter to search
 	newSearch := model.SearchRequestInput{
@@ -38,8 +77,15 @@ func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.Sea
 			{
 				Condition: &model.FilterConditionInput{
 					Field:    "major_code",
+					Operator: model.FilterOperatorIn,
+					Values:   majorCodes,
+				},
+			},
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{majorCode},
+					Values:   []string{semester},
 				},
 			},
 		}, search.Filters...),
@@ -58,18 +104,14 @@ func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.Sea
 
 // GetDepartmentStudents returns all students in the department
 func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.SearchRequestInput) (*model.StudentListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	majorCodes, err := c.GetAllMajorByMajorCode(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	// Get teacher's major to filter by department
-	teacher, err := c.user.GetTeacherById(ctx, *myId)
-	if err != nil {
-		return nil, err
+	semester, ok := ctx.Value("semester").(string)
+	if !ok {
+		return nil, fmt.Errorf("no semester")
 	}
-
-	majorCode := teacher.GetTeacher().GetMajorCode()
 
 	// Add major filter to search
 	newSearch := model.SearchRequestInput{
@@ -78,8 +120,15 @@ func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.Sea
 			{
 				Condition: &model.FilterConditionInput{
 					Field:    "major_code",
+					Operator: model.FilterOperatorIn,
+					Values:   majorCodes,
+				},
+			},
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{majorCode},
+					Values:   []string{semester},
 				},
 			},
 		}, search.Filters...),
@@ -102,32 +151,35 @@ func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.Sea
 
 // GetDepartmentSemesters returns all semesters
 func (c *Controller) GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error) {
-	semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(search))
-	if err != nil {
-		return nil, err
-	}
+	return nil, nil
+	// _, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if !check {
+	// 	return nil, fmt.Errorf("no department lecturer role")
+	// }
+	// semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	return &model.SemesterListResponse{
-		Total: semesters.GetTotal(),
-		Data:  convert.PbSemestersToModel(semesters.GetSemesters()),
-	}, nil
+	// return &model.SemesterListResponse{
+	// 	Total: semesters.GetTotal(),
+	// 	Data:  convert.PbSemestersToModel(semesters.GetSemesters()),
+	// }, nil
 }
 
 // GetDepartmentMajors returns all majors in the department
 func (c *Controller) GetDepartmentMajors(ctx context.Context, search model.SearchRequestInput) (*model.MajorListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	majorCodes, err := c.GetAllMajorByMajorCode(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	// Get teacher's major to filter by department
-	teacher, err := c.user.GetTeacherById(ctx, *myId)
-	if err != nil {
-		return nil, err
+	semester, ok := ctx.Value("semester").(string)
+	if !ok {
+		return nil, fmt.Errorf("no semester")
 	}
-
-	majorCode := teacher.GetTeacher().GetMajorCode()
-
 	// Add major filter to search
 	newSearch := model.SearchRequestInput{
 		Pagination: search.Pagination,
@@ -135,8 +187,15 @@ func (c *Controller) GetDepartmentMajors(ctx context.Context, search model.Searc
 			{
 				Condition: &model.FilterConditionInput{
 					Field:    "id",
+					Operator: model.FilterOperatorIn,
+					Values:   majorCodes,
+				},
+			},
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{majorCode},
+					Values:   []string{semester},
 				},
 			},
 		}, search.Filters...),
@@ -156,10 +215,37 @@ func (c *Controller) GetDepartmentMajors(ctx context.Context, search model.Searc
 // GetDepartmentFaculties returns all faculties
 func (c *Controller) GetDepartmentFaculties(ctx context.Context, search model.SearchRequestInput) (*model.FacultyListResponse, error) {
 	// TODO: Implement when GetFacultiesBySearch is available in gRPC client
-	return &model.FacultyListResponse{
-		Total: 0,
-		Data:  []*model.Faculty{},
-	}, nil
+	return nil, nil
+
+	// majorCode := teacher.GetTeacher().GetMajorCode()
+	// semesterCode := teacher.GetTeacher().GetSemesterCode()
+	// newSearch := model.SearchRequestInput{
+	// 	Pagination: search.Pagination,
+	// 	Filters: []*model.FilterCriteriaInput{
+	// 		{
+	// 			Condition: &model.FilterConditionInput{
+	// 				Field:    "major_code",
+	// 				Operator: model.FilterOperatorEqual,
+	// 				Values:   []string{majorCode},
+	// 			},
+	// 		},
+	// 		{
+	// 			Condition: &model.FilterConditionInput{
+	// 				Field:    "semester_code",
+	// 				Operator: model.FilterOperatorEqual,
+	// 				Values:   []string{semesterCode},
+	// 			},
+	// 		},
+	// 	},
+	// }
+	// faculties, err := c.academic.GetFacultiesBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return &model.FacultyListResponse{
+	// 	Total: faculties.GetTotal(),
+	// 	Data:  convert.PbFacultiesToModel(faculties.GetFaculties()),
+	// }, nil
 }
 
 // ============================================
@@ -168,19 +254,14 @@ func (c *Controller) GetDepartmentFaculties(ctx context.Context, search model.Se
 
 // GetDepartmentTopics returns all topics in the department
 func (c *Controller) GetDepartmentTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	majorCodes, err := c.GetAllMajorByMajorCode(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	// Get teacher's major to filter by department
-	teacher, err := c.user.GetTeacherById(ctx, *myId)
-	if err != nil {
-		return nil, err
+	semester, ok := ctx.Value("semester").(string)
+	if !ok {
+		return nil, fmt.Errorf("no semester")
 	}
-
-	majorCode := teacher.GetTeacher().GetMajorCode()
-
 	// Add major filter to search
 	newSearch := model.SearchRequestInput{
 		Pagination: search.Pagination,
@@ -188,8 +269,15 @@ func (c *Controller) GetDepartmentTopics(ctx context.Context, search model.Searc
 			{
 				Condition: &model.FilterConditionInput{
 					Field:    "major_code",
+					Operator: model.FilterOperatorIn,
+					Values:   majorCodes,
+				},
+			},
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{majorCode},
+					Values:   []string{semester},
 				},
 			},
 		}, search.Filters...),
@@ -208,12 +296,23 @@ func (c *Controller) GetDepartmentTopics(ctx context.Context, search model.Searc
 
 // GetDepartmentTopicDetail returns topic detail by ID
 func (c *Controller) GetDepartmentTopicDetail(ctx context.Context, id string) (*model.Topic, error) {
-	topic, err := c.thesis.GetTopicById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return convert.PbTopicToModel(topic.GetTopic()), nil
+	return nil, nil
+	// myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if !check {
+	// 	return nil, fmt.Errorf("no department lecturer role")
+	// }
+	// teacher, err := c.user.GetTeacherById(ctx, *myId)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// topic, err := c.thesis.GetTopicById(ctx, id)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return convert.PbTopicToModel(topic.GetTopic()), nil
 }
 
 // ============================================
@@ -222,19 +321,14 @@ func (c *Controller) GetDepartmentTopicDetail(ctx context.Context, id string) (*
 
 // GetDepartmentEnrollments returns all enrollments in the department
 func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	majorCodes, err := c.GetAllMajorByMajorCode(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	// Get teacher's major to filter by department
-	teacher, err := c.user.GetTeacherById(ctx, *myId)
-	if err != nil {
-		return nil, err
+	semester, ok := ctx.Value("semester").(string)
+	if !ok {
+		return nil, fmt.Errorf("no semester")
 	}
-
-	majorCode := teacher.GetTeacher().GetMajorCode()
-
 	// Get all topics in department first, then filter enrollments by topic
 	topicSearch := model.SearchRequestInput{
 		Pagination: c.DefaultPagination(),
@@ -242,8 +336,15 @@ func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.
 			{
 				Condition: &model.FilterConditionInput{
 					Field:    "major_code",
+					Operator: model.FilterOperatorIn,
+					Values:   majorCodes,
+				},
+			},
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{majorCode},
+					Values:   []string{semester},
 				},
 			},
 		},
@@ -281,12 +382,13 @@ func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.
 
 // GetDepartmentEnrollmentDetail returns enrollment detail by ID
 func (c *Controller) GetDepartmentEnrollmentDetail(ctx context.Context, id string) (*model.Enrollment, error) {
-	enrollment, err := c.thesis.GetEnrollmentById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
+	return nil, nil
+	// enrollment, err := c.thesis.GetEnrollmentById(ctx, id)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	return convert.PbEnrollmentToModel(enrollment.GetEnrollment()), nil
+	// return convert.PbEnrollmentToModel(enrollment.GetEnrollment()), nil
 }
 
 // ============================================
@@ -295,18 +397,14 @@ func (c *Controller) GetDepartmentEnrollmentDetail(ctx context.Context, id strin
 
 // GetDepartmentCouncils returns all councils in the department
 func (c *Controller) GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	majorCodes, err := c.GetAllMajorByMajorCode(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	// Get teacher's major to filter by department
-	teacher, err := c.user.GetTeacherById(ctx, *myId)
-	if err != nil {
-		return nil, err
+	semester, ok := ctx.Value("semester").(string)
+	if !ok {
+		return nil, fmt.Errorf("no semester")
 	}
-
-	majorCode := teacher.GetTeacher().GetMajorCode()
 
 	// Add major filter to search
 	newSearch := model.SearchRequestInput{
@@ -315,8 +413,15 @@ func (c *Controller) GetDepartmentCouncils(ctx context.Context, search model.Sea
 			{
 				Condition: &model.FilterConditionInput{
 					Field:    "major_code",
+					Operator: model.FilterOperatorIn,
+					Values:   majorCodes,
+				},
+			},
+			{
+				Condition: &model.FilterConditionInput{
+					Field:    "semester_code",
 					Operator: model.FilterOperatorEqual,
-					Values:   []string{majorCode},
+					Values:   []string{semester},
 				},
 			},
 		}, search.Filters...),
@@ -335,51 +440,46 @@ func (c *Controller) GetDepartmentCouncils(ctx context.Context, search model.Sea
 
 // GetDepartmentCouncilDetail returns council detail by ID
 func (c *Controller) GetDepartmentCouncilDetail(ctx context.Context, id string) (*model.Council, error) {
-	council, err := c.council.GetCouncilById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
+	return nil, nil
+	// council, err := c.council.GetCouncilById(ctx, id)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	return convert.PbCouncilToModel(council.GetCouncil()), nil
+	// return convert.PbCouncilToModel(council.GetCouncil()), nil
 }
 
 // GetDepartmentDefences returns all defences of a council
 func (c *Controller) GetDepartmentDefences(ctx context.Context, councilID string) (*model.DefenceListResponse, error) {
-	newSearch := model.SearchRequestInput{
-		Pagination: c.DefaultPagination(),
-		Filters: []*model.FilterCriteriaInput{
-			{
-				Condition: &model.FilterConditionInput{
-					Field:    "council_code",
-					Operator: model.FilterOperatorEqual,
-					Values:   []string{councilID},
-				},
-			},
-		},
-	}
+	return nil, nil
+	// newSearch := model.SearchRequestInput{
+	// 	Pagination: c.DefaultPagination(),
+	// 	Filters: []*model.FilterCriteriaInput{
+	// 		{
+	// 			Condition: &model.FilterConditionInput{
+	// 				Field:    "council_code",
+	// 				Operator: model.FilterOperatorEqual,
+	// 				Values:   []string{councilID},
+	// 			},
+	// 		},
+	// 	},
+	// }
 
-	defences, err := c.council.GetDefencesBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
-	if err != nil {
-		return nil, err
-	}
+	// defences, err := c.council.GetDefencesBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	return &model.DefenceListResponse{
-		Total: defences.GetTotal(),
-		Data:  convert.PbDefencesToModel(defences.GetDefences()),
-	}, nil
+	// return &model.DefenceListResponse{
+	// 	Total: defences.GetTotal(),
+	// 	Data:  convert.PbDefencesToModel(defences.GetDefences()),
+	// }, nil
 }
 
 // GetDepartmentGradeDefences returns all grade defences
 func (c *Controller) GetDepartmentGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error) {
-	gradeDefences, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(search))
-	if err != nil {
-		return nil, err
-	}
 
-	return &model.GradeDefenceListResponse{
-		Total: gradeDefences.GetTotal(),
-		Data:  convert.PbGradeDefencesToModel(gradeDefences.GetGradeDefences()),
-	}, nil
+	return nil, nil
 }
 
 // ============================================

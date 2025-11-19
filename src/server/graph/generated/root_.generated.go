@@ -421,46 +421,39 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Empty                             func(childComplexity int) int
-		GetAllCouncils                    func(childComplexity int, search model.SearchRequestInput) int
-		GetAllEnrollments                 func(childComplexity int, search model.SearchRequestInput) int
-		GetAllFaculties                   func(childComplexity int, search model.SearchRequestInput) int
-		GetAllGradeDefences               func(childComplexity int, search model.SearchRequestInput) int
-		GetAllMajors                      func(childComplexity int, search model.SearchRequestInput) int
-		GetAllSemesters                   func(childComplexity int, search model.SearchRequestInput) int
-		GetAllTopics                      func(childComplexity int, search model.SearchRequestInput) int
-		GetCouncilDetail                  func(childComplexity int, id string) int
-		GetDefencesByCouncil              func(childComplexity int, councilID string) int
-		GetDepartmentCouncilDetail        func(childComplexity int, id string) int
-		GetDepartmentCouncils             func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentDefences             func(childComplexity int, councilID string) int
-		GetDepartmentEnrollmentDetail     func(childComplexity int, id string) int
-		GetDepartmentEnrollments          func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentFaculties            func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentGradeDefences        func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentMajors               func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentSemesters            func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentStudents             func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentTeachers             func(childComplexity int, search model.SearchRequestInput) int
-		GetDepartmentTopicDetail          func(childComplexity int, id string) int
-		GetDepartmentTopics               func(childComplexity int, search model.SearchRequestInput) int
-		GetEnrollmentDetail               func(childComplexity int, id string) int
-		GetListStudents                   func(childComplexity int, search model.SearchRequestInput) int
-		GetListTeachers                   func(childComplexity int, search model.SearchRequestInput) int
-		GetMyDefenceDetail                func(childComplexity int, id string) int
-		GetMyDefences                     func(childComplexity int, search *model.SearchRequestInput) int
-		GetMyEnrollmentDetail             func(childComplexity int, id string) int
-		GetMyEnrollments                  func(childComplexity int, search *model.SearchRequestInput) int
-		GetMyGradeReviewDetail            func(childComplexity int, id string) int
-		GetMyGradeReviews                 func(childComplexity int, search *model.SearchRequestInput) int
-		GetMyProfile                      func(childComplexity int) int
-		GetMySemesters                    func(childComplexity int, search *model.SearchRequestInput) int
-		GetMySupervisedTopicCouncilDetail func(childComplexity int, id string) int
-		GetMySupervisedTopicCouncils      func(childComplexity int, search *model.SearchRequestInput) int
-		GetMyTeacherProfile               func(childComplexity int) int
-		GetStudentDetail                  func(childComplexity int, id string) int
-		GetTeacherDetail                  func(childComplexity int, id string) int
-		GetTopicDetail                    func(childComplexity int, id string) int
+		Empty                        func(childComplexity int) int
+		GetAllCouncils               func(childComplexity int, search model.SearchRequestInput) int
+		GetAllEnrollments            func(childComplexity int, search model.SearchRequestInput) int
+		GetAllFaculties              func(childComplexity int, search model.SearchRequestInput) int
+		GetAllGradeDefences          func(childComplexity int, search model.SearchRequestInput) int
+		GetAllMajors                 func(childComplexity int, search model.SearchRequestInput) int
+		GetAllSemesters              func(childComplexity int, search model.SearchRequestInput) int
+		GetAllTopics                 func(childComplexity int, search model.SearchRequestInput) int
+		GetCouncilDetail             func(childComplexity int, id string) int
+		GetDefencesByCouncil         func(childComplexity int, councilID string) int
+		GetDepartmentCouncils        func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentDefences        func(childComplexity int, councilID string) int
+		GetDepartmentEnrollments     func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentFaculties       func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentGradeDefences   func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentMajors          func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentSemesters       func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentStudents        func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentTeachers        func(childComplexity int, search model.SearchRequestInput) int
+		GetDepartmentTopics          func(childComplexity int, search model.SearchRequestInput) int
+		GetEnrollmentDetail          func(childComplexity int, id string) int
+		GetListStudents              func(childComplexity int, search model.SearchRequestInput) int
+		GetListTeachers              func(childComplexity int, search model.SearchRequestInput) int
+		GetMyDefences                func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyEnrollments             func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyGradeReviews            func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyProfile                 func(childComplexity int) int
+		GetMySemesters               func(childComplexity int, search *model.SearchRequestInput) int
+		GetMySupervisedTopicCouncils func(childComplexity int, search *model.SearchRequestInput) int
+		GetMyTeacherProfile          func(childComplexity int) int
+		GetStudentDetail             func(childComplexity int, id string) int
+		GetTeacherDetail             func(childComplexity int, id string) int
+		GetTopicDetail               func(childComplexity int, id string) int
 	}
 
 	ReviewerEnrollment struct {
@@ -2990,18 +2983,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetDefencesByCouncil(childComplexity, args["councilId"].(string)), true
 
-	case "Query.getDepartmentCouncilDetail":
-		if e.complexity.Query.GetDepartmentCouncilDetail == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getDepartmentCouncilDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetDepartmentCouncilDetail(childComplexity, args["id"].(string)), true
-
 	case "Query.getDepartmentCouncils":
 		if e.complexity.Query.GetDepartmentCouncils == nil {
 			break
@@ -3025,18 +3006,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.GetDepartmentDefences(childComplexity, args["councilId"].(string)), true
-
-	case "Query.getDepartmentEnrollmentDetail":
-		if e.complexity.Query.GetDepartmentEnrollmentDetail == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getDepartmentEnrollmentDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetDepartmentEnrollmentDetail(childComplexity, args["id"].(string)), true
 
 	case "Query.getDepartmentEnrollments":
 		if e.complexity.Query.GetDepartmentEnrollments == nil {
@@ -3122,18 +3091,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetDepartmentTeachers(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "Query.getDepartmentTopicDetail":
-		if e.complexity.Query.GetDepartmentTopicDetail == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getDepartmentTopicDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetDepartmentTopicDetail(childComplexity, args["id"].(string)), true
-
 	case "Query.getDepartmentTopics":
 		if e.complexity.Query.GetDepartmentTopics == nil {
 			break
@@ -3182,18 +3139,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetListTeachers(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "Query.getMyDefenceDetail":
-		if e.complexity.Query.GetMyDefenceDetail == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getMyDefenceDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetMyDefenceDetail(childComplexity, args["id"].(string)), true
-
 	case "Query.getMyDefences":
 		if e.complexity.Query.GetMyDefences == nil {
 			break
@@ -3206,18 +3151,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.GetMyDefences(childComplexity, args["search"].(*model.SearchRequestInput)), true
 
-	case "Query.getMyEnrollmentDetail":
-		if e.complexity.Query.GetMyEnrollmentDetail == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getMyEnrollmentDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetMyEnrollmentDetail(childComplexity, args["id"].(string)), true
-
 	case "Query.getMyEnrollments":
 		if e.complexity.Query.GetMyEnrollments == nil {
 			break
@@ -3229,18 +3162,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.GetMyEnrollments(childComplexity, args["search"].(*model.SearchRequestInput)), true
-
-	case "Query.getMyGradeReviewDetail":
-		if e.complexity.Query.GetMyGradeReviewDetail == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getMyGradeReviewDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetMyGradeReviewDetail(childComplexity, args["id"].(string)), true
 
 	case "Query.getMyGradeReviews":
 		if e.complexity.Query.GetMyGradeReviews == nil {
@@ -3272,18 +3193,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.GetMySemesters(childComplexity, args["search"].(*model.SearchRequestInput)), true
-
-	case "Query.getMySupervisedTopicCouncilDetail":
-		if e.complexity.Query.GetMySupervisedTopicCouncilDetail == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getMySupervisedTopicCouncilDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetMySupervisedTopicCouncilDetail(childComplexity, args["id"].(string)), true
 
 	case "Query.getMySupervisedTopicCouncils":
 		if e.complexity.Query.GetMySupervisedTopicCouncils == nil {
@@ -5771,20 +5680,20 @@ extend type Query {
     """Lấy danh sách tất cả topic trong bộ môn"""
     getDepartmentTopics(search: SearchRequestInput!): TopicListResponse!
 
-    """Lấy chi tiết topic"""
-    getDepartmentTopicDetail(id: ID!): Topic
+    # """Lấy chi tiết topic"""
+    # getDepartmentTopicDetail(id: ID!): Topic
 
     """Lấy danh sách enrollment trong bộ môn"""
     getDepartmentEnrollments(search: SearchRequestInput!): EnrollmentListResponse!
 
-    """Lấy chi tiết enrollment"""
-    getDepartmentEnrollmentDetail(id: ID!): Enrollment
+    # """Lấy chi tiết enrollment"""
+    # getDepartmentEnrollmentDetail(id: ID!): Enrollment
 
     """Lấy danh sách council trong bộ môn"""
     getDepartmentCouncils(search: SearchRequestInput!): CouncilListResponse!
 
-    """Lấy chi tiết council"""
-    getDepartmentCouncilDetail(id: ID!): Council
+    # """Lấy chi tiết council"""
+    # getDepartmentCouncilDetail(id: ID!): Council
 
     """Lấy danh sách defence của council"""
     getDepartmentDefences(councilId: ID!): DefenceListResponse!
@@ -6196,8 +6105,8 @@ extend type Query {
     """Lấy danh sách enrollment của sinh viên (chỉ của mình)"""
     getMyEnrollments(search: SearchRequestInput): StudentEnrollmentListResponse!
 
-    """Lấy chi tiết enrollment của sinh viên"""
-    getMyEnrollmentDetail(id: ID!): StudentEnrollment
+    # """Lấy chi tiết enrollment của sinh viên"""
+    # getMyEnrollmentDetail(id: ID!): StudentEnrollment
 
     """Lấy danh sách học kỳ của sinh viên"""
     getMySemesters(search: SearchRequestInput): SemesterListResponse!
@@ -6395,8 +6304,8 @@ extend type Query {
     """Lấy danh sách topic council mà giáo viên hướng dẫn"""
     getMySupervisedTopicCouncils(search: SearchRequestInput): SupervisorTopicCouncilAssignmentListResponse!
 
-    """Lấy chi tiết topic council mà giáo viên hướng dẫn"""
-    getMySupervisedTopicCouncilDetail(id: ID!): SupervisorTopicCouncilAssignment
+    # """Lấy chi tiết topic council mà giáo viên hướng dẫn"""
+    # getMySupervisedTopicCouncilDetail(id: ID!): SupervisorTopicCouncilAssignment
 
     # === COUNCIL MEMBER QUERIES (role động qua Defence) ===
     # Query từ bảng nguồn: Defence WHERE teacher_code = current_user
@@ -6404,8 +6313,8 @@ extend type Query {
     """Lấy danh sách defence assignments của giáo viên"""
     getMyDefences(search: SearchRequestInput): CouncilDefenceListResponse!
 
-    """Lấy chi tiết defence assignment"""
-    getMyDefenceDetail(id: ID!): CouncilDefence
+    # """Lấy chi tiết defence assignment"""
+    # getMyDefenceDetail(id: ID!): CouncilDefence
 
     # === REVIEWER QUERIES (role động qua Grade_review) ===
     # Query từ bảng nguồn: Grade_review WHERE teacher_code = current_user
@@ -6413,8 +6322,8 @@ extend type Query {
     """Lấy danh sách grade review assignments của giáo viên"""
     getMyGradeReviews(search: SearchRequestInput): ReviewerGradeReviewListResponse!
 
-    """Lấy chi tiết grade review assignment"""
-    getMyGradeReviewDetail(id: ID!): ReviewerGradeReview
+    # """Lấy chi tiết grade review assignment"""
+    # getMyGradeReviewDetail(id: ID!): ReviewerGradeReview
 }
 
 # ============================================

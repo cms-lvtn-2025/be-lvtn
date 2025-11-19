@@ -74,29 +74,14 @@ func (r *queryResolver) GetDepartmentTopics(ctx context.Context, search model.Se
 	return r.Ctrl.GetDepartmentTopics(ctx, search)
 }
 
-// GetDepartmentTopicDetail is the resolver for the getDepartmentTopicDetail field.
-func (r *queryResolver) GetDepartmentTopicDetail(ctx context.Context, id string) (*model.Topic, error) {
-	return r.Ctrl.GetDepartmentTopicDetail(ctx, id)
-}
-
 // GetDepartmentEnrollments is the resolver for the getDepartmentEnrollments field.
 func (r *queryResolver) GetDepartmentEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error) {
 	return r.Ctrl.GetDepartmentEnrollments(ctx, search)
 }
 
-// GetDepartmentEnrollmentDetail is the resolver for the getDepartmentEnrollmentDetail field.
-func (r *queryResolver) GetDepartmentEnrollmentDetail(ctx context.Context, id string) (*model.Enrollment, error) {
-	return r.Ctrl.GetDepartmentEnrollmentDetail(ctx, id)
-}
-
 // GetDepartmentCouncils is the resolver for the getDepartmentCouncils field.
 func (r *queryResolver) GetDepartmentCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
 	return r.Ctrl.GetDepartmentCouncils(ctx, search)
-}
-
-// GetDepartmentCouncilDetail is the resolver for the getDepartmentCouncilDetail field.
-func (r *queryResolver) GetDepartmentCouncilDetail(ctx context.Context, id string) (*model.Council, error) {
-	return r.Ctrl.GetDepartmentCouncilDetail(ctx, id)
 }
 
 // GetDepartmentDefences is the resolver for the getDepartmentDefences field.

@@ -31,9 +31,15 @@ func (c *Controller) GetTeacherByRequest(ctx context.Context) (*model.Teacher, e
 // Supervisor Methods
 
 func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *model.SearchRequestInput) (*model.SupervisorTopicCouncilAssignmentListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
 	if err != nil {
 		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if myId == nil {
+		return nil, fmt.Errorf("not authorized")
 	}
 
 	var newSearch model.SearchRequestInput
@@ -77,12 +83,15 @@ func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *mod
 }
 
 func (c *Controller) GetSupervisedTopicCouncilDetail(ctx context.Context, id string) (*model.SupervisorTopicCouncilAssignment, error) {
-	_, role, err := c.GetInfoRequest(ctx)
-	if role == nil || (*role) != "teacher" {
-		return nil, nil
-	}
+	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
 	if err != nil {
 		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if myId == nil {
+		return nil, fmt.Errorf("not authorized")
 	}
 
 	assignment, err := c.thesis.GetTopicCouncilSupervisorById(ctx, id)
@@ -182,9 +191,15 @@ func (c *Controller) GetSupervisorTopicCouncilsByTopicId(ctx context.Context, to
 // Council Member Methods
 
 func (c *Controller) GetMyDefences(ctx context.Context, search *model.SearchRequestInput) (*model.CouncilDefenceListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
 	if err != nil {
 		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if myId == nil {
+		return nil, fmt.Errorf("not authorized")
 	}
 
 	var newSearch model.SearchRequestInput
@@ -436,9 +451,15 @@ func (c *Controller) GetSupervisorTopicCouncilSupervisorsByTopicCouncilId(ctx co
 // Reviewer Methods
 
 func (c *Controller) GetMyGradeReviews(ctx context.Context, search *model.SearchRequestInput) (*model.ReviewerGradeReviewListResponse, error) {
-	myId, _, err := c.GetInfoRequest(ctx)
+	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
 	if err != nil {
 		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("not authorized")
+	}
+	if myId == nil {
+		return nil, fmt.Errorf("not authorized")
 	}
 
 	var newSearch model.SearchRequestInput

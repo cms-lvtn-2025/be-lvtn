@@ -20,20 +20,20 @@ extend type Query {
     """Lấy danh sách tất cả topic trong bộ môn"""
     getDepartmentTopics(search: SearchRequestInput!): TopicListResponse!
 
-    """Lấy chi tiết topic"""
-    getDepartmentTopicDetail(id: ID!): Topic
+    # """Lấy chi tiết topic"""
+    # getDepartmentTopicDetail(id: ID!): Topic
 
     """Lấy danh sách enrollment trong bộ môn"""
     getDepartmentEnrollments(search: SearchRequestInput!): EnrollmentListResponse!
 
-    """Lấy chi tiết enrollment"""
-    getDepartmentEnrollmentDetail(id: ID!): Enrollment
+    # """Lấy chi tiết enrollment"""
+    # getDepartmentEnrollmentDetail(id: ID!): Enrollment
 
     """Lấy danh sách council trong bộ môn"""
     getDepartmentCouncils(search: SearchRequestInput!): CouncilListResponse!
 
-    """Lấy chi tiết council"""
-    getDepartmentCouncilDetail(id: ID!): Council
+    # """Lấy chi tiết council"""
+    # getDepartmentCouncilDetail(id: ID!): Council
 
     """Lấy danh sách defence của council"""
     getDepartmentDefences(councilId: ID!): DefenceListResponse!

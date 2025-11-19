@@ -9,8 +9,8 @@ extend type Query {
     """Lấy danh sách enrollment của sinh viên (chỉ của mình)"""
     getMyEnrollments(search: SearchRequestInput): StudentEnrollmentListResponse!
 
-    """Lấy chi tiết enrollment của sinh viên"""
-    getMyEnrollmentDetail(id: ID!): StudentEnrollment
+    # """Lấy chi tiết enrollment của sinh viên"""
+    # getMyEnrollmentDetail(id: ID!): StudentEnrollment
 
     """Lấy danh sách học kỳ của sinh viên"""
     getMySemesters(search: SearchRequestInput): SemesterListResponse!
