@@ -1,6 +1,7 @@
 type Faculty {
     id: ID!
     title: String!
+    ms: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String
@@ -14,6 +15,7 @@ type Major {
     id: ID!
     title: String!
     facultyCode: String!  # Chỉ có code, KHÔNG có faculty relationship (tránh circular)
+    ms: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String

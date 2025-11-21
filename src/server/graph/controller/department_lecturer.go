@@ -3,8 +3,12 @@ package controller
 import (
 	"context"
 	"fmt"
+	pbCouncil "thaily/proto/council"
+	pbThesis "thaily/proto/thesis"
 	"thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ============================================
@@ -488,25 +492,123 @@ func (c *Controller) GetDepartmentGradeDefences(ctx context.Context, search mode
 
 // CreateCouncil creates a new council
 func (c *Controller) CreateCouncil(ctx context.Context, input model.CreateCouncilInput) (*model.Council, error) {
-	// TODO: Implement when CreateCouncil is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("no department lecturer role")
+	}
+
+	createdBy := ""
+	if userInfo != nil {
+		createdBy = *userInfo
+	}
+
+	resp, err := c.council.CreateCouncil(ctx, &pbCouncil.CreateCouncilRequest{
+		Title:        input.Title,
+		MajorCode:    input.MajorCode,
+		SemesterCode: input.SemesterCode,
+		CreatedBy:    createdBy,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbCouncilToModel(resp.GetCouncil()), nil
 }
 
 // UpdateDepartmentCouncil updates a council
 func (c *Controller) UpdateDepartmentCouncil(ctx context.Context, id string, input model.UpdateCouncilInput) (*model.Council, error) {
-	// TODO: Implement when UpdateCouncil method signature matches
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("no department lecturer role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbCouncil.UpdateCouncilRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	if input.Title != nil {
+		req.Title = input.Title
+	}
+	if input.TimeStart != nil {
+		ts := timestamppb.New(*input.TimeStart)
+		req.TimeStart = ts
+	}
+
+	resp, err := c.council.UpdateCouncil(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbCouncilToModel(resp.GetCouncil()), nil
 }
 
 // AddDefenceToCouncil adds a defence member to council
 func (c *Controller) AddDefenceToCouncil(ctx context.Context, input model.CreateDefenceInput) (*model.Defence, error) {
-	// TODO: Implement when CreateDefence is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("no department lecturer role")
+	}
+
+	createdBy := ""
+	if userInfo != nil {
+		createdBy = *userInfo
+	}
+
+	// Convert DefencePosition enum
+	var position pbCouncil.DefencePosition
+	switch input.Position {
+	case model.DefencePositionPresident:
+		position = pbCouncil.DefencePosition_PRESIDENT
+	case model.DefencePositionSecretary:
+		position = pbCouncil.DefencePosition_SECRETARY
+	case model.DefencePositionReviewer:
+		position = pbCouncil.DefencePosition_REVIEWER
+	case model.DefencePositionMember:
+		position = pbCouncil.DefencePosition_MEMBER
+	default:
+		position = pbCouncil.DefencePosition_MEMBER
+	}
+
+	resp, err := c.council.CreateDefence(ctx, &pbCouncil.CreateDefenceRequest{
+		Title:        input.Title,
+		CouncilCode:  input.CouncilCode,
+		TeacherCode:  input.TeacherCode,
+		Position:     position,
+		CreatedBy:    createdBy,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbDefenceToModel(resp.GetDefence()), nil
 }
 
 // RemoveDefenceFromCouncil removes a defence member from council
 func (c *Controller) RemoveDefenceFromCouncil(ctx context.Context, id string) (bool, error) {
-	_, err := c.council.DeleteDefence(ctx, id)
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("no department lecturer role")
+	}
+
+	_, err = c.council.DeleteDefence(ctx, id)
 	if err != nil {
 		return false, err
 	}
@@ -518,20 +620,97 @@ func (c *Controller) RemoveDefenceFromCouncil(ctx context.Context, id string) (b
 // MUTATION METHODS - Topic Management
 // ============================================
 
-// ApproveTopicStage1 approves topic stage 1
+// ApproveTopicStage1 approves topic stage 1 by updating status to APPROVED_1
 func (c *Controller) ApproveTopicStage1(ctx context.Context, id string) (*model.Topic, error) {
-	// TODO: Implement when ApproveTopicStage1 is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("no department lecturer role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	// Update topic status to APPROVED_1
+	status := pbThesis.TopicStatus_APPROVED_1
+	req := &pbThesis.UpdateTopicRequest{
+		Id:        id,
+		Status:    &status,
+		UpdatedBy: updatedBy,
+	}
+
+	resp, err := c.thesis.UpdateTopic(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
-// RejectTopicStage1 rejects topic stage 1
+// RejectTopicStage1 rejects topic stage 1 by updating status to REJECTED
 func (c *Controller) RejectTopicStage1(ctx context.Context, id string, reason *string) (*model.Topic, error) {
-	// TODO: Implement when RejectTopicStage1 is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("no department lecturer role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	// Update topic status to REJECTED
+	status := pbThesis.TopicStatus_REJECTED
+	req := &pbThesis.UpdateTopicRequest{
+		Id:        id,
+		Status:    &status,
+		UpdatedBy: updatedBy,
+	}
+
+	// TODO: Handle reason field if it exists in Topic model
+	// The reason might need to be stored in a different field or table
+
+	resp, err := c.thesis.UpdateTopic(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
 // AssignTopicToCouncil assigns a topic to council
 func (c *Controller) AssignTopicToCouncil(ctx context.Context, topicCouncilID string, councilID string) (*model.TopicCouncil, error) {
-	// TODO: Implement when AssignTopicToCouncil is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("no department lecturer role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	// Use UpdateTopicCouncil to assign council_code
+	req := &pbThesis.UpdateTopicCouncilRequest{
+		Id:          topicCouncilID,
+		CouncilCode: &councilID,
+		UpdatedBy:   updatedBy,
+	}
+
+	resp, err := c.thesis.UpdateTopicCouncil(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTopicCouncilToModel(resp.GetTopicCouncil()), nil
 }

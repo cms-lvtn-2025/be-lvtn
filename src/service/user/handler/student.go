@@ -9,7 +9,6 @@ import (
 	"thaily/src/service/pkg/helper"
 	"thaily/src/service/pkg/logger"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -36,8 +35,11 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
-	// Generate UUID
-	id := uuid.New().String()
+	// Use provided ID
+	id := req.Id
+	if id == "" {
+		return nil, status.Error(codes.InvalidArgument, "id is required")
+	}
 
 	// Prepare fields
 	Phone := ""
@@ -62,8 +64,8 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 
 	// Insert into database
 	query := `
-		INSERT INTO Student (id, email, phone, username, gender, major_code, class_code, semester_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Student (id, email, phone, username, gender, major_code, class_code, semester_code, mssv, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -75,6 +77,8 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 		req.MajorCode,
 		req.ClassCode,
 		req.SemesterCode,
+		req.Mssv,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 
@@ -84,6 +88,7 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create student: %v", err)
 	}
+	id = fmt.Sprint(req.Mssv, "_", req.SemesterCode)
 
 	result, err := h.GetStudent(ctx, &pb.GetStudentRequest{Id: id})
 	if err != nil {
@@ -103,7 +108,7 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 	}
 
 	query := `
-		SELECT id, email, phone, username, gender, major_code, class_code, semester_code, created_at, updated_at, created_by, updated_by
+		SELECT id, email, phone, username, gender, major_code, class_code, semester_code, mssv, created_at, updated_at, created_by, updated_by
 		FROM Student
 		WHERE id = ?
 	`
@@ -122,6 +127,7 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 		&entity.MajorCode,
 		&entity.ClassCode,
 		&entity.SemesterCode,
+		&entity.Mssv,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -216,6 +222,11 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
+
+	}
+	if req.Mssv != nil {
+		updateFields = append(updateFields, "mssv = ?")
+		args = append(args, *req.Mssv)
 
 	}
 

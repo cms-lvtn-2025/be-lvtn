@@ -31,13 +31,14 @@ func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequ
 
 	// Insert into database
 	query := `
-		INSERT INTO Semester (id, title, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, NOW(), NOW())
+		INSERT INTO Semester (id, title, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
 		req.Title,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 
@@ -47,8 +48,24 @@ func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequ
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create semester: %v", err)
 	}
+	var slug string
+	slugQuery := "SELECT create_slug(?) AS slug"
 
-	result, err := h.GetSemester(ctx, &pb.GetSemesterRequest{Id: id})
+	// Sử dụng QueryRowContext để thực thi và lấy 1 hàng kết quả
+	row := h.db.QueryRowContext(ctx, slugQuery, req.Title)
+
+	// Hứng kết quả (slug) vào biến đã khai báo
+	err = row.Scan(&slug)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to generate slug: %v", err)
+	}
+
+	// Kiểm tra giá trị slug (ví dụ: nếu nó rỗng)
+	if slug == "" {
+		return nil, status.Error(codes.Internal, "generated slug is empty")
+	}
+
+	result, err := h.GetSemester(ctx, &pb.GetSemesterRequest{Id: slug})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get semester")
 	}

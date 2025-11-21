@@ -93,6 +93,18 @@ func (c *GRPCCouncil) GetCouncilById(ctx context.Context, id string) (*pb.GetCou
 	return resp, nil
 }
 
+func (c *GRPCCouncil) CreateCouncil(ctx context.Context, req *pb.CreateCouncilRequest) (*pb.CreateCouncilResponse, error) {
+	resp, err := c.client.CreateCouncil(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, c.redisClient, councilCachePrefix+"*")
+
+	return resp, nil
+}
+
 func (c *GRPCCouncil) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilRequest) (*pb.UpdateCouncilResponse, error) {
 	resp, err := c.client.UpdateCouncil(ctx, req)
 	if err != nil {
@@ -232,6 +244,18 @@ func (c *GRPCCouncil) GetDefenceById(ctx context.Context, id string) (*pb.GetDef
 	}
 
 	SetCachedProto(ctx, c.redisClient, cacheKey, resp, defenceCacheTTL)
+	return resp, nil
+}
+
+func (c *GRPCCouncil) CreateDefence(ctx context.Context, req *pb.CreateDefenceRequest) (*pb.CreateDefenceResponse, error) {
+	resp, err := c.client.CreateDefence(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, c.redisClient, defenceCachePrefix+"*")
+
 	return resp, nil
 }
 
@@ -415,6 +439,17 @@ func (c *GRPCCouncil) GetGradeById(ctx context.Context, id string) (*pb.GetGrade
 	return resp, nil
 }
 
+func (c *GRPCCouncil) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDefenceRequest) (*pb.CreateGradeDefenceResponse, error) {
+	resp, err := c.client.CreateGradeDefence(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, c.redisClient, gradeDefenceCachePrefix+"*")
+	return resp, nil
+}
+
 func (c *GRPCCouncil) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDefenceRequest) (*pb.UpdateGradeDefenceResponse, error) {
 	resp, err := c.client.UpdateGradeDefence(ctx, req)
 	if err != nil {
@@ -553,6 +588,17 @@ func (c *GRPCCouncil) GetGradeCriterionById(ctx context.Context, id string) (*pb
 	}
 
 	SetCachedProto(ctx, c.redisClient, cacheKey, resp, gradeDefenceCriterion)
+	return resp, nil
+}
+
+func (c *GRPCCouncil) CreateGradeDefenceCriterion(ctx context.Context, req *pb.CreateGradeDefenceCriterionRequest) (*pb.CreateGradeDefenceCriterionResponse, error) {
+	resp, err := c.client.CreateGradeDefenceCriterion(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, c.redisClient, gradeDefenceCriterionCachePrefix+"*")
 	return resp, nil
 }
 

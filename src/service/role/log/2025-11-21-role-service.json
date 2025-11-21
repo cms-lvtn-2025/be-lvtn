@@ -1,0 +1,2 @@
+{"duration_ms":2,"method":"/role.RoleService/ListRoleSystems","queries":[],"request_id":"4fc5671e-4a7a-4394-b289-0f14f9994224","service_name":"role-service","success":true,"timestamp":"2025-11-21T00:20:32+07:00","trace":{"function_name":"ListRoleSystems","duration_ms":2}}
+{"duration_ms":2,"method":"/role.RoleService/ListRoleSystems","queries":[],"request_id":"96e5ecec-ca06-4d3f-84e4-420ee02553bd","service_name":"role-service","success":true,"timestamp":"2025-11-21T00:31:08+07:00","trace":{"function_name":"ListRoleSystems","duration_ms":2}}

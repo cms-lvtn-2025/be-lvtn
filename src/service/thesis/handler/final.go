@@ -63,8 +63,8 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 
 	// Insert into database
 	query := `
-		INSERT INTO Final (id, title, supervisor_grade, department_grade, final_grade, status, notes, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Final (id, title, supervisor_grade, department_grade, final_grade, status, notes, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -75,6 +75,7 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 		FinalGrade,
 		StatusStr,
 		Notes,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

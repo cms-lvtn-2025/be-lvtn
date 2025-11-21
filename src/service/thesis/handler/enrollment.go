@@ -49,8 +49,8 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 
 	// Insert into database
 	query := `
-		INSERT INTO Enrollment (id, title, student_code, topic_council_code, final_code, grade_review_code, midterm_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Enrollment (id, title, student_code, topic_council_code, final_code, grade_review_code, midterm_code, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -61,6 +61,7 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 		FinalCode,
 		GradeReviewCode,
 		MidtermCode,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

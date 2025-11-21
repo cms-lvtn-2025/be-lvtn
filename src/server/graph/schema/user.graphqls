@@ -8,6 +8,7 @@ type Student {
     majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
     classCode: String
     semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
+    mssv: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String
@@ -26,6 +27,7 @@ type Teacher {
     gender: Gender
     majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
     semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
+    msgv: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String

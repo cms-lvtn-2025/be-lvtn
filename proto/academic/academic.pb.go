@@ -605,6 +605,7 @@ type Faculty struct {
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,6,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Ms            string                 `protobuf:"bytes,7,opt,name=ms,proto3" json:"ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -681,10 +682,19 @@ func (x *Faculty) GetUpdatedBy() string {
 	return ""
 }
 
+func (x *Faculty) GetMs() string {
+	if x != nil {
+		return x.Ms
+	}
+	return ""
+}
+
 type CreateFacultyRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,7,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	Ms            string                 `protobuf:"bytes,6,opt,name=ms,proto3" json:"ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -719,6 +729,13 @@ func (*CreateFacultyRequest) Descriptor() ([]byte, []int) {
 	return file_proto_academic_academic_proto_rawDescGZIP(), []int{12}
 }
 
+func (x *CreateFacultyRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 func (x *CreateFacultyRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
@@ -729,6 +746,13 @@ func (x *CreateFacultyRequest) GetTitle() string {
 func (x *CreateFacultyRequest) GetCreatedBy() string {
 	if x != nil {
 		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *CreateFacultyRequest) GetMs() string {
+	if x != nil {
+		return x.Ms
 	}
 	return ""
 }
@@ -870,6 +894,7 @@ type UpdateFacultyRequest struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Ms            *string                `protobuf:"bytes,4,opt,name=ms,proto3,oneof" json:"ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -921,6 +946,13 @@ func (x *UpdateFacultyRequest) GetTitle() string {
 func (x *UpdateFacultyRequest) GetUpdatedBy() string {
 	if x != nil {
 		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *UpdateFacultyRequest) GetMs() string {
+	if x != nil && x.Ms != nil {
+		return *x.Ms
 	}
 	return ""
 }
@@ -1179,6 +1211,7 @@ type Major struct {
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Ms            string                 `protobuf:"bytes,8,opt,name=ms,proto3" json:"ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1262,11 +1295,20 @@ func (x *Major) GetUpdatedBy() string {
 	return ""
 }
 
+func (x *Major) GetMs() string {
+	if x != nil {
+		return x.Ms
+	}
+	return ""
+}
+
 type CreateMajorRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	FacultyCode   string                 `protobuf:"bytes,2,opt,name=faculty_code,json=facultyCode,proto3" json:"faculty_code,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,3,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	Ms            string                 `protobuf:"bytes,4,opt,name=ms,proto3" json:"ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1301,6 +1343,13 @@ func (*CreateMajorRequest) Descriptor() ([]byte, []int) {
 	return file_proto_academic_academic_proto_rawDescGZIP(), []int{23}
 }
 
+func (x *CreateMajorRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 func (x *CreateMajorRequest) GetTitle() string {
 	if x != nil {
 		return x.Title
@@ -1318,6 +1367,13 @@ func (x *CreateMajorRequest) GetFacultyCode() string {
 func (x *CreateMajorRequest) GetCreatedBy() string {
 	if x != nil {
 		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *CreateMajorRequest) GetMs() string {
+	if x != nil {
+		return x.Ms
 	}
 	return ""
 }
@@ -1460,6 +1516,7 @@ type UpdateMajorRequest struct {
 	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	FacultyCode   *string                `protobuf:"bytes,3,opt,name=faculty_code,json=facultyCode,proto3,oneof" json:"faculty_code,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,4,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Ms            *string                `protobuf:"bytes,5,opt,name=ms,proto3,oneof" json:"ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1518,6 +1575,13 @@ func (x *UpdateMajorRequest) GetFacultyCode() string {
 func (x *UpdateMajorRequest) GetUpdatedBy() string {
 	if x != nil {
 		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *UpdateMajorRequest) GetMs() string {
+	if x != nil && x.Ms != nil {
+		return *x.Ms
 	}
 	return ""
 }
@@ -1810,7 +1874,7 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\tsemesters\x18\x01 \x03(\v2\x12.academic.SemesterR\tsemesters\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xe3\x01\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xf3\x01\n" +
 	"\aFaculty\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x129\n" +
@@ -1821,23 +1885,28 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\x05 \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x06 \x01(\tR\tupdatedBy\"K\n" +
-	"\x14CreateFacultyRequest\x12\x14\n" +
+	"updated_by\x18\x06 \x01(\tR\tupdatedBy\x12\x0e\n" +
+	"\x02ms\x18\a \x01(\tR\x02ms\"k\n" +
+	"\x14CreateFacultyRequest\x12\x0e\n" +
+	"\x02id\x18\a \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1d\n" +
 	"\n" +
-	"created_by\x18\x05 \x01(\tR\tcreatedBy\"D\n" +
+	"created_by\x18\x05 \x01(\tR\tcreatedBy\x12\x0e\n" +
+	"\x02ms\x18\x06 \x01(\tR\x02ms\"D\n" +
 	"\x15CreateFacultyResponse\x12+\n" +
 	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"#\n" +
 	"\x11GetFacultyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"A\n" +
 	"\x12GetFacultyResponse\x12+\n" +
-	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"j\n" +
+	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"\x86\x01\n" +
 	"\x14UpdateFacultyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x03 \x01(\tR\tupdatedByB\b\n" +
-	"\x06_title\"D\n" +
+	"updated_by\x18\x03 \x01(\tR\tupdatedBy\x12\x13\n" +
+	"\x02ms\x18\x04 \x01(\tH\x01R\x02ms\x88\x01\x01B\b\n" +
+	"\x06_titleB\x05\n" +
+	"\x03_ms\"D\n" +
 	"\x15UpdateFacultyResponse\x12+\n" +
 	"\afaculty\x18\x01 \x01(\v2\x11.academic.FacultyR\afaculty\"&\n" +
 	"\x14DeleteFacultyRequest\x12\x0e\n" +
@@ -1850,7 +1919,7 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\tfaculties\x18\x01 \x03(\v2\x11.academic.FacultyR\tfaculties\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x84\x02\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x94\x02\n" +
 	"\x05Major\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12!\n" +
@@ -1862,26 +1931,31 @@ const file_proto_academic_academic_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\x06 \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedBy\"l\n" +
-	"\x12CreateMajorRequest\x12\x14\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedBy\x12\x0e\n" +
+	"\x02ms\x18\b \x01(\tR\x02ms\"\x8c\x01\n" +
+	"\x12CreateMajorRequest\x12\x0e\n" +
+	"\x02id\x18\x05 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12!\n" +
 	"\ffaculty_code\x18\x02 \x01(\tR\vfacultyCode\x12\x1d\n" +
 	"\n" +
-	"created_by\x18\x03 \x01(\tR\tcreatedBy\"<\n" +
+	"created_by\x18\x03 \x01(\tR\tcreatedBy\x12\x0e\n" +
+	"\x02ms\x18\x04 \x01(\tR\x02ms\"<\n" +
 	"\x13CreateMajorResponse\x12%\n" +
 	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"!\n" +
 	"\x0fGetMajorRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"9\n" +
 	"\x10GetMajorResponse\x12%\n" +
-	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"\xa1\x01\n" +
+	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"\xbd\x01\n" +
 	"\x12UpdateMajorRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12&\n" +
 	"\ffaculty_code\x18\x03 \x01(\tH\x01R\vfacultyCode\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\x04 \x01(\tR\tupdatedByB\b\n" +
+	"updated_by\x18\x04 \x01(\tR\tupdatedBy\x12\x13\n" +
+	"\x02ms\x18\x05 \x01(\tH\x02R\x02ms\x88\x01\x01B\b\n" +
 	"\x06_titleB\x0f\n" +
-	"\r_faculty_code\"<\n" +
+	"\r_faculty_codeB\x05\n" +
+	"\x03_ms\"<\n" +
 	"\x13UpdateMajorResponse\x12%\n" +
 	"\x05major\x18\x01 \x01(\v2\x0f.academic.MajorR\x05major\"$\n" +
 	"\x12DeleteMajorRequest\x12\x0e\n" +

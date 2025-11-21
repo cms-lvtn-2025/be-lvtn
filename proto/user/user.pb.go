@@ -87,6 +87,7 @@ type Student struct {
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,11,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,12,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Mssv          string                 `protobuf:"bytes,13,opt,name=mssv,proto3" json:"mssv,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -205,8 +206,16 @@ func (x *Student) GetUpdatedBy() string {
 	return ""
 }
 
+func (x *Student) GetMssv() string {
+	if x != nil {
+		return x.Mssv
+	}
+	return ""
+}
+
 type CreateStudentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,10,opt,name=id,proto3" json:"id,omitempty"`
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Phone         *string                `protobuf:"bytes,2,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
 	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
@@ -215,6 +224,7 @@ type CreateStudentRequest struct {
 	ClassCode     string                 `protobuf:"bytes,6,opt,name=class_code,json=classCode,proto3" json:"class_code,omitempty"`
 	SemesterCode  string                 `protobuf:"bytes,7,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	Mssv          string                 `protobuf:"bytes,9,opt,name=mssv,proto3" json:"mssv,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -247,6 +257,13 @@ func (x *CreateStudentRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateStudentRequest.ProtoReflect.Descriptor instead.
 func (*CreateStudentRequest) Descriptor() ([]byte, []int) {
 	return file_proto_user_user_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *CreateStudentRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
 }
 
 func (x *CreateStudentRequest) GetEmail() string {
@@ -301,6 +318,13 @@ func (x *CreateStudentRequest) GetSemesterCode() string {
 func (x *CreateStudentRequest) GetCreatedBy() string {
 	if x != nil {
 		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *CreateStudentRequest) GetMssv() string {
+	if x != nil {
+		return x.Mssv
 	}
 	return ""
 }
@@ -448,6 +472,7 @@ type UpdateStudentRequest struct {
 	ClassCode     *string                `protobuf:"bytes,7,opt,name=class_code,json=classCode,proto3,oneof" json:"class_code,omitempty"`
 	SemesterCode  *string                `protobuf:"bytes,8,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,9,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Mssv          *string                `protobuf:"bytes,10,opt,name=mssv,proto3,oneof" json:"mssv,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -541,6 +566,13 @@ func (x *UpdateStudentRequest) GetSemesterCode() string {
 func (x *UpdateStudentRequest) GetUpdatedBy() string {
 	if x != nil {
 		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *UpdateStudentRequest) GetMssv() string {
+	if x != nil && x.Mssv != nil {
+		return *x.Mssv
 	}
 	return ""
 }
@@ -802,6 +834,7 @@ type Teacher struct {
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,9,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,10,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Msgv          string                 `protobuf:"bytes,11,opt,name=msgv,proto3" json:"msgv,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -906,14 +939,23 @@ func (x *Teacher) GetUpdatedBy() string {
 	return ""
 }
 
+func (x *Teacher) GetMsgv() string {
+	if x != nil {
+		return x.Msgv
+	}
+	return ""
+}
+
 type CreateTeacherRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,8,opt,name=id,proto3" json:"id,omitempty"`
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	Gender        Gender                 `protobuf:"varint,3,opt,name=gender,proto3,enum=user.Gender" json:"gender,omitempty"`
 	MajorCode     string                 `protobuf:"bytes,4,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
 	SemesterCode  string                 `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	Msgv          string                 `protobuf:"bytes,7,opt,name=msgv,proto3" json:"msgv,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -946,6 +988,13 @@ func (x *CreateTeacherRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateTeacherRequest.ProtoReflect.Descriptor instead.
 func (*CreateTeacherRequest) Descriptor() ([]byte, []int) {
 	return file_proto_user_user_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *CreateTeacherRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
 }
 
 func (x *CreateTeacherRequest) GetEmail() string {
@@ -986,6 +1035,13 @@ func (x *CreateTeacherRequest) GetSemesterCode() string {
 func (x *CreateTeacherRequest) GetCreatedBy() string {
 	if x != nil {
 		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *CreateTeacherRequest) GetMsgv() string {
+	if x != nil {
+		return x.Msgv
 	}
 	return ""
 }
@@ -1131,6 +1187,7 @@ type UpdateTeacherRequest struct {
 	MajorCode     *string                `protobuf:"bytes,5,opt,name=major_code,json=majorCode,proto3,oneof" json:"major_code,omitempty"`
 	SemesterCode  *string                `protobuf:"bytes,6,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
 	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Msgv          *string                `protobuf:"bytes,8,opt,name=msgv,proto3,oneof" json:"msgv,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1210,6 +1267,13 @@ func (x *UpdateTeacherRequest) GetSemesterCode() string {
 func (x *UpdateTeacherRequest) GetUpdatedBy() string {
 	if x != nil {
 		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *UpdateTeacherRequest) GetMsgv() string {
+	if x != nil && x.Msgv != nil {
+		return *x.Msgv
 	}
 	return ""
 }
@@ -1462,7 +1526,7 @@ var File_proto_user_user_proto protoreflect.FileDescriptor
 
 const file_proto_user_user_proto_rawDesc = "" +
 	"\n" +
-	"\x15proto/user/user.proto\x12\x04user\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\x9e\x03\n" +
+	"\x15proto/user/user.proto\x12\x04user\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/common/common.proto\"\xb2\x03\n" +
 	"\aStudent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x14\n" +
@@ -1482,8 +1546,11 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"\n" +
 	"created_by\x18\v \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\f \x01(\tR\tupdatedBy\"\xa5\x02\n" +
-	"\x14CreateStudentRequest\x12\x14\n" +
+	"updated_by\x18\f \x01(\tR\tupdatedBy\x12\x12\n" +
+	"\x04mssv\x18\r \x01(\tR\x04mssv\"\xc9\x02\n" +
+	"\x14CreateStudentRequest\x12\x0e\n" +
+	"\x02id\x18\n" +
+	" \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x19\n" +
 	"\x05phone\x18\x02 \x01(\tH\x00R\x05phone\x88\x01\x01\x12\x1a\n" +
 	"\busername\x18\x03 \x01(\tR\busername\x12)\n" +
@@ -1494,7 +1561,8 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"class_code\x18\x06 \x01(\tR\tclassCode\x12#\n" +
 	"\rsemester_code\x18\a \x01(\tR\fsemesterCode\x12\x1d\n" +
 	"\n" +
-	"created_by\x18\b \x01(\tR\tcreatedByB\b\n" +
+	"created_by\x18\b \x01(\tR\tcreatedBy\x12\x12\n" +
+	"\x04mssv\x18\t \x01(\tR\x04mssvB\b\n" +
 	"\x06_phoneB\t\n" +
 	"\a_gender\"@\n" +
 	"\x15CreateStudentResponse\x12'\n" +
@@ -1502,7 +1570,7 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"\x11GetStudentRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
 	"\x12GetStudentResponse\x12'\n" +
-	"\astudent\x18\x01 \x01(\v2\r.user.StudentR\astudent\"\x95\x03\n" +
+	"\astudent\x18\x01 \x01(\v2\r.user.StudentR\astudent\"\xb7\x03\n" +
 	"\x14UpdateStudentRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x88\x01\x01\x12\x19\n" +
@@ -1515,14 +1583,17 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"class_code\x18\a \x01(\tH\x05R\tclassCode\x88\x01\x01\x12(\n" +
 	"\rsemester_code\x18\b \x01(\tH\x06R\fsemesterCode\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\t \x01(\tR\tupdatedByB\b\n" +
+	"updated_by\x18\t \x01(\tR\tupdatedBy\x12\x17\n" +
+	"\x04mssv\x18\n" +
+	" \x01(\tH\aR\x04mssv\x88\x01\x01B\b\n" +
 	"\x06_emailB\b\n" +
 	"\x06_phoneB\v\n" +
 	"\t_usernameB\t\n" +
 	"\a_genderB\r\n" +
 	"\v_major_codeB\r\n" +
 	"\v_class_codeB\x10\n" +
-	"\x0e_semester_code\"@\n" +
+	"\x0e_semester_codeB\a\n" +
+	"\x05_mssv\"@\n" +
 	"\x15UpdateStudentResponse\x12'\n" +
 	"\astudent\x18\x01 \x01(\v2\r.user.StudentR\astudent\"&\n" +
 	"\x14DeleteStudentRequest\x12\x0e\n" +
@@ -1535,7 +1606,7 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"\bstudents\x18\x01 \x03(\v2\r.user.StudentR\bstudents\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xe9\x02\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xfd\x02\n" +
 	"\aTeacher\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -1552,8 +1623,10 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"created_by\x18\t \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
 	"updated_by\x18\n" +
-	" \x01(\tR\tupdatedBy\"\xd1\x01\n" +
-	"\x14CreateTeacherRequest\x12\x14\n" +
+	" \x01(\tR\tupdatedBy\x12\x12\n" +
+	"\x04msgv\x18\v \x01(\tR\x04msgv\"\xf5\x01\n" +
+	"\x14CreateTeacherRequest\x12\x0e\n" +
+	"\x02id\x18\b \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12$\n" +
 	"\x06gender\x18\x03 \x01(\x0e2\f.user.GenderR\x06gender\x12\x1d\n" +
@@ -1561,13 +1634,14 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"major_code\x18\x04 \x01(\tR\tmajorCode\x12#\n" +
 	"\rsemester_code\x18\x05 \x01(\tR\fsemesterCode\x12\x1d\n" +
 	"\n" +
-	"created_by\x18\x06 \x01(\tR\tcreatedBy\"@\n" +
+	"created_by\x18\x06 \x01(\tR\tcreatedBy\x12\x12\n" +
+	"\x04msgv\x18\a \x01(\tR\x04msgv\"@\n" +
 	"\x15CreateTeacherResponse\x12'\n" +
 	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"#\n" +
 	"\x11GetTeacherRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
 	"\x12GetTeacherResponse\x12'\n" +
-	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"\xbd\x02\n" +
+	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"\xdf\x02\n" +
 	"\x14UpdateTeacherRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x88\x01\x01\x12\x1f\n" +
@@ -1577,12 +1651,14 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"major_code\x18\x05 \x01(\tH\x03R\tmajorCode\x88\x01\x01\x12(\n" +
 	"\rsemester_code\x18\x06 \x01(\tH\x04R\fsemesterCode\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedByB\b\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedBy\x12\x17\n" +
+	"\x04msgv\x18\b \x01(\tH\x05R\x04msgv\x88\x01\x01B\b\n" +
 	"\x06_emailB\v\n" +
 	"\t_usernameB\t\n" +
 	"\a_genderB\r\n" +
 	"\v_major_codeB\x10\n" +
-	"\x0e_semester_code\"@\n" +
+	"\x0e_semester_codeB\a\n" +
+	"\x05_msgv\"@\n" +
 	"\x15UpdateTeacherResponse\x12'\n" +
 	"\ateacher\x18\x01 \x01(\v2\r.user.TeacherR\ateacher\"&\n" +
 	"\x14DeleteTeacherRequest\x12\x0e\n" +

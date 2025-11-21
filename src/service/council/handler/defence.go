@@ -53,8 +53,8 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 
 	// Insert into database
 	query := `
-		INSERT INTO Defence (id, title, council_code, teacher_code, position, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Defence (id, title, council_code, teacher_code, position, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -63,6 +63,7 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 		req.CouncilCode,
 		req.TeacherCode,
 		PositionStr,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

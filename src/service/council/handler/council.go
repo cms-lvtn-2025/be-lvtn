@@ -37,8 +37,8 @@ func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilReques
 
 	// Insert into database
 	query := `
-		INSERT INTO Council (id, title, major_code, semester_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Council (id, title, major_code, semester_code, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -46,6 +46,7 @@ func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilReques
 		req.Title,
 		req.MajorCode,
 		req.SemesterCode,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

@@ -9,7 +9,6 @@ import (
 	"thaily/src/service/pkg/helper"
 	"thaily/src/service/pkg/logger"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -33,8 +32,11 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
-	// Generate UUID
-	id := uuid.New().String()
+	// Use provided ID
+	id := req.Id
+	if id == "" {
+		return nil, status.Error(codes.InvalidArgument, "id is required")
+	}
 
 	// Prepare fields
 
@@ -54,8 +56,8 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 
 	// Insert into database
 	query := `
-		INSERT INTO Teacher (id, email, username, gender, major_code, semester_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Teacher (id, email, username, gender, major_code, semester_code, msgv, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -65,6 +67,8 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 		GenderStr,
 		req.MajorCode,
 		req.SemesterCode,
+		req.Msgv,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 
@@ -74,7 +78,7 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create teacher: %v", err)
 	}
-
+	id = fmt.Sprint(req.Msgv, "_", req.SemesterCode)
 	result, err := h.GetTeacher(ctx, &pb.GetTeacherRequest{Id: id})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get teacher")
@@ -93,7 +97,7 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 	}
 
 	query := `
-		SELECT id, email, username, gender, major_code, semester_code, created_at, updated_at, created_by, updated_by
+		SELECT id, email, username, gender, major_code, semester_code, msgv, created_at, updated_at, created_by, updated_by
 		FROM Teacher
 		WHERE id = ?
 	`
@@ -110,6 +114,7 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 		&GenderStr,
 		&entity.MajorCode,
 		&entity.SemesterCode,
+		&entity.Msgv,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -194,6 +199,11 @@ func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherReques
 	if req.SemesterCode != nil {
 		updateFields = append(updateFields, "semester_code = ?")
 		args = append(args, *req.SemesterCode)
+
+	}
+	if req.Msgv != nil {
+		updateFields = append(updateFields, "msgv = ?")
+		args = append(args, *req.Msgv)
 
 	}
 

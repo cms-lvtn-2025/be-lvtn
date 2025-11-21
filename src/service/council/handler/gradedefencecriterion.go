@@ -43,8 +43,8 @@ func (h *Handler) CreateGradeDefenceCriterion(ctx context.Context, req *pb.Creat
 
 	// Insert into database
 	query := `
-		INSERT INTO Grade_defence_criterion (id, grade_defence_code, name, score, maxScore, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Grade_defence_criterion (id, grade_defence_code, name, score, maxScore, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -53,6 +53,7 @@ func (h *Handler) CreateGradeDefenceCriterion(ctx context.Context, req *pb.Creat
 		name,
 		score,
 		maxScore,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

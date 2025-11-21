@@ -34,14 +34,15 @@ func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.Crea
 
 	// Insert into database
 	query := `
-		INSERT INTO Topic_council_supervisor (id, teacher_supervisor_code, topic_council_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Topic_council_supervisor (id, teacher_supervisor_code, topic_council_code, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
 		req.TeacherSupervisorCode,
 		req.TopicCouncilCode,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

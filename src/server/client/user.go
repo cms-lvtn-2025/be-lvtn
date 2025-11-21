@@ -90,6 +90,18 @@ func (u *GRPCUser) GetUserById(ctx context.Context, id string) (*pb.GetStudentRe
 	return resp, nil
 }
 
+func (u *GRPCUser) CreateStudent(ctx context.Context, req *pb.CreateStudentRequest) (*pb.CreateStudentResponse, error) {
+	resp, err := u.client.CreateStudent(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, u.redisClient, studentCachePrefix+"*")
+
+	return resp, nil
+}
+
 func (u *GRPCUser) UpdateStudent(ctx context.Context, req *pb.UpdateStudentRequest) (*pb.UpdateStudentResponse, error) {
 	resp, err := u.client.UpdateStudent(ctx, req)
 	if err != nil {
@@ -399,6 +411,18 @@ func (u *GRPCUser) GetTeacherById(ctx context.Context, id string) (*pb.GetTeache
 	}
 
 	SetCachedProto(ctx, u.redisClient, cacheKey, resp, teacherCacheTTL)
+	return resp, nil
+}
+
+func (u *GRPCUser) CreateTeacher(ctx context.Context, req *pb.CreateTeacherRequest) (*pb.CreateTeacherResponse, error) {
+	resp, err := u.client.CreateTeacher(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, u.redisClient, teacherCachePrefix+"*")
+
 	return resp, nil
 }
 

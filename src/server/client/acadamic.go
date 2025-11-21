@@ -91,6 +91,18 @@ func (g *GRPCAcadamicClient) GetMajorById(ctx context.Context, id string) (*pb.G
 	return resp, nil
 }
 
+func (g *GRPCAcadamicClient) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (*pb.CreateMajorResponse, error) {
+	resp, err := g.client.CreateMajor(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, g.redisClient, majorCachePrefix+"*")
+
+	return resp, nil
+}
+
 func (g *GRPCAcadamicClient) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (*pb.UpdateMajorResponse, error) {
 	resp, err := g.client.UpdateMajor(ctx, req)
 	if err != nil {
@@ -232,6 +244,18 @@ func (g *GRPCAcadamicClient) GetSemesterById(ctx context.Context, id string) (*p
 	return resp, nil
 }
 
+func (g *GRPCAcadamicClient) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequest) (*pb.CreateSemesterResponse, error) {
+	resp, err := g.client.CreateSemester(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, g.redisClient, semesterCachePrefix+"*")
+
+	return resp, nil
+}
+
 func (g *GRPCAcadamicClient) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequest) (*pb.UpdateSemesterResponse, error) {
 	resp, err := g.client.UpdateSemester(ctx, req)
 	if err != nil {
@@ -370,6 +394,18 @@ func (g *GRPCAcadamicClient) GetFacultyById(ctx context.Context, id string) (*pb
 	}
 
 	SetCachedProto(ctx, g.redisClient, cacheKey, resp, facultyCacheTTL)
+	return resp, nil
+}
+
+func (g *GRPCAcadamicClient) CreateFaculty(ctx context.Context, req *pb.CreateFacultyRequest) (*pb.CreateFacultyResponse, error) {
+	resp, err := g.client.CreateFaculty(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Invalidate cache
+	InvalidateCacheByPattern(ctx, g.redisClient, facultyCachePrefix+"*")
+
 	return resp, nil
 }
 

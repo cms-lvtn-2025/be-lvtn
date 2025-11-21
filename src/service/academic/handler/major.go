@@ -9,7 +9,6 @@ import (
 	"thaily/src/service/pkg/helper"
 	"thaily/src/service/pkg/logger"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -27,21 +26,26 @@ func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (
 		return nil, status.Error(codes.InvalidArgument, "faculty_code is required")
 	}
 
-	// Generate UUID
-	id := uuid.New().String()
+	// Use provided ID
+	id := req.Id
+	if id == "" {
+		return nil, status.Error(codes.InvalidArgument, "id is required")
+	}
 
 	// Prepare fields
 
 	// Insert into database
 	query := `
-		INSERT INTO Major (id, title, faculty_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Major (id, title, faculty_code, ms, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
 		req.Title,
 		req.FacultyCode,
+		req.Ms,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 
@@ -52,7 +56,7 @@ func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (
 		return nil, status.Errorf(codes.Internal, "failed to create major: %v", err)
 	}
 
-	result, err := h.GetMajor(ctx, &pb.GetMajorRequest{Id: id})
+	result, err := h.GetMajor(ctx, &pb.GetMajorRequest{Id: req.Ms})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get major")
 	}
@@ -70,7 +74,7 @@ func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.Ge
 	}
 
 	query := `
-		SELECT id, title, faculty_code, created_at, updated_at, created_by, updated_by
+		SELECT id, title, faculty_code, ms, created_at, updated_at, created_by, updated_by
 		FROM Major
 		WHERE id = ?
 	`
@@ -83,6 +87,7 @@ func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.Ge
 		&entity.Id,
 		&entity.Title,
 		&entity.FacultyCode,
+		&entity.Ms,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -131,6 +136,11 @@ func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (
 	if req.FacultyCode != nil {
 		updateFields = append(updateFields, "faculty_code = ?")
 		args = append(args, *req.FacultyCode)
+
+	}
+	if req.Ms != nil {
+		updateFields = append(updateFields, "ms = ?")
+		args = append(args, *req.Ms)
 
 	}
 

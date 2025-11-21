@@ -42,8 +42,8 @@ func (h *Handler) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDef
 
 	// Insert into database
 	query := `
-		INSERT INTO Grade_defence (id, defence_code, enrollment_code, note, total_score, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Grade_defence (id, defence_code, enrollment_code, note, total_score, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -52,6 +52,7 @@ func (h *Handler) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDef
 		req.EnrollmentCode,
 		Note,
 		TotalScore,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

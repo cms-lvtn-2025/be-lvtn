@@ -67,8 +67,8 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 
 	// Insert into database
 	query := `
-		INSERT INTO Topic (id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Topic (id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -79,6 +79,7 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 		StatusStr,
 		PercentStage_1,
 		PercentStage_2,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

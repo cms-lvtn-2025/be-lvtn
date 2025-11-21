@@ -27,9 +27,11 @@ message Student {
   google.protobuf.Timestamp updated_at = 10;
   string created_by = 11;
   string updated_by = 12;
+  string mssv = 13;
 }
 
 message CreateStudentRequest {
+  string id = 10;
   string email = 1;
   optional string phone = 2;
   string username = 3;
@@ -38,6 +40,7 @@ message CreateStudentRequest {
   string class_code = 6;
   string semester_code = 7;
   string created_by = 8;
+  string mssv = 9;
 }
 
 message CreateStudentResponse {
@@ -62,6 +65,7 @@ message UpdateStudentRequest {
   optional string class_code = 7;
   optional string semester_code = 8;
   string updated_by = 9;
+  optional string mssv = 10;
 }
 
 message UpdateStudentResponse {
@@ -99,15 +103,18 @@ message Teacher {
   google.protobuf.Timestamp updated_at = 8;
   string created_by = 9;
   string updated_by = 10;
+  string msgv = 11;
 }
 
 message CreateTeacherRequest {
+  string id = 8;
   string email = 1;
   string username = 2;
   Gender gender = 3;
   string major_code = 4;
   string semester_code = 5;
   string created_by = 6;
+  string msgv = 7;
 }
 
 message CreateTeacherResponse {
@@ -130,6 +137,7 @@ message UpdateTeacherRequest {
   optional string major_code = 5;
   optional string semester_code = 6;
   string updated_by = 7;
+  optional string msgv = 8;
 }
 
 message UpdateTeacherResponse {

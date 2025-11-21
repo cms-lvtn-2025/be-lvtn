@@ -129,6 +129,7 @@ type CreateDefenceInput struct {
 type CreateFacultyInput struct {
 	ID    string `json:"id"`
 	Title string `json:"title"`
+	Ms    string `json:"ms"`
 }
 
 type CreateGradeDefenceCriterionInput struct {
@@ -149,6 +150,7 @@ type CreateMajorInput struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
 	FacultyCode string `json:"facultyCode"`
+	Ms          string `json:"ms"`
 }
 
 type CreateSemesterInput struct {
@@ -165,6 +167,7 @@ type CreateStudentInput struct {
 	MajorCode    string  `json:"majorCode"`
 	ClassCode    *string `json:"classCode,omitempty"`
 	SemesterCode string  `json:"semesterCode"`
+	Mssv         string  `json:"mssv"`
 }
 
 type CreateTeacherInput struct {
@@ -174,6 +177,7 @@ type CreateTeacherInput struct {
 	Gender       Gender `json:"gender"`
 	MajorCode    string `json:"majorCode"`
 	SemesterCode string `json:"semesterCode"`
+	Msgv         string `json:"msgv"`
 }
 
 type Defence struct {
@@ -224,6 +228,7 @@ type EnrollmentListResponse struct {
 type Faculty struct {
 	ID        string     `json:"id"`
 	Title     string     `json:"title"`
+	Ms        string     `json:"ms"`
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 	CreatedBy *string    `json:"createdBy,omitempty"`
@@ -364,6 +369,7 @@ type Major struct {
 	ID          string     `json:"id"`
 	Title       string     `json:"title"`
 	FacultyCode string     `json:"facultyCode"`
+	Ms          string     `json:"ms"`
 	CreatedAt   *time.Time `json:"createdAt,omitempty"`
 	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
 	CreatedBy   *string    `json:"createdBy,omitempty"`
@@ -536,6 +542,7 @@ type Student struct {
 	MajorCode    string        `json:"majorCode"`
 	ClassCode    *string       `json:"classCode,omitempty"`
 	SemesterCode string        `json:"semesterCode"`
+	Mssv         string        `json:"mssv"`
 	CreatedAt    *time.Time    `json:"createdAt,omitempty"`
 	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
 	CreatedBy    *string       `json:"createdBy,omitempty"`
@@ -783,6 +790,7 @@ type Teacher struct {
 	Gender       *Gender       `json:"gender,omitempty"`
 	MajorCode    string        `json:"majorCode"`
 	SemesterCode string        `json:"semesterCode"`
+	Msgv         string        `json:"msgv"`
 	CreatedAt    *time.Time    `json:"createdAt,omitempty"`
 	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
 	CreatedBy    *string       `json:"createdBy,omitempty"`
@@ -864,6 +872,7 @@ type UpdateCouncilInput struct {
 
 type UpdateFacultyInput struct {
 	Title *string `json:"title,omitempty"`
+	Ms    *string `json:"ms,omitempty"`
 }
 
 type UpdateGradeDefenceCriterionInput struct {
@@ -886,6 +895,7 @@ type UpdateGradeReviewInput struct {
 type UpdateMajorInput struct {
 	Title       *string `json:"title,omitempty"`
 	FacultyCode *string `json:"facultyCode,omitempty"`
+	Ms          *string `json:"ms,omitempty"`
 }
 
 type UpdateSemesterInput struct {
@@ -900,6 +910,7 @@ type UpdateStudentInput struct {
 	MajorCode    *string `json:"majorCode,omitempty"`
 	ClassCode    *string `json:"classCode,omitempty"`
 	SemesterCode *string `json:"semesterCode,omitempty"`
+	Mssv         *string `json:"mssv,omitempty"`
 }
 
 type UpdateTeacherInput struct {
@@ -908,6 +919,7 @@ type UpdateTeacherInput struct {
 	Gender       *Gender `json:"gender,omitempty"`
 	MajorCode    *string `json:"majorCode,omitempty"`
 	SemesterCode *string `json:"semesterCode,omitempty"`
+	Msgv         *string `json:"msgv,omitempty"`
 }
 
 type UpdateTeacherProfileInput struct {

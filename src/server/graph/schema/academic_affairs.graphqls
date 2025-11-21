@@ -124,6 +124,7 @@ input CreateTeacherInput {
     gender: Gender!
     majorCode: String!
     semesterCode: String!
+    msgv: String!
 }
 
 input UpdateTeacherInput {
@@ -132,6 +133,7 @@ input UpdateTeacherInput {
     gender: Gender
     majorCode: String
     semesterCode: String
+    msgv: String
 }
 
 input CreateStudentInput {
@@ -143,6 +145,7 @@ input CreateStudentInput {
     majorCode: String!
     classCode: String
     semesterCode: String!
+    mssv: String!
 }
 
 input UpdateStudentInput {
@@ -153,6 +156,7 @@ input UpdateStudentInput {
     majorCode: String
     classCode: String
     semesterCode: String
+    mssv: String
 }
 
 input CreateSemesterInput {
@@ -168,20 +172,24 @@ input CreateMajorInput {
     id: ID!
     title: String!
     facultyCode: String!
+    ms: String!
 }
 
 input UpdateMajorInput {
     title: String
     facultyCode: String
+    ms: String
 }
 
 input CreateFacultyInput {
     id: ID!
     title: String!
+    ms: String!
 }
 
 input UpdateFacultyInput {
     title: String
+    ms: String
 }
 
 input UpdateCouncilInput {

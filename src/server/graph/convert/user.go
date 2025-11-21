@@ -18,6 +18,7 @@ func PbStudentToModel(pb *user.Student) *model.Student {
 		Username:     pb.Username,
 		MajorCode:    pb.MajorCode,
 		SemesterCode: pb.SemesterCode,
+		Mssv:         pb.Mssv,
 	}
 
 	// Handle optional ClassCode
@@ -62,6 +63,7 @@ func PbTeacherToModel(pb *user.Teacher) *model.Teacher {
 		Username:     pb.Username,
 		MajorCode:    pb.MajorCode,
 		SemesterCode: pb.SemesterCode,
+		Msgv:         pb.Msgv,
 	}
 
 	// Handle timestamps

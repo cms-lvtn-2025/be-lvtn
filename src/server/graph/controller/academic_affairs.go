@@ -3,10 +3,16 @@ package controller
 import (
 	"context"
 	"fmt"
+	pbAcademic "thaily/proto/academic"
+	pbCouncil "thaily/proto/council"
+	pbThesis "thaily/proto/thesis"
+	pbUser "thaily/proto/user"
 	"thaily/src/server/graph/convert"
 	convert2 "thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
 	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ============================================
@@ -346,38 +352,255 @@ func (c *Controller) GetAllGradeDefences(ctx context.Context, search model.Searc
 
 // CreateTeacher creates a new teacher
 func (c *Controller) CreateTeacher(ctx context.Context, input model.CreateTeacherInput) (*model.Teacher, error) {
-	// TODO: Implement when CreateTeacher is available in gRPC client
-	return nil, nil
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	// Convert gender
+	var gender pbUser.Gender
+	switch input.Gender {
+	case model.GenderMale:
+		gender = pbUser.Gender_MALE
+	case model.GenderFemale:
+		gender = pbUser.Gender_FEMALE
+	default:
+		gender = pbUser.Gender_MALE
+	}
+
+	// Get user info for created_by
+	userInfo, _, _ := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	createdBy := ""
+	if userInfo != nil {
+		createdBy = *userInfo
+	}
+
+	// Call gRPC service
+	resp, err := c.user.CreateTeacher(ctx, &pbUser.CreateTeacherRequest{
+		Id:           input.ID,
+		Email:        input.Email,
+		Username:     input.Username,
+		Gender:       gender,
+		MajorCode:    input.MajorCode,
+		SemesterCode: input.SemesterCode,
+		Msgv:         input.Msgv,
+		CreatedBy:    createdBy,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTeacherToModel(resp.GetTeacher()), nil
 }
 
 // UpdateTeacher updates a teacher
 func (c *Controller) UpdateTeacher(ctx context.Context, id string, input model.UpdateTeacherInput) (*model.Teacher, error) {
-	// TODO: Implement when UpdateTeacher is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbUser.UpdateTeacherRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	// Only update fields that are provided
+	if input.Email != nil {
+		req.Email = input.Email
+	}
+	if input.Username != nil {
+		req.Username = input.Username
+	}
+	if input.Gender != nil {
+		var gender pbUser.Gender
+		switch *input.Gender {
+		case model.GenderMale:
+			gender = pbUser.Gender_MALE
+		case model.GenderFemale:
+			gender = pbUser.Gender_FEMALE
+		}
+		req.Gender = &gender
+	}
+	if input.MajorCode != nil {
+		req.MajorCode = input.MajorCode
+	}
+	if input.SemesterCode != nil {
+		req.SemesterCode = input.SemesterCode
+	}
+	if input.Msgv != nil {
+		req.Msgv = input.Msgv
+	}
+
+	resp, err := c.user.UpdateTeacher(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbTeacherToModel(resp.GetTeacher()), nil
 }
 
 // DeleteTeacher deletes a teacher
 func (c *Controller) DeleteTeacher(ctx context.Context, id string) (bool, error) {
-	// TODO: Implement when DeleteTeacher is available in gRPC client
-	return false, nil
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("No academic affairs staff role")
+	}
+
+	_, err = c.user.DeleteTeacher(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // CreateStudent creates a new student
 func (c *Controller) CreateStudent(ctx context.Context, input model.CreateStudentInput) (*model.Student, error) {
-	// TODO: Implement when CreateStudent is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	createdBy := ""
+	if userInfo != nil {
+		createdBy = *userInfo
+	}
+
+	// Convert gender
+	var gender pbUser.Gender
+	switch input.Gender {
+	case model.GenderMale:
+		gender = pbUser.Gender_MALE
+	case model.GenderFemale:
+		gender = pbUser.Gender_FEMALE
+	default:
+		gender = pbUser.Gender_MALE
+	}
+
+	req := &pbUser.CreateStudentRequest{
+		Id:           input.ID,
+		Email:        input.Email,
+		Username:     input.Username,
+		Gender:       &gender,
+		MajorCode:    input.MajorCode,
+		SemesterCode: input.SemesterCode,
+		Mssv:         input.Mssv,
+		CreatedBy:    createdBy,
+	}
+
+	// Handle optional Phone
+	if input.Phone != "" {
+		req.Phone = &input.Phone
+	}
+
+	// Handle optional ClassCode
+	if input.ClassCode != nil && *input.ClassCode != "" {
+		req.ClassCode = *input.ClassCode
+	}
+
+	resp, err := c.user.CreateStudent(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbStudentToModel(resp.GetStudent()), nil
 }
 
 // UpdateStudent updates a student
 func (c *Controller) UpdateStudent(ctx context.Context, id string, input model.UpdateStudentInput) (*model.Student, error) {
-	// TODO: Implement when UpdateStudent is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbUser.UpdateStudentRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	// Only update fields that are provided
+	if input.Email != nil {
+		req.Email = input.Email
+	}
+	if input.Phone != nil {
+		req.Phone = input.Phone
+	}
+	if input.Username != nil {
+		req.Username = input.Username
+	}
+	if input.Gender != nil {
+		var gender pbUser.Gender
+		switch *input.Gender {
+		case model.GenderMale:
+			gender = pbUser.Gender_MALE
+		case model.GenderFemale:
+			gender = pbUser.Gender_FEMALE
+		}
+		req.Gender = &gender
+	}
+	if input.MajorCode != nil {
+		req.MajorCode = input.MajorCode
+	}
+	if input.ClassCode != nil {
+		req.ClassCode = input.ClassCode
+	}
+	if input.SemesterCode != nil {
+		req.SemesterCode = input.SemesterCode
+	}
+	if input.Mssv != nil {
+		req.Mssv = input.Mssv
+	}
+
+	resp, err := c.user.UpdateStudent(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbStudentToModel(resp.GetStudent()), nil
 }
 
 // DeleteStudent deletes a student
 func (c *Controller) DeleteStudent(ctx context.Context, id string) (bool, error) {
-	// TODO: Implement when DeleteStudent is available in gRPC client
-	return false, nil
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("No academic affairs staff role")
+	}
+
+	_, err = c.user.DeleteStudent(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // ============================================
@@ -386,56 +609,244 @@ func (c *Controller) DeleteStudent(ctx context.Context, id string) (bool, error)
 
 // CreateSemester creates a new semester
 func (c *Controller) CreateSemester(ctx context.Context, input model.CreateSemesterInput) (*model.Semester, error) {
-	// TODO: Implement when CreateSemester is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	createdBy := ""
+	if userInfo != nil {
+		createdBy = *userInfo
+	}
+
+	resp, err := c.academic.CreateSemester(ctx, &pbAcademic.CreateSemesterRequest{
+		Title:     input.Title,
+		CreatedBy: createdBy,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbSemesterToModel(resp.GetSemester()), nil
 }
 
 // UpdateSemester updates a semester
 func (c *Controller) UpdateSemester(ctx context.Context, id string, input model.UpdateSemesterInput) (*model.Semester, error) {
-	// TODO: Implement when UpdateSemester is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbAcademic.UpdateSemesterRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	if input.Title != nil {
+		req.Title = input.Title
+	}
+
+	resp, err := c.academic.UpdateSemester(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbSemesterToModel(resp.GetSemester()), nil
 }
 
 // DeleteSemester deletes a semester
 func (c *Controller) DeleteSemester(ctx context.Context, id string) (bool, error) {
-	// TODO: Implement when DeleteSemester is available in gRPC client
-	return false, nil
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("No academic affairs staff role")
+	}
+
+	_, err = c.academic.DeleteSemester(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // CreateMajor creates a new major
 func (c *Controller) CreateMajor(ctx context.Context, input model.CreateMajorInput) (*model.Major, error) {
-	// TODO: Implement when CreateMajor is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	createdBy := ""
+	if userInfo != nil {
+		createdBy = *userInfo
+	}
+
+	resp, err := c.academic.CreateMajor(ctx, &pbAcademic.CreateMajorRequest{
+		Id:          input.ID,
+		Title:       input.Title,
+		FacultyCode: input.FacultyCode,
+		Ms:          input.Ms,
+		CreatedBy:   createdBy,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbMajorToModel(resp.GetMajor()), nil
 }
 
 // UpdateMajor updates a major
 func (c *Controller) UpdateMajor(ctx context.Context, id string, input model.UpdateMajorInput) (*model.Major, error) {
-	// TODO: Implement when UpdateMajor is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbAcademic.UpdateMajorRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	if input.Title != nil {
+		req.Title = input.Title
+	}
+	if input.FacultyCode != nil {
+		req.FacultyCode = input.FacultyCode
+	}
+	if input.Ms != nil {
+		req.Ms = input.Ms
+	}
+
+	resp, err := c.academic.UpdateMajor(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbMajorToModel(resp.GetMajor()), nil
 }
 
 // DeleteMajor deletes a major
 func (c *Controller) DeleteMajor(ctx context.Context, id string) (bool, error) {
-	// TODO: Implement when DeleteMajor is available in gRPC client
-	return false, nil
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("No academic affairs staff role")
+	}
+
+	_, err = c.academic.DeleteMajor(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // CreateFaculty creates a new faculty
 func (c *Controller) CreateFaculty(ctx context.Context, input model.CreateFacultyInput) (*model.Faculty, error) {
-	// TODO: Implement when CreateFaculty is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	createdBy := ""
+	if userInfo != nil {
+		createdBy = *userInfo
+	}
+
+	resp, err := c.academic.CreateFaculty(ctx, &pbAcademic.CreateFacultyRequest{
+		Id:        input.ID,
+		Title:     input.Title,
+		Ms:        input.Ms,
+		CreatedBy: createdBy,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbFacultyToModel(resp.GetFaculty()), nil
 }
 
 // UpdateFaculty updates a faculty
 func (c *Controller) UpdateFaculty(ctx context.Context, id string, input model.UpdateFacultyInput) (*model.Faculty, error) {
-	// TODO: Implement when UpdateFaculty is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbAcademic.UpdateFacultyRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	if input.Title != nil {
+		req.Title = input.Title
+	}
+	if input.Ms != nil {
+		req.Ms = input.Ms
+	}
+
+	resp, err := c.academic.UpdateFaculty(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbFacultyToModel(resp.GetFaculty()), nil
 }
 
 // DeleteFaculty deletes a faculty
 func (c *Controller) DeleteFaculty(ctx context.Context, id string) (bool, error) {
-	// TODO: Implement when DeleteFaculty is available in gRPC client
-	return false, nil
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("No academic affairs staff role")
+	}
+
+	_, err = c.academic.DeleteFaculty(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // ============================================
@@ -444,22 +855,86 @@ func (c *Controller) DeleteFaculty(ctx context.Context, id string) (bool, error)
 
 // ApproveCouncil approves a council and sets time start
 func (c *Controller) ApproveCouncil(ctx context.Context, id string, timeStart time.Time) (*model.Council, error) {
-	// TODO: Implement when ApproveCouncil is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	// Update council with time_start (which effectively approves it)
+	ts := timestamppb.New(timeStart)
+	req := &pbCouncil.UpdateCouncilRequest{
+		Id:        id,
+		TimeStart: ts,
+		UpdatedBy: updatedBy,
+	}
+
+	resp, err := c.council.UpdateCouncil(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbCouncilToModel(resp.GetCouncil()), nil
 }
 
 // UpdateCouncil updates a council
 func (c *Controller) UpdateCouncil(ctx context.Context, id string, input model.UpdateCouncilInput) (*model.Council, error) {
-	// TODO: Implement when UpdateCouncil method signature matches
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbCouncil.UpdateCouncilRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	if input.Title != nil {
+		req.Title = input.Title
+	}
+	if input.TimeStart != nil {
+		ts := timestamppb.New(*input.TimeStart)
+		req.TimeStart = ts
+	}
+
+	resp, err := c.council.UpdateCouncil(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert.PbCouncilToModel(resp.GetCouncil()), nil
 }
 
 // DeleteCouncil deletes a council
 func (c *Controller) DeleteCouncil(ctx context.Context, id string) (bool, error) {
-	_, err := c.council.DeleteCouncil(ctx, id)
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
 	if err != nil {
 		return false, err
 	}
+	if !check {
+		return false, fmt.Errorf("No academic affairs staff role")
+	}
+
+	_, err = c.council.DeleteCouncil(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
 	return true, nil
 }
 
@@ -467,26 +942,138 @@ func (c *Controller) DeleteCouncil(ctx context.Context, id string) (bool, error)
 // MUTATION METHODS - Topic Management
 // ============================================
 
-// ApproveTopic approves topic stage 2 (final approval)
+// ApproveTopic approves topic stage 2 (final approval) by updating status to APPROVED_2
 func (c *Controller) ApproveTopic(ctx context.Context, id string) (*model.Topic, error) {
-	// TODO: Implement when ApproveTopic is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	// Update topic status to APPROVED_2 (final approval)
+	status := pbThesis.TopicStatus_APPROVED_2
+	req := &pbThesis.UpdateTopicRequest{
+		Id:        id,
+		Status:    &status,
+		UpdatedBy: updatedBy,
+	}
+
+	resp, err := c.thesis.UpdateTopic(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert2.PbTopicToModel(resp.GetTopic()), nil
 }
 
-// RejectTopic rejects a topic
+// RejectTopic rejects a topic by updating status to REJECTED
 func (c *Controller) RejectTopic(ctx context.Context, id string, reason *string) (*model.Topic, error) {
-	// TODO: Implement when RejectTopic is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	// Update topic status to REJECTED
+	status := pbThesis.TopicStatus_REJECTED
+	req := &pbThesis.UpdateTopicRequest{
+		Id:        id,
+		Status:    &status,
+		UpdatedBy: updatedBy,
+	}
+
+	// TODO: Handle reason field if it exists in Topic model
+	// The reason might need to be stored in a different field or table
+
+	resp, err := c.thesis.UpdateTopic(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert2.PbTopicToModel(resp.GetTopic()), nil
 }
 
 // UpdateTopic updates a topic
 func (c *Controller) UpdateTopic(ctx context.Context, id string, input model.UpdateTopicInput) (*model.Topic, error) {
-	// TODO: Implement when UpdateTopic is available in gRPC client
-	return nil, nil
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, fmt.Errorf("No academic affairs staff role")
+	}
+
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+
+	req := &pbThesis.UpdateTopicRequest{
+		Id:        id,
+		UpdatedBy: updatedBy,
+	}
+
+	if input.Title != nil {
+		req.Title = input.Title
+	}
+	if input.Status != nil {
+		// Convert TopicStatus enum
+		var status pbThesis.TopicStatus
+		switch *input.Status {
+		case model.TopicStatusApproved1:
+			status = pbThesis.TopicStatus_APPROVED_1
+		case model.TopicStatusApproved2:
+			status = pbThesis.TopicStatus_APPROVED_2
+		case model.TopicStatusRejected:
+			status = pbThesis.TopicStatus_REJECTED
+		}
+		req.Status = &status
+	}
+	if input.PercentStage1 != nil {
+		percentStage1 := int32(*input.PercentStage1)
+		req.PercentStage_1 = &percentStage1
+	}
+	if input.PercentStage2 != nil {
+		percentStage2 := int32(*input.PercentStage2)
+		req.PercentStage_2 = &percentStage2
+	}
+
+	resp, err := c.thesis.UpdateTopic(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return convert2.PbTopicToModel(resp.GetTopic()), nil
 }
 
 // DeleteTopic deletes a topic
 func (c *Controller) DeleteTopic(ctx context.Context, id string) (bool, error) {
-	// TODO: Implement when DeleteTopic is available in gRPC client
-	return false, nil
+	_, check, err := c.RbacInfo(ctx, model.RoleSystemRoleAcademicAffairsStaff)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("No academic affairs staff role")
+	}
+
+	_, err = c.thesis.DeleteTopic(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

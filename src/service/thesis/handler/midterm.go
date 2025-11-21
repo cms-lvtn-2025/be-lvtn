@@ -55,8 +55,8 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 
 	// Insert into database
 	query := `
-		INSERT INTO Midterm (id, title, grade, status, feedback, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Midterm (id, title, grade, status, feedback, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -65,6 +65,7 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 		Grade,
 		StatusStr,
 		Feedback,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

@@ -58,8 +58,8 @@ func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeRevi
 
 	// Insert into database
 	query := `
-		INSERT INTO Grade_review (id, title, review_grade, teacher_code, status, notes, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Grade_review (id, title, review_grade, teacher_code, status, notes, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -69,6 +69,7 @@ func (h *Handler) CreateGradeReview(ctx context.Context, req *pb.CreateGradeRevi
 		req.TeacherCode,
 		StatusStr,
 		Notes,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

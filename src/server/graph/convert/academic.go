@@ -59,6 +59,7 @@ func PbMajorToModel(pb *academic.Major) *model.Major {
 		ID:          pb.Id,
 		Title:       pb.Title,
 		FacultyCode: pb.FacultyCode,
+		Ms:          pb.Ms,
 	}
 
 	// Handle timestamps
@@ -134,6 +135,7 @@ func PbFacultyToModel(pb *academic.Faculty) *model.Faculty {
 	result := &model.Faculty{
 		ID:    pb.Id,
 		Title: pb.Title,
+		Ms:    pb.Ms,
 	}
 
 	// Handle timestamps

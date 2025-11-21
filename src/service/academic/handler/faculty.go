@@ -9,7 +9,6 @@ import (
 	"thaily/src/service/pkg/helper"
 	"thaily/src/service/pkg/logger"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -24,20 +23,25 @@ func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyReques
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
 
-	// Generate UUID
-	id := uuid.New().String()
+	// Use provided ID
+	id := req.Id
+	if id == "" {
+		return nil, status.Error(codes.InvalidArgument, "id is required")
+	}
 
 	// Prepare fields
 
 	// Insert into database
 	query := `
-		INSERT INTO Faculty (id, title, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, NOW(), NOW())
+		INSERT INTO Faculty (id, title, ms, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
 		req.Title,
+		req.Ms,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 
@@ -48,7 +52,7 @@ func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyReques
 		return nil, status.Errorf(codes.Internal, "failed to create faculty: %v", err)
 	}
 
-	result, err := h.GetFaculty(ctx, &pb.GetFacultyRequest{Id: id})
+	result, err := h.GetFaculty(ctx, &pb.GetFacultyRequest{Id: req.Ms})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get faculty")
 	}
@@ -66,7 +70,7 @@ func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*p
 	}
 
 	query := `
-		SELECT id, title, created_at, updated_at, created_by, updated_by
+		SELECT id, title, ms, created_at, updated_at, created_by, updated_by
 		FROM Faculty
 		WHERE id = ?
 	`
@@ -78,6 +82,7 @@ func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*p
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
+		&entity.Ms,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -121,6 +126,11 @@ func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyReques
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
+
+	}
+	if req.Ms != nil {
+		updateFields = append(updateFields, "ms = ?")
+		args = append(args, *req.Ms)
 
 	}
 
