@@ -34,7 +34,7 @@ func (ec *executionContext) unmarshalInputCreateCouncilInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "majorCode", "semesterCode"}
+	fieldsInOrder := [...]string{"title", "majorCode"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -55,13 +55,6 @@ func (ec *executionContext) unmarshalInputCreateCouncilInput(ctx context.Context
 				return it, err
 			}
 			it.MajorCode = data
-		case "semesterCode":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("semesterCode"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SemesterCode = data
 		}
 	}
 

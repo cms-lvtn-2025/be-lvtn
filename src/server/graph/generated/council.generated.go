@@ -802,6 +802,8 @@ func (ec *executionContext) fieldContext_Defence_teacher(_ context.Context, fiel
 				return ec.fieldContext_Teacher_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Teacher_semesterCode(ctx, field)
+			case "msgv":
+				return ec.fieldContext_Teacher_msgv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Teacher_createdAt(ctx, field)
 			case "updatedAt":

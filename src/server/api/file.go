@@ -77,7 +77,7 @@ func (h *APIHandler) extractUserInfo(c *gin.Context) (*UserInfo, error) {
 	if semester == "" {
 		// If no semester specified, use first ID
 		if len(idsArr) > 0 {
-			parts := strings.Split(idsArr[0], "-")
+			parts := strings.Split(idsArr[0], ":")
 			if len(parts) > 1 {
 				myID = parts[1]
 				semester = parts[0]
@@ -86,8 +86,8 @@ func (h *APIHandler) extractUserInfo(c *gin.Context) (*UserInfo, error) {
 	} else {
 		// Find ID matching the semester
 		for _, id := range idsArr {
-			if strings.HasPrefix(id, semester+"-") {
-				parts := strings.Split(id, "-")
+			if strings.HasPrefix(id, semester+":") {
+				parts := strings.Split(id, ":")
 				if len(parts) > 1 {
 					myID = parts[1]
 					break

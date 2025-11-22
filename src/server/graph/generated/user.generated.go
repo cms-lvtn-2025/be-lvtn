@@ -268,6 +268,35 @@ func (ec *executionContext) fieldContext_Student_semesterCode(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Student_mssv(ctx context.Context, field graphql.CollectedField, obj *model.Student) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Student_mssv,
+		func(ctx context.Context) (any, error) {
+			return obj.Mssv, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Student_mssv(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Student",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Student_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Student) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -623,6 +652,35 @@ func (ec *executionContext) fieldContext_Teacher_semesterCode(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Teacher_msgv(ctx context.Context, field graphql.CollectedField, obj *model.Teacher) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Teacher_msgv,
+		func(ctx context.Context) (any, error) {
+			return obj.Msgv, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Teacher_msgv(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Teacher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Teacher_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Teacher) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -851,6 +909,11 @@ func (ec *executionContext) _Student(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "mssv":
+			out.Values[i] = ec._Student_mssv(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "createdAt":
 			out.Values[i] = ec._Student_createdAt(ctx, field, obj)
 		case "updatedAt":
@@ -950,6 +1013,11 @@ func (ec *executionContext) _Teacher(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "semesterCode":
 			out.Values[i] = ec._Teacher_semesterCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "msgv":
+			out.Values[i] = ec._Teacher_msgv(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

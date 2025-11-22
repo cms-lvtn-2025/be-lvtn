@@ -131,10 +131,10 @@ import (
 //	semester, ok := ctx.Value("semester").(string)
 //	myId := ""
 //	for _, id := range idsArr {
-//		parts := strings.Split(id, "-")
+//		parts := strings.Split(id, ":")
 //		if len(parts) == 2 {
-//			if semester != "" && strings.HasPrefix(id, semester+"-") {
-//				myId = strings.Split(id, "-")[1]
+//			if semester != "" && strings.HasPrefix(id, semester+":") {
+//				myId = strings.Split(id, ":")[1]
 //			}
 //			Values = append(Values, parts[1])
 //		}

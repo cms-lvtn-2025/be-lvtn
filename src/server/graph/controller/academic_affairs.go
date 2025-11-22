@@ -5,10 +5,10 @@ import (
 	"fmt"
 	pbAcademic "thaily/proto/academic"
 	pbCouncil "thaily/proto/council"
+	pbRole "thaily/proto/role"
 	pbThesis "thaily/proto/thesis"
 	pbUser "thaily/proto/user"
 	"thaily/src/server/graph/convert"
-	convert2 "thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
 	"time"
 
@@ -190,7 +190,7 @@ func (c *Controller) GetAllTopics(ctx context.Context, search model.SearchReques
 
 	return &model.TopicListResponse{
 		Total: topics.GetTotal(),
-		Data:  convert2.PbTopicsToModel(topics.GetTopics()),
+		Data:  convert.PbTopicsToModel(topics.GetTopics()),
 	}, nil
 }
 
@@ -208,7 +208,7 @@ func (c *Controller) GetTopicDetail(ctx context.Context, id string) (*model.Topi
 		return nil, err
 	}
 
-	return convert2.PbTopicToModel(topic.GetTopic()), nil
+	return convert.PbTopicToModel(topic.GetTopic()), nil
 }
 
 // ============================================
@@ -231,7 +231,7 @@ func (c *Controller) GetAllEnrollments(ctx context.Context, search model.SearchR
 
 	return &model.EnrollmentListResponse{
 		Total: enrollments.GetTotal(),
-		Data:  convert2.PbEnrollmentsToModel(enrollments.GetEnrollments()),
+		Data:  convert.PbEnrollmentsToModel(enrollments.GetEnrollments()),
 	}, nil
 }
 
@@ -249,7 +249,7 @@ func (c *Controller) GetEnrollmentDetail(ctx context.Context, id string) (*model
 		return nil, err
 	}
 
-	return convert2.PbEnrollmentToModel(enrollment.GetEnrollment()), nil
+	return convert.PbEnrollmentToModel(enrollment.GetEnrollment()), nil
 }
 
 // ============================================
@@ -393,6 +393,34 @@ func (c *Controller) CreateTeacher(ctx context.Context, input model.CreateTeache
 		return nil, err
 	}
 
+	// Create roles for the teacher if roles are provided
+	if len(input.Roles) > 0 {
+		// Convert model.RoleSystemRole to pb.RoleType
+		pbRoles := make([]pbRole.RoleType, 0, len(input.Roles))
+		for _, role := range input.Roles {
+			if role != nil {
+				pbRoles = append(pbRoles, modelRoleToPbRoleType(*role))
+			}
+		}
+
+		// Create role request with common fields
+		roleReq := &pbRole.CreateRoleSystemRequest{
+			Title:        input.Username, // Use username as title, or you can customize this
+			TeacherCode:  input.Msgv,
+			SemesterCode: input.SemesterCode,
+			Activate:     true,
+			CreatedBy:    createdBy,
+		}
+
+		// Create all roles
+		_, err = c.role.CreateRoles(ctx, roleReq, pbRoles)
+		if err != nil {
+			// Log error but don't fail the teacher creation
+			// You might want to handle this differently based on your requirements
+			fmt.Printf("Warning: Failed to create roles for teacher %s: %v\n", input.Msgv, err)
+		}
+	}
+
 	return convert.PbTeacherToModel(resp.GetTeacher()), nil
 }
 
@@ -446,6 +474,86 @@ func (c *Controller) UpdateTeacher(ctx context.Context, id string, input model.U
 	resp, err := c.user.UpdateTeacher(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Handle roles update if provided
+	if input.Roles != nil {
+		teacher := resp.GetTeacher()
+		if teacher == nil {
+			return nil, fmt.Errorf("teacher not found after update")
+		}
+
+		// Get teacher_code (msgv) and semester_code
+		teacherCode := teacher.Id
+		semesterCode := teacher.SemesterCode
+		if input.SemesterCode != nil {
+			semesterCode = *input.SemesterCode
+		}
+
+		// Get existing roles from DB
+		existingRolesResp, err := c.role.GetAllRoleByTeacherId(ctx, teacherCode)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get existing roles: %v", err)
+		}
+
+		// Convert input roles to pb.RoleType set
+		inputRoleSet := make(map[pbRole.RoleType]bool)
+		for _, role := range input.Roles {
+			if role != nil {
+				inputRoleSet[modelRoleToPbRoleType(*role)] = true
+			}
+		}
+
+		// Convert existing roles to pb.RoleType set with their IDs
+		existingRoleMap := make(map[pbRole.RoleType]string) // roleType -> roleId
+		if existingRolesResp != nil && existingRolesResp.RoleSystems != nil {
+			for _, role := range existingRolesResp.RoleSystems {
+				if role != nil {
+					existingRoleMap[role.Role] = role.Id
+				}
+			}
+		}
+
+		// Find roles to create (in input but not in DB)
+		rolesToCreate := make([]pbRole.RoleType, 0)
+		for roleType := range inputRoleSet {
+			if _, exists := existingRoleMap[roleType]; !exists {
+				rolesToCreate = append(rolesToCreate, roleType)
+			}
+		}
+
+		// Find roles to delete (in DB but not in input)
+		rolesToDelete := make([]string, 0) // role IDs to delete
+		for roleType, roleId := range existingRoleMap {
+			if !inputRoleSet[roleType] {
+				rolesToDelete = append(rolesToDelete, roleId)
+			}
+		}
+
+		// Create new roles
+		if len(rolesToCreate) > 0 {
+			roleReq := &pbRole.CreateRoleSystemRequest{
+				Title:        teacher.Username,
+				TeacherCode:  teacherCode,
+				SemesterCode: semesterCode,
+				Activate:     true,
+				CreatedBy:    updatedBy,
+			}
+
+			_, err = c.role.CreateRoles(ctx, roleReq, rolesToCreate)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create roles: %v", err)
+			}
+		}
+
+		// Delete old roles
+		for _, roleId := range rolesToDelete {
+			_, err = c.role.DeleteRole(ctx, roleId)
+			if err != nil {
+				// Log error but continue deleting other roles
+				fmt.Printf("Warning: Failed to delete role %s: %v\n", roleId, err)
+			}
+		}
 	}
 
 	return convert.PbTeacherToModel(resp.GetTeacher()), nil
@@ -970,7 +1078,7 @@ func (c *Controller) ApproveTopic(ctx context.Context, id string) (*model.Topic,
 		return nil, err
 	}
 
-	return convert2.PbTopicToModel(resp.GetTopic()), nil
+	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
 // RejectTopic rejects a topic by updating status to REJECTED
@@ -1004,7 +1112,7 @@ func (c *Controller) RejectTopic(ctx context.Context, id string, reason *string)
 		return nil, err
 	}
 
-	return convert2.PbTopicToModel(resp.GetTopic()), nil
+	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
 // UpdateTopic updates a topic
@@ -1057,7 +1165,7 @@ func (c *Controller) UpdateTopic(ctx context.Context, id string, input model.Upd
 		return nil, err
 	}
 
-	return convert2.PbTopicToModel(resp.GetTopic()), nil
+	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
 // DeleteTopic deletes a topic
@@ -1076,4 +1184,18 @@ func (c *Controller) DeleteTopic(ctx context.Context, id string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// modelRoleToPbRoleType converts model.RoleSystemRole to pb.RoleType
+func modelRoleToPbRoleType(role model.RoleSystemRole) pbRole.RoleType {
+	switch role {
+	case model.RoleSystemRoleAcademicAffairsStaff:
+		return pbRole.RoleType_ACADEMIC_AFFAIRS_STAFF
+	case model.RoleSystemRoleDepartmentLecturer:
+		return pbRole.RoleType_DEPARTMENT_LECTURER
+	case model.RoleSystemRoleTeacher:
+		return pbRole.RoleType_TEACHER
+	default:
+		return pbRole.RoleType_TEACHER
+	}
 }

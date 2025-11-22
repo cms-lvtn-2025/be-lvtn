@@ -34,7 +34,7 @@ func (ec *executionContext) unmarshalInputCreateFacultyInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title"}
+	fieldsInOrder := [...]string{"id", "title", "ms"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -55,6 +55,13 @@ func (ec *executionContext) unmarshalInputCreateFacultyInput(ctx context.Context
 				return it, err
 			}
 			it.Title = data
+		case "ms":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ms"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ms = data
 		}
 	}
 
@@ -68,7 +75,7 @@ func (ec *executionContext) unmarshalInputCreateMajorInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "facultyCode"}
+	fieldsInOrder := [...]string{"id", "title", "facultyCode", "ms"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -96,6 +103,13 @@ func (ec *executionContext) unmarshalInputCreateMajorInput(ctx context.Context, 
 				return it, err
 			}
 			it.FacultyCode = data
+		case "ms":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ms"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ms = data
 		}
 	}
 
@@ -143,7 +157,7 @@ func (ec *executionContext) unmarshalInputCreateStudentInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "email", "phone", "username", "gender", "majorCode", "classCode", "semesterCode"}
+	fieldsInOrder := [...]string{"id", "email", "phone", "username", "gender", "majorCode", "classCode", "semesterCode", "mssv"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -206,6 +220,13 @@ func (ec *executionContext) unmarshalInputCreateStudentInput(ctx context.Context
 				return it, err
 			}
 			it.SemesterCode = data
+		case "mssv":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mssv"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Mssv = data
 		}
 	}
 
@@ -219,7 +240,7 @@ func (ec *executionContext) unmarshalInputCreateTeacherInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "email", "username", "gender", "majorCode", "semesterCode"}
+	fieldsInOrder := [...]string{"id", "email", "username", "gender", "majorCode", "semesterCode", "msgv", "roles"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -268,6 +289,20 @@ func (ec *executionContext) unmarshalInputCreateTeacherInput(ctx context.Context
 				return it, err
 			}
 			it.SemesterCode = data
+		case "msgv":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("msgv"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Msgv = data
+		case "roles":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roles"))
+			data, err := ec.unmarshalNRoleSystemRole2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐRoleSystemRole(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Roles = data
 		}
 	}
 
@@ -315,7 +350,7 @@ func (ec *executionContext) unmarshalInputUpdateFacultyInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title"}
+	fieldsInOrder := [...]string{"title", "ms"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -329,6 +364,13 @@ func (ec *executionContext) unmarshalInputUpdateFacultyInput(ctx context.Context
 				return it, err
 			}
 			it.Title = data
+		case "ms":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ms"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ms = data
 		}
 	}
 
@@ -342,7 +384,7 @@ func (ec *executionContext) unmarshalInputUpdateMajorInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"title", "facultyCode"}
+	fieldsInOrder := [...]string{"title", "facultyCode", "ms"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -363,6 +405,13 @@ func (ec *executionContext) unmarshalInputUpdateMajorInput(ctx context.Context, 
 				return it, err
 			}
 			it.FacultyCode = data
+		case "ms":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ms"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ms = data
 		}
 	}
 
@@ -403,7 +452,7 @@ func (ec *executionContext) unmarshalInputUpdateStudentInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"email", "phone", "username", "gender", "majorCode", "classCode", "semesterCode"}
+	fieldsInOrder := [...]string{"email", "phone", "username", "gender", "majorCode", "classCode", "semesterCode", "mssv"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -459,6 +508,13 @@ func (ec *executionContext) unmarshalInputUpdateStudentInput(ctx context.Context
 				return it, err
 			}
 			it.SemesterCode = data
+		case "mssv":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mssv"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Mssv = data
 		}
 	}
 
@@ -472,7 +528,7 @@ func (ec *executionContext) unmarshalInputUpdateTeacherInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"email", "username", "gender", "majorCode", "semesterCode"}
+	fieldsInOrder := [...]string{"email", "username", "gender", "majorCode", "semesterCode", "msgv", "roles"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -514,6 +570,20 @@ func (ec *executionContext) unmarshalInputUpdateTeacherInput(ctx context.Context
 				return it, err
 			}
 			it.SemesterCode = data
+		case "msgv":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("msgv"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Msgv = data
+		case "roles":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roles"))
+			data, err := ec.unmarshalORoleSystemRole2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐRoleSystemRole(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Roles = data
 		}
 	}
 

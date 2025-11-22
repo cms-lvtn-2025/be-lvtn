@@ -282,11 +282,11 @@ import (
 //	idsArr := strings.Split(claims["ids"].(string), ",")
 //	myId := ""
 //	if semester == "" {
-//		myId = strings.Split(idsArr[0], "-")[1]
+//		myId = strings.Split(idsArr[0], ":")[1]
 //	} else {
 //		for _, id := range idsArr {
-//			if strings.HasPrefix(id, semester+"-") {
-//				myId = strings.Split(id, "-")[1]
+//			if strings.HasPrefix(id, semester+":") {
+//				myId = strings.Split(id, ":")[1]
 //			}
 //		}
 //	}
@@ -392,11 +392,11 @@ import (
 //	idsArr := strings.Split(claims["ids"].(string), ",")
 //	myId := ""
 //	if semester == "" {
-//		myId = strings.Split(idsArr[0], "-")[1]
+//		myId = strings.Split(idsArr[0], ":")[1]
 //	} else {
 //		for _, id := range idsArr {
-//			if strings.HasPrefix(id, semester+"-") {
-//				myId = strings.Split(id, "-")[1]
+//			if strings.HasPrefix(id, semester+":") {
+//				myId = strings.Split(id, ":")[1]
 //			}
 //		}
 //	}
@@ -431,11 +431,11 @@ import (
 //	//idsArr := strings.Split(claims["ids"].(string), ",")
 //	//myId := ""
 //	//if semester == "" {
-//	//	myId = strings.Split(idsArr[0], "-")[1]
+//	//	myId = strings.Split(idsArr[0], ":")[1]
 //	//} else {
 //	//	for _, id := range idsArr {
-//	//		if strings.HasPrefix(id, semester+"-") {
-//	//			myId = strings.Split(id, "-")[1]
+//	//		if strings.HasPrefix(id, semester+":") {
+//	//			myId = strings.Split(id, ":")[1]
 //	//		}
 //	//	}
 //	//}

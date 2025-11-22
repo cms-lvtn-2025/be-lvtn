@@ -99,6 +99,35 @@ func (ec *executionContext) fieldContext_Faculty_title(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Faculty_ms(ctx context.Context, field graphql.CollectedField, obj *model.Faculty) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Faculty_ms,
+		func(ctx context.Context) (any, error) {
+			return obj.Ms, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Faculty_ms(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Faculty",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Faculty_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Faculty) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -245,6 +274,8 @@ func (ec *executionContext) fieldContext_Faculty_majors(_ context.Context, field
 				return ec.fieldContext_Major_title(ctx, field)
 			case "facultyCode":
 				return ec.fieldContext_Major_facultyCode(ctx, field)
+			case "ms":
+				return ec.fieldContext_Major_ms(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Major_createdAt(ctx, field)
 			case "updatedAt":
@@ -337,6 +368,35 @@ func (ec *executionContext) _Major_facultyCode(ctx context.Context, field graphq
 }
 
 func (ec *executionContext) fieldContext_Major_facultyCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Major",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Major_ms(ctx context.Context, field graphql.CollectedField, obj *model.Major) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Major_ms,
+		func(ctx context.Context) (any, error) {
+			return obj.Ms, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Major_ms(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Major",
 		Field:      field,
@@ -738,6 +798,8 @@ func (ec *executionContext) fieldContext_Semester_students(_ context.Context, fi
 				return ec.fieldContext_Student_classCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Student_semesterCode(ctx, field)
+			case "mssv":
+				return ec.fieldContext_Student_mssv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Student_createdAt(ctx, field)
 			case "updatedAt":
@@ -791,6 +853,8 @@ func (ec *executionContext) fieldContext_Semester_teachers(_ context.Context, fi
 				return ec.fieldContext_Teacher_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Teacher_semesterCode(ctx, field)
+			case "msgv":
+				return ec.fieldContext_Teacher_msgv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Teacher_createdAt(ctx, field)
 			case "updatedAt":
@@ -900,6 +964,11 @@ func (ec *executionContext) _Faculty(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "ms":
+			out.Values[i] = ec._Faculty_ms(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "createdAt":
 			out.Values[i] = ec._Faculty_createdAt(ctx, field, obj)
 		case "updatedAt":
@@ -990,6 +1059,11 @@ func (ec *executionContext) _Major(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "facultyCode":
 			out.Values[i] = ec._Major_facultyCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "ms":
+			out.Values[i] = ec._Major_ms(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

@@ -182,7 +182,7 @@ func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		}
 
 		for _, student := range user.GetStudents() {
-			ids += student.GetSemesterCode() + "-" + student.GetId() + ","
+			ids += student.GetSemesterCode() + ":" + student.GetId() + ","
 		}
 	} else if session.Role == "teacher" {
 		teachers, err := s.user.GetTeacherByEmail(ctx, session.Email)
@@ -190,7 +190,7 @@ func (s *Service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 			return nil, fmt.Errorf("invalid user email")
 		}
 		for _, teacher := range teachers.GetTeachers() {
-			ids += teacher.GetSemesterCode() + "-" + teacher.GetId() + ","
+			ids += teacher.GetSemesterCode() + ":" + teacher.GetId() + ","
 		}
 	}
 

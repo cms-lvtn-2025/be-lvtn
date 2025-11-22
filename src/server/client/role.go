@@ -306,3 +306,52 @@ func (r *GRPCRole) GetRolesByTeacherIds(ctx context.Context, teacherIds []string
 
 	return result, nil
 }
+
+func (r *GRPCRole) CreateRoles(ctx context.Context, req *pb.CreateRoleSystemRequest, roles []pb.RoleType) (*pb.CreateRoleSystemResponse, error) {
+	if len(roles) == 0 {
+		return nil, fmt.Errorf("at least one role type is required")
+	}
+
+	var lastResp *pb.CreateRoleSystemResponse
+	var lastErr error
+
+	// Create each role
+	for _, roleType := range roles {
+		createReq := &pb.CreateRoleSystemRequest{
+			Title:        req.Title,
+			TeacherCode:  req.TeacherCode,
+			Role:         roleType,
+			SemesterCode: req.SemesterCode,
+			Activate:     req.Activate,
+			CreatedBy:    req.CreatedBy,
+		}
+
+		resp, err := r.client.CreateRoleSystem(ctx, createReq)
+		if err != nil {
+			lastErr = err
+			// Continue creating other roles even if one fails
+			continue
+		}
+
+		lastResp = resp
+
+		// Invalidate cache for the created role
+		if resp != nil && resp.RoleSystem != nil {
+			cacheKey := fmt.Sprintf("%s%s", roleSystemCachePrefix, resp.RoleSystem.Id)
+			InvalidateCacheByKey(ctx, r.redisClient, cacheKey)
+		}
+	}
+
+	// Invalidate pattern cache to ensure consistency
+	InvalidateCacheByPattern(ctx, r.redisClient, roleSystemCachePrefix+"*")
+	if req.TeacherCode != "" {
+		InvalidateCacheByPattern(ctx, r.redisClient, fmt.Sprintf("%steacher:%s*", roleSystemCachePrefix, req.TeacherCode))
+	}
+
+	// Return the last created role, or error if all failed
+	if lastResp == nil && lastErr != nil {
+		return nil, fmt.Errorf("failed to create any roles: %v", lastErr)
+	}
+
+	return lastResp, lastErr
+}

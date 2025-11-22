@@ -44,6 +44,11 @@ func (r *mutationResolver) AssignTopicToCouncil(ctx context.Context, topicCounci
 	return r.Ctrl.AssignTopicToCouncil(ctx, topicCouncilID, councilID)
 }
 
+// RemoveTopicFromCouncil is the resolver for the removeTopicFromCouncil field.
+func (r *mutationResolver) RemoveTopicFromCouncil(ctx context.Context, topicCouncilID string, councilID string) (bool, error) {
+	return r.Ctrl.RemoveTopicFromCouncil(ctx, topicCouncilID, councilID)
+}
+
 // GetDepartmentTeachers is the resolver for the getDepartmentTeachers field.
 func (r *queryResolver) GetDepartmentTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
 	return r.Ctrl.GetDepartmentTeachers(ctx, search)

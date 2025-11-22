@@ -73,7 +73,7 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create defence: %v", err)
 	}
-
+	id = fmt.Sprint(req.CouncilCode, "_", req.TeacherCode)
 	result, err := h.GetDefence(ctx, &pb.GetDefenceRequest{Id: id})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get defence")

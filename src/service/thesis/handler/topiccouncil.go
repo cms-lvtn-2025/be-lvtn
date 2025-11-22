@@ -203,7 +203,7 @@ func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCou
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
-		UPDATE TopicCouncil
+		UPDATE Topic_council
 		SET %s
 		WHERE id = ?
 	`, strings.Join(updateFields, ", "))
@@ -280,8 +280,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":           true,
 		"title":        true,
 		"stage":        true,
 		"topic_code":   true,

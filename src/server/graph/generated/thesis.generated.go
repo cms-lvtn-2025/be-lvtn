@@ -414,6 +414,8 @@ func (ec *executionContext) fieldContext_Enrollment_student(_ context.Context, f
 				return ec.fieldContext_Student_classCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Student_semesterCode(ctx, field)
+			case "mssv":
+				return ec.fieldContext_Student_mssv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Student_createdAt(ctx, field)
 			case "updatedAt":
@@ -2923,6 +2925,8 @@ func (ec *executionContext) fieldContext_TopicCouncilSupervisor_teacher(_ contex
 				return ec.fieldContext_Teacher_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Teacher_semesterCode(ctx, field)
+			case "msgv":
+				return ec.fieldContext_Teacher_msgv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Teacher_createdAt(ctx, field)
 			case "updatedAt":

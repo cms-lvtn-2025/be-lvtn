@@ -51,8 +51,8 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 
 	// Insert into database
 	query := `
-		INSERT INTO RoleSystem (id, title, teacher_code, role, semester_code, activate, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO RoleSystem (id, title, teacher_code, role, semester_code, activate, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
@@ -62,6 +62,7 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 		RoleStr,
 		req.SemesterCode,
 		req.Activate,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

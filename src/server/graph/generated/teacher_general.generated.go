@@ -392,6 +392,8 @@ func (ec *executionContext) fieldContext_CouncilDefence_teacher(_ context.Contex
 				return ec.fieldContext_Teacher_majorCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Teacher_semesterCode(ctx, field)
+			case "msgv":
+				return ec.fieldContext_Teacher_msgv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Teacher_createdAt(ctx, field)
 			case "updatedAt":
@@ -765,6 +767,8 @@ func (ec *executionContext) fieldContext_CouncilEnrollment_student(_ context.Con
 				return ec.fieldContext_Student_classCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Student_semesterCode(ctx, field)
+			case "mssv":
+				return ec.fieldContext_Student_mssv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Student_createdAt(ctx, field)
 			case "updatedAt":
@@ -2282,6 +2286,8 @@ func (ec *executionContext) fieldContext_ReviewerEnrollment_student(_ context.Co
 				return ec.fieldContext_Student_classCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Student_semesterCode(ctx, field)
+			case "mssv":
+				return ec.fieldContext_Student_mssv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Student_createdAt(ctx, field)
 			case "updatedAt":
@@ -3656,6 +3662,8 @@ func (ec *executionContext) fieldContext_SupervisorEnrollment_student(_ context.
 				return ec.fieldContext_Student_classCode(ctx, field)
 			case "semesterCode":
 				return ec.fieldContext_Student_semesterCode(ctx, field)
+			case "mssv":
+				return ec.fieldContext_Student_mssv(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Student_createdAt(ctx, field)
 			case "updatedAt":
@@ -5232,6 +5240,130 @@ func (ec *executionContext) unmarshalInputCreateGradeDefenceInput(ctx context.Co
 				return it, err
 			}
 			it.TotalScore = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateTopicCouncilForSuperVisorInput(ctx context.Context, obj any) (model.CreateTopicCouncilForSuperVisorInput, error) {
+	var it model.CreateTopicCouncilForSuperVisorInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"topicCode", "timeStart", "timeEnd", "students"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "topicCode":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("topicCode"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TopicCode = data
+		case "timeStart":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timeStart"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TimeStart = data
+		case "timeEnd":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timeEnd"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TimeEnd = data
+		case "students":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("students"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Students = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateTopicForSuperVisorInput(ctx context.Context, obj any) (model.CreateTopicForSuperVisorInput, error) {
+	var it model.CreateTopicForSuperVisorInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"title", "titleEn", "description", "students", "stage", "curriculum", "timeStart", "timeEnd"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "titleEn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("titleEn"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TitleEn = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "students":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("students"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Students = data
+		case "stage":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stage"))
+			data, err := ec.unmarshalNTopicStage2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicStage(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Stage = data
+		case "curriculum":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("curriculum"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Curriculum = data
+		case "timeStart":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timeStart"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TimeStart = data
+		case "timeEnd":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timeEnd"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TimeEnd = data
 		}
 	}
 
@@ -7806,6 +7938,16 @@ func (ec *executionContext) unmarshalNCreateGradeDefenceCriterionInput2thailyᚋ
 
 func (ec *executionContext) unmarshalNCreateGradeDefenceInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐCreateGradeDefenceInput(ctx context.Context, v any) (model.CreateGradeDefenceInput, error) {
 	res, err := ec.unmarshalInputCreateGradeDefenceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateTopicCouncilForSuperVisorInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐCreateTopicCouncilForSuperVisorInput(ctx context.Context, v any) (model.CreateTopicCouncilForSuperVisorInput, error) {
+	res, err := ec.unmarshalInputCreateTopicCouncilForSuperVisorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateTopicForSuperVisorInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐCreateTopicForSuperVisorInput(ctx context.Context, v any) (model.CreateTopicForSuperVisorInput, error) {
+	res, err := ec.unmarshalInputCreateTopicForSuperVisorInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

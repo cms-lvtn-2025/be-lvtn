@@ -125,6 +125,7 @@ input CreateTeacherInput {
     majorCode: String!
     semesterCode: String!
     msgv: String!
+    roles: [RoleSystemRole]!
 }
 
 input UpdateTeacherInput {
@@ -134,6 +135,7 @@ input UpdateTeacherInput {
     majorCode: String
     semesterCode: String
     msgv: String
+    roles: [RoleSystemRole]
 }
 
 input CreateStudentInput {

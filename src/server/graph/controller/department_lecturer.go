@@ -7,8 +7,6 @@ import (
 	pbThesis "thaily/proto/thesis"
 	"thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
-
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ============================================
@@ -504,11 +502,15 @@ func (c *Controller) CreateCouncil(ctx context.Context, input model.CreateCounci
 	if userInfo != nil {
 		createdBy = *userInfo
 	}
+	semester, ok := ctx.Value("semester").(string)
+	if !ok {
+		return nil, fmt.Errorf("no semester")
+	}
 
 	resp, err := c.council.CreateCouncil(ctx, &pbCouncil.CreateCouncilRequest{
 		Title:        input.Title,
 		MajorCode:    input.MajorCode,
-		SemesterCode: input.SemesterCode,
+		SemesterCode: semester,
 		CreatedBy:    createdBy,
 	})
 	if err != nil {
@@ -533,6 +535,14 @@ func (c *Controller) UpdateDepartmentCouncil(ctx context.Context, id string, inp
 		updatedBy = *userInfo
 	}
 
+	council, err := c.council.GetCouncilById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if council.GetCouncil().GetTimeStart() != nil {
+		return nil, fmt.Errorf("council already approved")
+	}
+
 	req := &pbCouncil.UpdateCouncilRequest{
 		Id:        id,
 		UpdatedBy: updatedBy,
@@ -540,10 +550,6 @@ func (c *Controller) UpdateDepartmentCouncil(ctx context.Context, id string, inp
 
 	if input.Title != nil {
 		req.Title = input.Title
-	}
-	if input.TimeStart != nil {
-		ts := timestamppb.New(*input.TimeStart)
-		req.TimeStart = ts
 	}
 
 	resp, err := c.council.UpdateCouncil(ctx, req)
@@ -568,6 +574,13 @@ func (c *Controller) AddDefenceToCouncil(ctx context.Context, input model.Create
 	if userInfo != nil {
 		createdBy = *userInfo
 	}
+	council, err := c.council.GetCouncilById(ctx, input.CouncilCode)
+	if err != nil {
+		return nil, err
+	}
+	if council.GetCouncil().GetTimeStart() != nil {
+		return nil, fmt.Errorf("council already approved")
+	}
 
 	// Convert DefencePosition enum
 	var position pbCouncil.DefencePosition
@@ -585,11 +598,11 @@ func (c *Controller) AddDefenceToCouncil(ctx context.Context, input model.Create
 	}
 
 	resp, err := c.council.CreateDefence(ctx, &pbCouncil.CreateDefenceRequest{
-		Title:        input.Title,
-		CouncilCode:  input.CouncilCode,
-		TeacherCode:  input.TeacherCode,
-		Position:     position,
-		CreatedBy:    createdBy,
+		Title:       input.Title,
+		CouncilCode: input.CouncilCode,
+		TeacherCode: input.TeacherCode,
+		Position:    position,
+		CreatedBy:   createdBy,
 	})
 	if err != nil {
 		return nil, err
@@ -606,6 +619,17 @@ func (c *Controller) RemoveDefenceFromCouncil(ctx context.Context, id string) (b
 	}
 	if !check {
 		return false, fmt.Errorf("no department lecturer role")
+	}
+	defence, err := c.council.GetDefenceById(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	council, err := c.council.GetCouncilById(ctx, defence.GetDefence().GetCouncilCode())
+	if err != nil {
+		return false, err
+	}
+	if council.GetCouncil().GetTimeStart() != nil {
+		return false, fmt.Errorf("council already approved")
 	}
 
 	_, err = c.council.DeleteDefence(ctx, id)
@@ -699,6 +723,13 @@ func (c *Controller) AssignTopicToCouncil(ctx context.Context, topicCouncilID st
 	if userInfo != nil {
 		updatedBy = *userInfo
 	}
+	council, err := c.council.GetCouncilById(ctx, councilID)
+	if err != nil {
+		return nil, err
+	}
+	if council.GetCouncil().GetTimeStart() != nil {
+		return nil, fmt.Errorf("council already approved")
+	}
 
 	// Use UpdateTopicCouncil to assign council_code
 	req := &pbThesis.UpdateTopicCouncilRequest{
@@ -713,4 +744,45 @@ func (c *Controller) AssignTopicToCouncil(ctx context.Context, topicCouncilID st
 	}
 
 	return convert.PbTopicCouncilToModel(resp.GetTopicCouncil()), nil
+}
+
+// RemoveTopicFromCouncil removes a topic from council
+func (c *Controller) RemoveTopicFromCouncil(ctx context.Context, topicCouncilID string, councilID string) (bool, error) {
+	userInfo, check, err := c.RbacInfo(ctx, model.RoleSystemRoleDepartmentLecturer)
+	if err != nil {
+		return false, err
+	}
+	if !check {
+		return false, fmt.Errorf("no department lecturer role")
+	}
+	updatedBy := ""
+	if userInfo != nil {
+		updatedBy = *userInfo
+	}
+	council, err := c.council.GetCouncilById(ctx, councilID)
+	if err != nil {
+		return false, err
+	}
+	if council.GetCouncil().GetTimeStart() != nil {
+		return false, fmt.Errorf("council already approved")
+	}
+	topicCouncil, err := c.thesis.GetTopicCouncilById(ctx, topicCouncilID)
+	if err != nil {
+		return false, err
+	}
+	if topicCouncil.GetTopicCouncil().GetCouncilCode() != councilID {
+		return false, fmt.Errorf("topic council not found in council")
+	}
+	removeString := "remove"
+	req := &pbThesis.UpdateTopicCouncilRequest{
+		Id:          topicCouncilID,
+		CouncilCode: &removeString,
+		UpdatedBy:   updatedBy,
+	}
+	_, err = c.thesis.UpdateTopicCouncil(ctx, req)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

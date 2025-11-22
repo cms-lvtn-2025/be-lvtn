@@ -253,6 +253,16 @@ func (r *councilTopicCouncilResolver) Supervisors(ctx context.Context, obj *mode
 	return supervisors, nil
 }
 
+// CreateTopicForSuperVisor is the resolver for the createTopicForSuperVisor field.
+func (r *mutationResolver) CreateTopicForSuperVisor(ctx context.Context, input model.CreateTopicForSuperVisorInput) (*model.Topic, error) {
+	panic(fmt.Errorf("not implemented: CreateTopicForSuperVisor - createTopicForSuperVisor"))
+}
+
+// CreateTopicCouncilForSupperVisor is the resolver for the createTopicCouncilForSupperVisor field.
+func (r *mutationResolver) CreateTopicCouncilForSupperVisor(ctx context.Context, input model.CreateTopicCouncilForSuperVisorInput) (*model.TopicCouncil, error) {
+	panic(fmt.Errorf("not implemented: CreateTopicCouncilForSupperVisor - createTopicCouncilForSupperVisor"))
+}
+
 // UpdateMyTeacherProfile is the resolver for the updateMyTeacherProfile field.
 func (r *mutationResolver) UpdateMyTeacherProfile(ctx context.Context, input model.UpdateTeacherProfileInput) (*model.Teacher, error) {
 	panic(fmt.Errorf("not implemented: UpdateMyTeacherProfile - updateMyTeacherProfile"))

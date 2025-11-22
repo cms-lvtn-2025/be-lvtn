@@ -65,7 +65,7 @@ func (h *APIHandler) GoogleCallback(c *gin.Context) {
 		}
 		ids := ""
 		for _, user := range user.GetStudents() {
-			ids += user.GetSemesterCode() + "-" + user.GetId() + ","
+			ids += user.GetSemesterCode() + ":" + user.GetId() + ","
 		}
 
 		// Generate token pair (access + refresh token)
@@ -97,7 +97,7 @@ func (h *APIHandler) GoogleCallback(c *gin.Context) {
 		ids := ""
 		fmt.Print(teachers)
 		for _, teacher := range teachers.GetTeachers() {
-			ids += teacher.GetSemesterCode() + "-" + teacher.GetId() + ","
+			ids += teacher.GetSemesterCode() + ":" + teacher.GetId() + ","
 		}
 		fmt.Println(ids)
 		// Generate token pair (access + refresh token)

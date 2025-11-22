@@ -63,13 +63,16 @@ extend type Mutation {
 
     """Gán topic vào council"""
     assignTopicToCouncil(topicCouncilId: ID!, councilId: ID!): TopicCouncil!
+
+    """Xóa topic khỏi council"""
+    removeTopicFromCouncil(topicCouncilId: ID!, councilId: ID!): Boolean!
 }
+
 
 # Input để tạo council
 input CreateCouncilInput {
     title: String!
     majorCode: String!
-    semesterCode: String!
 }
 
 # Input để tạo defence (thành viên hội đồng)

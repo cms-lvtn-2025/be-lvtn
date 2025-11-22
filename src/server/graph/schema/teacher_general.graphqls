@@ -290,7 +290,27 @@ type ReviewerTopic {
     files: [File!]
 }
 
+input CreateTopicForSuperVisorInput {
+    title: String!
+    titleEn: String!
+    description: String!
+    students: [String!]!
+    stage: TopicStage!
+    curriculum: String
+    timeStart: Time!
+    timeEnd: Time!
+}
+
+input CreateTopicCouncilForSuperVisorInput {
+    topicCode: String!
+    timeStart: Time!
+    timeEnd: Time!
+    students: [String!]!
+}
+
 extend type Mutation {
+    createTopicForSuperVisor(input: CreateTopicForSuperVisorInput!): Topic!
+    createTopicCouncilForSupperVisor(input: CreateTopicCouncilForSuperVisorInput!): TopicCouncil!
     """Cập nhật thông tin cá nhân giáo viên"""
     updateMyTeacherProfile(input: UpdateTeacherProfileInput!): Teacher!
 

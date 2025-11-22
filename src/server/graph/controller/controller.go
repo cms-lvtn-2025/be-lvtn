@@ -217,11 +217,11 @@ func (c *Controller) GetInfoRequest(ctx context.Context) (id *string, role *stri
 	fmt.Println(idsArr)
 	myId := ""
 	if semester == "" {
-		myId = strings.Split(idsArr[0], "-")[1]
+		myId = strings.Split(idsArr[0], ":")[1]
 	} else {
 		for _, id := range idsArr {
-			if strings.HasPrefix(id, semester+"-") {
-				myId = strings.Split(id, "-")[1]
+			if strings.HasPrefix(id, semester+":") {
+				myId = strings.Split(id, ":")[1]
 			}
 		}
 	}
@@ -269,10 +269,10 @@ func (c *Controller) GetInfoAllRequest(ctx context.Context) (ids *[]string, seme
 	var myIds []string
 	var mySemesters []string
 	for _, id := range idsArr {
-		parts := strings.Split(id, "-")
+		parts := strings.Split(id, ":")
 		if len(parts) == 2 {
-			myIds = append(myIds, strings.Split(id, "-")[1])
-			mySemesters = append(mySemesters, strings.Split(id, "-")[0])
+			myIds = append(myIds, strings.Split(id, ":")[1])
+			mySemesters = append(mySemesters, strings.Split(id, ":")[0])
 		}
 
 	}

@@ -114,9 +114,8 @@ type CouncilTopicCouncilListResponse struct {
 }
 
 type CreateCouncilInput struct {
-	Title        string `json:"title"`
-	MajorCode    string `json:"majorCode"`
-	SemesterCode string `json:"semesterCode"`
+	Title     string `json:"title"`
+	MajorCode string `json:"majorCode"`
 }
 
 type CreateDefenceInput struct {
@@ -171,13 +170,32 @@ type CreateStudentInput struct {
 }
 
 type CreateTeacherInput struct {
-	ID           string `json:"id"`
-	Email        string `json:"email"`
-	Username     string `json:"username"`
-	Gender       Gender `json:"gender"`
-	MajorCode    string `json:"majorCode"`
-	SemesterCode string `json:"semesterCode"`
-	Msgv         string `json:"msgv"`
+	ID           string            `json:"id"`
+	Email        string            `json:"email"`
+	Username     string            `json:"username"`
+	Gender       Gender            `json:"gender"`
+	MajorCode    string            `json:"majorCode"`
+	SemesterCode string            `json:"semesterCode"`
+	Msgv         string            `json:"msgv"`
+	Roles        []*RoleSystemRole `json:"roles"`
+}
+
+type CreateTopicCouncilForSuperVisorInput struct {
+	TopicCode string    `json:"topicCode"`
+	TimeStart time.Time `json:"timeStart"`
+	TimeEnd   time.Time `json:"timeEnd"`
+	Students  []string  `json:"students"`
+}
+
+type CreateTopicForSuperVisorInput struct {
+	Title       string     `json:"title"`
+	TitleEn     string     `json:"titleEn"`
+	Description string     `json:"description"`
+	Students    []string   `json:"students"`
+	Stage       TopicStage `json:"stage"`
+	Curriculum  *string    `json:"curriculum,omitempty"`
+	TimeStart   time.Time  `json:"timeStart"`
+	TimeEnd     time.Time  `json:"timeEnd"`
 }
 
 type Defence struct {
@@ -914,12 +932,13 @@ type UpdateStudentInput struct {
 }
 
 type UpdateTeacherInput struct {
-	Email        *string `json:"email,omitempty"`
-	Username     *string `json:"username,omitempty"`
-	Gender       *Gender `json:"gender,omitempty"`
-	MajorCode    *string `json:"majorCode,omitempty"`
-	SemesterCode *string `json:"semesterCode,omitempty"`
-	Msgv         *string `json:"msgv,omitempty"`
+	Email        *string           `json:"email,omitempty"`
+	Username     *string           `json:"username,omitempty"`
+	Gender       *Gender           `json:"gender,omitempty"`
+	MajorCode    *string           `json:"majorCode,omitempty"`
+	SemesterCode *string           `json:"semesterCode,omitempty"`
+	Msgv         *string           `json:"msgv,omitempty"`
+	Roles        []*RoleSystemRole `json:"roles,omitempty"`
 }
 
 type UpdateTeacherProfileInput struct {

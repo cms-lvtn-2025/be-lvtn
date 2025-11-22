@@ -224,6 +224,7 @@ type ComplexityRoot struct {
 		CreatedBy func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Majors    func(childComplexity int) int
+		Ms        func(childComplexity int) int
 		Title     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UpdatedBy func(childComplexity int) int
@@ -335,6 +336,7 @@ type ComplexityRoot struct {
 		CreatedBy   func(childComplexity int) int
 		FacultyCode func(childComplexity int) int
 		ID          func(childComplexity int) int
+		Ms          func(childComplexity int) int
 		Title       func(childComplexity int) int
 		Topics      func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
@@ -370,54 +372,57 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AddDefenceToCouncil         func(childComplexity int, input model.CreateDefenceInput) int
-		AddGradeDefenceCriterion    func(childComplexity int, input model.CreateGradeDefenceCriterionInput) int
-		ApproveCouncil              func(childComplexity int, id string, timeStart time.Time) int
-		ApproveFinalFile            func(childComplexity int, fileID string) int
-		ApproveMidtermFile          func(childComplexity int, fileID string) int
-		ApproveTopic                func(childComplexity int, id string) int
-		ApproveTopicStage1          func(childComplexity int, id string) int
-		AssignTopicToCouncil        func(childComplexity int, topicCouncilID string, councilID string) int
-		CompleteGradeReview         func(childComplexity int, id string) int
-		CreateCouncil               func(childComplexity int, input model.CreateCouncilInput) int
-		CreateFaculty               func(childComplexity int, input model.CreateFacultyInput) int
-		CreateGradeDefence          func(childComplexity int, input model.CreateGradeDefenceInput) int
-		CreateMajor                 func(childComplexity int, input model.CreateMajorInput) int
-		CreateSemester              func(childComplexity int, input model.CreateSemesterInput) int
-		CreateStudent               func(childComplexity int, input model.CreateStudentInput) int
-		CreateTeacher               func(childComplexity int, input model.CreateTeacherInput) int
-		DeleteCouncil               func(childComplexity int, id string) int
-		DeleteFaculty               func(childComplexity int, id string) int
-		DeleteGradeDefenceCriterion func(childComplexity int, id string) int
-		DeleteMajor                 func(childComplexity int, id string) int
-		DeleteSemester              func(childComplexity int, id string) int
-		DeleteStudent               func(childComplexity int, id string) int
-		DeleteTeacher               func(childComplexity int, id string) int
-		DeleteTopic                 func(childComplexity int, id string) int
-		Empty                       func(childComplexity int) int
-		FeedbackFinal               func(childComplexity int, finalID string, notes string) int
-		FeedbackMidterm             func(childComplexity int, midtermID string, feedback string) int
-		GradeFinal                  func(childComplexity int, enrollmentID string, input model.GradeFinalInput) int
-		GradeMidterm                func(childComplexity int, enrollmentID string, input model.GradeMidtermInput) int
-		RejectFinalFile             func(childComplexity int, fileID string, reason *string) int
-		RejectMidtermFile           func(childComplexity int, fileID string, reason *string) int
-		RejectTopic                 func(childComplexity int, id string, reason *string) int
-		RejectTopicStage1           func(childComplexity int, id string, reason *string) int
-		RemoveDefenceFromCouncil    func(childComplexity int, id string) int
-		UpdateCouncil               func(childComplexity int, id string, input model.UpdateCouncilInput) int
-		UpdateDepartmentCouncil     func(childComplexity int, id string, input model.UpdateCouncilInput) int
-		UpdateFaculty               func(childComplexity int, id string, input model.UpdateFacultyInput) int
-		UpdateGradeDefence          func(childComplexity int, id string, input model.UpdateGradeDefenceInput) int
-		UpdateGradeDefenceCriterion func(childComplexity int, id string, input model.UpdateGradeDefenceCriterionInput) int
-		UpdateGradeReview           func(childComplexity int, id string, input model.UpdateGradeReviewInput) int
-		UpdateMajor                 func(childComplexity int, id string, input model.UpdateMajorInput) int
-		UpdateMyTeacherProfile      func(childComplexity int, input model.UpdateTeacherProfileInput) int
-		UpdateSemester              func(childComplexity int, id string, input model.UpdateSemesterInput) int
-		UpdateStudent               func(childComplexity int, id string, input model.UpdateStudentInput) int
-		UpdateTeacher               func(childComplexity int, id string, input model.UpdateTeacherInput) int
-		UpdateTopic                 func(childComplexity int, id string, input model.UpdateTopicInput) int
-		UploadFinalFile             func(childComplexity int, input model.UploadFileInput) int
-		UploadMidtermFile           func(childComplexity int, input model.UploadFileInput) int
+		AddDefenceToCouncil              func(childComplexity int, input model.CreateDefenceInput) int
+		AddGradeDefenceCriterion         func(childComplexity int, input model.CreateGradeDefenceCriterionInput) int
+		ApproveCouncil                   func(childComplexity int, id string, timeStart time.Time) int
+		ApproveFinalFile                 func(childComplexity int, fileID string) int
+		ApproveMidtermFile               func(childComplexity int, fileID string) int
+		ApproveTopic                     func(childComplexity int, id string) int
+		ApproveTopicStage1               func(childComplexity int, id string) int
+		AssignTopicToCouncil             func(childComplexity int, topicCouncilID string, councilID string) int
+		CompleteGradeReview              func(childComplexity int, id string) int
+		CreateCouncil                    func(childComplexity int, input model.CreateCouncilInput) int
+		CreateFaculty                    func(childComplexity int, input model.CreateFacultyInput) int
+		CreateGradeDefence               func(childComplexity int, input model.CreateGradeDefenceInput) int
+		CreateMajor                      func(childComplexity int, input model.CreateMajorInput) int
+		CreateSemester                   func(childComplexity int, input model.CreateSemesterInput) int
+		CreateStudent                    func(childComplexity int, input model.CreateStudentInput) int
+		CreateTeacher                    func(childComplexity int, input model.CreateTeacherInput) int
+		CreateTopicCouncilForSupperVisor func(childComplexity int, input model.CreateTopicCouncilForSuperVisorInput) int
+		CreateTopicForSuperVisor         func(childComplexity int, input model.CreateTopicForSuperVisorInput) int
+		DeleteCouncil                    func(childComplexity int, id string) int
+		DeleteFaculty                    func(childComplexity int, id string) int
+		DeleteGradeDefenceCriterion      func(childComplexity int, id string) int
+		DeleteMajor                      func(childComplexity int, id string) int
+		DeleteSemester                   func(childComplexity int, id string) int
+		DeleteStudent                    func(childComplexity int, id string) int
+		DeleteTeacher                    func(childComplexity int, id string) int
+		DeleteTopic                      func(childComplexity int, id string) int
+		Empty                            func(childComplexity int) int
+		FeedbackFinal                    func(childComplexity int, finalID string, notes string) int
+		FeedbackMidterm                  func(childComplexity int, midtermID string, feedback string) int
+		GradeFinal                       func(childComplexity int, enrollmentID string, input model.GradeFinalInput) int
+		GradeMidterm                     func(childComplexity int, enrollmentID string, input model.GradeMidtermInput) int
+		RejectFinalFile                  func(childComplexity int, fileID string, reason *string) int
+		RejectMidtermFile                func(childComplexity int, fileID string, reason *string) int
+		RejectTopic                      func(childComplexity int, id string, reason *string) int
+		RejectTopicStage1                func(childComplexity int, id string, reason *string) int
+		RemoveDefenceFromCouncil         func(childComplexity int, id string) int
+		RemoveTopicFromCouncil           func(childComplexity int, topicCouncilID string, councilID string) int
+		UpdateCouncil                    func(childComplexity int, id string, input model.UpdateCouncilInput) int
+		UpdateDepartmentCouncil          func(childComplexity int, id string, input model.UpdateCouncilInput) int
+		UpdateFaculty                    func(childComplexity int, id string, input model.UpdateFacultyInput) int
+		UpdateGradeDefence               func(childComplexity int, id string, input model.UpdateGradeDefenceInput) int
+		UpdateGradeDefenceCriterion      func(childComplexity int, id string, input model.UpdateGradeDefenceCriterionInput) int
+		UpdateGradeReview                func(childComplexity int, id string, input model.UpdateGradeReviewInput) int
+		UpdateMajor                      func(childComplexity int, id string, input model.UpdateMajorInput) int
+		UpdateMyTeacherProfile           func(childComplexity int, input model.UpdateTeacherProfileInput) int
+		UpdateSemester                   func(childComplexity int, id string, input model.UpdateSemesterInput) int
+		UpdateStudent                    func(childComplexity int, id string, input model.UpdateStudentInput) int
+		UpdateTeacher                    func(childComplexity int, id string, input model.UpdateTeacherInput) int
+		UpdateTopic                      func(childComplexity int, id string, input model.UpdateTopicInput) int
+		UploadFinalFile                  func(childComplexity int, input model.UploadFileInput) int
+		UploadMidtermFile                func(childComplexity int, input model.UploadFileInput) int
 	}
 
 	Query struct {
@@ -562,6 +567,7 @@ type ComplexityRoot struct {
 		Gender       func(childComplexity int) int
 		ID           func(childComplexity int) int
 		MajorCode    func(childComplexity int) int
+		Mssv         func(childComplexity int) int
 		Phone        func(childComplexity int) int
 		SemesterCode func(childComplexity int) int
 		UpdatedAt    func(childComplexity int) int
@@ -782,6 +788,7 @@ type ComplexityRoot struct {
 		Gender       func(childComplexity int) int
 		ID           func(childComplexity int) int
 		MajorCode    func(childComplexity int) int
+		Msgv         func(childComplexity int) int
 		Roles        func(childComplexity int) int
 		SemesterCode func(childComplexity int) int
 		UpdatedAt    func(childComplexity int) int
@@ -1632,6 +1639,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Faculty.Majors(childComplexity), true
 
+	case "Faculty.ms":
+		if e.complexity.Faculty.Ms == nil {
+			break
+		}
+
+		return e.complexity.Faculty.Ms(childComplexity), true
+
 	case "Faculty.title":
 		if e.complexity.Faculty.Title == nil {
 			break
@@ -2157,6 +2171,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Major.ID(childComplexity), true
 
+	case "Major.ms":
+		if e.complexity.Major.Ms == nil {
+			break
+		}
+
+		return e.complexity.Major.Ms(childComplexity), true
+
 	case "Major.title":
 		if e.complexity.Major.Title == nil {
 			break
@@ -2489,6 +2510,30 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.CreateTeacher(childComplexity, args["input"].(model.CreateTeacherInput)), true
 
+	case "Mutation.createTopicCouncilForSupperVisor":
+		if e.complexity.Mutation.CreateTopicCouncilForSupperVisor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTopicCouncilForSupperVisor_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTopicCouncilForSupperVisor(childComplexity, args["input"].(model.CreateTopicCouncilForSuperVisorInput)), true
+
+	case "Mutation.createTopicForSuperVisor":
+		if e.complexity.Mutation.CreateTopicForSuperVisor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTopicForSuperVisor_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTopicForSuperVisor(childComplexity, args["input"].(model.CreateTopicForSuperVisorInput)), true
+
 	case "Mutation.deleteCouncil":
 		if e.complexity.Mutation.DeleteCouncil == nil {
 			break
@@ -2699,6 +2744,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.RemoveDefenceFromCouncil(childComplexity, args["id"].(string)), true
+
+	case "Mutation.removeTopicFromCouncil":
+		if e.complexity.Mutation.RemoveTopicFromCouncil == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeTopicFromCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveTopicFromCouncil(childComplexity, args["topicCouncilId"].(string), args["councilId"].(string)), true
 
 	case "Mutation.updateCouncil":
 		if e.complexity.Mutation.UpdateCouncil == nil {
@@ -3773,6 +3830,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Student.MajorCode(childComplexity), true
+
+	case "Student.mssv":
+		if e.complexity.Student.Mssv == nil {
+			break
+		}
+
+		return e.complexity.Student.Mssv(childComplexity), true
 
 	case "Student.phone":
 		if e.complexity.Student.Phone == nil {
@@ -4852,6 +4916,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Teacher.MajorCode(childComplexity), true
 
+	case "Teacher.msgv":
+		if e.complexity.Teacher.Msgv == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Msgv(childComplexity), true
+
 	case "Teacher.roles":
 		if e.complexity.Teacher.Roles == nil {
 			break
@@ -5226,6 +5297,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateSemesterInput,
 		ec.unmarshalInputCreateStudentInput,
 		ec.unmarshalInputCreateTeacherInput,
+		ec.unmarshalInputCreateTopicCouncilForSuperVisorInput,
+		ec.unmarshalInputCreateTopicForSuperVisorInput,
 		ec.unmarshalInputFilterConditionInput,
 		ec.unmarshalInputFilterCriteriaInput,
 		ec.unmarshalInputFilterGroupInput,
@@ -5362,6 +5435,7 @@ var sources = []*ast.Source{
 	{Name: "../schema/academic.graphqls", Input: `type Faculty {
     id: ID!
     title: String!
+    ms: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String
@@ -5375,6 +5449,7 @@ type Major {
     id: ID!
     title: String!
     facultyCode: String!  # Chỉ có code, KHÔNG có faculty relationship (tránh circular)
+    ms: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String
@@ -5524,6 +5599,8 @@ input CreateTeacherInput {
     gender: Gender!
     majorCode: String!
     semesterCode: String!
+    msgv: String!
+    roles: [RoleSystemRole]!
 }
 
 input UpdateTeacherInput {
@@ -5532,6 +5609,8 @@ input UpdateTeacherInput {
     gender: Gender
     majorCode: String
     semesterCode: String
+    msgv: String
+    roles: [RoleSystemRole]
 }
 
 input CreateStudentInput {
@@ -5543,6 +5622,7 @@ input CreateStudentInput {
     majorCode: String!
     classCode: String
     semesterCode: String!
+    mssv: String!
 }
 
 input UpdateStudentInput {
@@ -5553,6 +5633,7 @@ input UpdateStudentInput {
     majorCode: String
     classCode: String
     semesterCode: String
+    mssv: String
 }
 
 input CreateSemesterInput {
@@ -5568,20 +5649,24 @@ input CreateMajorInput {
     id: ID!
     title: String!
     facultyCode: String!
+    ms: String!
 }
 
 input UpdateMajorInput {
     title: String
     facultyCode: String
+    ms: String
 }
 
 input CreateFacultyInput {
     id: ID!
     title: String!
+    ms: String!
 }
 
 input UpdateFacultyInput {
     title: String
+    ms: String
 }
 
 input UpdateCouncilInput {
@@ -5723,13 +5808,16 @@ extend type Mutation {
 
     """Gán topic vào council"""
     assignTopicToCouncil(topicCouncilId: ID!, councilId: ID!): TopicCouncil!
+
+    """Xóa topic khỏi council"""
+    removeTopicFromCouncil(topicCouncilId: ID!, councilId: ID!): Boolean!
 }
+
 
 # Input để tạo council
 input CreateCouncilInput {
     title: String!
     majorCode: String!
-    semesterCode: String!
 }
 
 # Input để tạo defence (thành viên hội đồng)
@@ -6582,7 +6670,27 @@ type ReviewerTopic {
     files: [File!]
 }
 
+input CreateTopicForSuperVisorInput {
+    title: String!
+    titleEn: String!
+    description: String!
+    students: [String!]!
+    stage: TopicStage!
+    curriculum: String
+    timeStart: Time!
+    timeEnd: Time!
+}
+
+input CreateTopicCouncilForSuperVisorInput {
+    topicCode: String!
+    timeStart: Time!
+    timeEnd: Time!
+    students: [String!]!
+}
+
 extend type Mutation {
+    createTopicForSuperVisor(input: CreateTopicForSuperVisorInput!): Topic!
+    createTopicCouncilForSupperVisor(input: CreateTopicCouncilForSuperVisorInput!): TopicCouncil!
     """Cập nhật thông tin cá nhân giáo viên"""
     updateMyTeacherProfile(input: UpdateTeacherProfileInput!): Teacher!
 
@@ -6820,6 +6928,7 @@ type Student {
     majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
     classCode: String
     semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
+    mssv: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String
@@ -6838,6 +6947,7 @@ type Teacher {
     gender: Gender
     majorCode: String!  # Chỉ có code, KHÔNG có major relationship (tránh circular)
     semesterCode: String!  # Chỉ có code, KHÔNG có semester relationship (tránh circular)
+    msgv: String!
     createdAt: Time
     updatedAt: Time
     createdBy: String
