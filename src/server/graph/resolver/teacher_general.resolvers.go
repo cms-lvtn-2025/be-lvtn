@@ -255,12 +255,12 @@ func (r *councilTopicCouncilResolver) Supervisors(ctx context.Context, obj *mode
 
 // CreateTopicForSuperVisor is the resolver for the createTopicForSuperVisor field.
 func (r *mutationResolver) CreateTopicForSuperVisor(ctx context.Context, input model.CreateTopicForSuperVisorInput) (*model.Topic, error) {
-	panic(fmt.Errorf("not implemented: CreateTopicForSuperVisor - createTopicForSuperVisor"))
+	return r.Ctrl.CreateTopicForSuperVisor(ctx, input)
 }
 
 // CreateTopicCouncilForSupperVisor is the resolver for the createTopicCouncilForSupperVisor field.
 func (r *mutationResolver) CreateTopicCouncilForSupperVisor(ctx context.Context, input model.CreateTopicCouncilForSuperVisorInput) (*model.TopicCouncil, error) {
-	panic(fmt.Errorf("not implemented: CreateTopicCouncilForSupperVisor - createTopicCouncilForSupperVisor"))
+	return r.Ctrl.CreateTopicCouncilForSuperVisor(ctx, input)
 }
 
 // UpdateMyTeacherProfile is the resolver for the updateMyTeacherProfile field.
@@ -349,7 +349,7 @@ func (r *queryResolver) GetMyTeacherProfile(ctx context.Context) (*model.Teacher
 }
 
 // GetMySupervisedTopicCouncils is the resolver for the getMySupervisedTopicCouncils field.
-func (r *queryResolver) GetMySupervisedTopicCouncils(ctx context.Context, search *model.SearchRequestInput) (*model.SupervisorTopicCouncilAssignmentListResponse, error) {
+func (r *queryResolver) GetMySupervisedTopicCouncils(ctx context.Context, search *model.SearchRequestInput) (*model.TopicCouncilListResponse, error) {
 	return r.Ctrl.GetSupervisedTopicCouncils(ctx, search)
 }
 
@@ -505,19 +505,16 @@ func (r *supervisorEnrollmentResolver) Student(ctx context.Context, obj *model.S
 
 // TopicCouncil is the resolver for the topicCouncil field.
 func (r *supervisorEnrollmentResolver) TopicCouncil(ctx context.Context, obj *model.SupervisorEnrollment) (*model.SupervisorTopicCouncil, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.SupervisorTopicCouncilById != nil {
-		topicCouncil, err := loaders.SupervisorTopicCouncilById.Load(ctx, obj.TopicCouncilCode)
-		if err != nil {
-			return nil, err
-		}
-		return topicCouncil, nil
-	}
-	topicCouncil, err := r.Ctrl.GetSupervisorTopicCouncilById(ctx, obj.TopicCouncilCode)
-	if err != nil {
-		return nil, err
-	}
-	return topicCouncil, nil
+	return nil, nil
+	// loaders := dataloader.GetLoaders(ctx)
+	// if loaders != nil && loaders.SupervisorTopicCouncilById != nil {
+	// 	topicCouncil, err := loaders.SupervisorTopicCouncilById.Load(ctx, obj.TopicCouncilCode)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	return topicCouncil, nil
+	// }
+	// return r.Ctrl.GetSupervisedTopicCouncilDetail(ctx, obj.TopicCouncilCode)
 }
 
 // Midterm is the resolver for the midterm field.
@@ -684,23 +681,6 @@ func (r *supervisorTopicCouncilResolver) Supervisors(ctx context.Context, obj *m
 	return supervisors, nil
 }
 
-// TopicCouncil is the resolver for the topicCouncil field.
-func (r *supervisorTopicCouncilAssignmentResolver) TopicCouncil(ctx context.Context, obj *model.SupervisorTopicCouncilAssignment) (*model.SupervisorTopicCouncil, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.SupervisorTopicCouncilById != nil {
-		topicCouncil, err := loaders.SupervisorTopicCouncilById.Load(ctx, obj.TopicCouncilCode)
-		if err != nil {
-			return nil, err
-		}
-		return topicCouncil, nil
-	}
-	topicCouncil, err := r.Ctrl.GetSupervisorTopicCouncilById(ctx, obj.TopicCouncilCode)
-	if err != nil {
-		return nil, err
-	}
-	return topicCouncil, nil
-}
-
 // CouncilDefence returns generated.CouncilDefenceResolver implementation.
 func (r *Resolver) CouncilDefence() generated.CouncilDefenceResolver {
 	return &councilDefenceResolver{r}
@@ -754,11 +734,6 @@ func (r *Resolver) SupervisorTopicCouncil() generated.SupervisorTopicCouncilReso
 	return &supervisorTopicCouncilResolver{r}
 }
 
-// SupervisorTopicCouncilAssignment returns generated.SupervisorTopicCouncilAssignmentResolver implementation.
-func (r *Resolver) SupervisorTopicCouncilAssignment() generated.SupervisorTopicCouncilAssignmentResolver {
-	return &supervisorTopicCouncilAssignmentResolver{r}
-}
-
 type councilDefenceResolver struct{ *Resolver }
 type councilEnrollmentResolver struct{ *Resolver }
 type councilMemberCouncilResolver struct{ *Resolver }
@@ -770,4 +745,3 @@ type reviewerTopicCouncilResolver struct{ *Resolver }
 type supervisorEnrollmentResolver struct{ *Resolver }
 type supervisorTopicResolver struct{ *Resolver }
 type supervisorTopicCouncilResolver struct{ *Resolver }
-type supervisorTopicCouncilAssignmentResolver struct{ *Resolver }

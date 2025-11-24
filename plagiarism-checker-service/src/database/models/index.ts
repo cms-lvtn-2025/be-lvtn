@@ -12,3 +12,4 @@ export {
   ICronJobModel
 } from './cronjob.model';
 export { MinioConfigModel, IMinioConfig, IMinioConfigModel } from './minio.model';
+export { UserModel, IUser, IUserModel } from './user.model';

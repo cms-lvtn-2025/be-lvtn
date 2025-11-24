@@ -44,12 +44,6 @@ type Topic {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-    
-    # KHÔNG có major - tránh circular query: Topic → Major → Topics → ...
-    # KHÔNG có semester - tránh circular query: Topic → Semester → Topics → ...
-    # KHÔNG có enrollments vì Enrollment không có topic_code
-    # KHÔNG có topicSupervisors vì Topic_council_supervisor có topic_council_code, không có topic_code
-    # Muốn lấy enrollments hoặc supervisors phải qua topicCouncils[]
     files: [File!]
     topicCouncils: [TopicCouncil!]
 }
@@ -83,7 +77,6 @@ type TopicCouncilSupervisor {
     updatedBy: String
 
     teacher: Teacher
-    topicCouncil: TopicCouncil
 }
 
 type Final {

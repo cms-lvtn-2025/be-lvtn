@@ -361,10 +361,10 @@ models:
   # ============================================
   # SUPERVISOR CUSTOM TYPES
   # ============================================
-  SupervisorTopicCouncilAssignment:
-    fields:
-      topicCouncil:
-        resolver: true  # Join via dataloader → SupervisorTopicCouncil
+  # SupervisorTopicCouncilAssignment:
+  #   fields:
+  #     topicCouncil:
+  #       resolver: true  # Join via dataloader → SupervisorTopicCouncil
 
   SupervisorTopic:
     fields:

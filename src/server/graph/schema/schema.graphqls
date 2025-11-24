@@ -155,11 +155,6 @@ type TopicCouncilListResponse {
     data: [TopicCouncil!]!
 }
 
-type TopicCouncilSupervisorListResponse {
-    total: Int!
-    data: [TopicCouncilSupervisor!]!
-}
-
 type FileListResponse {
     total: Int!
     data: [File!]!
@@ -239,12 +234,6 @@ type StudentTopicSupervisorListResponse {
 type StudentDefenceInfoListResponse {
     total: Int!
     data: [StudentDefenceInfo!]!
-}
-
-# Supervisor custom type list responses
-type SupervisorTopicCouncilAssignmentListResponse {
-    total: Int!
-    data: [SupervisorTopicCouncilAssignment!]!
 }
 
 type SupervisorEnrollmentListResponse {

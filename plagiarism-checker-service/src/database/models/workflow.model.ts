@@ -73,6 +73,12 @@ const WorkflowChildrenSchema: Schema = new Schema(
  */
 const WorkflowSchema: Schema = new Schema(
   {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true,
+    },
     parentServiceName: {
       type: String,
       required: true,

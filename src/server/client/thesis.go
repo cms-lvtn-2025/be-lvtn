@@ -64,6 +64,16 @@ func NewGRPCthesis(addr string, redisClient *redis.Client) (*GRPCthesis, error) 
 // TOPIC METHODS
 // ============================================
 
+func (t *GRPCthesis) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (*pb.CreateTopicResponse, error) {
+	resp, err := t.client.CreateTopic(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	cacheKey := fmt.Sprintf("%s%s", topicCachePrefix, resp.Topic.Id)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, topicCacheTTL)
+	return resp, nil
+}
+
 func (t *GRPCthesis) GetTopicBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListTopicsResponse, error) {
 	cacheKey := GenerateCacheKey(topicCachePrefix, search)
 	fmt.Println("xxxxxxxxxxxxxx", search)
@@ -206,6 +216,16 @@ func (t *GRPCthesis) GetTopicsByIds(ctx context.Context, ids []string) (*pb.List
 // ENROLLMENT METHODS
 // ============================================
 
+func (t *GRPCthesis) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollmentRequest) (*pb.CreateEnrollmentResponse, error) {
+	resp, err := t.client.CreateEnrollment(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	cacheKey := fmt.Sprintf("%s%s", enrollmentCachePrefix, resp.Enrollment.Id)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, enrollmentCacheTTL)
+	return resp, nil
+}
+
 func (t *GRPCthesis) GetEnrollmentBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListEnrollmentsResponse, error) {
 	cacheKey := GenerateCacheKey(enrollmentCachePrefix, search)
 	var cached pb.ListEnrollmentsResponse
@@ -347,6 +367,16 @@ func (t *GRPCthesis) GetEnrollmentsByIds(ctx context.Context, ids []string) (*pb
 // MIDTERM METHODS
 // ============================================
 
+func (t *GRPCthesis) CreateMidterm(ctx context.Context, req *pb.CreateMidtermRequest) (*pb.CreateMidtermResponse, error) {
+	resp, err := t.client.CreateMidterm(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	cacheKey := fmt.Sprintf("%s%s", midtermCachePrefix, resp.Midterm.Id)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, midtermCacheTTL)
+	return resp, nil
+}
+
 func (t *GRPCthesis) GetMidtermBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListMidtermsResponse, error) {
 	cacheKey := GenerateCacheKey(midtermCachePrefix, search)
 	var cached pb.ListMidtermsResponse
@@ -487,6 +517,17 @@ func (t *GRPCthesis) GetMidtermsByIds(ctx context.Context, ids []string) (*pb.Li
 // ============================================
 // FINAL METHODS
 // ============================================
+
+func (t *GRPCthesis) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (*pb.CreateFinalResponse, error) {
+
+	resp, err := t.client.CreateFinal(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	cacheKey := fmt.Sprintf("%s%s", finalCachePrefix, resp.Final.Id)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, finalCacheTTL)
+	return resp, nil
+}
 
 func (t *GRPCthesis) GetFinalBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListFinalsResponse, error) {
 	cacheKey := GenerateCacheKey(finalCachePrefix, search)
@@ -770,6 +811,16 @@ func (t *GRPCthesis) GetGradeReviewsByIds(ctx context.Context, ids []string) (*p
 // TOPIC COUNCIL METHODS
 // ============================================
 
+func (t *GRPCthesis) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCouncilRequest) (*pb.CreateTopicCouncilResponse, error) {
+	resp, err := t.client.CreateTopicCouncil(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	cacheKey := fmt.Sprintf("%s%s", topicCouncilCachePrefix, resp.TopicCouncil.Id)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, topicCouncilCacheTTL)
+	return resp, nil
+}
+
 func (t *GRPCthesis) GetTopicCouncilBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListTopicCouncilsResponse, error) {
 	cacheKey := GenerateCacheKey(topicCouncilCachePrefix, search)
 	var cached pb.ListTopicCouncilsResponse
@@ -910,6 +961,15 @@ func (t *GRPCthesis) GetTopicCouncilsByIds(ctx context.Context, ids []string) (*
 // ============================================
 // TOPIC COUNCIL SUPERVISOR METHODS
 // ============================================
+func (t *GRPCthesis) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.CreateTopicCouncilSupervisorRequest) (*pb.CreateTopicCouncilSupervisorResponse, error) {
+	resp, err := t.client.CreateTopicCouncilSupervisor(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	cacheKey := fmt.Sprintf("%s%s", topicCouncilSupervisorCachePrefix, resp.TopicCouncilSupervisor.Id)
+	SetCachedProto(ctx, t.redisClient, cacheKey, resp, topicCouncilSupervisorCacheTTL)
+	return resp, nil
+}
 
 func (t *GRPCthesis) GetTopicCouncilSupervisorBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListTopicCouncilSupervisorsResponse, error) {
 	cacheKey := GenerateCacheKey(topicCouncilSupervisorCachePrefix, search)

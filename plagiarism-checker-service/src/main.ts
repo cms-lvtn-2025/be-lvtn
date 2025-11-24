@@ -1,4 +1,7 @@
 import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import DatabaseConnection from "./database/connection";
 import {
   MinioConfigModel,
@@ -6,7 +9,7 @@ import {
   WorkflowModel,
   IService,
 } from "./database/models";
-import { initBullBoard, createBullBoardApp } from "./ui/bull-board";
+import { initBullBoard, serverAdapter } from "./ui/bull-board";
 import {
   queueService,
   serviceQueueManager,
@@ -14,6 +17,8 @@ import {
 } from "./queue/queue";
 import { MinioService } from "./queue/minio";
 import { initializeCronJobs, cleanupCronJobs } from "./queue/cronjob/cronjob-init";
+import apiRoutes from "./api/routes";
+import { authenticateBullMQ } from "./middleware/bullmq-auth.middleware";
 
 const refreshBullBoardQueues = () => {
   initBullBoard(serviceQueueManager.getAllQueues());
@@ -85,15 +90,48 @@ async function main() {
     // Khởi tạo CronJobs (xóa old jobs, tạo lại từ database)
     await initializeCronJobs();
 
-    // Start Bull Board UI
-    const bullBoardApp = createBullBoardApp();
-    const port = parseInt(process.env.BULL_BOARD_PORT || "3000");
-    bullBoardApp.listen(port, () => {
-      console.log(
-        `\n🎨 Bull Board UI: http://localhost:${port}${
-          process.env.BULL_BOARD_PATH || "/admin/queues"
-        }`
-      );
+    // Create Express app with API routes
+    const app = express();
+
+    // CORS configuration
+    const allowedOrigins = [
+      process.env.FRONTEND_URL || "http://localhost:5173",
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+      "http://localhost:5176",
+    ];
+
+    app.use(cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    }));
+
+    // Body parser middleware
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
+
+    // API Routes
+    app.use('/api', apiRoutes);
+
+    // Bull Board UI - Protected with cookie-based authentication
+    app.use('/bullmq', authenticateBullMQ, serverAdapter.getRouter());
+
+    // Start server
+    const port = parseInt(process.env.API_PORT || process.env.BULL_BOARD_PORT || "3000");
+    app.listen(port, () => {
+      console.log(`\n🎨 Bull Board UI: http://localhost:${port}/bullmq`);
+      console.log(`\n🚀 API Server: http://localhost:${port}/api`);
     });
     // const WorkflowData = await WorkflowModel.findById("68f9d792133085ee4f6900b4") ;
     // if (WorkflowData) {

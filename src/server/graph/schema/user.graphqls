@@ -13,10 +13,6 @@ type Student {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    # KHÔNG có major - tránh circular query: Student → Major → Topics → ... → Student
-    # KHÔNG có semester - tránh circular query: Student → Semester → Students → ...
-    enrollments: [Enrollment!]
 }
 
 
@@ -32,11 +28,6 @@ type Teacher {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    # KHÔNG có major - tránh circular query: Teacher → Major → Topics → ...
-    # KHÔNG có semester - tránh circular query: Teacher → Semester → Teachers → ...
     roles: [RoleSystem!]
-    # KHÔNG có topicsSupervised vì Topic_council_supervisor không có topic_code
-    # Muốn lấy topics supervised phải qua Topic_council_supervisor → TopicCouncil → Topic
 }
 

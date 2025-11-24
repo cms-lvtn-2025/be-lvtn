@@ -20,9 +20,6 @@ type Major {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    # KHÔNG có faculty - tránh circular query: Major → Faculty → Majors → ...
-    topics: [Topic!]
 }
 
 
@@ -33,8 +30,4 @@ type Semester {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    students: [Student!]
-    teachers: [Teacher!]
-    topics: [Topic!]
 }

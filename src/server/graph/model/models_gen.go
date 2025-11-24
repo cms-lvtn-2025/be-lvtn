@@ -392,7 +392,6 @@ type Major struct {
 	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
 	CreatedBy   *string    `json:"createdBy,omitempty"`
 	UpdatedBy   *string    `json:"updatedBy,omitempty"`
-	Topics      []*Topic   `json:"topics,omitempty"`
 }
 
 // Major info - Restricted type để tránh circular query
@@ -512,8 +511,6 @@ type RoleSystem struct {
 	UpdatedAt    *time.Time     `json:"updatedAt,omitempty"`
 	CreatedBy    *string        `json:"createdBy,omitempty"`
 	UpdatedBy    *string        `json:"updatedBy,omitempty"`
-	Teacher      *Teacher       `json:"teacher,omitempty"`
-	Semester     *Semester      `json:"semester,omitempty"`
 }
 
 type RoleSystemListResponse struct {
@@ -533,9 +530,6 @@ type Semester struct {
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 	CreatedBy *string    `json:"createdBy,omitempty"`
 	UpdatedBy *string    `json:"updatedBy,omitempty"`
-	Students  []*Student `json:"students,omitempty"`
-	Teachers  []*Teacher `json:"teachers,omitempty"`
-	Topics    []*Topic   `json:"topics,omitempty"`
 }
 
 // Semester info - Restricted type để tránh circular query
@@ -552,20 +546,19 @@ type SemesterListResponse struct {
 }
 
 type Student struct {
-	ID           string        `json:"id"`
-	Email        string        `json:"email"`
-	Phone        string        `json:"phone"`
-	Username     string        `json:"username"`
-	Gender       *Gender       `json:"gender,omitempty"`
-	MajorCode    string        `json:"majorCode"`
-	ClassCode    *string       `json:"classCode,omitempty"`
-	SemesterCode string        `json:"semesterCode"`
-	Mssv         string        `json:"mssv"`
-	CreatedAt    *time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt    *time.Time    `json:"updatedAt,omitempty"`
-	CreatedBy    *string       `json:"createdBy,omitempty"`
-	UpdatedBy    *string       `json:"updatedBy,omitempty"`
-	Enrollments  []*Enrollment `json:"enrollments,omitempty"`
+	ID           string     `json:"id"`
+	Email        string     `json:"email"`
+	Phone        string     `json:"phone"`
+	Username     string     `json:"username"`
+	Gender       *Gender    `json:"gender,omitempty"`
+	MajorCode    string     `json:"majorCode"`
+	ClassCode    *string    `json:"classCode,omitempty"`
+	SemesterCode string     `json:"semesterCode"`
+	Mssv         string     `json:"mssv"`
+	CreatedAt    *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt    *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy    *string    `json:"createdBy,omitempty"`
+	UpdatedBy    *string    `json:"updatedBy,omitempty"`
 }
 
 // Council view cho Student
@@ -780,22 +773,6 @@ type SupervisorTopicCouncil struct {
 	Supervisors []*TopicCouncilSupervisor `json:"supervisors,omitempty"`
 }
 
-// Topic_council_supervisor assignment cho Supervisor
-// Đây là bảng nguồn - query từ đây: SELECT * FROM Topic_council_supervisor WHERE teacher_supervisor_code = current_user
-type SupervisorTopicCouncilAssignment struct {
-	ID                    string                  `json:"id"`
-	TeacherSupervisorCode string                  `json:"teacherSupervisorCode"`
-	TopicCouncilCode      string                  `json:"topicCouncilCode"`
-	CreatedAt             *time.Time              `json:"createdAt,omitempty"`
-	UpdatedAt             *time.Time              `json:"updatedAt,omitempty"`
-	TopicCouncil          *SupervisorTopicCouncil `json:"topicCouncil,omitempty"`
-}
-
-type SupervisorTopicCouncilAssignmentListResponse struct {
-	Total int32                               `json:"total"`
-	Data  []*SupervisorTopicCouncilAssignment `json:"data"`
-}
-
 type SupervisorTopicCouncilListResponse struct {
 	Total int32                     `json:"total"`
 	Data  []*SupervisorTopicCouncil `json:"data"`
@@ -862,20 +839,14 @@ type TopicCouncilListResponse struct {
 }
 
 type TopicCouncilSupervisor struct {
-	ID                    string        `json:"id"`
-	TeacherSupervisorCode string        `json:"teacherSupervisorCode"`
-	TopicCouncilCode      string        `json:"topicCouncilCode"`
-	CreatedAt             *time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt             *time.Time    `json:"updatedAt,omitempty"`
-	CreatedBy             *string       `json:"createdBy,omitempty"`
-	UpdatedBy             *string       `json:"updatedBy,omitempty"`
-	Teacher               *Teacher      `json:"teacher,omitempty"`
-	TopicCouncil          *TopicCouncil `json:"topicCouncil,omitempty"`
-}
-
-type TopicCouncilSupervisorListResponse struct {
-	Total int32                     `json:"total"`
-	Data  []*TopicCouncilSupervisor `json:"data"`
+	ID                    string     `json:"id"`
+	TeacherSupervisorCode string     `json:"teacherSupervisorCode"`
+	TopicCouncilCode      string     `json:"topicCouncilCode"`
+	CreatedAt             *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt             *time.Time `json:"updatedAt,omitempty"`
+	CreatedBy             *string    `json:"createdBy,omitempty"`
+	UpdatedBy             *string    `json:"updatedBy,omitempty"`
+	Teacher               *Teacher   `json:"teacher,omitempty"`
 }
 
 type TopicListResponse struct {

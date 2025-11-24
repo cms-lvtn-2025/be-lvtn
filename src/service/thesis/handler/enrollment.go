@@ -33,20 +33,6 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 	// Generate UUID
 	id := uuid.New().String()
 
-	// Prepare fields
-	FinalCode := ""
-	if req.FinalCode != nil {
-		FinalCode = *req.FinalCode
-	}
-	GradeReviewCode := ""
-	if req.GradeReviewCode != nil {
-		GradeReviewCode = *req.GradeReviewCode
-	}
-	MidtermCode := ""
-	if req.MidtermCode != nil {
-		MidtermCode = *req.MidtermCode
-	}
-
 	// Insert into database
 	query := `
 		INSERT INTO Enrollment (id, title, student_code, topic_council_code, final_code, grade_review_code, midterm_code, created_by, updated_by, created_at, updated_at)
@@ -58,9 +44,9 @@ func (h *Handler) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollment
 		req.Title,
 		req.StudentCode,
 		req.TopicCouncilCode,
-		FinalCode,
-		GradeReviewCode,
-		MidtermCode,
+		req.FinalCode,
+		req.GradeReviewCode,
+		req.MidtermCode,
 		req.CreatedBy,
 		req.CreatedBy,
 	)

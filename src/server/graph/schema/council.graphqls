@@ -10,8 +10,7 @@ type Council {
     createdBy: String
     updatedBy: String
 
-    # KHÔNG có major - tránh circular query
-    # KHÔNG có semester - tránh circular query
+
     defences: [Defence!]
     topicCouncils: [TopicCouncil!]
 }

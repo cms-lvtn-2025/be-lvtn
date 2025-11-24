@@ -20,14 +20,6 @@ import (
 type FacultyResolver interface {
 	Majors(ctx context.Context, obj *model.Faculty) ([]*model.Major, error)
 }
-type MajorResolver interface {
-	Topics(ctx context.Context, obj *model.Major) ([]*model.Topic, error)
-}
-type SemesterResolver interface {
-	Students(ctx context.Context, obj *model.Semester) ([]*model.Student, error)
-	Teachers(ctx context.Context, obj *model.Semester) ([]*model.Teacher, error)
-	Topics(ctx context.Context, obj *model.Semester) ([]*model.Topic, error)
-}
 
 // endregion ************************** generated!.gotpl **************************
 
@@ -284,8 +276,6 @@ func (ec *executionContext) fieldContext_Faculty_majors(_ context.Context, field
 				return ec.fieldContext_Major_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Major_updatedBy(ctx, field)
-			case "topics":
-				return ec.fieldContext_Major_topics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Major", field.Name)
 		},
@@ -525,65 +515,6 @@ func (ec *executionContext) fieldContext_Major_updatedBy(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Major_topics(ctx context.Context, field graphql.CollectedField, obj *model.Major) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Major_topics,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Major().Topics(ctx, obj)
-		},
-		nil,
-		ec.marshalOTopic2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicᚄ,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Major_topics(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Major",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "total":
-				return ec.fieldContext_Topic_total(ctx, field)
-			case "id":
-				return ec.fieldContext_Topic_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Topic_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "status":
-				return ec.fieldContext_Topic_status(ctx, field)
-			case "percentStage1":
-				return ec.fieldContext_Topic_percentStage1(ctx, field)
-			case "percentStage2":
-				return ec.fieldContext_Topic_percentStage2(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Topic_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Topic_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Topic_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Topic_updatedBy(ctx, field)
-			case "files":
-				return ec.fieldContext_Topic_files(ctx, field)
-			case "topicCouncils":
-				return ec.fieldContext_Topic_topicCouncils(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Semester_id(ctx context.Context, field graphql.CollectedField, obj *model.Semester) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -758,179 +689,6 @@ func (ec *executionContext) fieldContext_Semester_updatedBy(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Semester_students(ctx context.Context, field graphql.CollectedField, obj *model.Semester) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Semester_students,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Semester().Students(ctx, obj)
-		},
-		nil,
-		ec.marshalOStudent2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentᚄ,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Semester_students(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Semester",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Student_id(ctx, field)
-			case "email":
-				return ec.fieldContext_Student_email(ctx, field)
-			case "phone":
-				return ec.fieldContext_Student_phone(ctx, field)
-			case "username":
-				return ec.fieldContext_Student_username(ctx, field)
-			case "gender":
-				return ec.fieldContext_Student_gender(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Student_majorCode(ctx, field)
-			case "classCode":
-				return ec.fieldContext_Student_classCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Student_semesterCode(ctx, field)
-			case "mssv":
-				return ec.fieldContext_Student_mssv(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Student_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Student_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Student_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Student_updatedBy(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Student_enrollments(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Student", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Semester_teachers(ctx context.Context, field graphql.CollectedField, obj *model.Semester) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Semester_teachers,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Semester().Teachers(ctx, obj)
-		},
-		nil,
-		ec.marshalOTeacher2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTeacherᚄ,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Semester_teachers(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Semester",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Teacher_id(ctx, field)
-			case "email":
-				return ec.fieldContext_Teacher_email(ctx, field)
-			case "username":
-				return ec.fieldContext_Teacher_username(ctx, field)
-			case "gender":
-				return ec.fieldContext_Teacher_gender(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Teacher_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Teacher_semesterCode(ctx, field)
-			case "msgv":
-				return ec.fieldContext_Teacher_msgv(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Teacher_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Teacher_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Teacher_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Teacher_updatedBy(ctx, field)
-			case "roles":
-				return ec.fieldContext_Teacher_roles(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Semester_topics(ctx context.Context, field graphql.CollectedField, obj *model.Semester) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Semester_topics,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Semester().Topics(ctx, obj)
-		},
-		nil,
-		ec.marshalOTopic2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicᚄ,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Semester_topics(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Semester",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "total":
-				return ec.fieldContext_Topic_total(ctx, field)
-			case "id":
-				return ec.fieldContext_Topic_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Topic_title(ctx, field)
-			case "majorCode":
-				return ec.fieldContext_Topic_majorCode(ctx, field)
-			case "semesterCode":
-				return ec.fieldContext_Topic_semesterCode(ctx, field)
-			case "status":
-				return ec.fieldContext_Topic_status(ctx, field)
-			case "percentStage1":
-				return ec.fieldContext_Topic_percentStage1(ctx, field)
-			case "percentStage2":
-				return ec.fieldContext_Topic_percentStage2(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Topic_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Topic_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_Topic_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_Topic_updatedBy(ctx, field)
-			case "files":
-				return ec.fieldContext_Topic_files(ctx, field)
-			case "topicCouncils":
-				return ec.fieldContext_Topic_topicCouncils(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -1050,22 +808,22 @@ func (ec *executionContext) _Major(ctx context.Context, sel ast.SelectionSet, ob
 		case "id":
 			out.Values[i] = ec._Major_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "title":
 			out.Values[i] = ec._Major_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "facultyCode":
 			out.Values[i] = ec._Major_facultyCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "ms":
 			out.Values[i] = ec._Major_ms(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "createdAt":
 			out.Values[i] = ec._Major_createdAt(ctx, field, obj)
@@ -1075,39 +833,6 @@ func (ec *executionContext) _Major(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Major_createdBy(ctx, field, obj)
 		case "updatedBy":
 			out.Values[i] = ec._Major_updatedBy(ctx, field, obj)
-		case "topics":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Major_topics(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1145,12 +870,12 @@ func (ec *executionContext) _Semester(ctx context.Context, sel ast.SelectionSet,
 		case "id":
 			out.Values[i] = ec._Semester_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "title":
 			out.Values[i] = ec._Semester_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
+				out.Invalids++
 			}
 		case "createdAt":
 			out.Values[i] = ec._Semester_createdAt(ctx, field, obj)
@@ -1160,105 +885,6 @@ func (ec *executionContext) _Semester(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._Semester_createdBy(ctx, field, obj)
 		case "updatedBy":
 			out.Values[i] = ec._Semester_updatedBy(ctx, field, obj)
-		case "students":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Semester_students(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "teachers":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Semester_teachers(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "topics":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Semester_topics(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1455,13 +1081,6 @@ func (ec *executionContext) marshalNSemester2ᚖthailyᚋsrcᚋserverᚋgraphᚋ
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
 		}
-		return graphql.Null
-	}
-	return ec._Semester(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOSemester2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemester(ctx context.Context, sel ast.SelectionSet, v *model.Semester) graphql.Marshaler {
-	if v == nil {
 		return graphql.Null
 	}
 	return ec._Semester(ctx, sel, v)

@@ -2295,15 +2295,18 @@ type Topic struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title          string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	MajorCode      string                 `protobuf:"bytes,3,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	SemesterCode   string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
-	Status         TopicStatus            `protobuf:"varint,5,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
-	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	PercentStage_1 *int32                 `protobuf:"varint,8,opt,name=percent_stage_1,json=percentStage1,proto3,oneof" json:"percent_stage_1,omitempty"`
-	PercentStage_2 *int32                 `protobuf:"varint,9,opt,name=percent_stage_2,json=percentStage2,proto3,oneof" json:"percent_stage_2,omitempty"`
-	CreatedBy      string                 `protobuf:"bytes,10,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	UpdatedBy      string                 `protobuf:"bytes,11,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	TitleEn        string                 `protobuf:"bytes,3,opt,name=title_en,json=titleEn,proto3" json:"title_en,omitempty"`
+	Description    string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	Curriculum     string                 `protobuf:"bytes,5,opt,name=curriculum,proto3" json:"curriculum,omitempty"`
+	MajorCode      string                 `protobuf:"bytes,6,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
+	SemesterCode   string                 `protobuf:"bytes,7,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	Status         TopicStatus            `protobuf:"varint,8,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	PercentStage_1 *int32                 `protobuf:"varint,11,opt,name=percent_stage_1,json=percentStage1,proto3,oneof" json:"percent_stage_1,omitempty"`
+	PercentStage_2 *int32                 `protobuf:"varint,12,opt,name=percent_stage_2,json=percentStage2,proto3,oneof" json:"percent_stage_2,omitempty"`
+	CreatedBy      string                 `protobuf:"bytes,13,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	UpdatedBy      string                 `protobuf:"bytes,14,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -2348,6 +2351,27 @@ func (x *Topic) GetId() string {
 func (x *Topic) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *Topic) GetTitleEn() string {
+	if x != nil {
+		return x.TitleEn
+	}
+	return ""
+}
+
+func (x *Topic) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Topic) GetCurriculum() string {
+	if x != nil {
+		return x.Curriculum
 	}
 	return ""
 }
@@ -2418,12 +2442,15 @@ func (x *Topic) GetUpdatedBy() string {
 type CreateTopicRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Title          string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	MajorCode      string                 `protobuf:"bytes,2,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
-	SemesterCode   string                 `protobuf:"bytes,3,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
-	Status         TopicStatus            `protobuf:"varint,4,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
-	PercentStage_1 *int32                 `protobuf:"varint,5,opt,name=percent_stage_1,json=percentStage1,proto3,oneof" json:"percent_stage_1,omitempty"`
-	PercentStage_2 *int32                 `protobuf:"varint,6,opt,name=percent_stage_2,json=percentStage2,proto3,oneof" json:"percent_stage_2,omitempty"`
-	CreatedBy      string                 `protobuf:"bytes,7,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	TitleEn        string                 `protobuf:"bytes,2,opt,name=title_en,json=titleEn,proto3" json:"title_en,omitempty"`
+	Description    string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	MajorCode      string                 `protobuf:"bytes,4,opt,name=major_code,json=majorCode,proto3" json:"major_code,omitempty"`
+	Curriculum     string                 `protobuf:"bytes,5,opt,name=curriculum,proto3" json:"curriculum,omitempty"`
+	SemesterCode   string                 `protobuf:"bytes,6,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
+	Status         TopicStatus            `protobuf:"varint,7,opt,name=status,proto3,enum=thesis.TopicStatus" json:"status,omitempty"`
+	PercentStage_1 *int32                 `protobuf:"varint,8,opt,name=percent_stage_1,json=percentStage1,proto3,oneof" json:"percent_stage_1,omitempty"`
+	PercentStage_2 *int32                 `protobuf:"varint,9,opt,name=percent_stage_2,json=percentStage2,proto3,oneof" json:"percent_stage_2,omitempty"`
+	CreatedBy      string                 `protobuf:"bytes,10,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -2465,9 +2492,30 @@ func (x *CreateTopicRequest) GetTitle() string {
 	return ""
 }
 
+func (x *CreateTopicRequest) GetTitleEn() string {
+	if x != nil {
+		return x.TitleEn
+	}
+	return ""
+}
+
+func (x *CreateTopicRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
 func (x *CreateTopicRequest) GetMajorCode() string {
 	if x != nil {
 		return x.MajorCode
+	}
+	return ""
+}
+
+func (x *CreateTopicRequest) GetCurriculum() string {
+	if x != nil {
+		return x.Curriculum
 	}
 	return ""
 }
@@ -5174,37 +5222,48 @@ const file_proto_thesis_thesis_proto_rawDesc = "" +
 	"\venrollments\x18\x01 \x03(\v2\x12.thesis.EnrollmentR\venrollments\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xd4\x03\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\xb1\x04\n" +
 	"\x05Topic\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1d\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x19\n" +
+	"\btitle_en\x18\x03 \x01(\tR\atitleEn\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1e\n" +
 	"\n" +
-	"major_code\x18\x03 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\x12+\n" +
-	"\x06status\x18\x05 \x01(\x0e2\x13.thesis.TopicStatusR\x06status\x129\n" +
+	"curriculum\x18\x05 \x01(\tR\n" +
+	"curriculum\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"major_code\x18\x06 \x01(\tR\tmajorCode\x12#\n" +
+	"\rsemester_code\x18\a \x01(\tR\fsemesterCode\x12+\n" +
+	"\x06status\x18\b \x01(\x0e2\x13.thesis.TopicStatusR\x06status\x129\n" +
 	"\n" +
-	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12+\n" +
+	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12+\n" +
+	"\x0fpercent_stage_1\x18\v \x01(\x05H\x00R\rpercentStage1\x88\x01\x01\x12+\n" +
+	"\x0fpercent_stage_2\x18\f \x01(\x05H\x01R\rpercentStage2\x88\x01\x01\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\r \x01(\tR\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x0e \x01(\tR\tupdatedByB\x12\n" +
+	"\x10_percent_stage_1B\x12\n" +
+	"\x10_percent_stage_2\"\x99\x03\n" +
+	"\x12CreateTopicRequest\x12\x14\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12\x19\n" +
+	"\btitle_en\x18\x02 \x01(\tR\atitleEn\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1d\n" +
+	"\n" +
+	"major_code\x18\x04 \x01(\tR\tmajorCode\x12\x1e\n" +
+	"\n" +
+	"curriculum\x18\x05 \x01(\tR\n" +
+	"curriculum\x12#\n" +
+	"\rsemester_code\x18\x06 \x01(\tR\fsemesterCode\x12+\n" +
+	"\x06status\x18\a \x01(\x0e2\x13.thesis.TopicStatusR\x06status\x12+\n" +
 	"\x0fpercent_stage_1\x18\b \x01(\x05H\x00R\rpercentStage1\x88\x01\x01\x12+\n" +
 	"\x0fpercent_stage_2\x18\t \x01(\x05H\x01R\rpercentStage2\x88\x01\x01\x12\x1d\n" +
 	"\n" +
 	"created_by\x18\n" +
-	" \x01(\tR\tcreatedBy\x12\x1d\n" +
-	"\n" +
-	"updated_by\x18\v \x01(\tR\tupdatedByB\x12\n" +
-	"\x10_percent_stage_1B\x12\n" +
-	"\x10_percent_stage_2\"\xbc\x02\n" +
-	"\x12CreateTopicRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1d\n" +
-	"\n" +
-	"major_code\x18\x02 \x01(\tR\tmajorCode\x12#\n" +
-	"\rsemester_code\x18\x03 \x01(\tR\fsemesterCode\x12+\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x13.thesis.TopicStatusR\x06status\x12+\n" +
-	"\x0fpercent_stage_1\x18\x05 \x01(\x05H\x00R\rpercentStage1\x88\x01\x01\x12+\n" +
-	"\x0fpercent_stage_2\x18\x06 \x01(\x05H\x01R\rpercentStage2\x88\x01\x01\x12\x1d\n" +
-	"\n" +
-	"created_by\x18\a \x01(\tR\tcreatedByB\x12\n" +
+	" \x01(\tR\tcreatedByB\x12\n" +
 	"\x10_percent_stage_1B\x12\n" +
 	"\x10_percent_stage_2\":\n" +
 	"\x13CreateTopicResponse\x12#\n" +

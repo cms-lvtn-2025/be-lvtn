@@ -23,6 +23,15 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 	if req.Title == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
+	if req.TitleEn == "" {
+		return nil, status.Error(codes.InvalidArgument, "title_en is required")
+	}
+	if req.Description == "" {
+		return nil, status.Error(codes.InvalidArgument, "description is required")
+	}
+	if req.Curriculum == "" {
+		return nil, status.Error(codes.InvalidArgument, "curriculum is required")
+	}
 	if req.MajorCode == "" {
 		return nil, status.Error(codes.InvalidArgument, "major_code is required")
 	}
@@ -67,13 +76,16 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 
 	// Insert into database
 	query := `
-		INSERT INTO Topic (id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_by, updated_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Topic (id, title, title_en, description, curriculum, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
 		req.Title,
+		req.TitleEn,
+		req.Description,
+		req.Curriculum,
 		req.MajorCode,
 		req.SemesterCode,
 		StatusStr,
@@ -108,7 +120,7 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 	}
 
 	query := `
-		SELECT id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_at, updated_at, created_by, updated_by
+		SELECT id, title, title_en, description, curriculum, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_at, updated_at, created_by, updated_by
 		FROM Topic
 		WHERE id = ?
 	`
@@ -121,6 +133,9 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 	err := h.queryRow(ctx, query, req.Id).Scan(
 		&entity.Id,
 		&entity.Title,
+		&entity.TitleEn,
+		&entity.Description,
+		&entity.Curriculum,
 		&entity.MajorCode,
 		&entity.SemesterCode,
 		&StatusStr,
@@ -354,7 +369,7 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_at, updated_at, created_by, updated_by
+		SELECT id, title, title_en, description, curriculum, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_at, updated_at, created_by, updated_by
 		FROM Topic
 		%s
 		ORDER BY %s %s
@@ -377,6 +392,9 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Title,
+			&entity.TitleEn,
+			&entity.Description,
+			&entity.Curriculum,
 			&entity.MajorCode,
 			&entity.SemesterCode,
 			&StatusStr,

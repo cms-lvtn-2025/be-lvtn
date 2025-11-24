@@ -11,15 +11,6 @@ import (
 	"thaily/src/server/graph/model"
 )
 
-// Enrollments is the resolver for the enrollments field.
-func (r *studentResolver) Enrollments(ctx context.Context, obj *model.Student) ([]*model.Enrollment, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.EnrollmentByStudentId != nil {
-		return loaders.EnrollmentByStudentId.Load(ctx, obj.ID)
-	}
-	return r.Ctrl.GetEnrollmentsByStudentId(ctx, obj.ID)
-}
-
 // Roles is the resolver for the roles field.
 func (r *teacherResolver) Roles(ctx context.Context, obj *model.Teacher) ([]*model.RoleSystem, error) {
 	loaders := dataloader.GetLoaders(ctx)
@@ -29,11 +20,7 @@ func (r *teacherResolver) Roles(ctx context.Context, obj *model.Teacher) ([]*mod
 	return r.Ctrl.GetRolesByTeacherId(ctx, obj.ID)
 }
 
-// Student returns generated.StudentResolver implementation.
-func (r *Resolver) Student() generated.StudentResolver { return &studentResolver{r} }
-
 // Teacher returns generated.TeacherResolver implementation.
 func (r *Resolver) Teacher() generated.TeacherResolver { return &teacherResolver{r} }
 
-type studentResolver struct{ *Resolver }
 type teacherResolver struct{ *Resolver }

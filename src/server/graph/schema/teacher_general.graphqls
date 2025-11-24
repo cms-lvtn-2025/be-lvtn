@@ -1,7 +1,3 @@
-# Schema dành cho GIÁO VIÊN (Teacher - General)
-# Security at SCHEMA LEVEL - teacher types cho phép xem nhiều hơn student
-# Custom types cho từng role động: Supervisor, Council Member, Reviewer
-
 extend type Query {
     """Lấy thông tin cá nhân giáo viên"""
     getMyTeacherProfile: Teacher!
@@ -10,7 +6,7 @@ extend type Query {
     # Query từ bảng nguồn: Topic_council_supervisor WHERE teacher_supervisor_code = current_user
 
     """Lấy danh sách topic council mà giáo viên hướng dẫn"""
-    getMySupervisedTopicCouncils(search: SearchRequestInput): SupervisorTopicCouncilAssignmentListResponse!
+    getMySupervisedTopicCouncils(search: SearchRequestInput): TopicCouncilListResponse!
 
     # """Lấy chi tiết topic council mà giáo viên hướng dẫn"""
     # getMySupervisedTopicCouncilDetail(id: ID!): SupervisorTopicCouncilAssignment
@@ -37,21 +33,6 @@ extend type Query {
 # ============================================
 # SUPERVISOR TYPES - Giáo viên hướng dẫn
 # ============================================
-
-"""
-Topic_council_supervisor assignment cho Supervisor
-Đây là bảng nguồn - query từ đây: SELECT * FROM Topic_council_supervisor WHERE teacher_supervisor_code = current_user
-"""
-type SupervisorTopicCouncilAssignment {
-    id: ID!
-    teacherSupervisorCode: String!
-    topicCouncilCode: String!
-    createdAt: Time
-    updatedAt: Time
-
-    # Relationships - resolve sang custom types
-    topicCouncil: SupervisorTopicCouncil
-}
 
 """
 Topic view cho Supervisor

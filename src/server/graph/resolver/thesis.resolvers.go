@@ -187,15 +187,6 @@ func (r *topicCouncilSupervisorResolver) Teacher(ctx context.Context, obj *model
 	return r.Ctrl.GetTeacherById(ctx, obj.TeacherSupervisorCode)
 }
 
-// TopicCouncil is the resolver for the topicCouncil field.
-func (r *topicCouncilSupervisorResolver) TopicCouncil(ctx context.Context, obj *model.TopicCouncilSupervisor) (*model.TopicCouncil, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.TopicCouncilById != nil {
-		return loaders.TopicCouncilById.Load(ctx, obj.TopicCouncilCode)
-	}
-	return r.Ctrl.GetTopicCouncilById(ctx, obj.TopicCouncilCode)
-}
-
 // Enrollment returns generated.EnrollmentResolver implementation.
 func (r *Resolver) Enrollment() generated.EnrollmentResolver { return &enrollmentResolver{r} }
 

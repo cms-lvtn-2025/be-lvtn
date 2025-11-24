@@ -44,16 +44,12 @@ type ResolverRoot interface {
 	Faculty() FacultyResolver
 	GradeDefence() GradeDefenceResolver
 	GradeReview() GradeReviewResolver
-	Major() MajorResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 	ReviewerEnrollment() ReviewerEnrollmentResolver
 	ReviewerGradeReview() ReviewerGradeReviewResolver
 	ReviewerTopic() ReviewerTopicResolver
 	ReviewerTopicCouncil() ReviewerTopicCouncilResolver
-	RoleSystem() RoleSystemResolver
-	Semester() SemesterResolver
-	Student() StudentResolver
 	StudentCouncil() StudentCouncilResolver
 	StudentDefenceInfo() StudentDefenceInfoResolver
 	StudentEnrollment() StudentEnrollmentResolver
@@ -65,7 +61,6 @@ type ResolverRoot interface {
 	SupervisorEnrollment() SupervisorEnrollmentResolver
 	SupervisorTopic() SupervisorTopicResolver
 	SupervisorTopicCouncil() SupervisorTopicCouncilResolver
-	SupervisorTopicCouncilAssignment() SupervisorTopicCouncilAssignmentResolver
 	Teacher() TeacherResolver
 	Topic() TopicResolver
 	TopicCouncil() TopicCouncilResolver
@@ -338,7 +333,6 @@ type ComplexityRoot struct {
 		ID          func(childComplexity int) int
 		Ms          func(childComplexity int) int
 		Title       func(childComplexity int) int
-		Topics      func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
 		UpdatedBy   func(childComplexity int) int
 	}
@@ -522,9 +516,7 @@ type ComplexityRoot struct {
 		CreatedBy    func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Role         func(childComplexity int) int
-		Semester     func(childComplexity int) int
 		SemesterCode func(childComplexity int) int
-		Teacher      func(childComplexity int) int
 		TeacherCode  func(childComplexity int) int
 		Title        func(childComplexity int) int
 		UpdatedAt    func(childComplexity int) int
@@ -540,10 +532,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
 		ID        func(childComplexity int) int
-		Students  func(childComplexity int) int
-		Teachers  func(childComplexity int) int
 		Title     func(childComplexity int) int
-		Topics    func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UpdatedBy func(childComplexity int) int
 	}
@@ -563,7 +552,6 @@ type ComplexityRoot struct {
 		CreatedAt    func(childComplexity int) int
 		CreatedBy    func(childComplexity int) int
 		Email        func(childComplexity int) int
-		Enrollments  func(childComplexity int) int
 		Gender       func(childComplexity int) int
 		ID           func(childComplexity int) int
 		MajorCode    func(childComplexity int) int
@@ -762,20 +750,6 @@ type ComplexityRoot struct {
 		UpdatedAt   func(childComplexity int) int
 	}
 
-	SupervisorTopicCouncilAssignment struct {
-		CreatedAt             func(childComplexity int) int
-		ID                    func(childComplexity int) int
-		TeacherSupervisorCode func(childComplexity int) int
-		TopicCouncil          func(childComplexity int) int
-		TopicCouncilCode      func(childComplexity int) int
-		UpdatedAt             func(childComplexity int) int
-	}
-
-	SupervisorTopicCouncilAssignmentListResponse struct {
-		Data  func(childComplexity int) int
-		Total func(childComplexity int) int
-	}
-
 	SupervisorTopicCouncilListResponse struct {
 		Data  func(childComplexity int) int
 		Total func(childComplexity int) int
@@ -847,15 +821,9 @@ type ComplexityRoot struct {
 		ID                    func(childComplexity int) int
 		Teacher               func(childComplexity int) int
 		TeacherSupervisorCode func(childComplexity int) int
-		TopicCouncil          func(childComplexity int) int
 		TopicCouncilCode      func(childComplexity int) int
 		UpdatedAt             func(childComplexity int) int
 		UpdatedBy             func(childComplexity int) int
-	}
-
-	TopicCouncilSupervisorListResponse struct {
-		Data  func(childComplexity int) int
-		Total func(childComplexity int) int
 	}
 
 	TopicListResponse struct {
@@ -2184,13 +2152,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Major.Title(childComplexity), true
-
-	case "Major.topics":
-		if e.complexity.Major.Topics == nil {
-			break
-		}
-
-		return e.complexity.Major.Topics(childComplexity), true
 
 	case "Major.updatedAt":
 		if e.complexity.Major.UpdatedAt == nil {
@@ -3621,26 +3582,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.RoleSystem.Role(childComplexity), true
 
-	case "RoleSystem.semester":
-		if e.complexity.RoleSystem.Semester == nil {
-			break
-		}
-
-		return e.complexity.RoleSystem.Semester(childComplexity), true
-
 	case "RoleSystem.semesterCode":
 		if e.complexity.RoleSystem.SemesterCode == nil {
 			break
 		}
 
 		return e.complexity.RoleSystem.SemesterCode(childComplexity), true
-
-	case "RoleSystem.teacher":
-		if e.complexity.RoleSystem.Teacher == nil {
-			break
-		}
-
-		return e.complexity.RoleSystem.Teacher(childComplexity), true
 
 	case "RoleSystem.teacherCode":
 		if e.complexity.RoleSystem.TeacherCode == nil {
@@ -3705,33 +3652,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Semester.ID(childComplexity), true
 
-	case "Semester.students":
-		if e.complexity.Semester.Students == nil {
-			break
-		}
-
-		return e.complexity.Semester.Students(childComplexity), true
-
-	case "Semester.teachers":
-		if e.complexity.Semester.Teachers == nil {
-			break
-		}
-
-		return e.complexity.Semester.Teachers(childComplexity), true
-
 	case "Semester.title":
 		if e.complexity.Semester.Title == nil {
 			break
 		}
 
 		return e.complexity.Semester.Title(childComplexity), true
-
-	case "Semester.topics":
-		if e.complexity.Semester.Topics == nil {
-			break
-		}
-
-		return e.complexity.Semester.Topics(childComplexity), true
 
 	case "Semester.updatedAt":
 		if e.complexity.Semester.UpdatedAt == nil {
@@ -3802,13 +3728,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Student.Email(childComplexity), true
-
-	case "Student.enrollments":
-		if e.complexity.Student.Enrollments == nil {
-			break
-		}
-
-		return e.complexity.Student.Enrollments(childComplexity), true
 
 	case "Student.gender":
 		if e.complexity.Student.Gender == nil {
@@ -4804,62 +4723,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SupervisorTopicCouncil.UpdatedAt(childComplexity), true
 
-	case "SupervisorTopicCouncilAssignment.createdAt":
-		if e.complexity.SupervisorTopicCouncilAssignment.CreatedAt == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignment.CreatedAt(childComplexity), true
-
-	case "SupervisorTopicCouncilAssignment.id":
-		if e.complexity.SupervisorTopicCouncilAssignment.ID == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignment.ID(childComplexity), true
-
-	case "SupervisorTopicCouncilAssignment.teacherSupervisorCode":
-		if e.complexity.SupervisorTopicCouncilAssignment.TeacherSupervisorCode == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignment.TeacherSupervisorCode(childComplexity), true
-
-	case "SupervisorTopicCouncilAssignment.topicCouncil":
-		if e.complexity.SupervisorTopicCouncilAssignment.TopicCouncil == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignment.TopicCouncil(childComplexity), true
-
-	case "SupervisorTopicCouncilAssignment.topicCouncilCode":
-		if e.complexity.SupervisorTopicCouncilAssignment.TopicCouncilCode == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignment.TopicCouncilCode(childComplexity), true
-
-	case "SupervisorTopicCouncilAssignment.updatedAt":
-		if e.complexity.SupervisorTopicCouncilAssignment.UpdatedAt == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignment.UpdatedAt(childComplexity), true
-
-	case "SupervisorTopicCouncilAssignmentListResponse.data":
-		if e.complexity.SupervisorTopicCouncilAssignmentListResponse.Data == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignmentListResponse.Data(childComplexity), true
-
-	case "SupervisorTopicCouncilAssignmentListResponse.total":
-		if e.complexity.SupervisorTopicCouncilAssignmentListResponse.Total == nil {
-			break
-		}
-
-		return e.complexity.SupervisorTopicCouncilAssignmentListResponse.Total(childComplexity), true
-
 	case "SupervisorTopicCouncilListResponse.data":
 		if e.complexity.SupervisorTopicCouncilListResponse.Data == nil {
 			break
@@ -5224,13 +5087,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.TopicCouncilSupervisor.TeacherSupervisorCode(childComplexity), true
 
-	case "TopicCouncilSupervisor.topicCouncil":
-		if e.complexity.TopicCouncilSupervisor.TopicCouncil == nil {
-			break
-		}
-
-		return e.complexity.TopicCouncilSupervisor.TopicCouncil(childComplexity), true
-
 	case "TopicCouncilSupervisor.topicCouncilCode":
 		if e.complexity.TopicCouncilSupervisor.TopicCouncilCode == nil {
 			break
@@ -5251,20 +5107,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.TopicCouncilSupervisor.UpdatedBy(childComplexity), true
-
-	case "TopicCouncilSupervisorListResponse.data":
-		if e.complexity.TopicCouncilSupervisorListResponse.Data == nil {
-			break
-		}
-
-		return e.complexity.TopicCouncilSupervisorListResponse.Data(childComplexity), true
-
-	case "TopicCouncilSupervisorListResponse.total":
-		if e.complexity.TopicCouncilSupervisorListResponse.Total == nil {
-			break
-		}
-
-		return e.complexity.TopicCouncilSupervisorListResponse.Total(childComplexity), true
 
 	case "TopicListResponse.data":
 		if e.complexity.TopicListResponse.Data == nil {
@@ -5454,9 +5296,6 @@ type Major {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    # KHÔNG có faculty - tránh circular query: Major → Faculty → Majors → ...
-    topics: [Topic!]
 }
 
 
@@ -5467,10 +5306,6 @@ type Semester {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    students: [Student!]
-    teachers: [Teacher!]
-    topics: [Topic!]
 }
 `, BuiltIn: false},
 	{Name: "../schema/academic_affairs.graphqls", Input: `# Schema dành riêng cho GIÁO VỤ (Academic Affairs Staff)
@@ -5636,7 +5471,7 @@ input UpdateStudentInput {
     mssv: String
 }
 
-input CreateSemesterInput {
+    input CreateSemesterInput {
     id: ID!
     title: String!
 }
@@ -5693,8 +5528,7 @@ input UpdateTopicInput {
     createdBy: String
     updatedBy: String
 
-    # KHÔNG có major - tránh circular query
-    # KHÔNG có semester - tránh circular query
+
     defences: [Defence!]
     topicCouncils: [TopicCouncil!]
 }
@@ -5854,9 +5688,6 @@ type RoleSystem {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    teacher: Teacher
-    semester: Semester
 }
 `, BuiltIn: false},
 	{Name: "../schema/schema.graphqls", Input: `scalar Time
@@ -6016,11 +5847,6 @@ type TopicCouncilListResponse {
     data: [TopicCouncil!]!
 }
 
-type TopicCouncilSupervisorListResponse {
-    total: Int!
-    data: [TopicCouncilSupervisor!]!
-}
-
 type FileListResponse {
     total: Int!
     data: [File!]!
@@ -6100,12 +5926,6 @@ type StudentTopicSupervisorListResponse {
 type StudentDefenceInfoListResponse {
     total: Int!
     data: [StudentDefenceInfo!]!
-}
-
-# Supervisor custom type list responses
-type SupervisorTopicCouncilAssignmentListResponse {
-    total: Int!
-    data: [SupervisorTopicCouncilAssignment!]!
 }
 
 type SupervisorEnrollmentListResponse {
@@ -6378,11 +6198,7 @@ input UploadFileInput {
     option: String
 }
 `, BuiltIn: false},
-	{Name: "../schema/teacher_general.graphqls", Input: `# Schema dành cho GIÁO VIÊN (Teacher - General)
-# Security at SCHEMA LEVEL - teacher types cho phép xem nhiều hơn student
-# Custom types cho từng role động: Supervisor, Council Member, Reviewer
-
-extend type Query {
+	{Name: "../schema/teacher_general.graphqls", Input: `extend type Query {
     """Lấy thông tin cá nhân giáo viên"""
     getMyTeacherProfile: Teacher!
 
@@ -6390,7 +6206,7 @@ extend type Query {
     # Query từ bảng nguồn: Topic_council_supervisor WHERE teacher_supervisor_code = current_user
 
     """Lấy danh sách topic council mà giáo viên hướng dẫn"""
-    getMySupervisedTopicCouncils(search: SearchRequestInput): SupervisorTopicCouncilAssignmentListResponse!
+    getMySupervisedTopicCouncils(search: SearchRequestInput): TopicCouncilListResponse!
 
     # """Lấy chi tiết topic council mà giáo viên hướng dẫn"""
     # getMySupervisedTopicCouncilDetail(id: ID!): SupervisorTopicCouncilAssignment
@@ -6417,21 +6233,6 @@ extend type Query {
 # ============================================
 # SUPERVISOR TYPES - Giáo viên hướng dẫn
 # ============================================
-
-"""
-Topic_council_supervisor assignment cho Supervisor
-Đây là bảng nguồn - query từ đây: SELECT * FROM Topic_council_supervisor WHERE teacher_supervisor_code = current_user
-"""
-type SupervisorTopicCouncilAssignment {
-    id: ID!
-    teacherSupervisorCode: String!
-    topicCouncilCode: String!
-    createdAt: Time
-    updatedAt: Time
-
-    # Relationships - resolve sang custom types
-    topicCouncil: SupervisorTopicCouncil
-}
 
 """
 Topic view cho Supervisor
@@ -6844,12 +6645,6 @@ type Topic {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-    
-    # KHÔNG có major - tránh circular query: Topic → Major → Topics → ...
-    # KHÔNG có semester - tránh circular query: Topic → Semester → Topics → ...
-    # KHÔNG có enrollments vì Enrollment không có topic_code
-    # KHÔNG có topicSupervisors vì Topic_council_supervisor có topic_council_code, không có topic_code
-    # Muốn lấy enrollments hoặc supervisors phải qua topicCouncils[]
     files: [File!]
     topicCouncils: [TopicCouncil!]
 }
@@ -6883,7 +6678,6 @@ type TopicCouncilSupervisor {
     updatedBy: String
 
     teacher: Teacher
-    topicCouncil: TopicCouncil
 }
 
 type Final {
@@ -6933,10 +6727,6 @@ type Student {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    # KHÔNG có major - tránh circular query: Student → Major → Topics → ... → Student
-    # KHÔNG có semester - tránh circular query: Student → Semester → Students → ...
-    enrollments: [Enrollment!]
 }
 
 
@@ -6952,12 +6742,7 @@ type Teacher {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    # KHÔNG có major - tránh circular query: Teacher → Major → Topics → ...
-    # KHÔNG có semester - tránh circular query: Teacher → Semester → Teachers → ...
     roles: [RoleSystem!]
-    # KHÔNG có topicsSupervised vì Topic_council_supervisor không có topic_code
-    # Muốn lấy topics supervised phải qua Topic_council_supervisor → TopicCouncil → Topic
 }
 
 `, BuiltIn: false},

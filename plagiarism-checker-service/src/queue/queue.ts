@@ -378,6 +378,7 @@ export class ServiceQueueManager {
       },
       {
         connection: redisConnection,
+        lockDuration: 300000, // 5 minutes
         concurrency:
           options?.concurrency ||
           parseInt(process.env.WORKER_CONCURRENCY || "3"),

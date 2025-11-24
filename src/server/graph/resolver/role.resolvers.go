@@ -7,7 +7,6 @@ package resolver
 import (
 	"context"
 	"thaily/src/server/graph/dataloader"
-	"thaily/src/server/graph/generated"
 	"thaily/src/server/graph/model"
 )
 
@@ -37,8 +36,5 @@ func (r *roleSystemResolver) Semester(ctx context.Context, obj *model.RoleSystem
 	}
 	return r.Ctrl.GetSemesterById(ctx, obj.SemesterCode)
 }
-
-// RoleSystem returns generated.RoleSystemResolver implementation.
-func (r *Resolver) RoleSystem() generated.RoleSystemResolver { return &roleSystemResolver{r} }
 
 type roleSystemResolver struct{ *Resolver }

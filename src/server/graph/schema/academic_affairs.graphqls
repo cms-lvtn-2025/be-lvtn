@@ -161,7 +161,7 @@ input UpdateStudentInput {
     mssv: String
 }
 
-input CreateSemesterInput {
+    input CreateSemesterInput {
     id: ID!
     title: String!
 }

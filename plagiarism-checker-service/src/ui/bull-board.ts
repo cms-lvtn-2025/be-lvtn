@@ -8,7 +8,7 @@ import adminRoutes from './admin-routes';
 
 // Tạo Express adapter cho Bull Board
 const serverAdapter = new ExpressAdapter();
-serverAdapter.setBasePath(process.env.BULL_BOARD_PATH || '/admin/queues');
+serverAdapter.setBasePath('/bullmq');
 
 const buildQueueAdapters = (queues: ServiceQueueInfo[]) =>
   queues.map(info => new BullMQAdapter(info.queue));

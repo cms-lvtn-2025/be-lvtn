@@ -814,29 +814,29 @@ func PbTopicToSupervisorTopic(pb *thesis.Topic) *model.SupervisorTopic {
 }
 
 // PbTopicCouncilSupervisorToSupervisorTopicCouncilAssignment converts protobuf TopicCouncilSupervisor to GraphQL SupervisorTopicCouncilAssignment
-func PbTopicCouncilSupervisorToSupervisorTopicCouncilAssignment(pb *thesis.TopicCouncilSupervisor) *model.SupervisorTopicCouncilAssignment {
-	if pb == nil {
-		return nil
-	}
+// func PbTopicCouncilSupervisorToSupervisorTopicCouncilAssignment(pb *thesis.TopicCouncilSupervisor) *model.SupervisorTopicCouncilAssignment {
+// 	if pb == nil {
+// 		return nil
+// 	}
 
-	result := &model.SupervisorTopicCouncilAssignment{
-		ID:                    pb.Id,
-		TeacherSupervisorCode: pb.TeacherSupervisorCode,
-		TopicCouncilCode:      pb.TopicCouncilCode,
-	}
+// 	result := &model.SupervisorTopicCouncil{
+// 		ID:                    pb.Id,
+// 		TeacherSupervisorCode: pb.TeacherSupervisorCode,
+// 		TopicCouncilCode:      pb.TopicCouncilCode,
+// 	}
 
-	// Handle timestamps
-	if pb.CreatedAt != nil {
-		t := pb.CreatedAt.AsTime()
-		result.CreatedAt = &t
-	}
-	if pb.UpdatedAt != nil {
-		t := pb.UpdatedAt.AsTime()
-		result.UpdatedAt = &t
-	}
+// 	// Handle timestamps
+// 	if pb.CreatedAt != nil {
+// 		t := pb.CreatedAt.AsTime()
+// 		result.CreatedAt = &t
+// 	}
+// 	if pb.UpdatedAt != nil {
+// 		t := pb.UpdatedAt.AsTime()
+// 		result.UpdatedAt = &t
+// 	}
 
-	return result
-}
+// 	return result
+// }
 
 // ============================================
 // REVIEWER VIEW CONVERTERS
@@ -1002,12 +1002,12 @@ func CreateTopicCouncilListResponse(topicCouncils []*model.TopicCouncil, total i
 }
 
 // CreateTopicCouncilSupervisorListResponse creates a TopicCouncilSupervisorListResponse
-func CreateTopicCouncilSupervisorListResponse(supervisors []*model.TopicCouncilSupervisor, total int32) *model.TopicCouncilSupervisorListResponse {
-	return &model.TopicCouncilSupervisorListResponse{
-		Data:  supervisors,
-		Total: total,
-	}
-}
+// func CreateTopicCouncilSupervisorListResponse(supervisors []*model.TopicCouncilSupervisor, total int32) *model.TopicCouncilSupervisorListResponse {
+// 	return &model.TopicCouncilSupervisorListResponse{
+// 		Data:  supervisors,
+// 		Total: total,
+// 	}
+// }
 
 // CreateGradeReviewListResponse creates a GradeReviewListResponse
 func CreateGradeReviewListResponse(gradeReviews []*model.GradeReview, total int32) *model.GradeReviewListResponse {
@@ -1050,12 +1050,12 @@ func CreateSupervisorTopicCouncilListResponse(topicCouncils []*model.SupervisorT
 }
 
 // CreateSupervisorTopicCouncilAssignmentListResponse creates a SupervisorTopicCouncilAssignmentListResponse
-func CreateSupervisorTopicCouncilAssignmentListResponse(assignments []*model.SupervisorTopicCouncilAssignment, total int32) *model.SupervisorTopicCouncilAssignmentListResponse {
-	return &model.SupervisorTopicCouncilAssignmentListResponse{
-		Data:  assignments,
-		Total: total,
-	}
-}
+// func CreateSupervisorTopicCouncilAssignmentListResponse(assignments []*model.SupervisorTopicCouncilAssignment, total int32) *model.SupervisorTopicCouncilAssignmentListResponse {
+// 	return &model.SupervisorTopicCouncilAssignmentListResponse{
+// 		Data:  assignments,
+// 		Total: total,
+// 	}
+// }
 
 // CreateReviewerGradeReviewListResponse creates a ReviewerGradeReviewListResponse
 func CreateReviewerGradeReviewListResponse(gradeReviews []*model.ReviewerGradeReview, total int32) *model.ReviewerGradeReviewListResponse {
@@ -1188,18 +1188,18 @@ func PbTopicCouncilsToCouncilTopicCouncils(pbs []*thesis.TopicCouncil) []*model.
 }
 
 // PbTopicCouncilSupervisorsToSupervisorTopicCouncilAssignments converts array of protobuf TopicCouncilSupervisors to GraphQL SupervisorTopicCouncilAssignments
-func PbTopicCouncilSupervisorsToSupervisorTopicCouncilAssignments(pbs []*thesis.TopicCouncilSupervisor) []*model.SupervisorTopicCouncilAssignment {
-	if pbs == nil {
-		return nil
-	}
-	result := make([]*model.SupervisorTopicCouncilAssignment, 0, len(pbs))
-	for _, pb := range pbs {
-		if pb != nil {
-			result = append(result, PbTopicCouncilSupervisorToSupervisorTopicCouncilAssignment(pb))
-		}
-	}
-	return result
-}
+// func PbTopicCouncilSupervisorsToSupervisorTopicCouncilAssignments(pbs []*thesis.TopicCouncilSupervisor) []*model.SupervisorTopicCouncilAssignment {
+// 	if pbs == nil {
+// 		return nil
+// 	}
+// 	result := make([]*model.SupervisorTopicCouncilAssignment, 0, len(pbs))
+// 	for _, pb := range pbs {
+// 		if pb != nil {
+// 			result = append(result, PbTopicCouncilSupervisorToSupervisorTopicCouncilAssignment(pb))
+// 		}
+// 	}
+// 	return result
+// }
 
 // PbGradeReviewsToReviewerGradeReviews converts array of protobuf GradeReviews to GraphQL ReviewerGradeReviews
 func PbGradeReviewsToReviewerGradeReviews(pbs []*thesis.GradeReview) []*model.ReviewerGradeReview {

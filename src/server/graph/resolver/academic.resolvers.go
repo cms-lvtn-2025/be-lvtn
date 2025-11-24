@@ -20,51 +20,7 @@ func (r *facultyResolver) Majors(ctx context.Context, obj *model.Faculty) ([]*mo
 	return r.Ctrl.GetMajorsByFacultyId(ctx, obj.ID)
 }
 
-// Topics is the resolver for the topics field.
-func (r *majorResolver) Topics(ctx context.Context, obj *model.Major) ([]*model.Topic, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.TopicByMajorId != nil {
-		return loaders.TopicByMajorId.Load(ctx, obj.ID)
-	}
-	return r.Ctrl.GetTopicsByMajorId(ctx, obj.ID)
-}
-
-// Students is the resolver for the students field.
-func (r *semesterResolver) Students(ctx context.Context, obj *model.Semester) ([]*model.Student, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.StudentBySemesterId != nil {
-		return loaders.StudentBySemesterId.Load(ctx, obj.ID)
-	}
-	return r.Ctrl.GetStudentsBySemesterId(ctx, obj.ID)
-}
-
-// Teachers is the resolver for the teachers field.
-func (r *semesterResolver) Teachers(ctx context.Context, obj *model.Semester) ([]*model.Teacher, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.TeacherBySemesterId != nil {
-		return loaders.TeacherBySemesterId.Load(ctx, obj.ID)
-	}
-	return r.Ctrl.GetTeachersBySemesterId(ctx, obj.ID)
-}
-
-// Topics is the resolver for the topics field.
-func (r *semesterResolver) Topics(ctx context.Context, obj *model.Semester) ([]*model.Topic, error) {
-	loaders := dataloader.GetLoaders(ctx)
-	if loaders != nil && loaders.TopicBySemesterId != nil {
-		return loaders.TopicBySemesterId.Load(ctx, obj.ID)
-	}
-	return r.Ctrl.GetTopicsBySemesterId(ctx, obj.ID)
-}
-
 // Faculty returns generated.FacultyResolver implementation.
 func (r *Resolver) Faculty() generated.FacultyResolver { return &facultyResolver{r} }
 
-// Major returns generated.MajorResolver implementation.
-func (r *Resolver) Major() generated.MajorResolver { return &majorResolver{r} }
-
-// Semester returns generated.SemesterResolver implementation.
-func (r *Resolver) Semester() generated.SemesterResolver { return &semesterResolver{r} }
-
 type facultyResolver struct{ *Resolver }
-type majorResolver struct{ *Resolver }
-type semesterResolver struct{ *Resolver }

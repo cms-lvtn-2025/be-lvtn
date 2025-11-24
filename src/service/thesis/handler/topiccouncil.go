@@ -30,12 +30,6 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	// Generate UUID
 	id := uuid.New().String()
 
-	// Prepare fields
-	CouncilCode := ""
-	if req.CouncilCode != nil {
-		CouncilCode = *req.CouncilCode
-	}
-
 	// Convert Stage enum to string
 	StageValue := pb.TopicStage_STAGE_DACN
 
@@ -47,19 +41,28 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	case pb.TopicStage_STAGE_LVTN:
 		StageStr = "stage_lvtn"
 	}
-
+	timeStart := ""
+	if req.TimeStart != nil {
+		timeStart = req.TimeStart.AsTime().Format("2006-01-02 15:04:05")
+	}
+	timeEnd := ""
+	if req.TimeEnd != nil {
+		timeEnd = req.TimeEnd.AsTime().Format("2006-01-02 15:04:05")
+	}
 	// Insert into database
 	query := `
-		INSERT INTO TopicCouncil (id, title, stage, topic_code, council_code, created_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Topic_council (id, title, stage, topic_code, council_code, time_start, time_end, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
-
 	_, err := h.execQuery(ctx, query,
 		id,
 		req.Title,
 		StageStr,
 		req.TopicCode,
-		CouncilCode,
+		req.CouncilCode,
+		timeStart,
+		timeEnd,
+		req.CreatedBy,
 		req.CreatedBy,
 	)
 

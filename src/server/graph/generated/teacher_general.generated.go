@@ -80,9 +80,6 @@ type SupervisorTopicCouncilResolver interface {
 	Enrollments(ctx context.Context, obj *model.SupervisorTopicCouncil) ([]*model.SupervisorEnrollment, error)
 	Supervisors(ctx context.Context, obj *model.SupervisorTopicCouncil) ([]*model.TopicCouncilSupervisor, error)
 }
-type SupervisorTopicCouncilAssignmentResolver interface {
-	TopicCouncil(ctx context.Context, obj *model.SupervisorTopicCouncilAssignment) (*model.SupervisorTopicCouncil, error)
-}
 
 // endregion ************************** generated!.gotpl **************************
 
@@ -777,8 +774,6 @@ func (ec *executionContext) fieldContext_CouncilEnrollment_student(_ context.Con
 				return ec.fieldContext_Student_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Student_updatedBy(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Student_enrollments(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Student", field.Name)
 		},
@@ -1976,8 +1971,6 @@ func (ec *executionContext) fieldContext_CouncilTopicCouncil_supervisors(_ conte
 				return ec.fieldContext_TopicCouncilSupervisor_updatedBy(ctx, field)
 			case "teacher":
 				return ec.fieldContext_TopicCouncilSupervisor_teacher(ctx, field)
-			case "topicCouncil":
-				return ec.fieldContext_TopicCouncilSupervisor_topicCouncil(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TopicCouncilSupervisor", field.Name)
 		},
@@ -2296,8 +2289,6 @@ func (ec *executionContext) fieldContext_ReviewerEnrollment_student(_ context.Co
 				return ec.fieldContext_Student_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Student_updatedBy(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Student_enrollments(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Student", field.Name)
 		},
@@ -3294,8 +3285,6 @@ func (ec *executionContext) fieldContext_ReviewerTopicCouncil_supervisors(_ cont
 				return ec.fieldContext_TopicCouncilSupervisor_updatedBy(ctx, field)
 			case "teacher":
 				return ec.fieldContext_TopicCouncilSupervisor_teacher(ctx, field)
-			case "topicCouncil":
-				return ec.fieldContext_TopicCouncilSupervisor_topicCouncil(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TopicCouncilSupervisor", field.Name)
 		},
@@ -3672,8 +3661,6 @@ func (ec *executionContext) fieldContext_SupervisorEnrollment_student(_ context.
 				return ec.fieldContext_Student_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Student_updatedBy(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Student_enrollments(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Student", field.Name)
 		},
@@ -4935,212 +4922,8 @@ func (ec *executionContext) fieldContext_SupervisorTopicCouncil_supervisors(_ co
 				return ec.fieldContext_TopicCouncilSupervisor_updatedBy(ctx, field)
 			case "teacher":
 				return ec.fieldContext_TopicCouncilSupervisor_teacher(ctx, field)
-			case "topicCouncil":
-				return ec.fieldContext_TopicCouncilSupervisor_topicCouncil(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TopicCouncilSupervisor", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SupervisorTopicCouncilAssignment_id(ctx context.Context, field graphql.CollectedField, obj *model.SupervisorTopicCouncilAssignment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SupervisorTopicCouncilAssignment_id,
-		func(ctx context.Context) (any, error) {
-			return obj.ID, nil
-		},
-		nil,
-		ec.marshalNID2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_SupervisorTopicCouncilAssignment_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SupervisorTopicCouncilAssignment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SupervisorTopicCouncilAssignment_teacherSupervisorCode(ctx context.Context, field graphql.CollectedField, obj *model.SupervisorTopicCouncilAssignment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SupervisorTopicCouncilAssignment_teacherSupervisorCode,
-		func(ctx context.Context) (any, error) {
-			return obj.TeacherSupervisorCode, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_SupervisorTopicCouncilAssignment_teacherSupervisorCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SupervisorTopicCouncilAssignment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SupervisorTopicCouncilAssignment_topicCouncilCode(ctx context.Context, field graphql.CollectedField, obj *model.SupervisorTopicCouncilAssignment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SupervisorTopicCouncilAssignment_topicCouncilCode,
-		func(ctx context.Context) (any, error) {
-			return obj.TopicCouncilCode, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_SupervisorTopicCouncilAssignment_topicCouncilCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SupervisorTopicCouncilAssignment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SupervisorTopicCouncilAssignment_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.SupervisorTopicCouncilAssignment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SupervisorTopicCouncilAssignment_createdAt,
-		func(ctx context.Context) (any, error) {
-			return obj.CreatedAt, nil
-		},
-		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_SupervisorTopicCouncilAssignment_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SupervisorTopicCouncilAssignment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SupervisorTopicCouncilAssignment_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.SupervisorTopicCouncilAssignment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SupervisorTopicCouncilAssignment_updatedAt,
-		func(ctx context.Context) (any, error) {
-			return obj.UpdatedAt, nil
-		},
-		nil,
-		ec.marshalOTime2ᚖtimeᚐTime,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_SupervisorTopicCouncilAssignment_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SupervisorTopicCouncilAssignment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _SupervisorTopicCouncilAssignment_topicCouncil(ctx context.Context, field graphql.CollectedField, obj *model.SupervisorTopicCouncilAssignment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_SupervisorTopicCouncilAssignment_topicCouncil,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.SupervisorTopicCouncilAssignment().TopicCouncil(ctx, obj)
-		},
-		nil,
-		ec.marshalOSupervisorTopicCouncil2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSupervisorTopicCouncil,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_SupervisorTopicCouncilAssignment_topicCouncil(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "SupervisorTopicCouncilAssignment",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_SupervisorTopicCouncil_id(ctx, field)
-			case "title":
-				return ec.fieldContext_SupervisorTopicCouncil_title(ctx, field)
-			case "stage":
-				return ec.fieldContext_SupervisorTopicCouncil_stage(ctx, field)
-			case "topicCode":
-				return ec.fieldContext_SupervisorTopicCouncil_topicCode(ctx, field)
-			case "councilCode":
-				return ec.fieldContext_SupervisorTopicCouncil_councilCode(ctx, field)
-			case "timeStart":
-				return ec.fieldContext_SupervisorTopicCouncil_timeStart(ctx, field)
-			case "timeEnd":
-				return ec.fieldContext_SupervisorTopicCouncil_timeEnd(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_SupervisorTopicCouncil_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_SupervisorTopicCouncil_updatedAt(ctx, field)
-			case "topic":
-				return ec.fieldContext_SupervisorTopicCouncil_topic(ctx, field)
-			case "council":
-				return ec.fieldContext_SupervisorTopicCouncil_council(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_SupervisorTopicCouncil_enrollments(ctx, field)
-			case "supervisors":
-				return ec.fieldContext_SupervisorTopicCouncil_supervisors(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SupervisorTopicCouncil", field.Name)
 		},
 	}
 	return fc, nil
@@ -7679,92 +7462,6 @@ func (ec *executionContext) _SupervisorTopicCouncil(ctx context.Context, sel ast
 	return out
 }
 
-var supervisorTopicCouncilAssignmentImplementors = []string{"SupervisorTopicCouncilAssignment"}
-
-func (ec *executionContext) _SupervisorTopicCouncilAssignment(ctx context.Context, sel ast.SelectionSet, obj *model.SupervisorTopicCouncilAssignment) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, supervisorTopicCouncilAssignmentImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("SupervisorTopicCouncilAssignment")
-		case "id":
-			out.Values[i] = ec._SupervisorTopicCouncilAssignment_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "teacherSupervisorCode":
-			out.Values[i] = ec._SupervisorTopicCouncilAssignment_teacherSupervisorCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "topicCouncilCode":
-			out.Values[i] = ec._SupervisorTopicCouncilAssignment_topicCouncilCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "createdAt":
-			out.Values[i] = ec._SupervisorTopicCouncilAssignment_createdAt(ctx, field, obj)
-		case "updatedAt":
-			out.Values[i] = ec._SupervisorTopicCouncilAssignment_updatedAt(ctx, field, obj)
-		case "topicCouncil":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._SupervisorTopicCouncilAssignment_topicCouncil(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
@@ -8125,60 +7822,6 @@ func (ec *executionContext) marshalNSupervisorTopicCouncil2ᚖthailyᚋsrcᚋser
 		return graphql.Null
 	}
 	return ec._SupervisorTopicCouncil(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNSupervisorTopicCouncilAssignment2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSupervisorTopicCouncilAssignmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SupervisorTopicCouncilAssignment) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSupervisorTopicCouncilAssignment2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSupervisorTopicCouncilAssignment(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNSupervisorTopicCouncilAssignment2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSupervisorTopicCouncilAssignment(ctx context.Context, sel ast.SelectionSet, v *model.SupervisorTopicCouncilAssignment) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._SupervisorTopicCouncilAssignment(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNUpdateGradeDefenceCriterionInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐUpdateGradeDefenceCriterionInput(ctx context.Context, v any) (model.UpdateGradeDefenceCriterionInput, error) {

@@ -9,9 +9,9 @@ import (
 	pbThesis "thaily/proto/thesis"
 	pbUser "thaily/proto/user"
 	"thaily/src/server/graph/convert"
-	convert2 "thaily/src/server/graph/convert"
 	"thaily/src/server/graph/model"
 	"time"
+
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -36,7 +36,7 @@ func (c *Controller) GetTeacherByRequest(ctx context.Context) (*model.Teacher, e
 
 // Supervisor Methods
 
-func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *model.SearchRequestInput) (*model.SupervisorTopicCouncilAssignmentListResponse, error) {
+func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *model.SearchRequestInput) (*model.TopicCouncilListResponse, error) {
 	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
 	if err != nil {
 		return nil, err
@@ -78,47 +78,24 @@ func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *mod
 	}
 
 	assignments, err := c.thesis.GetTopicCouncilSupervisorBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	var topicCouncils []string
+	for _, assignment := range assignments.GetTopicCouncilSupervisors() {
+		topicCouncils = append(topicCouncils, assignment.GetTopicCouncilCode())
+	}
+	topicCouncilsResponse, err := c.thesis.GetTopicCouncilsByIds(ctx, topicCouncils)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.SupervisorTopicCouncilAssignmentListResponse{
-		Total: assignments.GetTotal(),
-		Data:  convert2.PbTopicCouncilSupervisorsToSupervisorTopicCouncilAssignments(assignments.GetTopicCouncilSupervisors()),
+	return &model.TopicCouncilListResponse{
+		Total: int32(len(topicCouncilsResponse.GetTopicCouncils())),
+		Data:  convert.PbTopicCouncilsToModel(topicCouncilsResponse.GetTopicCouncils()),
 	}, nil
 }
 
-func (c *Controller) GetSupervisedTopicCouncilDetail(ctx context.Context, id string) (*model.SupervisorTopicCouncilAssignment, error) {
-	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
-	if err != nil {
-		return nil, err
-	}
-	if !check {
-		return nil, fmt.Errorf("not authorized")
-	}
-	if myId == nil {
-		return nil, fmt.Errorf("not authorized")
-	}
+// func (c *Controller) GetSupervisedTopicCouncilDetail(ctx context.Context, id string) (*model.SupervisorTopicCouncil, error) {
 
-	assignment, err := c.thesis.GetTopicCouncilSupervisorById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return convert2.PbTopicCouncilSupervisorToSupervisorTopicCouncilAssignment(assignment.GetTopicCouncilSupervisor()), nil
-}
-
-func (c *Controller) GetSupervisorTopicCouncilById(ctx context.Context, id string) (*model.SupervisorTopicCouncil, error) {
-	_, _, err := c.GetInfoRequest(ctx)
-	if err != nil {
-		return nil, err
-	}
-	topicCouncil, err := c.thesis.GetTopicCouncilById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert2.PbTopicCouncilToSupervisorTopicCouncil(topicCouncil.GetTopicCouncil()), nil
-}
+// }
 
 func (c *Controller) GetSupervisorTopicById(ctx context.Context, id string) (*model.SupervisorTopic, error) {
 	// role teacher
@@ -133,7 +110,7 @@ func (c *Controller) GetSupervisorTopicById(ctx context.Context, id string) (*mo
 	if err != nil {
 		return nil, err
 	}
-	return convert2.PbTopicToSupervisorTopic(topic.GetTopic()), nil
+	return convert.PbTopicToSupervisorTopic(topic.GetTopic()), nil
 }
 
 func (c *Controller) GetSupervisorEnrollmentsByTopicCouncilId(ctx context.Context, topicCouncilId string) ([]*model.SupervisorEnrollment, error) {
@@ -162,7 +139,7 @@ func (c *Controller) GetSupervisorEnrollmentsByTopicCouncilId(ctx context.Contex
 		return nil, err
 	}
 
-	return convert2.PbEnrollmentsToSupervisorEnrollments(enrollments.GetEnrollments()), nil
+	return convert.PbEnrollmentsToSupervisorEnrollments(enrollments.GetEnrollments()), nil
 }
 
 func (c *Controller) GetSupervisorTopicCouncilsByTopicId(ctx context.Context, topicId string) ([]*model.SupervisorTopicCouncil, error) {
@@ -191,7 +168,7 @@ func (c *Controller) GetSupervisorTopicCouncilsByTopicId(ctx context.Context, to
 		return nil, err
 	}
 
-	return convert2.PbTopicCouncilsToSupervisorTopicCouncils(topicCouncils.GetTopicCouncils()), nil
+	return convert.PbTopicCouncilsToSupervisorTopicCouncils(topicCouncils.GetTopicCouncils()), nil
 }
 
 // Council Member Methods
@@ -275,7 +252,7 @@ func (c *Controller) GetCouncilTopicCouncilById(ctx context.Context, id string) 
 	if err != nil {
 		return nil, err
 	}
-	return convert2.PbTopicCouncilToCouncilTopicCouncil(topicCouncil.GetTopicCouncil()), nil
+	return convert.PbTopicCouncilToCouncilTopicCouncil(topicCouncil.GetTopicCouncil()), nil
 }
 
 // GetTopicById, GetCouncilById - moved to resolvers_helper.go
@@ -306,7 +283,7 @@ func (c *Controller) GetCouncilEnrollmentsByTopicCouncilId(ctx context.Context, 
 		return nil, err
 	}
 
-	return convert2.PbEnrollmentsToCouncilEnrollments(enrollments.GetEnrollments()), nil
+	return convert.PbEnrollmentsToCouncilEnrollments(enrollments.GetEnrollments()), nil
 }
 
 func (c *Controller) GetCouncilDefencesByCouncilId(ctx context.Context, councilId string) ([]*model.CouncilDefence, error) {
@@ -364,7 +341,7 @@ func (c *Controller) GetCouncilTopicCouncilsByCouncilId(ctx context.Context, cou
 		return nil, err
 	}
 
-	return convert2.PbTopicCouncilsToCouncilTopicCouncils(topicCouncils.GetTopicCouncils()), nil
+	return convert.PbTopicCouncilsToCouncilTopicCouncils(topicCouncils.GetTopicCouncils()), nil
 }
 
 func (c *Controller) GetCouncilGradeDefencesByDefenceId(ctx context.Context, defenceId string) ([]*model.GradeDefence, error) {
@@ -451,7 +428,7 @@ func (c *Controller) GetSupervisorTopicCouncilSupervisorsByTopicCouncilId(ctx co
 		return nil, err
 	}
 
-	return convert2.PbTopicCouncilSupervisorsToModel(supervisors.GetTopicCouncilSupervisors()), nil
+	return convert.PbTopicCouncilSupervisorsToModel(supervisors.GetTopicCouncilSupervisors()), nil
 }
 
 // Reviewer Methods
@@ -504,7 +481,7 @@ func (c *Controller) GetMyGradeReviews(ctx context.Context, search *model.Search
 
 	return &model.ReviewerGradeReviewListResponse{
 		Total: gradeReviews.GetTotal(),
-		Data:  convert2.PbGradeReviewsToReviewerGradeReviews(gradeReviews.GetGradeReviews()),
+		Data:  convert.PbGradeReviewsToReviewerGradeReviews(gradeReviews.GetGradeReviews()),
 	}, nil
 }
 
@@ -519,7 +496,7 @@ func (c *Controller) GetMyGradeReviewDetail(ctx context.Context, id string) (*mo
 		return nil, err
 	}
 
-	return convert2.PbGradeReviewToReviewerGradeReview(gradeReview.GetGradeReview()), nil
+	return convert.PbGradeReviewToReviewerGradeReview(gradeReview.GetGradeReview()), nil
 }
 
 func (c *Controller) GetReviewerEnrollmentByGradeReviewId(ctx context.Context, gradeReviewId string) (*model.ReviewerEnrollment, error) {
@@ -552,7 +529,7 @@ func (c *Controller) GetReviewerEnrollmentByGradeReviewId(ctx context.Context, g
 		return nil, nil
 	}
 
-	return convert2.PbEnrollmentToReviewerEnrollment(enrollments.GetEnrollments()[0]), nil
+	return convert.PbEnrollmentToReviewerEnrollment(enrollments.GetEnrollments()[0]), nil
 }
 
 func (c *Controller) GetReviewerTopicCouncilById(ctx context.Context, id string) (*model.ReviewerTopicCouncil, error) {
@@ -560,7 +537,7 @@ func (c *Controller) GetReviewerTopicCouncilById(ctx context.Context, id string)
 	if err != nil {
 		return nil, err
 	}
-	return convert2.PbTopicCouncilToReviewerTopicCouncil(topicCouncil.GetTopicCouncil()), nil
+	return convert.PbTopicCouncilToReviewerTopicCouncil(topicCouncil.GetTopicCouncil()), nil
 }
 
 func (c *Controller) GetReviewerTopicById(ctx context.Context, id string) (*model.ReviewerTopic, error) {
@@ -568,7 +545,7 @@ func (c *Controller) GetReviewerTopicById(ctx context.Context, id string) (*mode
 	if err != nil {
 		return nil, err
 	}
-	return convert2.PbTopicToReviewerTopic(topic.GetTopic()), nil
+	return convert.PbTopicToReviewerTopic(topic.GetTopic()), nil
 }
 
 // GetFilesByTopicId - moved to resolvers_helper.go
@@ -669,7 +646,7 @@ func (c *Controller) GradeMidterm(ctx context.Context, enrollmentID string, inpu
 		return nil, err
 	}
 
-	return convert2.PbMidtermToModel(resp.GetMidterm()), nil
+	return convert.PbMidtermToModel(resp.GetMidterm()), nil
 }
 
 // FeedbackMidterm adds feedback to midterm
@@ -727,7 +704,7 @@ func (c *Controller) FeedbackMidterm(ctx context.Context, midtermID string, feed
 		return nil, err
 	}
 
-	return convert2.PbMidtermToModel(resp.GetMidterm()), nil
+	return convert.PbMidtermToModel(resp.GetMidterm()), nil
 }
 
 // GradeFinal grades a final (supervisor only)
@@ -786,7 +763,7 @@ func (c *Controller) GradeFinal(ctx context.Context, enrollmentID string, input 
 		return nil, err
 	}
 
-	return convert2.PbFinalToModel(resp.GetFinal()), nil
+	return convert.PbFinalToModel(resp.GetFinal()), nil
 }
 
 // FeedbackFinal adds feedback to final
@@ -844,7 +821,7 @@ func (c *Controller) FeedbackFinal(ctx context.Context, finalID string, notes st
 		return nil, err
 	}
 
-	return convert2.PbFinalToModel(resp.GetFinal()), nil
+	return convert.PbFinalToModel(resp.GetFinal()), nil
 }
 
 // ApproveMidtermFile approves a midterm file
@@ -955,6 +932,298 @@ func (c *Controller) RejectFinalFile(ctx context.Context, fileID string, reason 
 // ============================================
 // COUNCIL MEMBER MUTATIONS - Grade Defence
 // ============================================
+
+func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.CreateTopicForSuperVisorInput) (*model.Topic, error) {
+	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
+	if err != nil {
+		return nil, err
+	}
+	if !check || myId == nil {
+		return nil, fmt.Errorf("not authorized")
+	}
+	teacher, err := c.user.GetTeacherById(ctx, *myId)
+	if err != nil {
+		return nil, err
+	}
+	if teacher == nil || teacher.GetTeacher() == nil {
+		return nil, fmt.Errorf("teacher not found")
+	}
+
+	// Validate required fields
+	if input.Curriculum == nil {
+		return nil, fmt.Errorf("curriculum is required")
+	}
+
+	// Track created resources for rollback
+	type createdResources struct {
+		topicId        string
+		topicCouncilId string
+		supervisorId   string
+		enrollmentIds  []string
+	}
+	resources := &createdResources{
+		enrollmentIds: make([]string, 0),
+	}
+
+	// Track if we need to rollback
+	shouldRollback := true
+
+	// Rollback function - will be called if any error occurs
+	rollback := func() {
+		// Delete in reverse order: enrollments -> supervisor -> topic council -> topic
+		for _, enrollmentId := range resources.enrollmentIds {
+			_, _ = c.thesis.DeleteEnrollment(ctx, enrollmentId)
+		}
+		if resources.supervisorId != "" {
+			_, _ = c.thesis.DeleteTopicCouncilSupervisor(ctx, resources.supervisorId)
+		}
+		if resources.topicCouncilId != "" {
+			_, _ = c.thesis.DeleteTopicCouncil(ctx, resources.topicCouncilId)
+		}
+		if resources.topicId != "" {
+			_, _ = c.thesis.DeleteTopic(ctx, resources.topicId)
+		}
+	}
+
+	// Ensure rollback on error
+	defer func() {
+		if shouldRollback {
+			rollback()
+		}
+	}()
+
+	// Step 1: Create topic
+	topicInput := &pbThesis.CreateTopicRequest{
+		Title:          input.Title,
+		TitleEn:        input.TitleEn,
+		Description:    input.Description,
+		Curriculum:     *input.Curriculum,
+		MajorCode:      teacher.GetTeacher().GetMajorCode(),
+		SemesterCode:   teacher.GetTeacher().GetSemesterCode(),
+		Status:         pbThesis.TopicStatus_SUBMIT,
+		PercentStage_1: nil,
+		PercentStage_2: nil,
+		CreatedBy:      *myId,
+	}
+
+	topicResp, err := c.thesis.CreateTopic(ctx, topicInput)
+	if err != nil {
+		return nil, err
+	}
+	resources.topicId = topicResp.GetTopic().GetId()
+
+	// Step 2: Create topic council
+	stage := pbThesis.TopicStage_STAGE_DACN
+	switch input.Stage {
+	case model.TopicStageStageDacn:
+		stage = pbThesis.TopicStage_STAGE_DACN
+	case model.TopicStageStageLvtn:
+		stage = pbThesis.TopicStage_STAGE_LVTN
+	}
+
+	topicCouncilInput := &pbThesis.CreateTopicCouncilRequest{
+		Title:     fmt.Sprintf("Topic Council for %s", input.Title),
+		TopicCode: resources.topicId,
+		Stage:     stage,
+		TimeStart: timestamppb.New(input.TimeStart),
+		TimeEnd:   timestamppb.New(input.TimeEnd),
+		CreatedBy: *myId,
+	}
+
+	topicCouncilResp, err := c.thesis.CreateTopicCouncil(ctx, topicCouncilInput)
+	if err != nil {
+		return nil, err
+	}
+	resources.topicCouncilId = topicCouncilResp.GetTopicCouncil().GetId()
+
+	// Step 3: Create supervisor
+	supervisorInput := &pbThesis.CreateTopicCouncilSupervisorRequest{
+		TopicCouncilCode:      resources.topicCouncilId,
+		TeacherSupervisorCode: *myId,
+		CreatedBy:             *myId,
+	}
+	supervisorResp, err := c.thesis.CreateTopicCouncilSupervisor(ctx, supervisorInput)
+	if err != nil {
+		return nil, err
+	}
+	resources.supervisorId = supervisorResp.GetTopicCouncilSupervisor().GetId()
+
+	// Step 4: Create enrollments (sequentially to track each one)
+	for _, student := range input.Students {
+		idStudent := fmt.Sprint(student, "_", teacher.GetTeacher().GetSemesterCode())
+		enrollmentInput := &pbThesis.CreateEnrollmentRequest{
+			TopicCouncilCode: resources.topicCouncilId,
+			StudentCode:      idStudent,
+			CreatedBy:        *myId,
+			Title:            fmt.Sprintf("Enrollment for %s", student),
+		}
+		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, enrollmentInput)
+		if err != nil {
+			return nil, err
+		}
+		resources.enrollmentIds = append(resources.enrollmentIds, enrollmentResp.GetEnrollment().GetId())
+	}
+
+	// All steps succeeded, disable rollback
+	shouldRollback = false
+	return convert.PbTopicToModel(topicResp.GetTopic()), nil
+}
+
+func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input model.CreateTopicCouncilForSuperVisorInput) (*model.TopicCouncil, error) {
+	myId, check, err := c.RbacInfo(ctx, model.RoleSystemRoleTeacher)
+	if err != nil {
+		return nil, err
+	}
+	if !check || myId == nil {
+		return nil, fmt.Errorf("not authorized")
+	}
+
+	// Step 1: Get topic to verify it exists
+	topic, err := c.thesis.GetTopicById(ctx, input.TopicCode)
+	if err != nil {
+		return nil, fmt.Errorf("topic not found: %v", err)
+	}
+	if topic.GetTopic() == nil {
+		return nil, fmt.Errorf("topic not found")
+	}
+
+	// Step 2: Get all topic councils for this topic
+	topicCouncilsResp, err := c.thesis.GetTopicCouncilBySearch(ctx, &pb.SearchRequest{
+		Filters: []*pb.FilterCriteria{
+			{
+				Criteria: &pb.FilterCriteria_Condition{
+					Condition: &pb.FilterCondition{
+						Field:    "topic_code",
+						Operator: pb.FilterOperator_EQUAL,
+						Values:   []string{input.TopicCode},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get topic councils: %v", err)
+	}
+
+	// Step 3: Find stage 1 (DACN) topic council and verify supervisor
+	var stage1TopicCouncilId string
+	for _, tc := range topicCouncilsResp.GetTopicCouncils() {
+		if tc != nil && tc.Stage == pbThesis.TopicStage_STAGE_DACN {
+			stage1TopicCouncilId = tc.Id
+			break
+		}
+		if tc != nil && tc.TimeEnd.AsTime().Before(time.Now()) {
+			return nil, fmt.Errorf("stage 1 (DACN) topic council has ended")
+		}
+	}
+
+	if stage1TopicCouncilId == "" {
+		return nil, fmt.Errorf("stage 1 (DACN) topic council not found for this topic")
+	}
+
+	// Step 4: Verify teacher is supervisor of stage 1 topic council
+	if !c.verifySupervisor(ctx, *myId, stage1TopicCouncilId) {
+		return nil, fmt.Errorf("you are not the supervisor of this topic")
+	}
+
+	// Step 5: Check if stage 2 (LVTN) already exists
+	for _, tc := range topicCouncilsResp.GetTopicCouncils() {
+		if tc != nil && tc.Stage == pbThesis.TopicStage_STAGE_LVTN {
+			return nil, fmt.Errorf("stage 2 (LVTN) topic council already exists for this topic")
+		}
+	}
+
+	// Step 6: Get teacher info for semester code
+	teacher, err := c.user.GetTeacherById(ctx, *myId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get teacher info: %v", err)
+	}
+	if teacher == nil || teacher.GetTeacher() == nil {
+		return nil, fmt.Errorf("teacher not found")
+	}
+
+	// Track created resources for rollback
+	type createdResources struct {
+		topicCouncilId string
+		supervisorId   string
+		enrollmentIds  []string
+	}
+	resources := &createdResources{
+		enrollmentIds: make([]string, 0),
+	}
+
+	// Track if we need to rollback
+	shouldRollback := true
+
+	// Rollback function
+	rollback := func() {
+		// Delete in reverse order: enrollments -> supervisor -> topic council
+		for _, enrollmentId := range resources.enrollmentIds {
+			_, _ = c.thesis.DeleteEnrollment(ctx, enrollmentId)
+		}
+		if resources.supervisorId != "" {
+			_, _ = c.thesis.DeleteTopicCouncilSupervisor(ctx, resources.supervisorId)
+		}
+		if resources.topicCouncilId != "" {
+			_, _ = c.thesis.DeleteTopicCouncil(ctx, resources.topicCouncilId)
+		}
+	}
+
+	// Ensure rollback on error
+	defer func() {
+		if shouldRollback {
+			rollback()
+		}
+	}()
+
+	// Step 7: Create stage 2 topic council
+	topicCouncilInput := &pbThesis.CreateTopicCouncilRequest{
+		Title:     fmt.Sprintf("Topic Council Stage 2 for %s", topic.GetTopic().GetTitle()),
+		TopicCode: input.TopicCode,
+		Stage:     pbThesis.TopicStage_STAGE_LVTN,
+		TimeStart: timestamppb.New(input.TimeStart),
+		TimeEnd:   timestamppb.New(input.TimeEnd),
+		CreatedBy: *myId,
+	}
+
+	topicCouncilResp, err := c.thesis.CreateTopicCouncil(ctx, topicCouncilInput)
+	if err != nil {
+		return nil, err
+	}
+	resources.topicCouncilId = topicCouncilResp.GetTopicCouncil().GetId()
+
+	// Step 8: Create supervisor for stage 2 topic council
+	supervisorInput := &pbThesis.CreateTopicCouncilSupervisorRequest{
+		TopicCouncilCode:      resources.topicCouncilId,
+		TeacherSupervisorCode: *myId,
+		CreatedBy:             *myId,
+	}
+	supervisorResp, err := c.thesis.CreateTopicCouncilSupervisor(ctx, supervisorInput)
+	if err != nil {
+		return nil, err
+	}
+	resources.supervisorId = supervisorResp.GetTopicCouncilSupervisor().GetId()
+
+	// Step 9: Create enrollments for students
+	for _, student := range input.Students {
+		idStudent := fmt.Sprint(student, "_", teacher.GetTeacher().GetSemesterCode())
+		enrollmentInput := &pbThesis.CreateEnrollmentRequest{
+			TopicCouncilCode: resources.topicCouncilId,
+			StudentCode:      idStudent,
+			CreatedBy:        *myId,
+			Title:            fmt.Sprintf("Enrollment Stage 2 for %s", student),
+		}
+		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, enrollmentInput)
+		if err != nil {
+			return nil, err
+		}
+		resources.enrollmentIds = append(resources.enrollmentIds, enrollmentResp.GetEnrollment().GetId())
+	}
+
+	// All steps succeeded, disable rollback
+	shouldRollback = false
+	return convert.PbTopicCouncilToModel(topicCouncilResp.GetTopicCouncil()), nil
+}
 
 // CreateGradeDefence creates a grade defence (council member only)
 func (c *Controller) CreateGradeDefence(ctx context.Context, input model.CreateGradeDefenceInput) (*model.GradeDefence, error) {
@@ -1233,7 +1502,7 @@ func (c *Controller) UpdateGradeReview(ctx context.Context, id string, input mod
 		return nil, err
 	}
 
-	return convert2.PbGradeReviewToReviewerGradeReview(resp.GetGradeReview()), nil
+	return convert.PbGradeReviewToReviewerGradeReview(resp.GetGradeReview()), nil
 }
 
 // CompleteGradeReview marks grade review as completed
@@ -1271,7 +1540,7 @@ func (c *Controller) CompleteGradeReview(ctx context.Context, id string) (*model
 		return nil, err
 	}
 
-	return convert2.PbGradeReviewToReviewerGradeReview(resp.GetGradeReview()), nil
+	return convert.PbGradeReviewToReviewerGradeReview(resp.GetGradeReview()), nil
 }
 
 // ============================================

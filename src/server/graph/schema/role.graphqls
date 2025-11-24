@@ -10,7 +10,4 @@ type RoleSystem {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-
-    teacher: Teacher
-    semester: Semester
 }
