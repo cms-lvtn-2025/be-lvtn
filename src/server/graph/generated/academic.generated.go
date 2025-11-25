@@ -963,7 +963,7 @@ func (ec *executionContext) marshalNFaculty2ᚕᚖthailyᚋsrcᚋserverᚋgraph�
 func (ec *executionContext) marshalNFaculty2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFaculty(ctx context.Context, sel ast.SelectionSet, v *model.Faculty) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -1021,7 +1021,7 @@ func (ec *executionContext) marshalNMajor2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋ
 func (ec *executionContext) marshalNMajor2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajor(ctx context.Context, sel ast.SelectionSet, v *model.Major) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -1079,7 +1079,7 @@ func (ec *executionContext) marshalNSemester2ᚕᚖthailyᚋsrcᚋserverᚋgraph
 func (ec *executionContext) marshalNSemester2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemester(ctx context.Context, sel ast.SelectionSet, v *model.Semester) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}

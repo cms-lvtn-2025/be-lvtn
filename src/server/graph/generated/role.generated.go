@@ -450,7 +450,7 @@ func (ec *executionContext) marshalNRoleSystem2ᚕᚖthailyᚋsrcᚋserverᚋgra
 func (ec *executionContext) marshalNRoleSystem2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐRoleSystem(ctx context.Context, sel ast.SelectionSet, v *model.RoleSystem) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}

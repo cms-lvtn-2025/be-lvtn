@@ -68,6 +68,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	RbacRole func(ctx context.Context, obj any, next graphql.Resolver, role string) (res any, err error)
 }
 
 type ComplexityRoot struct {
@@ -5530,7 +5531,7 @@ input UpdateTopicInput {
 
 
     defences: [Defence!]
-    topicCouncils: [TopicCouncil!]
+    topicCouncils: [TopicCouncil!] # no for teacher suppervisror
 }
 
 type Defence {
@@ -5661,6 +5662,12 @@ input CreateDefenceInput {
     teacherCode: String!
     position: DefencePosition!
 }
+`, BuiltIn: false},
+	{Name: "../schema/directive.graphqls", Input: `# Directive for role-based access control on relationships
+# This directive enforces a specific role context for a query and its children
+# Each query subtree gets its own isolated context - no race conditions
+
+directive @rbacRole(role: String!) on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../schema/file.graphqls", Input: `type File {
     id: ID!

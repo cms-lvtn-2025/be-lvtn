@@ -3731,7 +3731,7 @@ func (ec *executionContext) marshalNStudentDefenceInfo2ᚕᚖthailyᚋsrcᚋserv
 func (ec *executionContext) marshalNStudentDefenceInfo2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentDefenceInfo(ctx context.Context, sel ast.SelectionSet, v *model.StudentDefenceInfo) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -3785,7 +3785,7 @@ func (ec *executionContext) marshalNStudentEnrollment2ᚕᚖthailyᚋsrcᚋserve
 func (ec *executionContext) marshalNStudentEnrollment2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentEnrollment(ctx context.Context, sel ast.SelectionSet, v *model.StudentEnrollment) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -3839,7 +3839,7 @@ func (ec *executionContext) marshalNStudentGradeDefence2ᚕᚖthailyᚋsrcᚋser
 func (ec *executionContext) marshalNStudentGradeDefence2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentGradeDefence(ctx context.Context, sel ast.SelectionSet, v *model.StudentGradeDefence) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -3893,7 +3893,7 @@ func (ec *executionContext) marshalNStudentTopicSupervisor2ᚕᚖthailyᚋsrcᚋ
 func (ec *executionContext) marshalNStudentTopicSupervisor2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentTopicSupervisor(ctx context.Context, sel ast.SelectionSet, v *model.StudentTopicSupervisor) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}

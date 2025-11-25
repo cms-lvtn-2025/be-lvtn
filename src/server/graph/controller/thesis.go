@@ -594,6 +594,13 @@ func (c *Controller) GetFinalById(ctx context.Context, id string) (*model.Final,
 
 // GetTopicCouncilById returns a topic council by ID
 func (c *Controller) GetTopicCouncilById(ctx context.Context, id string) (*model.TopicCouncil, error) {
+	access, err := c.GetRbacDynamicRole(ctx, []string{"council", "department", "affair"})
+	if err != nil {
+		return nil, err
+	}
+	if !access {
+		return nil, nil
+	}
 	topicCouncil, err := c.thesis.GetTopicCouncilById(ctx, id)
 	if err != nil {
 		return nil, err

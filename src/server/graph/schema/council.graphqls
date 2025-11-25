@@ -12,7 +12,7 @@ type Council {
 
 
     defences: [Defence!]
-    topicCouncils: [TopicCouncil!]
+    topicCouncils: [TopicCouncil!] # no for teacher suppervisror
 }
 
 type Defence {

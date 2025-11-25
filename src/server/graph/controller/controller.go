@@ -6,6 +6,7 @@ import (
 	"strings"
 	pb "thaily/proto/common"
 	"thaily/src/server/client"
+	"thaily/src/server/graph/directive"
 	"thaily/src/server/graph/helper"
 	"thaily/src/server/graph/model"
 
@@ -281,4 +282,10 @@ func (c *Controller) GetInfoAllRequest(ctx context.Context) (ids *[]string, seme
 	}
 	return &myIds, &mySemesters, &roleSystem, nil
 
+}
+
+// GetRbacDynamicRole checks if current context has one of the specified roles
+// Uses directive.HasRole to check role from context (set by @rbacRole directive)
+func (c *Controller) GetRbacDynamicRole(ctx context.Context, roles []string) (bool, error) {
+	return directive.HasRole(ctx, roles...), nil
 }

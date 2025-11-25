@@ -5,6 +5,7 @@ import (
 	"thaily/src/server/api"
 	"thaily/src/server/config"
 	dataloader2 "thaily/src/server/graph/dataloader"
+	"thaily/src/server/graph/directive"
 	"thaily/src/service/pkg/container"
 	"time"
 
@@ -64,10 +65,17 @@ func setupGraphQL(r *gin.Engine, c *container.Container) {
 		c.Clients.User,
 	)
 
-	// Create GraphQL handler
-	srv := handler.New(generated.NewExecutableSchema(
-		generated.Config{Resolvers: &resolver.Resolver{Ctrl: ctrl}},
-	))
+	// Create GraphQL handler with directive
+	cfg := generated.Config{
+		Resolvers: &resolver.Resolver{Ctrl: ctrl},
+		Directives: generated.DirectiveRoot{
+			RbacRole: directive.RbacRoleDirective,
+		},
+	}
+	srv := handler.New(generated.NewExecutableSchema(cfg))
+
+	// Add field middleware for RBAC propagation
+	srv.AroundFields(directive.RbacFieldMiddleware)
 
 	// Configure transports
 	srv.AddTransport(transport.Options{})

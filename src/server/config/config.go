@@ -84,7 +84,7 @@ type JWTConfig struct {
 func Load() (*Config, error) {
 	// Try multiple paths for .server.env
 	envPaths := []string{
-		"/home/thaily/code/heheheh_be/src/server/.server.env", // Current directory
+		"/home/thaily/code/lvtn/BE_main/src/server/.server.env", // Current directory
 	}
 
 	loaded := false

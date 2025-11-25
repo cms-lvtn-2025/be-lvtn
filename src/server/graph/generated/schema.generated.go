@@ -10803,7 +10803,7 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		Object: "Subscription",
 	})
 	if len(fields) != 1 {
-		ec.Errorf(ctx, "must subscribe to exactly one stream")
+		graphql.AddErrorf(ctx, "must subscribe to exactly one stream")
 		return nil
 	}
 
@@ -11046,7 +11046,7 @@ func (ec *executionContext) marshalNCouncilDefenceListResponse2thailyᚋsrcᚋse
 func (ec *executionContext) marshalNCouncilDefenceListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncilDefenceListResponse(ctx context.Context, sel ast.SelectionSet, v *model.CouncilDefenceListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11060,7 +11060,7 @@ func (ec *executionContext) marshalNCouncilListResponse2thailyᚋsrcᚋserverᚋ
 func (ec *executionContext) marshalNCouncilListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncilListResponse(ctx context.Context, sel ast.SelectionSet, v *model.CouncilListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11074,7 +11074,7 @@ func (ec *executionContext) marshalNDefenceListResponse2thailyᚋsrcᚋserverᚋ
 func (ec *executionContext) marshalNDefenceListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐDefenceListResponse(ctx context.Context, sel ast.SelectionSet, v *model.DefenceListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11098,7 +11098,7 @@ func (ec *executionContext) marshalNEnrollmentListResponse2thailyᚋsrcᚋserver
 func (ec *executionContext) marshalNEnrollmentListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐEnrollmentListResponse(ctx context.Context, sel ast.SelectionSet, v *model.EnrollmentListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11112,7 +11112,7 @@ func (ec *executionContext) marshalNFacultyListResponse2thailyᚋsrcᚋserverᚋ
 func (ec *executionContext) marshalNFacultyListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFacultyListResponse(ctx context.Context, sel ast.SelectionSet, v *model.FacultyListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11196,7 +11196,7 @@ func (ec *executionContext) marshalNGradeDefenceListResponse2thailyᚋsrcᚋserv
 func (ec *executionContext) marshalNGradeDefenceListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeDefenceListResponse(ctx context.Context, sel ast.SelectionSet, v *model.GradeDefenceListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11210,7 +11210,7 @@ func (ec *executionContext) marshalNMajorListResponse2thailyᚋsrcᚋserverᚋgr
 func (ec *executionContext) marshalNMajorListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajorListResponse(ctx context.Context, sel ast.SelectionSet, v *model.MajorListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11234,7 +11234,7 @@ func (ec *executionContext) marshalNReviewerGradeReviewListResponse2thailyᚋsrc
 func (ec *executionContext) marshalNReviewerGradeReviewListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐReviewerGradeReviewListResponse(ctx context.Context, sel ast.SelectionSet, v *model.ReviewerGradeReviewListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11316,7 +11316,7 @@ func (ec *executionContext) marshalNSemesterListResponse2thailyᚋsrcᚋserver�
 func (ec *executionContext) marshalNSemesterListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemesterListResponse(ctx context.Context, sel ast.SelectionSet, v *model.SemesterListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11330,7 +11330,7 @@ func (ec *executionContext) marshalNStudentEnrollmentListResponse2thailyᚋsrc�
 func (ec *executionContext) marshalNStudentEnrollmentListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentEnrollmentListResponse(ctx context.Context, sel ast.SelectionSet, v *model.StudentEnrollmentListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11344,7 +11344,7 @@ func (ec *executionContext) marshalNStudentListResponse2thailyᚋsrcᚋserverᚋ
 func (ec *executionContext) marshalNStudentListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentListResponse(ctx context.Context, sel ast.SelectionSet, v *model.StudentListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11358,7 +11358,7 @@ func (ec *executionContext) marshalNTeacherListResponse2thailyᚋsrcᚋserverᚋ
 func (ec *executionContext) marshalNTeacherListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTeacherListResponse(ctx context.Context, sel ast.SelectionSet, v *model.TeacherListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11375,7 +11375,7 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
@@ -11388,7 +11388,7 @@ func (ec *executionContext) marshalNTopicCouncilListResponse2thailyᚋsrcᚋserv
 func (ec *executionContext) marshalNTopicCouncilListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicCouncilListResponse(ctx context.Context, sel ast.SelectionSet, v *model.TopicCouncilListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
@@ -11402,7 +11402,7 @@ func (ec *executionContext) marshalNTopicListResponse2thailyᚋsrcᚋserverᚋgr
 func (ec *executionContext) marshalNTopicListResponse2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicListResponse(ctx context.Context, sel ast.SelectionSet, v *model.TopicListResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}

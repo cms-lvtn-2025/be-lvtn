@@ -49,6 +49,13 @@ func (c *Controller) GetDefencesByCouncilId(ctx context.Context, councilId strin
 
 // GetTopicCouncilsByCouncilId returns all topic councils for a given council
 func (c *Controller) GetTopicCouncilsByCouncilId(ctx context.Context, councilId string) ([]*model.TopicCouncil, error) {
+	access, err := c.GetRbacDynamicRole(ctx, []string{"council", "department", "affair"})
+	if err != nil {
+		return nil, err
+	}
+	if !access {
+		return nil, nil
+	}
 	newSearch := model.SearchRequestInput{
 		Pagination: c.DefaultPagination(),
 		Filters: []*model.FilterCriteriaInput{
