@@ -8,60 +8,53 @@ import (
 )
 
 // Loaders holds all dataloaders for the application
+// Schema 2: Unified types with field-level RBAC
 type Loaders struct {
-	// Academic - General
-	MajorInfoById    *DataLoader[string, *model.MajorInfo]
-	SemesterInfoById *DataLoader[string, *model.SemesterInfo]
-	SemesterById     *DataLoader[string, *model.Semester]
-	// Academic - Relationships
+	// ============================================
+	// ACADEMIC LOADERS
+	// ============================================
+	MajorInfoById       *DataLoader[string, *model.MajorInfo]
+	SemesterInfoById    *DataLoader[string, *model.SemesterInfo]
+	SemesterById        *DataLoader[string, *model.Semester]
 	MajorByFacultyId    *DataLoader[string, []*model.Major]
 	TopicByMajorId      *DataLoader[string, []*model.Topic]
 	StudentBySemesterId *DataLoader[string, []*model.Student]
 	TeacherBySemesterId *DataLoader[string, []*model.Teacher]
 	TopicBySemesterId   *DataLoader[string, []*model.Topic]
-	// Council - Student views
-	DefenceInfoByCouncilId          *DataLoader[string, []*model.StudentDefenceInfo]
-	CouncilByIdForStudent           *DataLoader[string, *model.StudentCouncil]
-	GradeDefencesInfoByEnrollmentId *DataLoader[string, []*model.StudentGradeDefence]
-	GradeDefenceCriteriaByDefenceId *DataLoader[string, []*model.GradeDefenceCriterion]
-	DefenceInfoById                 *DataLoader[string, *model.StudentDefenceInfo]
-	// Council - Teacher views
-	CouncilMemberById       *DataLoader[string, *model.CouncilMemberCouncil]
-	GradeDefenceByDefenceId *DataLoader[string, []*model.GradeDefence]
-	CouncilDefenceById      *DataLoader[string, *model.CouncilDefence]
-	// Council - General
-	CouncilByID                *DataLoader[string, *model.Council]
-	DefenceById                *DataLoader[string, *model.Defence]
-	DefenceByCouncilId         *DataLoader[string, []*model.Defence]
-	TopicCouncilByCouncilId    *DataLoader[string, []*model.TopicCouncil]
-	GradeDefenceByEnrollmentId *DataLoader[string, []*model.GradeDefence]
-	// User
-	TeacherInfoById       *DataLoader[string, *model.StudentTeacherInfo]
+
+	// ============================================
+	// USER LOADERS
+	// ============================================
+	TeacherInfoById       *DataLoader[string, *model.TeacherInfo]
 	TeacherById           *DataLoader[string, *model.Teacher]
 	StudentById           *DataLoader[string, *model.Student]
 	EnrollmentByStudentId *DataLoader[string, []*model.Enrollment]
 	RolesByTeacherId      *DataLoader[string, []*model.RoleSystem]
-	// Thesis - General
-	TopicCouncilInfoById       *DataLoader[string, *model.StudentTopicCouncil]
-	MidtermByID                *DataLoader[string, *model.Midterm]
-	FinalByID                  *DataLoader[string, *model.Final]
-	GradeViewById              *DataLoader[string, *model.GradeReview]
-	TopicByID                  *DataLoader[string, *model.Topic]
-	TopicForStudentByID        *DataLoader[string, *model.StudentTopic]
-	SupervisorByTopicCouncilId *DataLoader[string, []*model.StudentTopicSupervisor]
-	EnrollmentById             *DataLoader[string, *model.Enrollment]
-	TopicCouncilById           *DataLoader[string, *model.TopicCouncil]
-	// Thesis - Relationships
-	FilesByTopicId              *DataLoader[string, []*model.File]
+
+	// ============================================
+	// COUNCIL LOADERS - Unified types
+	// ============================================
+	CouncilByID                     *DataLoader[string, *model.Council]
+	DefenceById                     *DataLoader[string, *model.Defence]
+	DefenceByCouncilId              *DataLoader[string, []*model.Defence]
+	GradeDefenceByDefenceId         *DataLoader[string, []*model.GradeDefence]
+	GradeDefenceByEnrollmentId      *DataLoader[string, []*model.GradeDefence]
+	GradeDefenceCriteriaByDefenceId *DataLoader[string, []*model.GradeDefenceCriterion]
+
+	// ============================================
+	// THESIS LOADERS - Unified types
+	// ============================================
+	TopicByID                   *DataLoader[string, *model.Topic]
+	TopicCouncilById            *DataLoader[string, *model.TopicCouncil]
 	TopicCouncilByTopicId       *DataLoader[string, []*model.TopicCouncil]
+	TopicCouncilByCouncilId     *DataLoader[string, []*model.TopicCouncil]
+	EnrollmentById              *DataLoader[string, *model.Enrollment]
 	EnrollmentByTopicCouncilId  *DataLoader[string, []*model.Enrollment]
+	MidtermByID                 *DataLoader[string, *model.Midterm]
+	FinalByID                   *DataLoader[string, *model.Final]
+	GradeViewById               *DataLoader[string, *model.GradeReview]
 	SupervisorsByTopicCouncilId *DataLoader[string, []*model.TopicCouncilSupervisor]
-	// Teacher - Thesis
-	CouncilTopicCouncilById    *DataLoader[string, *model.CouncilTopicCouncil]
-	ReviewerTopicCouncilById   *DataLoader[string, *model.ReviewerTopicCouncil]
-	SupervisorTopicCouncilById *DataLoader[string, *model.SupervisorTopicCouncil]
-	ReviewerTopicById          *DataLoader[string, *model.ReviewerTopic]
-	SupervisorTopicById        *DataLoader[string, *model.SupervisorTopic]
+	FilesByTopicId              *DataLoader[string, []*model.File]
 }
 
 // NewLoaders creates a new Loaders instance with all dataloaders
@@ -81,7 +74,9 @@ func NewLoaders(
 	}
 
 	return &Loaders{
-		// Academic - General
+		// ============================================
+		// ACADEMIC LOADERS
+		// ============================================
 		MajorInfoById: NewDataLoader(
 			createMajorInfoBatchFunc(academicClient),
 			defaultConfig,
@@ -94,7 +89,6 @@ func NewLoaders(
 			createSemesterByIdBatchFunc(academicClient),
 			defaultConfig,
 		),
-		// Academic - Relationships
 		MajorByFacultyId: NewDataLoader(
 			createMajorsByFacultyIdBatchFunc(academicClient),
 			defaultConfig,
@@ -115,62 +109,10 @@ func NewLoaders(
 			createTopicsBySemesterIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
-		// Council - Student views
-		DefenceInfoByCouncilId: NewDataLoader(
-			createDefenceByCouncilIDBatchFunc(councilClient),
-			defaultConfig,
-		),
-		DefenceInfoById: NewDataLoader(
-			createDefenceInfoByIdBatchFunc(councilClient),
-			defaultConfig,
-		),
-		CouncilByIdForStudent: NewDataLoader(
-			createCouncilForStudentBatchFunc(councilClient),
-			defaultConfig,
-		),
-		GradeDefencesInfoByEnrollmentId: NewDataLoader(
-			createGradeDefencesForStudentBatchFunc(councilClient),
-			defaultConfig,
-		),
-		GradeDefenceCriteriaByDefenceId: NewDataLoader(
-			createGradeDefenceCriteriaForByDefenceIdBatchFunc(councilClient),
-			defaultConfig,
-		),
-		// Council - Teacher views
-		CouncilMemberById: NewDataLoader(
-			createCouncilMemberCouncilBatchFunc(councilClient),
-			defaultConfig,
-		),
-		GradeDefenceByDefenceId: NewDataLoader(
-			createGradeDefenceByDefenceIdBatchFunc(councilClient),
-			defaultConfig,
-		),
-		CouncilDefenceById: NewDataLoader(
-			createCouncilDefenceBatchFunc(councilClient),
-			defaultConfig,
-		),
-		// Council - General
-		CouncilByID: NewDataLoader(
-			createCouncilByIdBatchFunc(councilClient),
-			defaultConfig,
-		),
-		DefenceById: NewDataLoader(
-			createDefenceByIdBatchFunc(councilClient),
-			defaultConfig,
-		),
-		DefenceByCouncilId: NewDataLoader(
-			createDefencesByCouncilIdBatchFunc(councilClient),
-			defaultConfig,
-		),
-		TopicCouncilByCouncilId: NewDataLoader(
-			createTopicCouncilsByCouncilIdBatchFunc(thesisClient),
-			defaultConfig,
-		),
-		GradeDefenceByEnrollmentId: NewDataLoader(
-			createGradeDefencesByEnrollmentIdBatchFunc(councilClient),
-			defaultConfig,
-		),
-		// User
+
+		// ============================================
+		// USER LOADERS
+		// ============================================
 		TeacherInfoById: NewDataLoader(
 			createTeacherInfoBatchFunc(userClient),
 			defaultConfig,
@@ -191,79 +133,80 @@ func NewLoaders(
 			createRolesByTeacherIdBatchFunc(roleClient),
 			defaultConfig,
 		),
-		// Thesis - General
-		TopicCouncilInfoById: NewDataLoader(
-			createStudentTopicCouncilInfoBatchFunc(thesisClient),
+
+		// ============================================
+		// COUNCIL LOADERS
+		// ============================================
+		CouncilByID: NewDataLoader(
+			createCouncilByIdBatchFunc(councilClient),
 			defaultConfig,
 		),
-		TopicForStudentByID: NewDataLoader(
-			createTopicForStudentBatchFunc(thesisClient),
+		DefenceById: NewDataLoader(
+			createDefenceByIdBatchFunc(councilClient),
 			defaultConfig,
 		),
-		MidtermByID: NewDataLoader(
-			createMidtermBatchFunc(thesisClient),
+		DefenceByCouncilId: NewDataLoader(
+			createDefencesByCouncilIdBatchFunc(councilClient),
 			defaultConfig,
 		),
-		SupervisorByTopicCouncilId: NewDataLoader(
-			createSupervisorForStudentBatchFunc(thesisClient),
+		GradeDefenceByDefenceId: NewDataLoader(
+			createGradeDefenceByDefenceIdBatchFunc(councilClient),
 			defaultConfig,
 		),
-		GradeViewById: NewDataLoader(
-			createGradeViewBatchFunc(thesisClient),
+		GradeDefenceByEnrollmentId: NewDataLoader(
+			createGradeDefencesByEnrollmentIdBatchFunc(councilClient),
 			defaultConfig,
 		),
-		FinalByID: NewDataLoader(
-			createFinalBatchFunc(thesisClient),
+		GradeDefenceCriteriaByDefenceId: NewDataLoader(
+			createGradeDefenceCriteriaByDefenceIdBatchFunc(councilClient),
 			defaultConfig,
 		),
+
+		// ============================================
+		// THESIS LOADERS
+		// ============================================
 		TopicByID: NewDataLoader(
 			createTopicBatchFunc(thesisClient),
-			defaultConfig,
-		),
-		EnrollmentById: NewDataLoader(
-			createEnrollmentByIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
 		TopicCouncilById: NewDataLoader(
 			createTopicCouncilByIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
-		// Thesis - Relationships
-		FilesByTopicId: NewDataLoader(
-			createFilesByTopicIdBatchFunc(fileClient),
-			defaultConfig,
-		),
 		TopicCouncilByTopicId: NewDataLoader(
 			createTopicCouncilsByTopicIdBatchFunc(thesisClient),
+			defaultConfig,
+		),
+		TopicCouncilByCouncilId: NewDataLoader(
+			createTopicCouncilsByCouncilIdBatchFunc(thesisClient),
+			defaultConfig,
+		),
+		EnrollmentById: NewDataLoader(
+			createEnrollmentByIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
 		EnrollmentByTopicCouncilId: NewDataLoader(
 			createEnrollmentsByTopicCouncilIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
+		MidtermByID: NewDataLoader(
+			createMidtermBatchFunc(thesisClient),
+			defaultConfig,
+		),
+		FinalByID: NewDataLoader(
+			createFinalBatchFunc(thesisClient),
+			defaultConfig,
+		),
+		GradeViewById: NewDataLoader(
+			createGradeViewBatchFunc(thesisClient),
+			defaultConfig,
+		),
 		SupervisorsByTopicCouncilId: NewDataLoader(
 			createSupervisorsByTopicCouncilIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
-		// Teacher - Thesis
-		CouncilTopicCouncilById: NewDataLoader(
-			createCouncilTopicCouncilBatchFunc(thesisClient),
-			defaultConfig,
-		),
-		ReviewerTopicCouncilById: NewDataLoader(
-			createReviewerTopicCouncilBatchFunc(thesisClient),
-			defaultConfig,
-		),
-		SupervisorTopicCouncilById: NewDataLoader(
-			createSupervisorTopicCouncilBatchFunc(thesisClient),
-			defaultConfig,
-		),
-		ReviewerTopicById: NewDataLoader(
-			createReviewerTopicBatchFunc(thesisClient),
-			defaultConfig,
-		),
-		SupervisorTopicById: NewDataLoader(
-			createSupervisorTopicBatchFunc(thesisClient),
+		FilesByTopicId: NewDataLoader(
+			createFilesByTopicIdBatchFunc(fileClient),
 			defaultConfig,
 		),
 	}

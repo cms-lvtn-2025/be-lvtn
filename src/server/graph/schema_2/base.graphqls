@@ -1,0 +1,145 @@
+# ============================================
+# BASE SCHEMA - Scalars, Enums, Directives
+# ============================================
+
+scalar Time
+
+# Directive for role-based access control
+directive @rbacRole(role: String!) on FIELD_DEFINITION
+
+# ============================================
+# ENUMS
+# ============================================
+
+"""Gioi tinh"""
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+"""Trang thai file"""
+enum FileStatus {
+    FILE_PENDING
+    APPROVED
+    REJECTED
+}
+
+"""Bang dinh kem file"""
+enum FileTable {
+    TOPIC
+    MIDTERM
+    FINAL
+    ORDER
+}
+
+"""
+Vai tro STATIC trong he thong
+Role dong (Supervisor, Reviewer, Council Member) duoc xac dinh qua:
+- Supervisor: bang Topic_council_supervisor
+- Reviewer: bang Grade_review
+- Council Member: bang Defence
+"""
+enum RoleSystemRole {
+    ACADEMIC_AFFAIRS_STAFF
+    DEPARTMENT_LECTURER
+    TEACHER
+}
+
+"""Trang thai giua ky"""
+enum MidtermStatus {
+    NOT_SUBMITTED
+    SUBMITTED
+    PASS
+    FAIL
+}
+
+"""Trang thai de tai"""
+enum TopicStatus {
+    SUBMIT
+    TOPIC_PENDING
+    APPROVED_1
+    APPROVED_2
+    IN_PROGRESS
+    TOPIC_COMPLETED
+    REJECTED
+}
+
+"""Giai doan de tai"""
+enum TopicStage {
+    STAGE_DACN
+    STAGE_LVTN
+}
+
+"""Vai tro trong hoi dong bao ve"""
+enum DefencePosition {
+    PRESIDENT
+    SECRETARY
+    REVIEWER
+    MEMBER
+}
+
+"""Trang thai do an cuoi cung"""
+enum FinalStatus {
+    PENDING
+    PASSED
+    FAILED
+    COMPLETED
+}
+
+enum Role {
+    TEACHER
+    STUDENT
+}
+
+enum FilterOperator {
+    EQUAL
+    NOT_EQUAL
+    GREATER_THAN
+    GREATER_THAN_EQUAL
+    LESS_THAN
+    LESS_THAN_EQUAL
+    LIKE
+    IN
+    NOT_IN
+    IS_NULL
+    IS_NOT_NULL
+    BETWEEN
+}
+
+enum LogicalCondition {
+    AND
+    OR
+}
+
+# ============================================
+# COMMON INPUT TYPES
+# ============================================
+
+input FilterConditionInput {
+    field: String!
+    operator: FilterOperator!
+    values: [String!]
+}
+
+input FilterGroupInput {
+    logic: LogicalCondition = AND
+    filters: [FilterCriteriaInput!]!
+}
+
+input FilterCriteriaInput {
+    condition: FilterConditionInput
+    group: FilterGroupInput
+}
+
+input PaginationInput {
+    page: Int = 1
+    pageSize: Int = 20
+    sortBy: String
+    descending: Boolean = false
+}
+
+input SearchRequestInput {
+    pagination: PaginationInput
+    filters: [FilterCriteriaInput!]
+}

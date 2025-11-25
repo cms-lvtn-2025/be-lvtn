@@ -1,0 +1,438 @@
+# ============================================
+# UNIFIED TYPES - Chi 1 type cho moi entity
+# RBAC duoc check o field-level resolver
+# Neu khong co quyen -> return null
+# ============================================
+
+# ============================================
+# INFO TYPES - Restricted types de tranh circular query
+# ============================================
+
+"""
+Major info - Restricted type de tranh circular query
+Khong co relationships (topics, faculty) de tranh vong lap
+"""
+type MajorInfo {
+    id: ID!
+    title: String!
+    facultyCode: String!
+}
+
+"""
+Semester info - Restricted type de tranh circular query
+Khong co relationships (students, teachers, topics) de tranh vong lap
+"""
+type SemesterInfo {
+    id: ID!
+    title: String!
+}
+
+"""
+Teacher info - Restricted type cho student view
+Khong co field 'roles' vi sensitive
+"""
+type TeacherInfo {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+}
+
+# ============================================
+# BASE ENTITY TYPES
+# ============================================
+
+type Student {
+    id: ID!
+    email: String!
+    phone: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    classCode: String
+    semesterCode: String!
+    mssv: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type Teacher {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender
+    majorCode: String!
+    semesterCode: String!
+    msgv: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations - RBAC: null neu la student
+    roles: [RoleSystem!]
+}
+
+type Faculty {
+    id: ID!
+    title: String!
+    ms: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations
+    majors: [Major!]!
+}
+
+type Major {
+    id: ID!
+    title: String!
+    facultyCode: String!
+    ms: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type Semester {
+    id: ID!
+    title: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type RoleSystem {
+    id: ID!
+    title: String!
+    teacherCode: String
+    role: RoleSystemRole!
+    semesterCode: String!
+    activate: Boolean!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type File {
+    id: ID!
+    title: String!
+    file: String
+    status: FileStatus!
+    table: FileTable!
+    option: String
+    tableId: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+# ============================================
+# THESIS ENTITY TYPES - Unified (no duplicates)
+# ============================================
+
+"""
+Topic - Unified type
+RBAC check o field resolver:
+- topicCouncils: null neu la student (student chi xem duoc cua minh qua enrollment)
+"""
+type Topic {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    status: TopicStatus!
+    percentStage1: Int
+    percentStage2: Int
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations - RBAC controlled
+    major: MajorInfo           # all
+    semester: SemesterInfo     # all
+    files: [File!]             # all
+    topicCouncils: [TopicCouncil!]  # RBAC: null neu la student
+}
+
+"""
+TopicCouncil - Unified type
+RBAC check o field resolver:
+- enrollments: null neu la student (student khong xem duoc enrollment nguoi khac)
+"""
+type TopicCouncil {
+    id: ID!
+    title: String!
+    stage: TopicStage!
+    topicCode: String!
+    councilCode: String
+    timeStart: Time!
+    timeEnd: Time!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations - RBAC controlled
+    topic: Topic               # all
+    council: Council           # all (student chi xem basic info)
+    supervisors: [TopicCouncilSupervisor!]  # all
+    enrollments: [Enrollment!] # RBAC: null neu la student
+}
+
+type TopicCouncilSupervisor {
+    id: ID!
+    teacherSupervisorCode: String!
+    topicCouncilCode: String!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations - RBAC controlled
+    teacher: Teacher           # all (student se nhan TeacherInfo thay vi Teacher day du)
+}
+
+"""
+Enrollment - Unified type (thay the StudentEnrollment, SupervisorEnrollment, etc.)
+RBAC check o field resolver:
+- student: null neu la student role (student khong xem info student khac)
+- gradeDefences: check role
+"""
+type Enrollment {
+    id: ID!
+    title: String!
+    studentCode: String!
+    topicCouncilCode: String!
+    finalCode: String
+    gradeReviewCode: String
+    midtermCode: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations - RBAC controlled
+    student: Student           # RBAC: null neu la student role
+    topicCouncil: TopicCouncil # all
+    midterm: Midterm           # RBAC: supervisor, department, affair, student (chi cua minh)
+    final: Final               # RBAC: supervisor, department, affair, student (chi cua minh)
+    gradeReview: GradeReview   # all
+    gradeDefences: [GradeDefence!]  # RBAC: supervisor, department, student, affair
+}
+
+type Midterm {
+    id: ID!
+    title: String!
+    grade: Int
+    status: MidtermStatus!
+    feedback: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type Final {
+    id: ID!
+    title: String!
+    supervisorGrade: Int
+    departmentGrade: Int
+    finalGrade: Int
+    status: FinalStatus!
+    notes: String
+    completionDate: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+type GradeReview {
+    id: ID!
+    title: String!
+    reviewGrade: Int
+    teacherCode: String!
+    status: FinalStatus!
+    notes: String
+    completionDate: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations
+    teacher: TeacherInfo       # all (dung TeacherInfo de an roles)
+    enrollment: Enrollment     # RBAC: reviewer only
+}
+
+"""
+Council - Unified type
+RBAC check o field resolver:
+- topicCouncils: null neu la student
+"""
+type Council {
+    id: ID!
+    title: String!
+    majorCode: String!
+    semesterCode: String!
+    timeStart: Time
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations - RBAC controlled
+    major: MajorInfo           # all
+    semester: SemesterInfo     # all
+    defences: [Defence!]       # RBAC: council, affair, department
+    topicCouncils: [TopicCouncil!]  # RBAC: null neu la student
+}
+
+"""
+Defence - Unified type (thay the CouncilDefence)
+"""
+type Defence {
+    id: ID!
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations - RBAC controlled
+    council: Council           # RBAC: council, department, affair
+    teacher: Teacher           # RBAC: council, department, affair
+    gradeDefences: [GradeDefence!]  # RBAC: council, department, affair
+}
+
+type GradeDefence {
+    id: ID!
+    defenceCode: String!
+    enrollmentCode: String!
+    note: String
+    totalScore: Int
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+
+    # Relations
+    defence: Defence           # all
+    enrollment: Enrollment     # RBAC controlled
+    criteria: [GradeDefenceCriterion!]  # all
+}
+
+type GradeDefenceCriterion {
+    id: ID!
+    gradeDefenceCode: String!
+    name: String
+    score: String
+    maxScore: String
+    createdAt: Time
+    updatedAt: Time
+    createdBy: String
+    updatedBy: String
+}
+
+# ============================================
+# LIST RESPONSE TYPES
+# ============================================
+
+type StudentListResponse {
+    total: Int!
+    data: [Student!]!
+}
+
+type TeacherListResponse {
+    total: Int!
+    data: [Teacher!]!
+}
+
+type EnrollmentListResponse {
+    total: Int!
+    data: [Enrollment!]!
+}
+
+type TopicListResponse {
+    total: Int!
+    data: [Topic!]!
+}
+
+type TopicCouncilListResponse {
+    total: Int!
+    data: [TopicCouncil!]!
+}
+
+type FileListResponse {
+    total: Int!
+    data: [File!]!
+}
+
+type RoleSystemListResponse {
+    total: Int!
+    data: [RoleSystem!]!
+}
+
+type MajorListResponse {
+    total: Int!
+    data: [Major!]!
+}
+
+type FacultyListResponse {
+    total: Int!
+    data: [Faculty!]!
+}
+
+type SemesterListResponse {
+    total: Int!
+    data: [Semester!]!
+}
+
+type CouncilListResponse {
+    total: Int!
+    data: [Council!]!
+}
+
+type DefenceListResponse {
+    total: Int!
+    data: [Defence!]!
+}
+
+type GradeDefenceListResponse {
+    total: Int!
+    data: [GradeDefence!]!
+}
+
+type GradeDefenceCriterionListResponse {
+    total: Int!
+    data: [GradeDefenceCriterion!]!
+}
+
+type GradeReviewListResponse {
+    total: Int!
+    data: [GradeReview!]!
+}
+
+type MidtermListResponse {
+    total: Int!
+    data: [Midterm!]!
+}
+
+type FinalListResponse {
+    total: Int!
+    data: [Final!]!
+}

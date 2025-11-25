@@ -1,0 +1,199 @@
+# ============================================
+# INPUT TYPES
+# ============================================
+
+# ============================================
+# Student Inputs
+# ============================================
+
+input UploadFileInput {
+    title: String!
+    file: String!
+    tableId: ID!
+    option: String
+}
+
+# ============================================
+# Teacher Inputs
+# ============================================
+
+input UpdateTeacherProfileInput {
+    email: String
+    username: String
+}
+
+# --- Supervisor Inputs ---
+
+input CreateTopicInput {
+    title: String!
+    titleEn: String!
+    description: String!
+    students: [String!]!
+    stage: TopicStage!
+    curriculum: String
+    timeStart: Time!
+    timeEnd: Time!
+}
+
+input CreateTopicCouncilInput {
+    topicCode: String!
+    timeStart: Time!
+    timeEnd: Time!
+    students: [String!]!
+}
+
+input GradeMidtermInput {
+    grade: Int!
+    status: MidtermStatus!
+    feedback: String
+}
+
+input GradeFinalInput {
+    supervisorGrade: Int!
+    status: FinalStatus!
+    notes: String
+}
+
+# --- Council Member Inputs ---
+
+input CreateGradeDefenceInput {
+    defenceCode: String!
+    enrollmentCode: String!
+    note: String
+    totalScore: Int
+}
+
+input UpdateGradeDefenceInput {
+    note: String
+    totalScore: Int
+}
+
+input CreateGradeDefenceCriterionInput {
+    gradeDefenceCode: String!
+    name: String!
+    score: String!
+    maxScore: String!
+}
+
+input UpdateGradeDefenceCriterionInput {
+    name: String
+    score: String
+    maxScore: String
+}
+
+# --- Reviewer Inputs ---
+
+input UpdateGradeReviewInput {
+    reviewGrade: Int
+    status: FinalStatus
+    notes: String
+}
+
+# ============================================
+# Academic Affairs Inputs
+# ============================================
+
+input CreateTeacherInput {
+    id: ID!
+    email: String!
+    username: String!
+    gender: Gender!
+    majorCode: String!
+    semesterCode: String!
+    msgv: String!
+    roles: [RoleSystemRole]!
+}
+
+input UpdateTeacherInput {
+    email: String
+    username: String
+    gender: Gender
+    majorCode: String
+    semesterCode: String
+    msgv: String
+    roles: [RoleSystemRole]
+}
+
+input CreateStudentInput {
+    id: ID!
+    email: String!
+    phone: String!
+    username: String!
+    gender: Gender!
+    majorCode: String!
+    classCode: String
+    semesterCode: String!
+    mssv: String!
+}
+
+input UpdateStudentInput {
+    email: String
+    phone: String
+    username: String
+    gender: Gender
+    majorCode: String
+    classCode: String
+    semesterCode: String
+    mssv: String
+}
+
+input CreateSemesterInput {
+    id: ID!
+    title: String!
+}
+
+input UpdateSemesterInput {
+    title: String
+}
+
+input CreateMajorInput {
+    id: ID!
+    title: String!
+    facultyCode: String!
+    ms: String!
+}
+
+input UpdateMajorInput {
+    title: String
+    facultyCode: String
+    ms: String
+}
+
+input CreateFacultyInput {
+    id: ID!
+    title: String!
+    ms: String!
+}
+
+input UpdateFacultyInput {
+    title: String
+    ms: String
+}
+
+input UpdateTopicInput {
+    title: String
+    status: TopicStatus
+    percentStage1: Int
+    percentStage2: Int
+}
+
+# ============================================
+# Department Lecturer Inputs
+# ============================================
+
+input CreateCouncilInput {
+    title: String!
+    majorCode: String!
+}
+
+input UpdateCouncilInput {
+    title: String
+    timeStart: Time
+}
+
+input CreateDefenceInput {
+    title: String!
+    councilCode: String!
+    teacherCode: String!
+    position: DefencePosition!
+}

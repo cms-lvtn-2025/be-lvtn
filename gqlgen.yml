@@ -1,130 +1,27 @@
+# ============================================
+# GQLGEN CONFIGURATION - Schema 2 (New)
+# Nested Query + Unified Types + Field-level RBAC
+# ============================================
 
-# Where are all the schema files located? globs are supported eg  src/server/**/*.graphqls
 schema:
-  - src/server/graph/schema/*.graphqls
+  - src/server/graph/schema_2/*.graphqls
 
-# Where should the generated server code go?
 exec:
   package: generated
-  layout: follow-schema # Only other option is "follow-schema," ie multi-file.
-
+  layout: follow-schema
   dir: src/server/graph/generated
   filename_template: "{name}.generated.go"
 
-  # Only for follow-schema layout:
-  # dir: graph
-  # filename_template: "{name}.generated.go"
-
-  # Optional: Maximum number of goroutines in concurrency to use per child resolvers(default: unlimited)
-  # worker_limit: 1000
-
-# Uncomment to enable federation
-# federation:
-#   filename: graph/federation.go
-#   package: graph
-#   version: 2
-#   options:
-#     computed_requires: true
-
-# Where should any generated models go?
 model:
   filename: src/server/graph/model/models_gen.go
   package: model
 
-  # Optional: Pass in a path to a new gotpl template to use for generating the models
-  # model_template: [your/path/model.gotpl]
-
-# Where should the resolver implementations go?
 resolver:
   package: resolver
-  layout: follow-schema # Only other option is "single-file."
-
-  # Only for single-file layout:
-  # filename: graph/resolver.go
-
-  # Only for follow-schema layout:
+  layout: follow-schema
   dir: src/server/graph/resolver
   filename_template: "{name}.resolvers.go"
 
-  # Optional: turn on to not generate template comments above resolvers
-  # omit_template_comment: false
-  # Optional: Pass in a path to a new gotpl template to use for generating resolvers
-  # resolver_template: [your/path/resolver.gotpl]
-  # Optional: turn on to avoid rewriting existing resolver(s) when generating
-  # preserve_resolver: false
-
-# Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
-# struct_tag: json
-
-# Optional: turn on to use []Thing instead of []*Thing
-# omit_slice_element_pointers: false
-
-# Optional: turn on to omit Is<Name>() methods to interface and unions
-# omit_interface_checks: true
-
-# Optional: turn on to skip generation of ComplexityRoot struct content and Complexity function
-# omit_complexity: false
-
-# Optional: turn on to not generate any file notice comments in generated files
-# omit_gqlgen_file_notice: false
-
-# Optional: turn on to exclude the gqlgen version in the generated file notice. No effect if `omit_gqlgen_file_notice` is true.
-# omit_gqlgen_version_in_file_notice: false
-
-# Optional: turn on to exclude root models such as Query and Mutation from the generated models file.
-# omit_root_models: false
-
-# Optional: turn on to exclude resolver fields from the generated models file.
-# omit_resolver_fields: false
-
-# Optional: turn off to make struct-type struct fields not use pointers
-# e.g. type Thing struct { FieldA OtherThing } instead of { FieldA *OtherThing }
-# struct_fields_always_pointers: true
-
-# Optional: turn off to make resolvers return values instead of pointers for structs
-# resolvers_always_return_pointers: true
-
-# Optional: turn on to return pointers instead of values in unmarshalInput
-# return_pointers_in_unmarshalinput: false
-
-# Optional: wrap nullable input fields with Omittable
-# nullable_input_omittable: true
-
-# Optional: set to speed up generation time by not performing a final validation pass.
-# skip_validation: true
-
-# Optional: set to skip running `go mod tidy` when generating server code
-# skip_mod_tidy: true
-
-# Optional: if this is set to true, argument directives that
-# decorate a field with a null value will still be called.
-#
-# This enables argumment directives to not just mutate
-# argument values but to set them even if they're null.
-# call_argument_directives_with_null: true
-
-# Optional: set build tags that will be used to load packages
-# go_build_tags:
-#  - private
-#  - enterprise
-
-# Optional: set to modify the initialisms regarded for Go names
-# go_initialisms:
-#   replace_defaults: false # if true, the default initialisms will get dropped in favor of the new ones instead of being added
-#   initialisms: # List of initialisms to for Go names
-#     - 'CC'
-#     - 'BCC'
-
-# gqlgen will search for any type names in the schema in these go packages
-# if they match it will use them, otherwise it will generate them.
-# autobind:
-#  - "github.com/ThaiLyhcmut/graph/model"
-
-# This section declares type mapping between the GraphQL and go type systems
-#
-# The first line in each type will be used as defaults for resolver arguments and
-# modelgen, the others will be allowed when binding to fields. Configure them to
-# your liking
 models:
   ID:
     model:
@@ -132,21 +29,7 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
-  # gqlgen provides a default GraphQL UUID convenience wrapper for github.com/google/uuid 
-  # but you can override this to provide your own GraphQL UUID implementation
-  UUID:
-    model:
-      - github.com/99designs/gqlgen/graphql.UUID
 
-  # The GraphQL spec explicitly states that the Int type is a signed 32-bit
-  # integer. Using Go int or int64 to represent it can lead to unexpected
-  # behavior, and some GraphQL tools like Apollo Router will fail when
-  # communicating numbers that overflow 32-bits.
-  #
-  # You may choose to use the custom, built-in Int64 scalar to represent 64-bit
-  # integers, or ignore the spec and bind Int to graphql.Int / graphql.Int64
-  # (the default behavior of gqlgen). This is fine in simple use cases when you
-  # do not need to worry about interoperability and only expect small numbers.
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int32
@@ -155,351 +38,374 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
+
   Time:
     model:
       - github.com/99designs/gqlgen/graphql.Time
 
-  # === CORE TYPES ===
+  # ============================================
+  # ROOT QUERY & MUTATION - Entry Points
+  # ============================================
+  Query:
+    fields:
+      student:
+        resolver: true
+      teacher:
+        resolver: true
+      affair:
+        resolver: true
+      department:
+        resolver: true
+
+  Mutation:
+    fields:
+      student:
+        resolver: true
+      teacher:
+        resolver: true
+      affair:
+        resolver: true
+      department:
+        resolver: true
+
+  # ============================================
+  # QUERY NAMESPACES
+  # ============================================
+  StudentQuery:
+    fields:
+      me:
+        resolver: true
+      enrollments:
+        resolver: true
+      semesters:
+        resolver: true
+
+  TeacherQuery:
+    fields:
+      me:
+        resolver: true
+      supervisor:
+        resolver: true
+      council:
+        resolver: true
+      reviewer:
+        resolver: true
+
+  SupervisorQuery:
+    fields:
+      topicCouncils:
+        resolver: true
+      topicCouncilDetail:
+        resolver: true
+
+  CouncilMemberQuery:
+    fields:
+      defences:
+        resolver: true
+      defenceDetail:
+        resolver: true
+
+  ReviewerQuery:
+    fields:
+      gradeReviews:
+        resolver: true
+      gradeReviewDetail:
+        resolver: true
+
+  AffairQuery:
+    fields:
+      teachers:
+        resolver: true
+      teacherDetail:
+        resolver: true
+      students:
+        resolver: true
+      studentDetail:
+        resolver: true
+      semesters:
+        resolver: true
+      semesterDetail:
+        resolver: true
+      majors:
+        resolver: true
+      majorDetail:
+        resolver: true
+      faculties:
+        resolver: true
+      facultyDetail:
+        resolver: true
+      topics:
+        resolver: true
+      topicDetail:
+        resolver: true
+      enrollments:
+        resolver: true
+      enrollmentDetail:
+        resolver: true
+      councils:
+        resolver: true
+      councilDetail:
+        resolver: true
+      defencesByCouncil:
+        resolver: true
+      gradeDefences:
+        resolver: true
+
+  DepartmentQuery:
+    fields:
+      teachers:
+        resolver: true
+      teacherDetail:
+        resolver: true
+      students:
+        resolver: true
+      studentDetail:
+        resolver: true
+      semesters:
+        resolver: true
+      majors:
+        resolver: true
+      faculties:
+        resolver: true
+      topics:
+        resolver: true
+      topicDetail:
+        resolver: true
+      enrollments:
+        resolver: true
+      enrollmentDetail:
+        resolver: true
+      councils:
+        resolver: true
+      councilDetail:
+        resolver: true
+      defencesByCouncil:
+        resolver: true
+      gradeDefences:
+        resolver: true
+
+  # ============================================
+  # MUTATION NAMESPACES
+  # ============================================
+  StudentMutation:
+    fields:
+      uploadMidtermFile:
+        resolver: true
+      uploadFinalFile:
+        resolver: true
+
+  TeacherMutation:
+    fields:
+      updateProfile:
+        resolver: true
+      supervisor:
+        resolver: true
+      council:
+        resolver: true
+      reviewer:
+        resolver: true
+
+  SupervisorMutation:
+    fields:
+      createTopic:
+        resolver: true
+      createTopicCouncil:
+        resolver: true
+      gradeMidterm:
+        resolver: true
+      feedbackMidterm:
+        resolver: true
+      gradeFinal:
+        resolver: true
+      feedbackFinal:
+        resolver: true
+      approveMidtermFile:
+        resolver: true
+      rejectMidtermFile:
+        resolver: true
+      approveFinalFile:
+        resolver: true
+      rejectFinalFile:
+        resolver: true
+
+  CouncilMemberMutation:
+    fields:
+      createGradeDefence:
+        resolver: true
+      updateGradeDefence:
+        resolver: true
+      addCriterion:
+        resolver: true
+      updateCriterion:
+        resolver: true
+      deleteCriterion:
+        resolver: true
+
+  ReviewerMutation:
+    fields:
+      updateGradeReview:
+        resolver: true
+      completeGradeReview:
+        resolver: true
+
+  AffairMutation:
+    fields:
+      createTeacher:
+        resolver: true
+      updateTeacher:
+        resolver: true
+      deleteTeacher:
+        resolver: true
+      createStudent:
+        resolver: true
+      updateStudent:
+        resolver: true
+      deleteStudent:
+        resolver: true
+      createSemester:
+        resolver: true
+      updateSemester:
+        resolver: true
+      deleteSemester:
+        resolver: true
+      createMajor:
+        resolver: true
+      updateMajor:
+        resolver: true
+      deleteMajor:
+        resolver: true
+      createFaculty:
+        resolver: true
+      updateFaculty:
+        resolver: true
+      deleteFaculty:
+        resolver: true
+      approveCouncil:
+        resolver: true
+      updateCouncil:
+        resolver: true
+      deleteCouncil:
+        resolver: true
+      approveTopic:
+        resolver: true
+      rejectTopic:
+        resolver: true
+      updateTopic:
+        resolver: true
+      deleteTopic:
+        resolver: true
+
+  DepartmentMutation:
+    fields:
+      createCouncil:
+        resolver: true
+      updateCouncil:
+        resolver: true
+      addDefence:
+        resolver: true
+      removeDefence:
+        resolver: true
+      approveTopicStage1:
+        resolver: true
+      rejectTopicStage1:
+        resolver: true
+      assignTopicToCouncil:
+        resolver: true
+      removeTopicFromCouncil:
+        resolver: true
+
+  # ============================================
+  # ENTITY TYPES - Field-level RBAC
+  # ============================================
   Student:
     fields:
-      # KHÔNG có major - tránh circular query: Student → Major → Topics → ... → Student
-      # KHÔNG có semester - tránh circular query: Student → Semester → Students → ...
       enrollments:
-        resolver: true  # Security: filter by student_code = current_user.id
+        resolver: true
 
   Teacher:
     fields:
       roles:
-        resolver: true  # Join via dataloader
-      # KHÔNG có major - tránh circular query: Teacher → Major → Topics → ...
-      # KHÔNG có semester - tránh circular query: Teacher → Semester → Teachers → ...
-      # KHÔNG có topicsSupervised - Topic_council_supervisor không có topic_code
+        resolver: true
 
-  # === THESIS RELATED ===
   Topic:
     fields:
-      # KHÔNG có major - tránh circular query: Topic → Major → Topics → ...
-      # KHÔNG có semester - tránh circular query: Topic → Semester → Topics → ...
-      # KHÔNG có enrollments - Enrollment không có topic_code
-      # KHÔNG có topicSupervisors - Topic_council_supervisor không có topic_code
+      major:
+        resolver: true
+      semester:
+        resolver: true
       files:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
       topicCouncils:
-        resolver: true  # Join via dataloader
+        resolver: true
 
   TopicCouncil:
     fields:
       topic:
-        resolver: true  # Join via dataloader
+        resolver: true
       council:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
       enrollments:
-        resolver: true  # Security: check role-based access
+        resolver: true
       supervisors:
-        resolver: true  # Join via dataloader
+        resolver: true
 
   TopicCouncilSupervisor:
     fields:
       teacher:
-        resolver: true  # Join via dataloader
-      topicCouncil:
-        resolver: true  # Join via dataloader
+        resolver: true
 
   Enrollment:
     fields:
       student:
-        resolver: true  # Join via dataloader, security: check ownership
+        resolver: true
       midterm:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
       final:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
       topicCouncil:
-        resolver: true  # Join via dataloader
+        resolver: true
       gradeReview:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
       gradeDefences:
-        resolver: true  # Join via dataloader, security check
-
-  Midterm:
-    fields:
-      # All fields auto-mapped from database
-
-  Final:
-    fields:
-      # All fields auto-mapped from database
+        resolver: true
 
   GradeReview:
     fields:
       teacher:
-        resolver: true  # Join via dataloader
+        resolver: true
+      enrollment:
+        resolver: true
 
-  # === COUNCIL RELATED ===
   Council:
     fields:
-      # KHÔNG có major - tránh circular query: Council → Major → Topics → ... → Council
-      # KHÔNG có semester - tránh circular query: Council → Semester → ... → Council
+      major:
+        resolver: true
+      semester:
+        resolver: true
       defences:
-        resolver: true  # Join via dataloader
+        resolver: true
       topicCouncils:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
 
   Defence:
     fields:
       council:
-        resolver: true  # Join via dataloader
+        resolver: true
       teacher:
-        resolver: true  # Join via dataloader
+        resolver: true
       gradeDefences:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
 
   GradeDefence:
     fields:
       defence:
-        resolver: true  # Join via dataloader
+        resolver: true
       enrollment:
-        resolver: true  # Join via dataloader, security check
+        resolver: true
       criteria:
-        resolver: true  # Join via dataloader
+        resolver: true
 
-  # === ACADEMIC RELATED ===
   Faculty:
     fields:
       majors:
-        resolver: true  # Join via dataloader
-
-  Major:
-    fields:
-      # KHÔNG có faculty - tránh circular query: Major → Faculty → Majors → ...
-      topics:
-        resolver: true  # Join via dataloader, security check
-
-  Semester:
-    fields:
-      students:
-        resolver: true  # Join via dataloader, security check
-      teachers:
-        resolver: true  # Join via dataloader, security check
-      topics:
-        resolver: true  # Join via dataloader, security check
-
-  # === FILE & ROLE ===
-  File:
-    fields:
-      # All fields auto-mapped
-
-  RoleSystem:
-    fields:
-      teacher:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
-
-  # ============================================
-  # STUDENT CUSTOM TYPES - Schema-level security
-  # ============================================
-  StudentEnrollment:
-    fields:
-      topicCouncil:
-        resolver: true  # Join via dataloader → StudentTopicCouncil
-      midterm:
-        resolver: true  # Join via dataloader
-      final:
-        resolver: true  # Join via dataloader
-      gradeReview:
-        resolver: true  # Join via dataloader
-      gradeDefences:
-        resolver: true  # Join via dataloader → [StudentGradeDefence]
-
-  StudentTopicCouncil:
-    fields:
-      topic:
-        resolver: true  # Join via dataloader → StudentTopic
-      supervisors:
-        resolver: true  # Join via dataloader → [StudentTopicSupervisor]
-      council:
-        resolver: true  # Join via dataloader → StudentCouncil
-
-  StudentTopic:
-    fields:
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
-      files:
-        resolver: true  # Join via dataloader
-
-  StudentTopicSupervisor:
-    fields:
-      teacher:
-        resolver: true  # Join via dataloader → StudentTeacherInfo
-
-  StudentTeacherInfo:
-    fields:
-      # No relationships - majorCode is scalar
-
-  StudentGradeDefence:
-    fields:
-      criteria:
-        resolver: true  # Join via dataloader
-      defence:
-        resolver: true  # Join via dataloader → StudentDefenceInfo
-
-  StudentCouncil:
-    fields:
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
-      defences:
-        resolver: true  # Join via dataloader → [StudentDefenceInfo]
-
-  StudentDefenceInfo:
-    fields:
-      teacher:
-        resolver: true  # Join via dataloader → StudentTeacherInfo
-
-  # ============================================
-  # SUPERVISOR CUSTOM TYPES
-  # ============================================
-  # SupervisorTopicCouncilAssignment:
-  #   fields:
-  #     topicCouncil:
-  #       resolver: true  # Join via dataloader → SupervisorTopicCouncil
-
-  SupervisorTopic:
-    fields:
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
-      # KHÔNG có enrollments - Enrollment không có topic_code
-      # KHÔNG có topicSupervisors - Topic_council_supervisor không có topic_code
-      files:
-        resolver: true  # Join via dataloader
-      topicCouncils:
-        resolver: true  # Join → [SupervisorTopicCouncil]
-
-  SupervisorEnrollment:
-    fields:
-      student:
-        resolver: true  # Join via dataloader
-      topicCouncil:
-        resolver: true  # Join → SupervisorTopicCouncil
-      midterm:
-        resolver: true  # Join via dataloader
-      final:
-        resolver: true  # Join via dataloader
-      gradeReview:
-        resolver: true  # Join via dataloader
-      gradeDefences:
-        resolver: true  # Join via dataloader
-
-  SupervisorTopicCouncil:
-    fields:
-      topic:
-        resolver: true  # Join → SupervisorTopic
-      council:
-        resolver: true  # Join via dataloader
-      enrollments:
-        resolver: true  # Join → [SupervisorEnrollment]
-      supervisors:
-        resolver: true  # Join via dataloader
-
-  # ============================================
-  # COUNCIL MEMBER CUSTOM TYPES
-  # ============================================
-  CouncilMemberCouncil:
-    fields:
-      major:
-        resolver: true  # Join via dataloader
-      semester:
-        resolver: true  # Join via dataloader
-      defences:
-        resolver: true  # Join → [CouncilDefence]
-      topicCouncils:
-        resolver: true  # Join → [CouncilTopicCouncil]
-
-  CouncilDefence:
-    fields:
-      council:
-        resolver: true  # Join → CouncilMemberCouncil
-      teacher:
-        resolver: true  # Join via dataloader
-      gradeDefences:
-        resolver: true  # Join via dataloader
-
-  CouncilTopicCouncil:
-    fields:
-      topic:
-        resolver: true  # Join via dataloader (full Topic)
-      council:
-        resolver: true  # Join → CouncilMemberCouncil
-      enrollments:
-        resolver: true  # Join → [CouncilEnrollment]
-      supervisors:
-        resolver: true  # Join via dataloader
-
-  CouncilEnrollment:
-    fields:
-      student:
-        resolver: true  # Join via dataloader
-      topicCouncil:
-        resolver: true  # Join → CouncilTopicCouncil
-      midterm:
-        resolver: true  # Join via dataloader
-      final:
-        resolver: true  # Join via dataloader
-      gradeReview:
-        resolver: true  # Join via dataloader
-      gradeDefences:
-        resolver: true  # Join via dataloader
-
-  # ============================================
-  # REVIEWER CUSTOM TYPES
-  # ============================================
-  ReviewerGradeReview:
-    fields:
-      enrollment:
-        resolver: true  # Resolve ngược: SELECT * FROM Enrollment WHERE grade_review_code = ?
-
-  ReviewerEnrollment:
-    fields:
-      student:
-        resolver: true  # Join via dataloader
-      topicCouncil:
-        resolver: true  # Join → ReviewerTopicCouncil
-      midterm:
-        resolver: true  # Join via dataloader
-      final:
-        resolver: true  # Join via dataloader
-      gradeReview:
-        resolver: true  # Join via dataloader
-
-  ReviewerTopicCouncil:
-    fields:
-      topic:
-        resolver: true  # Join → ReviewerTopic
-      supervisors:
-        resolver: true  # Join via dataloader
-
-  ReviewerTopic:
-    fields:
-      major:
-        resolver: true  # Join via dataloader → MajorInfo
-      files:
-        resolver: true  # Join via dataloader
-
-  # ============================================
-  # SHARED RESTRICTED TYPES - No relationships
-  # ============================================
-  MajorInfo:
-    fields:
-      # All fields auto-mapped - no relationships
-
-  SemesterInfo:
-    fields:
-      # All fields auto-mapped - no relationships
-
-
-
-
+        resolver: true

@@ -4,12 +4,12 @@ import (
 	"context"
 	"thaily/src/server/api"
 	"thaily/src/server/config"
+	"thaily/src/server/graph/controller"
 	dataloader2 "thaily/src/server/graph/dataloader"
 	"thaily/src/server/graph/directive"
 	"thaily/src/service/pkg/container"
 	"time"
 
-	"thaily/src/server/graph/controller"
 	"thaily/src/server/graph/dataloader"
 	"thaily/src/server/graph/generated"
 	"thaily/src/server/graph/helper"

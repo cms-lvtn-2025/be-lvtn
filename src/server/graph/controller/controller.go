@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+
 	pb "thaily/proto/common"
 	"thaily/src/server/client"
 	"thaily/src/server/graph/directive"
@@ -13,6 +14,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// Controller handles all GraphQL resolver business logic
 type Controller struct {
 	academic *client.GRPCAcadamicClient
 	council  *client.GRPCCouncil
@@ -22,8 +24,15 @@ type Controller struct {
 	user     *client.GRPCUser
 }
 
-// Constructor function
-func NewController(academic *client.GRPCAcadamicClient, council *client.GRPCCouncil, file *client.GRPCfile, role *client.GRPCRole, thesis *client.GRPCthesis, user *client.GRPCUser) *Controller {
+// NewController creates a new Controller instance
+func NewController(
+	academic *client.GRPCAcadamicClient,
+	council *client.GRPCCouncil,
+	file *client.GRPCfile,
+	role *client.GRPCRole,
+	thesis *client.GRPCthesis,
+	user *client.GRPCUser,
+) *Controller {
 	return &Controller{
 		academic: academic,
 		council:  council,
@@ -34,16 +43,21 @@ func NewController(academic *client.GRPCAcadamicClient, council *client.GRPCCoun
 	}
 }
 
+// ============================================
+// PAGINATION & SEARCH HELPERS
+// ============================================
+
+// DefaultPagination returns default pagination settings
 func (c *Controller) DefaultPagination() *model.PaginationInput {
-	Page := int32(1)
-	PageSize := int32(10)
-	SortBy := "created_at"
-	Descending := true
+	page := int32(1)
+	pageSize := int32(10)
+	sortBy := "created_at"
+	descending := true
 	return &model.PaginationInput{
-		Page:       &Page,
-		PageSize:   &PageSize,
-		SortBy:     &SortBy,
-		Descending: &Descending,
+		Page:       &page,
+		PageSize:   &pageSize,
+		SortBy:     &sortBy,
+		Descending: &descending,
 	}
 }
 
@@ -55,12 +69,10 @@ func (c *Controller) ConvertSearchRequestToPB(input model.SearchRequestInput) *p
 
 	req := &pb.SearchRequest{}
 
-	// Convert Pagination
 	if input.Pagination != nil {
 		req.Pagination = convertPaginationToPB(input.Pagination)
 	}
 
-	// Convert Filters
 	if input.Filters != nil && len(input.Filters) > 0 {
 		req.Filters = make([]*pb.FilterCriteria, 0, len(input.Filters))
 		for _, filter := range input.Filters {
@@ -68,13 +80,117 @@ func (c *Controller) ConvertSearchRequestToPB(input model.SearchRequestInput) *p
 				req.Filters = append(req.Filters, convertFilterCriteriaToPB(filter))
 			}
 		}
-
 	}
 
 	return req
 }
 
-// convertPaginationToPB converts GraphQL PaginationInput to Protobuf Pagination
+// ============================================
+// AUTH & RBAC HELPERS
+// ============================================
+
+// GetInfoRequest extracts user ID and role from JWT context
+func (c *Controller) GetInfoRequest(ctx context.Context) (id *string, role *string, err error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, nil, fmt.Errorf("not authorized")
+	}
+
+	roleSystem, ok := claims["role"].(string)
+	if !ok {
+		return nil, nil, fmt.Errorf("not authorized")
+	}
+
+	semester, _ := ctx.Value("semester").(string)
+	idsArr := strings.Split(claims["ids"].(string), ",")
+
+	myId := ""
+	if semester == "" {
+		myId = strings.Split(idsArr[0], ":")[1]
+	} else {
+		for _, id := range idsArr {
+			if strings.HasPrefix(id, semester+":") {
+				myId = strings.Split(id, ":")[1]
+			}
+		}
+	}
+
+	if myId == "" {
+		return nil, nil, fmt.Errorf("no user found for semester %s", semester)
+	}
+
+	return &myId, &roleSystem, nil
+}
+
+// GetInfoAllRequest extracts all user IDs and semesters from JWT context
+func (c *Controller) GetInfoAllRequest(ctx context.Context) (ids *[]string, semesters *[]string, role *string, err error) {
+	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
+	if !ok {
+		return nil, nil, nil, fmt.Errorf("not authorized")
+	}
+
+	roleSystem, ok := claims["role"].(string)
+	if !ok {
+		return nil, nil, nil, fmt.Errorf("not authorized")
+	}
+
+	idsArr := strings.Split(claims["ids"].(string), ",")
+	var myIds []string
+	var mySemesters []string
+
+	for _, id := range idsArr {
+		parts := strings.Split(id, ":")
+		if len(parts) == 2 {
+			myIds = append(myIds, parts[1])
+			mySemesters = append(mySemesters, parts[0])
+		}
+	}
+
+	if len(myIds) == 0 {
+		return nil, nil, nil, fmt.Errorf("no id found")
+	}
+
+	return &myIds, &mySemesters, &roleSystem, nil
+}
+
+// RbacInfo checks if user has specific role and returns their ID
+func (c *Controller) RbacInfo(ctx context.Context, roleCheck model.RoleSystemRole) (id *string, check bool, err error) {
+	myId, role, err := c.GetInfoRequest(ctx)
+	if err != nil {
+		return nil, false, err
+	}
+
+	if role == nil || (*role) != "teacher" {
+		return nil, false, fmt.Errorf("not a teacher")
+	}
+
+	roles, err := c.GetRole(ctx, *myId)
+	if err != nil {
+		return nil, false, err
+	}
+
+	if roles == nil {
+		return nil, false, fmt.Errorf("no roles found")
+	}
+
+	for _, r := range roles {
+		if roleCheck == r.Role {
+			return myId, true, nil
+		}
+	}
+
+	return nil, false, fmt.Errorf("role %s not found", roleCheck)
+}
+
+// GetRbacDynamicRole checks if context has one of the specified roles (set by directive)
+func (c *Controller) GetRbacDynamicRole(ctx context.Context, roles []string) (bool, error) {
+	return directive.HasRole(ctx, roles...), nil
+}
+
+// ============================================
+// INTERNAL CONVERSION HELPERS
+// ============================================
+
 func convertPaginationToPB(input *model.PaginationInput) *pb.Pagination {
 	if input == nil {
 		return nil
@@ -85,15 +201,12 @@ func convertPaginationToPB(input *model.PaginationInput) *pb.Pagination {
 	if input.Page != nil {
 		pagination.Page = *input.Page
 	}
-
 	if input.PageSize != nil {
 		pagination.PageSize = *input.PageSize
 	}
-
 	if input.SortBy != nil {
 		pagination.SortBy = *input.SortBy
 	}
-
 	if input.Descending != nil {
 		pagination.Descending = *input.Descending
 	}
@@ -101,7 +214,6 @@ func convertPaginationToPB(input *model.PaginationInput) *pb.Pagination {
 	return pagination
 }
 
-// convertFilterCriteriaToPB converts GraphQL FilterCriteriaInput to Protobuf FilterCriteria
 func convertFilterCriteriaToPB(input *model.FilterCriteriaInput) *pb.FilterCriteria {
 	if input == nil {
 		return nil
@@ -122,7 +234,6 @@ func convertFilterCriteriaToPB(input *model.FilterCriteriaInput) *pb.FilterCrite
 	return criteria
 }
 
-// convertFilterConditionToPB converts GraphQL FilterConditionInput to Protobuf FilterCondition
 func convertFilterConditionToPB(input *model.FilterConditionInput) *pb.FilterCondition {
 	if input == nil {
 		return nil
@@ -135,7 +246,6 @@ func convertFilterConditionToPB(input *model.FilterConditionInput) *pb.FilterCon
 	}
 }
 
-// convertFilterGroupToPB converts GraphQL FilterGroupInput to Protobuf FilterGroup
 func convertFilterGroupToPB(input *model.FilterGroupInput) *pb.FilterGroup {
 	if input == nil {
 		return nil
@@ -159,7 +269,6 @@ func convertFilterGroupToPB(input *model.FilterGroupInput) *pb.FilterGroup {
 	return group
 }
 
-// convertFilterOperatorToPB converts GraphQL FilterOperator to Protobuf FilterOperator
 func convertFilterOperatorToPB(op model.FilterOperator) pb.FilterOperator {
 	switch op {
 	case model.FilterOperatorEqual:
@@ -191,7 +300,6 @@ func convertFilterOperatorToPB(op model.FilterOperator) pb.FilterOperator {
 	}
 }
 
-// convertLogicalConditionToPB converts GraphQL LogicalCondition to Protobuf LogicalCondition
 func convertLogicalConditionToPB(cond model.LogicalCondition) pb.LogicalCondition {
 	switch cond {
 	case model.LogicalConditionAnd:
@@ -201,91 +309,4 @@ func convertLogicalConditionToPB(cond model.LogicalCondition) pb.LogicalConditio
 	default:
 		return pb.LogicalCondition_AND
 	}
-}
-
-func (c *Controller) GetInfoRequest(ctx context.Context) (id *string, role *string, err error) {
-	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
-	if !ok {
-		return nil, nil, fmt.Errorf("not authorized")
-	}
-	roleSystem, ok := claims["role"].(string)
-	if !ok {
-		return nil, nil, fmt.Errorf("not authorized")
-	}
-	semester, ok := ctx.Value("semester").(string)
-
-	idsArr := strings.Split(claims["ids"].(string), ",")
-	fmt.Println(idsArr)
-	myId := ""
-	if semester == "" {
-		myId = strings.Split(idsArr[0], ":")[1]
-	} else {
-		for _, id := range idsArr {
-			if strings.HasPrefix(id, semester+":") {
-				myId = strings.Split(id, ":")[1]
-			}
-		}
-	}
-	fmt.Println(myId)
-	if myId == "" {
-		return nil, nil, fmt.Errorf("no teacher found for semester %s", semester)
-	}
-
-	return &myId, &roleSystem, nil
-}
-
-func (c *Controller) RbacInfo(ctx context.Context, roleCheck model.RoleSystemRole) (id *string, check bool, err error) {
-	myId, role, err := c.GetInfoRequest(ctx)
-	if err != nil {
-		return nil, false, err
-	}
-	if role == nil || (*role) != "teacher" {
-		return nil, false, fmt.Errorf("no teacher found for role %s", roleCheck)
-	}
-	roles, err := c.GetRole(ctx, *myId)
-	if err != nil {
-		return nil, false, err
-	}
-	if roles == nil {
-		return nil, false, fmt.Errorf("no teacher found for role %s", roleCheck)
-	}
-	for _, role := range roles {
-		if roleCheck == role.Role {
-			return myId, true, nil
-		}
-	}
-	return nil, false, fmt.Errorf("no teacher found for role %s", roleCheck)
-}
-
-func (c *Controller) GetInfoAllRequest(ctx context.Context) (ids *[]string, semesters *[]string, role *string, err error) {
-	claims, ok := ctx.Value(helper.Auth).(jwt.MapClaims)
-	if !ok {
-		return nil, nil, nil, fmt.Errorf("not authorized")
-	}
-	roleSystem, ok := claims["role"].(string)
-	if !ok {
-		return nil, nil, nil, fmt.Errorf("not authorized")
-	}
-	idsArr := strings.Split(claims["ids"].(string), ",")
-	var myIds []string
-	var mySemesters []string
-	for _, id := range idsArr {
-		parts := strings.Split(id, ":")
-		if len(parts) == 2 {
-			myIds = append(myIds, strings.Split(id, ":")[1])
-			mySemesters = append(mySemesters, strings.Split(id, ":")[0])
-		}
-
-	}
-	if len(myIds) == 0 {
-		return nil, nil, nil, fmt.Errorf("no id found for semester %s", roleSystem)
-	}
-	return &myIds, &mySemesters, &roleSystem, nil
-
-}
-
-// GetRbacDynamicRole checks if current context has one of the specified roles
-// Uses directive.HasRole to check role from context (set by @rbacRole directive)
-func (c *Controller) GetRbacDynamicRole(ctx context.Context, roles []string) (bool, error) {
-	return directive.HasRole(ctx, roles...), nil
 }

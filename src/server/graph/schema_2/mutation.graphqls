@@ -1,0 +1,236 @@
+# ============================================
+# ROOT MUTATION - Entry points theo role
+# Moi entry point se set role vao context
+# ============================================
+
+type Mutation {
+    """Cong vao cho STUDENT - Set role = 'student'"""
+    student: StudentMutation!
+
+    """Cong vao cho TEACHER - Set role = 'teacher'"""
+    teacher: TeacherMutation!
+
+    """Cong vao cho ACADEMIC AFFAIRS - Set role = 'affair'"""
+    affair: AffairMutation!
+
+    """Cong vao cho DEPARTMENT LECTURER - Set role = 'department'"""
+    department: DepartmentMutation!
+}
+
+# ============================================
+# STUDENT MUTATION NAMESPACE
+# Role: student
+# ============================================
+
+type StudentMutation {
+    """Upload file midterm (chi sinh vien moi upload duoc)"""
+    uploadMidtermFile(input: UploadFileInput!): File!
+
+    """Upload file final (chi sinh vien moi upload duoc)"""
+    uploadFinalFile(input: UploadFileInput!): File!
+}
+
+# ============================================
+# TEACHER MUTATION NAMESPACE
+# Role: teacher (base)
+# Sub-roles: supervisor, council, reviewer
+# ============================================
+
+type TeacherMutation {
+    """Cap nhat thong tin ca nhan giao vien"""
+    updateProfile(input: UpdateTeacherProfileInput!): Teacher!
+
+    """Namespace cho SUPERVISOR (giao vien huong dan) - Set role = 'supervisor'"""
+    supervisor: SupervisorMutation!
+
+    """Namespace cho COUNCIL MEMBER (thanh vien hoi dong) - Set role = 'council'"""
+    council: CouncilMemberMutation!
+
+    """Namespace cho REVIEWER (giao vien phan bien) - Set role = 'reviewer'"""
+    reviewer: ReviewerMutation!
+}
+
+"""
+SupervisorMutation - Mutations cho giao vien huong dan
+Entry point: mutation { teacher { supervisor { ... } } }
+"""
+type SupervisorMutation {
+    """Tao topic moi"""
+    createTopic(input: CreateTopicInput!): Topic!
+
+    """Tao topic council moi"""
+    createTopicCouncil(input: CreateTopicCouncilInput!): TopicCouncil!
+
+    """Cap nhat diem midterm cho sinh vien"""
+    gradeMidterm(enrollmentId: ID!, input: GradeMidtermInput!): Midterm!
+
+    """Phan hoi midterm cho sinh vien"""
+    feedbackMidterm(midtermId: ID!, feedback: String!): Midterm!
+
+    """Cap nhat diem final cho sinh vien"""
+    gradeFinal(enrollmentId: ID!, input: GradeFinalInput!): Final!
+
+    """Phan hoi final cho sinh vien"""
+    feedbackFinal(finalId: ID!, notes: String!): Final!
+
+    """Phe duyet file midterm cua sinh vien"""
+    approveMidtermFile(fileId: ID!): File!
+
+    """Tu choi file midterm cua sinh vien"""
+    rejectMidtermFile(fileId: ID!, reason: String): File!
+
+    """Phe duyet file final cua sinh vien"""
+    approveFinalFile(fileId: ID!): File!
+
+    """Tu choi file final cua sinh vien"""
+    rejectFinalFile(fileId: ID!, reason: String): File!
+}
+
+"""
+CouncilMemberMutation - Mutations cho thanh vien hoi dong
+Entry point: mutation { teacher { council { ... } } }
+"""
+type CouncilMemberMutation {
+    """Tao grade defence"""
+    createGradeDefence(input: CreateGradeDefenceInput!): GradeDefence!
+
+    """Cap nhat grade defence"""
+    updateGradeDefence(id: ID!, input: UpdateGradeDefenceInput!): GradeDefence!
+
+    """Them criterion vao grade defence"""
+    addCriterion(input: CreateGradeDefenceCriterionInput!): GradeDefenceCriterion!
+
+    """Cap nhat criterion"""
+    updateCriterion(id: ID!, input: UpdateGradeDefenceCriterionInput!): GradeDefenceCriterion!
+
+    """Xoa criterion"""
+    deleteCriterion(id: ID!): Boolean!
+}
+
+"""
+ReviewerMutation - Mutations cho giao vien phan bien
+Entry point: mutation { teacher { reviewer { ... } } }
+"""
+type ReviewerMutation {
+    """Cap nhat grade review"""
+    updateGradeReview(id: ID!, input: UpdateGradeReviewInput!): GradeReview!
+
+    """Hoan thanh grade review"""
+    completeGradeReview(id: ID!): GradeReview!
+}
+
+# ============================================
+# AFFAIR MUTATION NAMESPACE
+# Role: affair (Academic Affairs Staff)
+# Full access to system
+# ============================================
+
+type AffairMutation {
+    # --- Teacher CRUD ---
+    """Tao moi giao vien"""
+    createTeacher(input: CreateTeacherInput!): Teacher!
+
+    """Cap nhat thong tin giao vien"""
+    updateTeacher(id: ID!, input: UpdateTeacherInput!): Teacher!
+
+    """Xoa giao vien"""
+    deleteTeacher(id: ID!): Boolean!
+
+    # --- Student CRUD ---
+    """Tao moi sinh vien"""
+    createStudent(input: CreateStudentInput!): Student!
+
+    """Cap nhat thong tin sinh vien"""
+    updateStudent(id: ID!, input: UpdateStudentInput!): Student!
+
+    """Xoa sinh vien"""
+    deleteStudent(id: ID!): Boolean!
+
+    # --- Semester CRUD ---
+    """Tao semester moi"""
+    createSemester(input: CreateSemesterInput!): Semester!
+
+    """Cap nhat semester"""
+    updateSemester(id: ID!, input: UpdateSemesterInput!): Semester!
+
+    """Xoa semester"""
+    deleteSemester(id: ID!): Boolean!
+
+    # --- Major CRUD ---
+    """Tao major moi"""
+    createMajor(input: CreateMajorInput!): Major!
+
+    """Cap nhat major"""
+    updateMajor(id: ID!, input: UpdateMajorInput!): Major!
+
+    """Xoa major"""
+    deleteMajor(id: ID!): Boolean!
+
+    # --- Faculty CRUD ---
+    """Tao faculty moi"""
+    createFaculty(input: CreateFacultyInput!): Faculty!
+
+    """Cap nhat faculty"""
+    updateFaculty(id: ID!, input: UpdateFacultyInput!): Faculty!
+
+    """Xoa faculty"""
+    deleteFaculty(id: ID!): Boolean!
+
+    # --- Council management ---
+    """Phe duyet council (cho phep set thoi gian)"""
+    approveCouncil(id: ID!, timeStart: Time!): Council!
+
+    """Cap nhat council"""
+    updateCouncil(id: ID!, input: UpdateCouncilInput!): Council!
+
+    """Xoa council"""
+    deleteCouncil(id: ID!): Boolean!
+
+    # --- Topic management ---
+    """Phe duyet topic lan 2 (approved_2)"""
+    approveTopic(id: ID!): Topic!
+
+    """Tu choi topic"""
+    rejectTopic(id: ID!, reason: String): Topic!
+
+    """Cap nhat topic"""
+    updateTopic(id: ID!, input: UpdateTopicInput!): Topic!
+
+    """Xoa topic"""
+    deleteTopic(id: ID!): Boolean!
+}
+
+# ============================================
+# DEPARTMENT MUTATION NAMESPACE
+# Role: department (Department Lecturer)
+# Access within department scope
+# ============================================
+
+type DepartmentMutation {
+    # --- Council management ---
+    """Tao council moi"""
+    createCouncil(input: CreateCouncilInput!): Council!
+
+    """Cap nhat council"""
+    updateCouncil(id: ID!, input: UpdateCouncilInput!): Council!
+
+    """Them thanh vien vao council"""
+    addDefence(input: CreateDefenceInput!): Defence!
+
+    """Xoa thanh vien khoi council"""
+    removeDefence(id: ID!): Boolean!
+
+    # --- Topic approval ---
+    """Phe duyet topic lan 1 (approved_1)"""
+    approveTopicStage1(id: ID!): Topic!
+
+    """Tu choi topic"""
+    rejectTopicStage1(id: ID!, reason: String): Topic!
+
+    # --- Topic-Council assignment ---
+    """Gan topic vao council"""
+    assignTopicToCouncil(topicCouncilId: ID!, councilId: ID!): TopicCouncil!
+
+    """Xoa topic khoi council"""
+    removeTopicFromCouncil(topicCouncilId: ID!, councilId: ID!): Boolean!
+}

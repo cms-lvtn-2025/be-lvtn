@@ -136,16 +136,16 @@ func PbTeachersToModel(pbs []*user.Teacher) []*model.Teacher {
 }
 
 // ============================================
-// STUDENT VIEW CONVERTERS
+// INFO TYPE CONVERTERS
 // ============================================
 
-// PbTeacherToStudentTeacherInfo converts protobuf Teacher to GraphQL StudentTeacherInfo
-func PbTeacherToStudentTeacherInfo(pb *user.Teacher) *model.StudentTeacherInfo {
+// PbTeacherToTeacherInfo converts protobuf Teacher to GraphQL TeacherInfo
+func PbTeacherToTeacherInfo(pb *user.Teacher) *model.TeacherInfo {
 	if pb == nil {
 		return nil
 	}
 
-	result := &model.StudentTeacherInfo{
+	result := &model.TeacherInfo{
 		ID:        pb.Id,
 		Email:     pb.Email,
 		Username:  pb.Username,
@@ -179,18 +179,3 @@ func CreateTeacherListResponse(teachers []*model.Teacher, total int32) *model.Te
 	}
 }
 
-// CreateStudentDefenceInfoListResponse creates a StudentDefenceInfoListResponse
-func CreateStudentDefenceInfoListResponse(defences []*model.StudentDefenceInfo, total int32) *model.StudentDefenceInfoListResponse {
-	return &model.StudentDefenceInfoListResponse{
-		Data:  defences,
-		Total: total,
-	}
-}
-
-// CreateStudentGradeDefenceListResponse creates a StudentGradeDefenceListResponse
-func CreateStudentGradeDefenceListResponse(gradeDefences []*model.StudentGradeDefence, total int32) *model.StudentGradeDefenceListResponse {
-	return &model.StudentGradeDefenceListResponse{
-		Data:  gradeDefences,
-		Total: total,
-	}
-}
