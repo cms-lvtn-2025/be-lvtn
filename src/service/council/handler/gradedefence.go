@@ -170,7 +170,7 @@ func (h *Handler) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDef
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
-		UPDATE GradeDefence
+		UPDATE Grade_defence
 		SET %s
 		WHERE id = ?
 	`, strings.Join(updateFields, ", "))

@@ -165,7 +165,6 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 	if req.Title != nil {
 		updateFields = append(updateFields, "title = ?")
 		args = append(args, *req.Title)
-
 	}
 	if req.CouncilCode != nil {
 		updateFields = append(updateFields, "council_code = ?")
@@ -177,6 +176,7 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 		args = append(args, *req.TeacherCode)
 
 	}
+
 	if req.Position != nil {
 		updateFields = append(updateFields, "position = ?")
 		PositionStr := "president"

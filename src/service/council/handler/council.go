@@ -150,6 +150,11 @@ func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilReques
 
 	}
 
+	if req.TimeStart != nil {
+		updateFields = append(updateFields, "time_start = ?")
+		args = append(args, req.TimeStart.AsTime())
+	}
+
 	if len(updateFields) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "no fields to update")
 	}

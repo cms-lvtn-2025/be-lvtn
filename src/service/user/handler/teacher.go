@@ -326,7 +326,7 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, email, username, gender, major_code, semester_code, created_at, updated_at, created_by, updated_by
+		SELECT id, email, msgv, username, gender, major_code, semester_code, created_at, updated_at, created_by, updated_by
 		FROM Teacher
 		%s
 		ORDER BY %s %s
@@ -349,6 +349,7 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 		err := rows.Scan(
 			&entity.Id,
 			&entity.Email,
+			&entity.Msgv,
 			&entity.Username,
 			&GenderStr,
 			&entity.MajorCode,
