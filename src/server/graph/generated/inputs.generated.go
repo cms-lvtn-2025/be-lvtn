@@ -1317,11 +1317,6 @@ func (ec *executionContext) unmarshalNUpdateGradeDefenceInput2thailyᚋsrcᚋser
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateGradeReviewInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐUpdateGradeReviewInput(ctx context.Context, v any) (model.UpdateGradeReviewInput, error) {
-	res, err := ec.unmarshalInputUpdateGradeReviewInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNUpdateMajorInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐUpdateMajorInput(ctx context.Context, v any) (model.UpdateMajorInput, error) {
 	res, err := ec.unmarshalInputUpdateMajorInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)

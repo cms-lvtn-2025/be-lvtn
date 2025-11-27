@@ -227,7 +227,6 @@ type Enrollment {
     topicCouncil: TopicCouncil # all
     midterm: Midterm           # RBAC: supervisor, department, affair, student (chi cua minh)
     final: Final               # RBAC: supervisor, department, affair, student (chi cua minh)
-    gradeReview: GradeReview   # all
     gradeDefences: [GradeDefence!]  # RBAC: supervisor, department, student, affair
 }
 
@@ -241,6 +240,9 @@ type Midterm {
     updatedAt: Time
     createdBy: String
     updatedBy: String
+
+    # Relations
+    files: [File!]             # all
 }
 
 type Final {
@@ -256,25 +258,12 @@ type Final {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-}
-
-type GradeReview {
-    id: ID!
-    title: String!
-    reviewGrade: Int
-    teacherCode: String!
-    status: FinalStatus!
-    notes: String
-    completionDate: Time
-    createdAt: Time
-    updatedAt: Time
-    createdBy: String
-    updatedBy: String
 
     # Relations
-    teacher: TeacherInfo       # all (dung TeacherInfo de an roles)
-    enrollment: Enrollment     # RBAC: reviewer only
+    files: [File!]             # all
 }
+
+
 
 """
 Council - Unified type
@@ -420,11 +409,6 @@ type GradeDefenceListResponse {
 type GradeDefenceCriterionListResponse {
     total: Int!
     data: [GradeDefenceCriterion!]!
-}
-
-type GradeReviewListResponse {
-    total: Int!
-    data: [GradeReview!]!
 }
 
 type MidtermListResponse {

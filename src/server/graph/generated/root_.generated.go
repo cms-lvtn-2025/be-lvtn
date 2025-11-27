@@ -44,12 +44,11 @@ type ResolverRoot interface {
 	DepartmentQuery() DepartmentQueryResolver
 	Enrollment() EnrollmentResolver
 	Faculty() FacultyResolver
+	Final() FinalResolver
 	GradeDefence() GradeDefenceResolver
-	GradeReview() GradeReviewResolver
+	Midterm() MidtermResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
-	ReviewerMutation() ReviewerMutationResolver
-	ReviewerQuery() ReviewerQueryResolver
 	StudentMutation() StudentMutationResolver
 	StudentQuery() StudentQueryResolver
 	Subscription() SubscriptionResolver
@@ -144,8 +143,7 @@ type ComplexityRoot struct {
 	}
 
 	CouncilMemberQuery struct {
-		DefenceDetail func(childComplexity int, id string) int
-		Defences      func(childComplexity int, search *model.SearchRequestInput) int
+		Defences func(childComplexity int, search *model.SearchRequestInput) int
 	}
 
 	Defence struct {
@@ -180,21 +178,15 @@ type ComplexityRoot struct {
 	}
 
 	DepartmentQuery struct {
-		CouncilDetail     func(childComplexity int, id string) int
-		Councils          func(childComplexity int, search model.SearchRequestInput) int
-		DefencesByCouncil func(childComplexity int, councilID string) int
-		EnrollmentDetail  func(childComplexity int, id string) int
-		Enrollments       func(childComplexity int, search model.SearchRequestInput) int
-		Faculties         func(childComplexity int, search model.SearchRequestInput) int
-		GradeDefences     func(childComplexity int, search model.SearchRequestInput) int
-		Majors            func(childComplexity int, search model.SearchRequestInput) int
-		Semesters         func(childComplexity int, search model.SearchRequestInput) int
-		StudentDetail     func(childComplexity int, id string) int
-		Students          func(childComplexity int, search model.SearchRequestInput) int
-		TeacherDetail     func(childComplexity int, id string) int
-		Teachers          func(childComplexity int, search model.SearchRequestInput) int
-		TopicDetail       func(childComplexity int, id string) int
-		Topics            func(childComplexity int, search model.SearchRequestInput) int
+		Councils      func(childComplexity int, search model.SearchRequestInput) int
+		Enrollments   func(childComplexity int, search model.SearchRequestInput) int
+		Faculties     func(childComplexity int, search model.SearchRequestInput) int
+		GradeDefences func(childComplexity int, search model.SearchRequestInput) int
+		Majors        func(childComplexity int, search model.SearchRequestInput) int
+		Semesters     func(childComplexity int, search model.SearchRequestInput) int
+		Students      func(childComplexity int, search model.SearchRequestInput) int
+		Teachers      func(childComplexity int, search model.SearchRequestInput) int
+		Topics        func(childComplexity int, search model.SearchRequestInput) int
 	}
 
 	Enrollment struct {
@@ -203,7 +195,6 @@ type ComplexityRoot struct {
 		Final            func(childComplexity int) int
 		FinalCode        func(childComplexity int) int
 		GradeDefences    func(childComplexity int) int
-		GradeReview      func(childComplexity int) int
 		GradeReviewCode  func(childComplexity int) int
 		ID               func(childComplexity int) int
 		Midterm          func(childComplexity int) int
@@ -262,6 +253,7 @@ type ComplexityRoot struct {
 		CreatedAt       func(childComplexity int) int
 		CreatedBy       func(childComplexity int) int
 		DepartmentGrade func(childComplexity int) int
+		Files           func(childComplexity int) int
 		FinalGrade      func(childComplexity int) int
 		ID              func(childComplexity int) int
 		Notes           func(childComplexity int) int
@@ -314,27 +306,6 @@ type ComplexityRoot struct {
 		Total func(childComplexity int) int
 	}
 
-	GradeReview struct {
-		CompletionDate func(childComplexity int) int
-		CreatedAt      func(childComplexity int) int
-		CreatedBy      func(childComplexity int) int
-		Enrollment     func(childComplexity int) int
-		ID             func(childComplexity int) int
-		Notes          func(childComplexity int) int
-		ReviewGrade    func(childComplexity int) int
-		Status         func(childComplexity int) int
-		Teacher        func(childComplexity int) int
-		TeacherCode    func(childComplexity int) int
-		Title          func(childComplexity int) int
-		UpdatedAt      func(childComplexity int) int
-		UpdatedBy      func(childComplexity int) int
-	}
-
-	GradeReviewListResponse struct {
-		Data  func(childComplexity int) int
-		Total func(childComplexity int) int
-	}
-
 	Major struct {
 		CreatedAt   func(childComplexity int) int
 		CreatedBy   func(childComplexity int) int
@@ -361,6 +332,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
 		Feedback  func(childComplexity int) int
+		Files     func(childComplexity int) int
 		Grade     func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Status    func(childComplexity int) int
@@ -386,16 +358,6 @@ type ComplexityRoot struct {
 		Department func(childComplexity int) int
 		Student    func(childComplexity int) int
 		Teacher    func(childComplexity int) int
-	}
-
-	ReviewerMutation struct {
-		CompleteGradeReview func(childComplexity int, id string) int
-		UpdateGradeReview   func(childComplexity int, id string, input model.UpdateGradeReviewInput) int
-	}
-
-	ReviewerQuery struct {
-		GradeReviewDetail func(childComplexity int, id string) int
-		GradeReviews      func(childComplexity int, search *model.SearchRequestInput) int
 	}
 
 	RoleSystem struct {
@@ -485,8 +447,7 @@ type ComplexityRoot struct {
 	}
 
 	SupervisorQuery struct {
-		TopicCouncilDetail func(childComplexity int, id string) int
-		TopicCouncils      func(childComplexity int, search *model.SearchRequestInput) int
+		TopicCouncils func(childComplexity int, search *model.SearchRequestInput) int
 	}
 
 	Teacher struct {
@@ -519,7 +480,6 @@ type ComplexityRoot struct {
 
 	TeacherMutation struct {
 		Council       func(childComplexity int) int
-		Reviewer      func(childComplexity int) int
 		Supervisor    func(childComplexity int) int
 		UpdateProfile func(childComplexity int, input model.UpdateTeacherProfileInput) int
 	}
@@ -527,7 +487,6 @@ type ComplexityRoot struct {
 	TeacherQuery struct {
 		Council    func(childComplexity int) int
 		Me         func(childComplexity int) int
-		Reviewer   func(childComplexity int) int
 		Supervisor func(childComplexity int) int
 	}
 
@@ -1253,18 +1212,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.CouncilMemberMutation.UpdateGradeDefence(childComplexity, args["id"].(string), args["input"].(model.UpdateGradeDefenceInput)), true
 
-	case "CouncilMemberQuery.defenceDetail":
-		if e.complexity.CouncilMemberQuery.DefenceDetail == nil {
-			break
-		}
-
-		args, err := ec.field_CouncilMemberQuery_defenceDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CouncilMemberQuery.DefenceDetail(childComplexity, args["id"].(string)), true
-
 	case "CouncilMemberQuery.defences":
 		if e.complexity.CouncilMemberQuery.Defences == nil {
 			break
@@ -1471,18 +1418,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DepartmentMutation.UpdateCouncil(childComplexity, args["id"].(string), args["input"].(model.UpdateCouncilInput)), true
 
-	case "DepartmentQuery.councilDetail":
-		if e.complexity.DepartmentQuery.CouncilDetail == nil {
-			break
-		}
-
-		args, err := ec.field_DepartmentQuery_councilDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.DepartmentQuery.CouncilDetail(childComplexity, args["id"].(string)), true
-
 	case "DepartmentQuery.councils":
 		if e.complexity.DepartmentQuery.Councils == nil {
 			break
@@ -1494,30 +1429,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.DepartmentQuery.Councils(childComplexity, args["search"].(model.SearchRequestInput)), true
-
-	case "DepartmentQuery.defencesByCouncil":
-		if e.complexity.DepartmentQuery.DefencesByCouncil == nil {
-			break
-		}
-
-		args, err := ec.field_DepartmentQuery_defencesByCouncil_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.DepartmentQuery.DefencesByCouncil(childComplexity, args["councilId"].(string)), true
-
-	case "DepartmentQuery.enrollmentDetail":
-		if e.complexity.DepartmentQuery.EnrollmentDetail == nil {
-			break
-		}
-
-		args, err := ec.field_DepartmentQuery_enrollmentDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.DepartmentQuery.EnrollmentDetail(childComplexity, args["id"].(string)), true
 
 	case "DepartmentQuery.enrollments":
 		if e.complexity.DepartmentQuery.Enrollments == nil {
@@ -1579,18 +1490,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DepartmentQuery.Semesters(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "DepartmentQuery.studentDetail":
-		if e.complexity.DepartmentQuery.StudentDetail == nil {
-			break
-		}
-
-		args, err := ec.field_DepartmentQuery_studentDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.DepartmentQuery.StudentDetail(childComplexity, args["id"].(string)), true
-
 	case "DepartmentQuery.students":
 		if e.complexity.DepartmentQuery.Students == nil {
 			break
@@ -1603,18 +1502,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DepartmentQuery.Students(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "DepartmentQuery.teacherDetail":
-		if e.complexity.DepartmentQuery.TeacherDetail == nil {
-			break
-		}
-
-		args, err := ec.field_DepartmentQuery_teacherDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.DepartmentQuery.TeacherDetail(childComplexity, args["id"].(string)), true
-
 	case "DepartmentQuery.teachers":
 		if e.complexity.DepartmentQuery.Teachers == nil {
 			break
@@ -1626,18 +1513,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.DepartmentQuery.Teachers(childComplexity, args["search"].(model.SearchRequestInput)), true
-
-	case "DepartmentQuery.topicDetail":
-		if e.complexity.DepartmentQuery.TopicDetail == nil {
-			break
-		}
-
-		args, err := ec.field_DepartmentQuery_topicDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.DepartmentQuery.TopicDetail(childComplexity, args["id"].(string)), true
 
 	case "DepartmentQuery.topics":
 		if e.complexity.DepartmentQuery.Topics == nil {
@@ -1685,13 +1560,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Enrollment.GradeDefences(childComplexity), true
-
-	case "Enrollment.gradeReview":
-		if e.complexity.Enrollment.GradeReview == nil {
-			break
-		}
-
-		return e.complexity.Enrollment.GradeReview(childComplexity), true
 
 	case "Enrollment.gradeReviewCode":
 		if e.complexity.Enrollment.GradeReviewCode == nil {
@@ -1973,6 +1841,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Final.DepartmentGrade(childComplexity), true
 
+	case "Final.files":
+		if e.complexity.Final.Files == nil {
+			break
+		}
+
+		return e.complexity.Final.Files(childComplexity), true
+
 	case "Final.finalGrade":
 		if e.complexity.Final.FinalGrade == nil {
 			break
@@ -2218,111 +2093,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.GradeDefenceListResponse.Total(childComplexity), true
 
-	case "GradeReview.completionDate":
-		if e.complexity.GradeReview.CompletionDate == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.CompletionDate(childComplexity), true
-
-	case "GradeReview.createdAt":
-		if e.complexity.GradeReview.CreatedAt == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.CreatedAt(childComplexity), true
-
-	case "GradeReview.createdBy":
-		if e.complexity.GradeReview.CreatedBy == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.CreatedBy(childComplexity), true
-
-	case "GradeReview.enrollment":
-		if e.complexity.GradeReview.Enrollment == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.Enrollment(childComplexity), true
-
-	case "GradeReview.id":
-		if e.complexity.GradeReview.ID == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.ID(childComplexity), true
-
-	case "GradeReview.notes":
-		if e.complexity.GradeReview.Notes == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.Notes(childComplexity), true
-
-	case "GradeReview.reviewGrade":
-		if e.complexity.GradeReview.ReviewGrade == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.ReviewGrade(childComplexity), true
-
-	case "GradeReview.status":
-		if e.complexity.GradeReview.Status == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.Status(childComplexity), true
-
-	case "GradeReview.teacher":
-		if e.complexity.GradeReview.Teacher == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.Teacher(childComplexity), true
-
-	case "GradeReview.teacherCode":
-		if e.complexity.GradeReview.TeacherCode == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.TeacherCode(childComplexity), true
-
-	case "GradeReview.title":
-		if e.complexity.GradeReview.Title == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.Title(childComplexity), true
-
-	case "GradeReview.updatedAt":
-		if e.complexity.GradeReview.UpdatedAt == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.UpdatedAt(childComplexity), true
-
-	case "GradeReview.updatedBy":
-		if e.complexity.GradeReview.UpdatedBy == nil {
-			break
-		}
-
-		return e.complexity.GradeReview.UpdatedBy(childComplexity), true
-
-	case "GradeReviewListResponse.data":
-		if e.complexity.GradeReviewListResponse.Data == nil {
-			break
-		}
-
-		return e.complexity.GradeReviewListResponse.Data(childComplexity), true
-
-	case "GradeReviewListResponse.total":
-		if e.complexity.GradeReviewListResponse.Total == nil {
-			break
-		}
-
-		return e.complexity.GradeReviewListResponse.Total(childComplexity), true
-
 	case "Major.createdAt":
 		if e.complexity.Major.CreatedAt == nil {
 			break
@@ -2435,6 +2205,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Midterm.Feedback(childComplexity), true
 
+	case "Midterm.files":
+		if e.complexity.Midterm.Files == nil {
+			break
+		}
+
+		return e.complexity.Midterm.Files(childComplexity), true
+
 	case "Midterm.grade":
 		if e.complexity.Midterm.Grade == nil {
 			break
@@ -2546,54 +2323,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.Teacher(childComplexity), true
-
-	case "ReviewerMutation.completeGradeReview":
-		if e.complexity.ReviewerMutation.CompleteGradeReview == nil {
-			break
-		}
-
-		args, err := ec.field_ReviewerMutation_completeGradeReview_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.ReviewerMutation.CompleteGradeReview(childComplexity, args["id"].(string)), true
-
-	case "ReviewerMutation.updateGradeReview":
-		if e.complexity.ReviewerMutation.UpdateGradeReview == nil {
-			break
-		}
-
-		args, err := ec.field_ReviewerMutation_updateGradeReview_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.ReviewerMutation.UpdateGradeReview(childComplexity, args["id"].(string), args["input"].(model.UpdateGradeReviewInput)), true
-
-	case "ReviewerQuery.gradeReviewDetail":
-		if e.complexity.ReviewerQuery.GradeReviewDetail == nil {
-			break
-		}
-
-		args, err := ec.field_ReviewerQuery_gradeReviewDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.ReviewerQuery.GradeReviewDetail(childComplexity, args["id"].(string)), true
-
-	case "ReviewerQuery.gradeReviews":
-		if e.complexity.ReviewerQuery.GradeReviews == nil {
-			break
-		}
-
-		args, err := ec.field_ReviewerQuery_gradeReviews_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.ReviewerQuery.GradeReviews(childComplexity, args["search"].(*model.SearchRequestInput)), true
 
 	case "RoleSystem.activate":
 		if e.complexity.RoleSystem.Activate == nil {
@@ -3036,18 +2765,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SupervisorMutation.RejectMidtermFile(childComplexity, args["fileId"].(string), args["reason"].(*string)), true
 
-	case "SupervisorQuery.topicCouncilDetail":
-		if e.complexity.SupervisorQuery.TopicCouncilDetail == nil {
-			break
-		}
-
-		args, err := ec.field_SupervisorQuery_topicCouncilDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.SupervisorQuery.TopicCouncilDetail(childComplexity, args["id"].(string)), true
-
 	case "SupervisorQuery.topicCouncils":
 		if e.complexity.SupervisorQuery.TopicCouncils == nil {
 			break
@@ -3200,13 +2917,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.TeacherMutation.Council(childComplexity), true
 
-	case "TeacherMutation.reviewer":
-		if e.complexity.TeacherMutation.Reviewer == nil {
-			break
-		}
-
-		return e.complexity.TeacherMutation.Reviewer(childComplexity), true
-
 	case "TeacherMutation.supervisor":
 		if e.complexity.TeacherMutation.Supervisor == nil {
 			break
@@ -3239,13 +2949,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.TeacherQuery.Me(childComplexity), true
-
-	case "TeacherQuery.reviewer":
-		if e.complexity.TeacherQuery.Reviewer == nil {
-			break
-		}
-
-		return e.complexity.TeacherQuery.Reviewer(childComplexity), true
 
 	case "TeacherQuery.supervisor":
 		if e.complexity.TeacherQuery.Supervisor == nil {
@@ -4093,9 +3796,6 @@ type TeacherMutation {
 
     """Namespace cho COUNCIL MEMBER (thanh vien hoi dong) - Set role = 'council'"""
     council: CouncilMemberMutation!
-
-    """Namespace cho REVIEWER (giao vien phan bien) - Set role = 'reviewer'"""
-    reviewer: ReviewerMutation!
 }
 
 """
@@ -4159,13 +3859,6 @@ type CouncilMemberMutation {
 ReviewerMutation - Mutations cho giao vien phan bien
 Entry point: mutation { teacher { reviewer { ... } } }
 """
-type ReviewerMutation {
-    """Cap nhat grade review"""
-    updateGradeReview(id: ID!, input: UpdateGradeReviewInput!): GradeReview!
-
-    """Hoan thanh grade review"""
-    completeGradeReview(id: ID!): GradeReview!
-}
 
 # ============================================
 # AFFAIR MUTATION NAMESPACE
@@ -4334,8 +4027,6 @@ type TeacherQuery {
     """Namespace cho COUNCIL MEMBER (thanh vien hoi dong) - Set role = 'council'"""
     council: CouncilMemberQuery!
 
-    """Namespace cho REVIEWER (giao vien phan bien) - Set role = 'reviewer'"""
-    reviewer: ReviewerQuery!
 }
 
 """
@@ -4347,8 +4038,6 @@ type SupervisorQuery {
     """Lay danh sach topic council ma giao vien huong dan"""
     topicCouncils(search: SearchRequestInput): TopicCouncilListResponse!
 
-    """Lay chi tiet topic council"""
-    topicCouncilDetail(id: ID!): TopicCouncil
 }
 
 """
@@ -4359,22 +4048,12 @@ type CouncilMemberQuery {
     """Lay danh sach defence assignments cua giao vien"""
     defences(search: SearchRequestInput): DefenceListResponse!
 
-    """Lay chi tiet defence"""
-    defenceDetail(id: ID!): Defence
 }
 
 """
 ReviewerQuery - Queries cho giao vien phan bien
 Entry point: teacher { reviewer { ... } }
 """
-type ReviewerQuery {
-    """Lay danh sach grade review assignments cua giao vien"""
-    gradeReviews(search: SearchRequestInput): GradeReviewListResponse!
-
-    """Lay chi tiet grade review"""
-    gradeReviewDetail(id: ID!): GradeReview
-}
-
 # ============================================
 # AFFAIR QUERY NAMESPACE
 # Role: affair (Academic Affairs Staff)
@@ -4447,14 +4126,9 @@ type DepartmentQuery {
     """Lay danh sach giao vien trong bo mon"""
     teachers(search: SearchRequestInput!): TeacherListResponse!
 
-    """Lay chi tiet giao vien"""
-    teacherDetail(id: ID!): Teacher
 
     """Lay danh sach sinh vien trong bo mon"""
     students(search: SearchRequestInput!): StudentListResponse!
-
-    """Lay chi tiet sinh vien"""
-    studentDetail(id: ID!): Student
 
     """Lay danh sach semester"""
     semesters(search: SearchRequestInput!): SemesterListResponse!
@@ -4468,23 +4142,11 @@ type DepartmentQuery {
     """Lay danh sach tat ca topic trong bo mon"""
     topics(search: SearchRequestInput!): TopicListResponse!
 
-    """Lay chi tiet topic"""
-    topicDetail(id: ID!): Topic
-
     """Lay danh sach enrollment trong bo mon"""
     enrollments(search: SearchRequestInput!): EnrollmentListResponse!
 
-    """Lay chi tiet enrollment"""
-    enrollmentDetail(id: ID!): Enrollment
-
     """Lay danh sach council trong bo mon"""
     councils(search: SearchRequestInput!): CouncilListResponse!
-
-    """Lay chi tiet council"""
-    councilDetail(id: ID!): Council
-
-    """Lay danh sach defence cua council"""
-    defencesByCouncil(councilId: ID!): DefenceListResponse!
 
     """Lay danh sach grade defence"""
     gradeDefences(search: SearchRequestInput!): GradeDefenceListResponse!
@@ -4728,7 +4390,6 @@ type Enrollment {
     topicCouncil: TopicCouncil # all
     midterm: Midterm           # RBAC: supervisor, department, affair, student (chi cua minh)
     final: Final               # RBAC: supervisor, department, affair, student (chi cua minh)
-    gradeReview: GradeReview   # all
     gradeDefences: [GradeDefence!]  # RBAC: supervisor, department, student, affair
 }
 
@@ -4742,6 +4403,9 @@ type Midterm {
     updatedAt: Time
     createdBy: String
     updatedBy: String
+
+    # Relations
+    files: [File!]             # all
 }
 
 type Final {
@@ -4757,25 +4421,12 @@ type Final {
     updatedAt: Time
     createdBy: String
     updatedBy: String
-}
-
-type GradeReview {
-    id: ID!
-    title: String!
-    reviewGrade: Int
-    teacherCode: String!
-    status: FinalStatus!
-    notes: String
-    completionDate: Time
-    createdAt: Time
-    updatedAt: Time
-    createdBy: String
-    updatedBy: String
 
     # Relations
-    teacher: TeacherInfo       # all (dung TeacherInfo de an roles)
-    enrollment: Enrollment     # RBAC: reviewer only
+    files: [File!]             # all
 }
+
+
 
 """
 Council - Unified type
@@ -4921,11 +4572,6 @@ type GradeDefenceListResponse {
 type GradeDefenceCriterionListResponse {
     total: Int!
     data: [GradeDefenceCriterion!]!
-}
-
-type GradeReviewListResponse {
-    total: Int!
-    data: [GradeReview!]!
 }
 
 type MidtermListResponse {

@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// ReviewerMutation - Mutations cho giao vien phan bien
+// Entry point: mutation { teacher { reviewer { ... } } }
 type AffairMutation struct {
 	// Tao moi giao vien
 	CreateTeacher *Teacher `json:"createTeacher"`
@@ -57,6 +59,8 @@ type AffairMutation struct {
 	DeleteTopic bool `json:"deleteTopic"`
 }
 
+// ReviewerQuery - Queries cho giao vien phan bien
+// Entry point: teacher { reviewer { ... } }
 type AffairQuery struct {
 	// Lay danh sach giao vien
 	Teachers *TeacherListResponse `json:"teachers"`
@@ -140,8 +144,6 @@ type CouncilMemberMutation struct {
 type CouncilMemberQuery struct {
 	// Lay danh sach defence assignments cua giao vien
 	Defences *DefenceListResponse `json:"defences"`
-	// Lay chi tiet defence
-	DefenceDetail *Defence `json:"defenceDetail,omitempty"`
 }
 
 type CreateCouncilInput struct {
@@ -272,12 +274,8 @@ type DepartmentMutation struct {
 type DepartmentQuery struct {
 	// Lay danh sach giao vien trong bo mon
 	Teachers *TeacherListResponse `json:"teachers"`
-	// Lay chi tiet giao vien
-	TeacherDetail *Teacher `json:"teacherDetail,omitempty"`
 	// Lay danh sach sinh vien trong bo mon
 	Students *StudentListResponse `json:"students"`
-	// Lay chi tiet sinh vien
-	StudentDetail *Student `json:"studentDetail,omitempty"`
 	// Lay danh sach semester
 	Semesters *SemesterListResponse `json:"semesters"`
 	// Lay danh sach major trong bo mon
@@ -286,18 +284,10 @@ type DepartmentQuery struct {
 	Faculties *FacultyListResponse `json:"faculties"`
 	// Lay danh sach tat ca topic trong bo mon
 	Topics *TopicListResponse `json:"topics"`
-	// Lay chi tiet topic
-	TopicDetail *Topic `json:"topicDetail,omitempty"`
 	// Lay danh sach enrollment trong bo mon
 	Enrollments *EnrollmentListResponse `json:"enrollments"`
-	// Lay chi tiet enrollment
-	EnrollmentDetail *Enrollment `json:"enrollmentDetail,omitempty"`
 	// Lay danh sach council trong bo mon
 	Councils *CouncilListResponse `json:"councils"`
-	// Lay chi tiet council
-	CouncilDetail *Council `json:"councilDetail,omitempty"`
-	// Lay danh sach defence cua council
-	DefencesByCouncil *DefenceListResponse `json:"defencesByCouncil"`
 	// Lay danh sach grade defence
 	GradeDefences *GradeDefenceListResponse `json:"gradeDefences"`
 }
@@ -322,7 +312,6 @@ type Enrollment struct {
 	TopicCouncil     *TopicCouncil   `json:"topicCouncil,omitempty"`
 	Midterm          *Midterm        `json:"midterm,omitempty"`
 	Final            *Final          `json:"final,omitempty"`
-	GradeReview      *GradeReview    `json:"gradeReview,omitempty"`
 	GradeDefences    []*GradeDefence `json:"gradeDefences,omitempty"`
 }
 
@@ -395,6 +384,7 @@ type Final struct {
 	UpdatedAt       *time.Time  `json:"updatedAt,omitempty"`
 	CreatedBy       *string     `json:"createdBy,omitempty"`
 	UpdatedBy       *string     `json:"updatedBy,omitempty"`
+	Files           []*File     `json:"files,omitempty"`
 }
 
 type FinalListResponse struct {
@@ -451,27 +441,6 @@ type GradeMidtermInput struct {
 	Feedback *string       `json:"feedback,omitempty"`
 }
 
-type GradeReview struct {
-	ID             string       `json:"id"`
-	Title          string       `json:"title"`
-	ReviewGrade    *int32       `json:"reviewGrade,omitempty"`
-	TeacherCode    string       `json:"teacherCode"`
-	Status         FinalStatus  `json:"status"`
-	Notes          *string      `json:"notes,omitempty"`
-	CompletionDate *time.Time   `json:"completionDate,omitempty"`
-	CreatedAt      *time.Time   `json:"createdAt,omitempty"`
-	UpdatedAt      *time.Time   `json:"updatedAt,omitempty"`
-	CreatedBy      *string      `json:"createdBy,omitempty"`
-	UpdatedBy      *string      `json:"updatedBy,omitempty"`
-	Teacher        *TeacherInfo `json:"teacher,omitempty"`
-	Enrollment     *Enrollment  `json:"enrollment,omitempty"`
-}
-
-type GradeReviewListResponse struct {
-	Total int32          `json:"total"`
-	Data  []*GradeReview `json:"data"`
-}
-
 type Major struct {
 	ID          string     `json:"id"`
 	Title       string     `json:"title"`
@@ -506,6 +475,7 @@ type Midterm struct {
 	UpdatedAt *time.Time    `json:"updatedAt,omitempty"`
 	CreatedBy *string       `json:"createdBy,omitempty"`
 	UpdatedBy *string       `json:"updatedBy,omitempty"`
+	Files     []*File       `json:"files,omitempty"`
 }
 
 type MidtermListResponse struct {
@@ -524,24 +494,6 @@ type PaginationInput struct {
 }
 
 type Query struct {
-}
-
-// ReviewerMutation - Mutations cho giao vien phan bien
-// Entry point: mutation { teacher { reviewer { ... } } }
-type ReviewerMutation struct {
-	// Cap nhat grade review
-	UpdateGradeReview *GradeReview `json:"updateGradeReview"`
-	// Hoan thanh grade review
-	CompleteGradeReview *GradeReview `json:"completeGradeReview"`
-}
-
-// ReviewerQuery - Queries cho giao vien phan bien
-// Entry point: teacher { reviewer { ... } }
-type ReviewerQuery struct {
-	// Lay danh sach grade review assignments cua giao vien
-	GradeReviews *GradeReviewListResponse `json:"gradeReviews"`
-	// Lay chi tiet grade review
-	GradeReviewDetail *GradeReview `json:"gradeReviewDetail,omitempty"`
 }
 
 type RoleSystem struct {
@@ -659,8 +611,6 @@ type SupervisorMutation struct {
 type SupervisorQuery struct {
 	// Lay danh sach topic council ma giao vien huong dan
 	TopicCouncils *TopicCouncilListResponse `json:"topicCouncils"`
-	// Lay chi tiet topic council
-	TopicCouncilDetail *TopicCouncil `json:"topicCouncilDetail,omitempty"`
 }
 
 type Teacher struct {
@@ -700,8 +650,6 @@ type TeacherMutation struct {
 	Supervisor *SupervisorMutation `json:"supervisor"`
 	// Namespace cho COUNCIL MEMBER (thanh vien hoi dong) - Set role = 'council'
 	Council *CouncilMemberMutation `json:"council"`
-	// Namespace cho REVIEWER (giao vien phan bien) - Set role = 'reviewer'
-	Reviewer *ReviewerMutation `json:"reviewer"`
 }
 
 type TeacherQuery struct {
@@ -711,8 +659,6 @@ type TeacherQuery struct {
 	Supervisor *SupervisorQuery `json:"supervisor"`
 	// Namespace cho COUNCIL MEMBER (thanh vien hoi dong) - Set role = 'council'
 	Council *CouncilMemberQuery `json:"council"`
-	// Namespace cho REVIEWER (giao vien phan bien) - Set role = 'reviewer'
-	Reviewer *ReviewerQuery `json:"reviewer"`
 }
 
 // Topic - Unified type

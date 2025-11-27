@@ -52,9 +52,10 @@ type Loaders struct {
 	EnrollmentByTopicCouncilId  *DataLoader[string, []*model.Enrollment]
 	MidtermByID                 *DataLoader[string, *model.Midterm]
 	FinalByID                   *DataLoader[string, *model.Final]
-	GradeViewById               *DataLoader[string, *model.GradeReview]
 	SupervisorsByTopicCouncilId *DataLoader[string, []*model.TopicCouncilSupervisor]
 	FilesByTopicId              *DataLoader[string, []*model.File]
+	FilesByMidtermId            *DataLoader[string, []*model.File]
+	FilesByFinalId              *DataLoader[string, []*model.File]
 }
 
 // NewLoaders creates a new Loaders instance with all dataloaders
@@ -197,16 +198,20 @@ func NewLoaders(
 			createFinalBatchFunc(thesisClient),
 			defaultConfig,
 		),
-		GradeViewById: NewDataLoader(
-			createGradeViewBatchFunc(thesisClient),
-			defaultConfig,
-		),
 		SupervisorsByTopicCouncilId: NewDataLoader(
 			createSupervisorsByTopicCouncilIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
 		FilesByTopicId: NewDataLoader(
 			createFilesByTopicIdBatchFunc(fileClient),
+			defaultConfig,
+		),
+		FilesByMidtermId: NewDataLoader(
+			createFilesByMidtermIdBatchFunc(fileClient),
+			defaultConfig,
+		),
+		FilesByFinalId: NewDataLoader(
+			createFilesByFinalIdBatchFunc(fileClient),
 			defaultConfig,
 		),
 	}

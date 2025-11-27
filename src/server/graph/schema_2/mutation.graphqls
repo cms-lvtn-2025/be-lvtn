@@ -45,9 +45,6 @@ type TeacherMutation {
 
     """Namespace cho COUNCIL MEMBER (thanh vien hoi dong) - Set role = 'council'"""
     council: CouncilMemberMutation!
-
-    """Namespace cho REVIEWER (giao vien phan bien) - Set role = 'reviewer'"""
-    reviewer: ReviewerMutation!
 }
 
 """
@@ -111,13 +108,6 @@ type CouncilMemberMutation {
 ReviewerMutation - Mutations cho giao vien phan bien
 Entry point: mutation { teacher { reviewer { ... } } }
 """
-type ReviewerMutation {
-    """Cap nhat grade review"""
-    updateGradeReview(id: ID!, input: UpdateGradeReviewInput!): GradeReview!
-
-    """Hoan thanh grade review"""
-    completeGradeReview(id: ID!): GradeReview!
-}
 
 # ============================================
 # AFFAIR MUTATION NAMESPACE

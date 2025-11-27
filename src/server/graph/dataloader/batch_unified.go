@@ -407,41 +407,6 @@ func createFinalBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.Fi
 	}
 }
 
-// createGradeViewBatchFunc creates a batch function for loading GradeReview
-func createGradeViewBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.GradeReview] {
-	return func(ctx context.Context, ids []string) (map[string]*model.GradeReview, error) {
-		result := make(map[string]*model.GradeReview)
-		if len(ids) == 0 {
-			return result, nil
-		}
-
-		resp, err := client.GetGradeReviewsByIds(ctx, ids)
-		if err != nil {
-			log.Printf("[DataLoader] Batch fetch failed, falling back to individual: %v", err)
-			for _, id := range ids {
-				gradeReview, err := client.GetGradeReviewById(ctx, id)
-				if err != nil {
-					continue
-				}
-				if gradeReview != nil && gradeReview.GetGradeReview() != nil {
-					result[id] = convert.PbGradeReviewToModel(gradeReview.GetGradeReview())
-				}
-			}
-			return result, nil
-		}
-
-		if resp != nil && resp.GradeReviews != nil {
-			for _, pbGradeReview := range resp.GradeReviews {
-				if pbGradeReview != nil {
-					result[pbGradeReview.Id] = convert.PbGradeReviewToModel(pbGradeReview)
-				}
-			}
-		}
-
-		return result, nil
-	}
-}
-
 // ============================================
 // HELPER CONVERTER FUNCTIONS
 // ============================================

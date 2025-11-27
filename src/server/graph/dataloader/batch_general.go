@@ -397,6 +397,79 @@ func createFilesByTopicIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []
 	}
 }
 
+// createFilesByTopicIdBatchFunc creates a batch function for loading files by topic ID
+func createFilesByMidtermIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []*model.File] {
+	return func(ctx context.Context, midtermIds []string) (map[string][]*model.File, error) {
+		result := make(map[string][]*model.File)
+
+		for _, midtermId := range midtermIds {
+			searchRequest := &common.SearchRequest{
+				Pagination: &common.Pagination{
+					Page:     1,
+					PageSize: 100,
+				},
+				Filters: []*common.FilterCriteria{
+					{
+						Criteria: &common.FilterCriteria_Condition{
+							Condition: &common.FilterCondition{
+								Field:    "midterm_code",
+								Operator: common.FilterOperator_EQUAL,
+								Values:   []string{midtermId},
+							},
+						},
+					},
+				},
+			}
+
+			files, err := client.GetFileBySearch(ctx, searchRequest)
+			if err != nil {
+				result[midtermId] = []*model.File{}
+				continue
+			}
+
+			result[midtermId] = convert.PbFilesToModel(files.GetFiles())
+		}
+
+		return result, nil
+	}
+}
+
+func createFilesByFinalIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []*model.File] {
+	return func(ctx context.Context, finalIds []string) (map[string][]*model.File, error) {
+		result := make(map[string][]*model.File)
+
+		for _, finalId := range finalIds {
+			searchRequest := &common.SearchRequest{
+				Pagination: &common.Pagination{
+					Page:     1,
+					PageSize: 100,
+				},
+				Filters: []*common.FilterCriteria{
+					{
+						Criteria: &common.FilterCriteria_Condition{
+							Condition: &common.FilterCondition{
+								Field:    "final_code",
+								Operator: common.FilterOperator_EQUAL,
+								Values:   []string{finalId},
+							},
+						},
+					},
+				},
+			}
+
+			files, err := client.GetFileBySearch(ctx, searchRequest)
+			if err != nil {
+				result[finalId] = []*model.File{}
+				continue
+			}
+
+			result[finalId] = convert.PbFilesToModel(files.GetFiles())
+		}
+
+		return result, nil
+	}
+}
+
 // createTopicCouncilsByTopicIdBatchFunc creates a batch function for loading topic councils by topic ID
 func createTopicCouncilsByTopicIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.TopicCouncil] {
 	return func(ctx context.Context, topicIds []string) (map[string][]*model.TopicCouncil, error) {

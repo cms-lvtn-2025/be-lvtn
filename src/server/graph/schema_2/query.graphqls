@@ -49,8 +49,6 @@ type TeacherQuery {
     """Namespace cho COUNCIL MEMBER (thanh vien hoi dong) - Set role = 'council'"""
     council: CouncilMemberQuery!
 
-    """Namespace cho REVIEWER (giao vien phan bien) - Set role = 'reviewer'"""
-    reviewer: ReviewerQuery!
 }
 
 """
@@ -62,8 +60,6 @@ type SupervisorQuery {
     """Lay danh sach topic council ma giao vien huong dan"""
     topicCouncils(search: SearchRequestInput): TopicCouncilListResponse!
 
-    """Lay chi tiet topic council"""
-    topicCouncilDetail(id: ID!): TopicCouncil
 }
 
 """
@@ -74,22 +70,12 @@ type CouncilMemberQuery {
     """Lay danh sach defence assignments cua giao vien"""
     defences(search: SearchRequestInput): DefenceListResponse!
 
-    """Lay chi tiet defence"""
-    defenceDetail(id: ID!): Defence
 }
 
 """
 ReviewerQuery - Queries cho giao vien phan bien
 Entry point: teacher { reviewer { ... } }
 """
-type ReviewerQuery {
-    """Lay danh sach grade review assignments cua giao vien"""
-    gradeReviews(search: SearchRequestInput): GradeReviewListResponse!
-
-    """Lay chi tiet grade review"""
-    gradeReviewDetail(id: ID!): GradeReview
-}
-
 # ============================================
 # AFFAIR QUERY NAMESPACE
 # Role: affair (Academic Affairs Staff)
@@ -162,14 +148,9 @@ type DepartmentQuery {
     """Lay danh sach giao vien trong bo mon"""
     teachers(search: SearchRequestInput!): TeacherListResponse!
 
-    """Lay chi tiet giao vien"""
-    teacherDetail(id: ID!): Teacher
 
     """Lay danh sach sinh vien trong bo mon"""
     students(search: SearchRequestInput!): StudentListResponse!
-
-    """Lay chi tiet sinh vien"""
-    studentDetail(id: ID!): Student
 
     """Lay danh sach semester"""
     semesters(search: SearchRequestInput!): SemesterListResponse!
@@ -183,23 +164,11 @@ type DepartmentQuery {
     """Lay danh sach tat ca topic trong bo mon"""
     topics(search: SearchRequestInput!): TopicListResponse!
 
-    """Lay chi tiet topic"""
-    topicDetail(id: ID!): Topic
-
     """Lay danh sach enrollment trong bo mon"""
     enrollments(search: SearchRequestInput!): EnrollmentListResponse!
 
-    """Lay chi tiet enrollment"""
-    enrollmentDetail(id: ID!): Enrollment
-
     """Lay danh sach council trong bo mon"""
     councils(search: SearchRequestInput!): CouncilListResponse!
-
-    """Lay chi tiet council"""
-    councilDetail(id: ID!): Council
-
-    """Lay danh sach defence cua council"""
-    defencesByCouncil(councilId: ID!): DefenceListResponse!
 
     """Lay danh sach grade defence"""
     gradeDefences(search: SearchRequestInput!): GradeDefenceListResponse!

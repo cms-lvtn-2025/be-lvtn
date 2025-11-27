@@ -427,70 +427,6 @@ func PbTopicCouncilSupervisorsToModel(pbs []*thesis.TopicCouncilSupervisor) []*m
 	return result
 }
 
-// PbGradeReviewToModel converts protobuf GradeReview to GraphQL GradeReview
-func PbGradeReviewToModel(pb *thesis.GradeReview) *model.GradeReview {
-	if pb == nil {
-		return nil
-	}
-
-	result := &model.GradeReview{
-		ID:          pb.Id,
-		Title:       pb.Title,
-		TeacherCode: pb.TeacherCode,
-		Status:      PbFinalStatusToModel(pb.Status),
-	}
-
-	// Handle optional ReviewGrade
-	if pb.ReviewGrade != nil {
-		result.ReviewGrade = pb.ReviewGrade
-	}
-
-	// Handle optional Notes
-	if pb.Notes != nil {
-		result.Notes = pb.Notes
-	}
-
-	// Handle timestamps
-	if pb.CompletionDate != nil {
-		t := pb.CompletionDate.AsTime()
-		result.CompletionDate = &t
-	}
-	if pb.CreatedAt != nil {
-		t := pb.CreatedAt.AsTime()
-		result.CreatedAt = &t
-	}
-	if pb.UpdatedAt != nil {
-		t := pb.UpdatedAt.AsTime()
-		result.UpdatedAt = &t
-	}
-
-	// Handle CreatedBy/UpdatedBy
-	if pb.CreatedBy != "" {
-		result.CreatedBy = &pb.CreatedBy
-	}
-	if pb.UpdatedBy != "" {
-		result.UpdatedBy = &pb.UpdatedBy
-	}
-
-	return result
-}
-
-// PbGradeReviewsToModel converts array of protobuf GradeReviews to GraphQL GradeReviews
-func PbGradeReviewsToModel(pbs []*thesis.GradeReview) []*model.GradeReview {
-	if pbs == nil {
-		return nil
-	}
-
-	result := make([]*model.GradeReview, 0, len(pbs))
-	for _, pb := range pbs {
-		if pb != nil {
-			result = append(result, PbGradeReviewToModel(pb))
-		}
-	}
-	return result
-}
-
-
 // ============================================
 // LIST RESPONSE FACTORY FUNCTIONS
 // ============================================
@@ -544,10 +480,3 @@ func CreateTopicCouncilListResponse(topicCouncils []*model.TopicCouncil, total i
 // }
 
 // CreateGradeReviewListResponse creates a GradeReviewListResponse
-func CreateGradeReviewListResponse(gradeReviews []*model.GradeReview, total int32) *model.GradeReviewListResponse {
-	return &model.GradeReviewListResponse{
-		Data:  gradeReviews,
-		Total: total,
-	}
-}
-

@@ -88,8 +88,6 @@ models:
         resolver: true
       council:
         resolver: true
-      reviewer:
-        resolver: true
 
   SupervisorQuery:
     fields:
@@ -105,12 +103,6 @@ models:
       defenceDetail:
         resolver: true
 
-  ReviewerQuery:
-    fields:
-      gradeReviews:
-        resolver: true
-      gradeReviewDetail:
-        resolver: true
 
   AffairQuery:
     fields:
@@ -202,8 +194,6 @@ models:
         resolver: true
       council:
         resolver: true
-      reviewer:
-        resolver: true
 
   SupervisorMutation:
     fields:
@@ -241,12 +231,6 @@ models:
       deleteCriterion:
         resolver: true
 
-  ReviewerMutation:
-    fields:
-      updateGradeReview:
-        resolver: true
-      completeGradeReview:
-        resolver: true
 
   AffairMutation:
     fields:
@@ -364,17 +348,17 @@ models:
         resolver: true
       topicCouncil:
         resolver: true
-      gradeReview:
-        resolver: true
       gradeDefences:
         resolver: true
-
-  GradeReview:
+  Midterm:
     fields:
-      teacher:
+      files:
         resolver: true
-      enrollment:
+  Final:
+    fields:
+      files:
         resolver: true
+
 
   Council:
     fields:

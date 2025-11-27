@@ -123,13 +123,6 @@ func (c *Controller) GetFinalById(ctx context.Context, id string) (*model.Final,
 }
 
 // GetGradeReviewById returns a grade review by ID
-func (c *Controller) GetGradeReviewById(ctx context.Context, id string) (*model.GradeReview, error) {
-	gradeReview, err := c.thesis.GetGradeReviewById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return convert.PbGradeReviewToModel(gradeReview.GetGradeReview()), nil
-}
 
 // GetDefencesByCouncil returns all defences for a council
 func (c *Controller) GetDefencesByCouncil(ctx context.Context, councilID string) (*model.DefenceListResponse, error) {

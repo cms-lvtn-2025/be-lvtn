@@ -64,10 +64,6 @@ type MutationResolver interface {
 	Affair(ctx context.Context) (*model.AffairMutation, error)
 	Department(ctx context.Context) (*model.DepartmentMutation, error)
 }
-type ReviewerMutationResolver interface {
-	UpdateGradeReview(ctx context.Context, obj *model.ReviewerMutation, id string, input model.UpdateGradeReviewInput) (*model.GradeReview, error)
-	CompleteGradeReview(ctx context.Context, obj *model.ReviewerMutation, id string) (*model.GradeReview, error)
-}
 type StudentMutationResolver interface {
 	UploadMidtermFile(ctx context.Context, obj *model.StudentMutation, input model.UploadFileInput) (*model.File, error)
 	UploadFinalFile(ctx context.Context, obj *model.StudentMutation, input model.UploadFileInput) (*model.File, error)
@@ -88,7 +84,6 @@ type TeacherMutationResolver interface {
 	UpdateProfile(ctx context.Context, obj *model.TeacherMutation, input model.UpdateTeacherProfileInput) (*model.Teacher, error)
 	Supervisor(ctx context.Context, obj *model.TeacherMutation) (*model.SupervisorMutation, error)
 	Council(ctx context.Context, obj *model.TeacherMutation) (*model.CouncilMemberMutation, error)
-	Reviewer(ctx context.Context, obj *model.TeacherMutation) (*model.ReviewerMutation, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -548,33 +543,6 @@ func (ec *executionContext) field_DepartmentMutation_updateCouncil_args(ctx cont
 	}
 	args["id"] = arg0
 	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateCouncilInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐUpdateCouncilInput)
-	if err != nil {
-		return nil, err
-	}
-	args["input"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_ReviewerMutation_completeGradeReview_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
-	if err != nil {
-		return nil, err
-	}
-	args["id"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_ReviewerMutation_updateGradeReview_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
-	if err != nil {
-		return nil, err
-	}
-	args["id"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateGradeReviewInput2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐUpdateGradeReviewInput)
 	if err != nil {
 		return nil, err
 	}
@@ -2893,8 +2861,6 @@ func (ec *executionContext) fieldContext_Mutation_teacher(_ context.Context, fie
 				return ec.fieldContext_TeacherMutation_supervisor(ctx, field)
 			case "council":
 				return ec.fieldContext_TeacherMutation_council(ctx, field)
-			case "reviewer":
-				return ec.fieldContext_TeacherMutation_reviewer(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TeacherMutation", field.Name)
 		},
@@ -3020,144 +2986,6 @@ func (ec *executionContext) fieldContext_Mutation_department(_ context.Context, 
 			}
 			return nil, fmt.Errorf("no field named %q was found under type DepartmentMutation", field.Name)
 		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ReviewerMutation_updateGradeReview(ctx context.Context, field graphql.CollectedField, obj *model.ReviewerMutation) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_ReviewerMutation_updateGradeReview,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.ReviewerMutation().UpdateGradeReview(ctx, obj, fc.Args["id"].(string), fc.Args["input"].(model.UpdateGradeReviewInput))
-		},
-		nil,
-		ec.marshalNGradeReview2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeReview,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_ReviewerMutation_updateGradeReview(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ReviewerMutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_GradeReview_id(ctx, field)
-			case "title":
-				return ec.fieldContext_GradeReview_title(ctx, field)
-			case "reviewGrade":
-				return ec.fieldContext_GradeReview_reviewGrade(ctx, field)
-			case "teacherCode":
-				return ec.fieldContext_GradeReview_teacherCode(ctx, field)
-			case "status":
-				return ec.fieldContext_GradeReview_status(ctx, field)
-			case "notes":
-				return ec.fieldContext_GradeReview_notes(ctx, field)
-			case "completionDate":
-				return ec.fieldContext_GradeReview_completionDate(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_GradeReview_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_GradeReview_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_GradeReview_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_GradeReview_updatedBy(ctx, field)
-			case "teacher":
-				return ec.fieldContext_GradeReview_teacher(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_GradeReview_enrollment(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type GradeReview", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_ReviewerMutation_updateGradeReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _ReviewerMutation_completeGradeReview(ctx context.Context, field graphql.CollectedField, obj *model.ReviewerMutation) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_ReviewerMutation_completeGradeReview,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.ReviewerMutation().CompleteGradeReview(ctx, obj, fc.Args["id"].(string))
-		},
-		nil,
-		ec.marshalNGradeReview2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeReview,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_ReviewerMutation_completeGradeReview(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "ReviewerMutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_GradeReview_id(ctx, field)
-			case "title":
-				return ec.fieldContext_GradeReview_title(ctx, field)
-			case "reviewGrade":
-				return ec.fieldContext_GradeReview_reviewGrade(ctx, field)
-			case "teacherCode":
-				return ec.fieldContext_GradeReview_teacherCode(ctx, field)
-			case "status":
-				return ec.fieldContext_GradeReview_status(ctx, field)
-			case "notes":
-				return ec.fieldContext_GradeReview_notes(ctx, field)
-			case "completionDate":
-				return ec.fieldContext_GradeReview_completionDate(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_GradeReview_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_GradeReview_updatedAt(ctx, field)
-			case "createdBy":
-				return ec.fieldContext_GradeReview_createdBy(ctx, field)
-			case "updatedBy":
-				return ec.fieldContext_GradeReview_updatedBy(ctx, field)
-			case "teacher":
-				return ec.fieldContext_GradeReview_teacher(ctx, field)
-			case "enrollment":
-				return ec.fieldContext_GradeReview_enrollment(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type GradeReview", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_ReviewerMutation_completeGradeReview_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
@@ -3481,6 +3309,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_gradeMidterm(ctx con
 				return ec.fieldContext_Midterm_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Midterm_updatedBy(ctx, field)
+			case "files":
+				return ec.fieldContext_Midterm_files(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Midterm", field.Name)
 		},
@@ -3542,6 +3372,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_feedbackMidterm(ctx 
 				return ec.fieldContext_Midterm_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Midterm_updatedBy(ctx, field)
+			case "files":
+				return ec.fieldContext_Midterm_files(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Midterm", field.Name)
 		},
@@ -3609,6 +3441,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_gradeFinal(ctx conte
 				return ec.fieldContext_Final_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Final_updatedBy(ctx, field)
+			case "files":
+				return ec.fieldContext_Final_files(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Final", field.Name)
 		},
@@ -3676,6 +3510,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_feedbackFinal(ctx co
 				return ec.fieldContext_Final_createdBy(ctx, field)
 			case "updatedBy":
 				return ec.fieldContext_Final_updatedBy(ctx, field)
+			case "files":
+				return ec.fieldContext_Final_files(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Final", field.Name)
 		},
@@ -4108,41 +3944,6 @@ func (ec *executionContext) fieldContext_TeacherMutation_council(_ context.Conte
 				return ec.fieldContext_CouncilMemberMutation_deleteCriterion(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CouncilMemberMutation", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _TeacherMutation_reviewer(ctx context.Context, field graphql.CollectedField, obj *model.TeacherMutation) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_TeacherMutation_reviewer,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.TeacherMutation().Reviewer(ctx, obj)
-		},
-		nil,
-		ec.marshalNReviewerMutation2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐReviewerMutation,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_TeacherMutation_reviewer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TeacherMutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "updateGradeReview":
-				return ec.fieldContext_ReviewerMutation_updateGradeReview(ctx, field)
-			case "completeGradeReview":
-				return ec.fieldContext_ReviewerMutation_completeGradeReview(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ReviewerMutation", field.Name)
 		},
 	}
 	return fc, nil
@@ -5592,112 +5393,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
-var reviewerMutationImplementors = []string{"ReviewerMutation"}
-
-func (ec *executionContext) _ReviewerMutation(ctx context.Context, sel ast.SelectionSet, obj *model.ReviewerMutation) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, reviewerMutationImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ReviewerMutation")
-		case "updateGradeReview":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._ReviewerMutation_updateGradeReview(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "completeGradeReview":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._ReviewerMutation_completeGradeReview(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var studentMutationImplementors = []string{"StudentMutation"}
 
 func (ec *executionContext) _StudentMutation(ctx context.Context, sel ast.SelectionSet, obj *model.StudentMutation) graphql.Marshaler {
@@ -6317,42 +6012,6 @@ func (ec *executionContext) _TeacherMutation(ctx context.Context, sel ast.Select
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "reviewer":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._TeacherMutation_reviewer(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6420,20 +6079,6 @@ func (ec *executionContext) marshalNDepartmentMutation2ᚖthailyᚋsrcᚋserver�
 		return graphql.Null
 	}
 	return ec._DepartmentMutation(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNReviewerMutation2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐReviewerMutation(ctx context.Context, sel ast.SelectionSet, v model.ReviewerMutation) graphql.Marshaler {
-	return ec._ReviewerMutation(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNReviewerMutation2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐReviewerMutation(ctx context.Context, sel ast.SelectionSet, v *model.ReviewerMutation) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._ReviewerMutation(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNStudentMutation2thailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudentMutation(ctx context.Context, sel ast.SelectionSet, v model.StudentMutation) graphql.Marshaler {
