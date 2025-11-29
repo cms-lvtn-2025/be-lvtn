@@ -47,3 +47,14 @@ logs/
 !.github/workflows/*.yml
 !docker-compose*.yml
 !**/docker-compose*.yml
+# Bỏ qua tất cả file log
+*.log
+src/service/*/log/*.json
+
+# Bỏ qua các folder chứa binary/temp build
+tmp-*/
+src/service/*/tmp-*/
+
+# Bỏ qua file binary (nếu code Go)
+*.exe
+*.test
