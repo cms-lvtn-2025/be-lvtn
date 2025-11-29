@@ -22,7 +22,7 @@ type GRPCfile struct {
 
 const (
 	// Cache TTL configurations
-	fileCacheTTL = 15 * time.Minute // Files are relatively stable once uploaded
+	fileCacheTTL = 1 * time.Minute // Files are relatively stable once uploaded
 
 	// Cache key prefixes
 	fileCachePrefix = "file:file:"
@@ -95,7 +95,7 @@ func (f *GRPCfile) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*
 	}
 
 	// Invalidate search caches (new file added)
-	InvalidateCacheByPattern(ctx, f.redisClient, fileCachePrefix+"search:*")
+	InvalidateCacheByPattern(ctx, f.redisClient, fileCachePrefix+"*")
 
 	return resp, nil
 }

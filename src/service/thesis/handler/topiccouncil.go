@@ -288,6 +288,8 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 		"stage":        true,
 		"topic_code":   true,
 		"council_code": true,
+		"time_start":   true,
+		"time_end":     true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
 		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)

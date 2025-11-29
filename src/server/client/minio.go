@@ -61,9 +61,8 @@ func NewServiceMinIo(cfg config.MinioConfig) (*ServiceMinIo, error) {
 
 // UploadFile uploads a file to MinIO
 func (s *ServiceMinIo) UploadFile(ctx context.Context, objectName string, reader interface{}, objectSize int64, contentType string) (string, error) {
-	bucketName := s.config.BucketName
 
-	_, err := s.client.PutObject(ctx, bucketName, objectName, reader.(interface {
+	_, err := s.client.PutObject(ctx, s.config.BucketName, objectName, reader.(interface {
 		Read(p []byte) (n int, err error)
 		Seek(offset int64, whence int) (int64, error)
 	}), objectSize, minio.PutObjectOptions{
@@ -74,11 +73,11 @@ func (s *ServiceMinIo) UploadFile(ctx context.Context, objectName string, reader
 	}
 
 	// Generate file URL
-	fileURL := fmt.Sprintf("%s/%s/%s", s.config.Endpoint, bucketName, objectName)
+	fileURL := fmt.Sprintf("%s", objectName)
 	if s.config.UseSSL {
-		fileURL = fmt.Sprintf("https://%s/%s/%s", s.config.Endpoint, bucketName, objectName)
+		fileURL = fmt.Sprintf("%s", objectName)
 	} else {
-		fileURL = fmt.Sprintf("http://%s/%s/%s", s.config.Endpoint, bucketName, objectName)
+		fileURL = fmt.Sprintf("%s", objectName)
 	}
 
 	log.Printf("File uploaded successfully: %s", fileURL)
@@ -102,8 +101,8 @@ func (s *ServiceMinIo) DeleteFile(ctx context.Context, objectName string) error 
 func (s *ServiceMinIo) GetFileURL(ctx context.Context, objectName string) (string, error) {
 	bucketName := s.config.BucketName
 
-	// Generate presigned URL valid for 7 days
-	url, err := s.client.PresignedGetObject(ctx, bucketName, objectName, 7*24*60*60*1000000000, nil)
+	// Generate presigned URL valid for 5 minutes
+	url, err := s.client.PresignedGetObject(ctx, bucketName, objectName, 5*60*1000000000, nil)
 	if err != nil {
 		return "", fmt.Errorf("failed to generate presigned URL: %w", err)
 	}

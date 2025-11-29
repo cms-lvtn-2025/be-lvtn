@@ -14,8 +14,10 @@ type APIHandler struct {
 	AcademicClient *client.GRPCAcadamicClient
 	FileClient     *client.GRPCfile
 	Redis          *client.RedisClient
+	RoleClient     *client.GRPCRole
 	Mongodb        *client.MongoClient
 	MimIo          *client.ServiceMinIo
+	ThesisClient   *client.GRPCthesis
 	// Thêm các client khác nếu cần
 }
 
@@ -48,6 +50,13 @@ func WithAcademicClient(client *client.GRPCAcadamicClient) ClientOption {
 	}
 }
 
+// WithRoleClient inject role client
+func WithRoleClient(client *client.GRPCRole) ClientOption {
+	return func(h *APIHandler) {
+		h.RoleClient = client
+	}
+}
+
 // WithFileClient inject file client
 func WithFileClient(client *client.GRPCfile) ClientOption {
 	return func(h *APIHandler) {
@@ -55,28 +64,37 @@ func WithFileClient(client *client.GRPCfile) ClientOption {
 	}
 }
 
+// WithRedisClient inject redis client
 func WithRedisClient(client *client.RedisClient) ClientOption {
 	return func(h *APIHandler) {
 		h.Redis = client
 	}
-
 }
 
+// WithMongoClient inject mongo client
 func WithMongoClient(client *client.MongoClient) ClientOption {
 	return func(h *APIHandler) {
 		h.Mongodb = client
 	}
 }
 
+// WithMimIo inject MinIO client
 func WithMimIo(client *client.ServiceMinIo) ClientOption {
 	return func(h *APIHandler) {
 		h.MimIo = client
 	}
 }
 
+// WithConfig inject config
 func WithConfig(cfg *config.Config) ClientOption {
 	return func(h *APIHandler) {
 		h.Config = cfg
+	}
+}
+
+func WithThesisClient(client *client.GRPCthesis) ClientOption {
+	return func(h *APIHandler) {
+		h.ThesisClient = client
 	}
 }
 
@@ -95,21 +113,21 @@ func (h *APIHandler) RegisterRoutes(r *gin.RouterGroup) {
 	files := r.Group("/files")
 	{
 		// Upload endpoints - require authentication
-		files.POST("/upload/list-student", AuthMiddleware(h.Config.JWT), h.UploadListStudentFile)
-		files.POST("/upload/list-teacher", AuthMiddleware(h.Config.JWT), h.UploadListTeacherFile)
-		files.POST("/upload/final", AuthMiddleware(h.Config.JWT), h.UploadFinalFile)
-		files.POST("/upload/midterm", AuthMiddleware(h.Config.JWT), h.UploadFinalFile)
 
-		// Get file info
-		files.GET("/:id", AuthMiddleware(h.Config.JWT), h.GetFile)
+		files.POST("/upload/grade-supervisor", AuthMiddleware(h.Config.JWT), h.UploadGradeSuppervisorFile)
+		files.POST("/upload/grade-defence", AuthMiddleware(h.Config.JWT), h.UploadGradeDefenceFile)
+		files.POST("/upload/topic-council-for-department", AuthMiddleware(h.Config.JWT), h.UploadTopicCouncilForDepartmentFile)
+		files.POST("/upload/council-for-department", AuthMiddleware(h.Config.JWT), h.UploadCouncilForDepartmentFile)
+		files.POST("/upload/council-for-affair", AuthMiddleware(h.Config.JWT), h.UploadCouncilForAffairFile)
+		files.POST("/upload/final", AuthMiddleware(h.Config.JWT), h.UploadFinalFile)
+		files.POST("/upload/midterm", AuthMiddleware(h.Config.JWT), h.UploadMidtermFile)
+		files.POST("/upload/student-for-affair", AuthMiddleware(h.Config.JWT), h.UploadUserForAffairFile)
+		files.POST("/upload/teacher-for-affair", AuthMiddleware(h.Config.JWT), h.UploadTeacherForAffairFile)
 		// Get presigned download URL
 		files.GET("/:id/url", AuthMiddleware(h.Config.JWT), h.GetFileURL)
 		// Delete file
 		files.DELETE("/:id", AuthMiddleware(h.Config.JWT), h.DeleteFile)
-		// List files
-		files.GET("", AuthMiddleware(h.Config.JWT), h.ListFiles)
-
 		// Public blob endpoint - uses token in query string
-		files.GET("/blob", h.GetFileBlob)
+		files.GET("/list/excel", AuthMiddleware(h.Config.JWT), h.ListFilesExcel)
 	}
 }

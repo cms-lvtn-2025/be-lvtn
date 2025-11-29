@@ -4,10 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
+	pbCommon "thaily/proto/common"
 	"thaily/src/server/auth"
+	"thaily/src/server/graph/helper"
 	"thaily/src/server/response"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // Request/Response models
@@ -167,4 +171,98 @@ func (h *APIHandler) Logout(c *gin.Context) {
 	}
 
 	response.SuccessWithMessage(c, "Logout successful", nil)
+}
+
+func (h *APIHandler) extractRole(c *gin.Context, id string) ([]string, error) {
+	if h.RoleClient == nil {
+		return nil, fmt.Errorf("role client not initialized")
+	}
+	newSearch := &pbCommon.SearchRequest{
+		Filters: []*pbCommon.FilterCriteria{
+			{
+				Criteria: &pbCommon.FilterCriteria_Condition{
+					Condition: &pbCommon.FilterCondition{
+						Field:    "teacher_code",
+						Operator: pbCommon.FilterOperator_EQUAL,
+						Values:   []string{id},
+					},
+				},
+			},
+		},
+	}
+	roles, err := h.RoleClient.GetRoleBySearch(c.Request.Context(), newSearch)
+	if err != nil {
+		return nil, err
+	}
+	if roles == nil || roles.RoleSystems == nil {
+		return nil, fmt.Errorf("role not found")
+	}
+	result := []string{}
+	for _, role := range roles.RoleSystems {
+		result = append(result, string(role.Role))
+	}
+	return result, nil
+}
+
+// extractUserInfo extracts user information from context
+func (h *APIHandler) extractUserInfo(c *gin.Context) (*UserInfo, error) {
+	// Use c.Get() instead of c.Value() for gin.Context
+	claimsValue, exists := c.Get(helper.Auth)
+	if !exists {
+		return nil, fmt.Errorf("not authorized - claims not found")
+	}
+
+	claims, ok := claimsValue.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("not authorized - invalid claims type")
+	}
+
+	role, ok := claims["role"].(string)
+	if !ok {
+		return nil, fmt.Errorf("role not found in claims")
+	}
+	// Get semester from context (might be empty)
+	semester := c.GetHeader("x-semester")
+
+	// Parse IDs from claims
+	idsStr, ok := claims["ids"].(string)
+	if !ok {
+		return nil, fmt.Errorf("ids not found in claims")
+	}
+
+	idsArr := strings.Split(idsStr, ",")
+	myID := ""
+
+	if semester == "" {
+		// If no semester specified, use first ID
+		if len(idsArr) > 0 {
+			parts := strings.Split(idsArr[0], ":")
+			if len(parts) > 1 {
+				myID = parts[1]
+				semester = parts[0]
+			}
+		}
+	} else {
+		// Find ID matching the semester
+		for _, id := range idsArr {
+			if strings.HasPrefix(id, semester+":") {
+				parts := strings.Split(id, ":")
+				if len(parts) > 1 {
+					myID = parts[1]
+					break
+				}
+			}
+		}
+	}
+
+	if myID == "" {
+		return nil, fmt.Errorf("no user ID found for semester %s", semester)
+	}
+
+	return &UserInfo{
+		Role:     role,
+		Semester: semester,
+		UserID:   myID,
+		IDs:      idsArr,
+	}, nil
 }

@@ -109,6 +109,8 @@ func setupRestAPI(r *gin.Engine, c *container.Container) {
 		api.WithRedisClient(c.Clients.Redis),
 		api.WithMongoClient(c.Clients.MongoDB),
 		api.WithMimIo(c.Clients.MinIO),
+		api.WithThesisClient(c.Clients.Thesis),
+		api.WithRoleClient(c.Clients.Role),
 	)
 
 	// Register routes

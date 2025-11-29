@@ -242,7 +242,7 @@ type Midterm {
     updatedBy: String
 
     # Relations
-    files: [File!]             # all
+    files: [File!]
 }
 
 type Final {

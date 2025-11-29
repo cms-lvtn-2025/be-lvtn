@@ -966,8 +966,7 @@ func (t *GRPCthesis) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.C
 	if err != nil {
 		return nil, err
 	}
-	cacheKey := fmt.Sprintf("%s%s", topicCouncilSupervisorCachePrefix, resp.TopicCouncilSupervisor.Id)
-	SetCachedProto(ctx, t.redisClient, cacheKey, resp, topicCouncilSupervisorCacheTTL)
+	InvalidateCacheByPattern(ctx, t.redisClient, topicCouncilSupervisorCachePrefix+"*")
 	return resp, nil
 }
 

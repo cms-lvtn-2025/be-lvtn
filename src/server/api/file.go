@@ -1,31 +1,53 @@
 package api
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
-	"path/filepath"
+	"slices"
 	"strings"
-	"thaily/src/server/graph/helper"
 	"thaily/src/server/response"
 	"time"
 
 	pb "thaily/proto/file"
+	"thaily/proto/thesis"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // FileUploadType represents different upload destinations
 type FileUploadType string
 
 const (
-	UploadTypeTemplate    FileUploadType = "template"     // tmp_template/{semester}/{teacher_id}
-	UploadTypeListStudent FileUploadType = "list_student" // tmp_list_student/{semester}/{teacher_id}
-	UploadTypeListTeacher FileUploadType = "list_teacher" // tmp_list_teacher/{semester}/{teacher_id}
-	UploadTypeFinal       FileUploadType = "final"        // final/{semester}/{student_id}
+	UploadTypeGradeSuppervisor      FileUploadType = "grade_supervisor"       // grade_supervisor/{semester}/{student_id}
+	UploadTypeGradeDefence          FileUploadType = "grade_defence"          // grade_defence/{semester}/{student_id}
+	UploadTopicCouncilForDepartment FileUploadType = "topic_for_department"   // topic_for_department/{semester}/{teacher_id}
+	UploadCouncilForDepartment      FileUploadType = "council_for_department" // council_for_department/{semester}/{teacher_id}
+	UploadCouncilForAffair          FileUploadType = "council_for_affair"     // council_for_affair/{semester}/{teacher_id}
+	UploadStudentForAffair          FileUploadType = "student_for_affair"     // student_for_affair/{semester}/{student_id}
+	UploadTeacherForAffair          FileUploadType = "teacher_for_affair"     // teacher_for_affair/{semester}/{teacher_id}
+	UploadTypeMidterm               FileUploadType = "midterm"                // midterm/{semester}/{student_id}
+	UploadTypeFinal                 FileUploadType = "final"                  // final/{semester}/{student_id}
 )
+
+// Excel model lưu thông tin file Excel trong MongoDB
+type Excel struct {
+	ID         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	File       string             `bson:"file" json:"file"`
+	Title      string             `bson:"title" json:"title"`
+	Option     string             `bson:"option" json:"option"`
+	TableType  pb.TableType       `bson:"table_type" json:"table_type"`
+	TableID    string             `bson:"table_id" json:"table_id"`
+	Status     string             `bson:"status" json:"status"`
+	Message    string             `bson:"message" json:"message"`
+	UploadType FileUploadType     `bson:"upload_type" json:"upload_type"`
+	Percentage int32              `bson:"percentage" json:"percentage"`
+	CreatedBy  string             `bson:"created_by" json:"created_by"`
+	CreatedAt  time.Time          `bson:"created_at" json:"created_at"`
+	UpdatedAt  time.Time          `bson:"updated_at" json:"updated_at"`
+}
 
 // UserInfo contains extracted user information from JWT claims
 type UserInfo struct {
@@ -41,87 +63,6 @@ type BlobTokenClaims struct {
 	UserID string `json:"user_id"`
 	Role   string `json:"role"`
 	jwt.RegisteredClaims
-}
-
-// extractUserInfo extracts user information from context
-func (h *APIHandler) extractUserInfo(c *gin.Context) (*UserInfo, error) {
-	// Use c.Get() instead of c.Value() for gin.Context
-	claimsValue, exists := c.Get(helper.Auth)
-	if !exists {
-		return nil, fmt.Errorf("not authorized - claims not found")
-	}
-
-	claims, ok := claimsValue.(jwt.MapClaims)
-	if !ok {
-		return nil, fmt.Errorf("not authorized - invalid claims type")
-	}
-
-	role, ok := claims["role"].(string)
-	if !ok {
-		return nil, fmt.Errorf("role not found in claims")
-	}
-
-	// Get semester from context (might be empty)
-	semesterValue, _ := c.Get("semester")
-	semester, _ := semesterValue.(string)
-
-	// Parse IDs from claims
-	idsStr, ok := claims["ids"].(string)
-	if !ok {
-		return nil, fmt.Errorf("ids not found in claims")
-	}
-
-	idsArr := strings.Split(idsStr, ",")
-	myID := ""
-
-	if semester == "" {
-		// If no semester specified, use first ID
-		if len(idsArr) > 0 {
-			parts := strings.Split(idsArr[0], ":")
-			if len(parts) > 1 {
-				myID = parts[1]
-				semester = parts[0]
-			}
-		}
-	} else {
-		// Find ID matching the semester
-		for _, id := range idsArr {
-			if strings.HasPrefix(id, semester+":") {
-				parts := strings.Split(id, ":")
-				if len(parts) > 1 {
-					myID = parts[1]
-					break
-				}
-			}
-		}
-	}
-
-	if myID == "" {
-		return nil, fmt.Errorf("no user ID found for semester %s", semester)
-	}
-
-	return &UserInfo{
-		Role:     role,
-		Semester: semester,
-		UserID:   myID,
-		IDs:      idsArr,
-	}, nil
-}
-
-// generateBrowserFingerprint creates a unique fingerprint for the browser session
-func generateBrowserFingerprint(c *gin.Context) string {
-	// Combine multiple factors to create unique fingerprint
-	userAgent := c.GetHeader("User-Agent")
-	clientIP := c.ClientIP()
-	xForwardedFor := c.GetHeader("X-Forwarded-For")
-	xRealIP := c.GetHeader("X-Real-IP")
-
-	// Create fingerprint string
-	fingerprintData := fmt.Sprintf("%s|%s|%s|%s", userAgent, clientIP, xForwardedFor, xRealIP)
-
-	// Hash it for security
-	hash := sha256.Sum256([]byte(fingerprintData))
-	return hex.EncodeToString(hash[:])
 }
 
 // generateBlobToken creates a temporary token for blob access bound to browser session
@@ -148,7 +89,7 @@ func (h *APIHandler) generateBlobToken(c *gin.Context, fileID string, userInfo *
 	}
 
 	// Generate browser fingerprint
-	fingerprint := generateBrowserFingerprint(c)
+	fingerprint := GenerateBrowserFingerprint(c)
 
 	// Store token-fingerprint mapping in Redis
 	redisKey := fmt.Sprintf("blob_token:%s", tokenID)
@@ -158,43 +99,6 @@ func (h *APIHandler) generateBlobToken(c *gin.Context, fileID string, userInfo *
 	}
 
 	return tokenString, nil
-}
-
-// validateBlobToken validates token and checks browser fingerprint
-func (h *APIHandler) validateBlobToken(c *gin.Context, tokenString string) (*BlobTokenClaims, error) {
-	claims := &BlobTokenClaims{}
-
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(h.Config.JWT.AccessSecret), nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if !token.Valid {
-		return nil, fmt.Errorf("invalid token")
-	}
-
-	// Get stored fingerprint from Redis
-	redisKey := fmt.Sprintf("blob_token:%s", claims.ID)
-	storedFingerprint, err := h.Redis.Get(c.Request.Context(), redisKey)
-	if err != nil {
-		return nil, fmt.Errorf("token session expired or invalid")
-	}
-
-	// Generate fingerprint from current request
-	currentFingerprint := generateBrowserFingerprint(c)
-
-	// Compare fingerprints - must match
-	if storedFingerprint != currentFingerprint {
-		return nil, fmt.Errorf("token cannot be used from different browser/session")
-	}
-
-	return claims, nil
 }
 
 // canAccessFile checks if user has permission to access the file
@@ -220,71 +124,6 @@ func (h *APIHandler) canAccessFile(fileResp *pb.File, userInfo *UserInfo) bool {
 	return false
 }
 
-// validateFileType checks if file extension is valid for the upload type
-func validateFileType(filename string, uploadType FileUploadType) error {
-	ext := strings.ToLower(filepath.Ext(filename))
-
-	switch uploadType {
-	case UploadTypeTemplate:
-		// Accept doc, docx
-		if ext != ".doc" && ext != ".docx" {
-			return fmt.Errorf("template files must be .doc or .docx format")
-		}
-	case UploadTypeListStudent, UploadTypeListTeacher:
-		// Accept xls, xlsx
-		if ext != ".xls" && ext != ".xlsx" {
-			return fmt.Errorf("list files must be .xls or .xlsx format")
-		}
-	case UploadTypeFinal:
-		// Accept pdf only
-		if ext != ".pdf" {
-			return fmt.Errorf("final files must be .pdf format")
-		}
-	}
-
-	return nil
-}
-
-// getContentType returns MIME type based on file extension
-func getContentType(filename string) string {
-	ext := strings.ToLower(filepath.Ext(filename))
-	switch ext {
-	case ".pdf":
-		return "application/pdf"
-	case ".doc":
-		return "application/msword"
-	case ".docx":
-		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-	case ".xls":
-		return "application/vnd.ms-excel"
-	case ".xlsx":
-		return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-	default:
-		return "application/octet-stream"
-	}
-}
-
-// generateObjectPath generates MinIO object path based on upload type and user info
-func generateObjectPath(uploadType FileUploadType, userInfo *UserInfo, filename string) string {
-	// Generate unique filename with timestamp and UUID
-	ext := filepath.Ext(filename)
-	baseName := strings.TrimSuffix(filename, ext)
-	uniqueName := fmt.Sprintf("%s_%d_%s%s", baseName, time.Now().Unix(), uuid.New().String()[:8], ext)
-
-	switch uploadType {
-	case UploadTypeTemplate:
-		return fmt.Sprintf("tmp_template/%s/%s/%s", userInfo.Semester, userInfo.UserID, uniqueName)
-	case UploadTypeListStudent:
-		return fmt.Sprintf("tmp_list_student/%s/%s/%s", userInfo.Semester, userInfo.UserID, uniqueName)
-	case UploadTypeListTeacher:
-		return fmt.Sprintf("tmp_list_teacher/%s/%s/%s", userInfo.Semester, userInfo.UserID, uniqueName)
-	case UploadTypeFinal:
-		return fmt.Sprintf("final/%s/%s/%s", userInfo.Semester, userInfo.UserID, uniqueName)
-	}
-
-	return uniqueName
-}
-
 // uploadFileHandler handles file upload with validation
 func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType, allowedRoles []string) {
 	// Extract user info
@@ -302,9 +141,18 @@ func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType
 			break
 		}
 	}
-	if !roleAllowed {
-		response.Forbidden(c, fmt.Sprintf("role %s is not allowed to upload this type of file", userInfo.Role))
-		return
+	if userInfo.Role == "teacher" && !roleAllowed {
+		roles, err := h.extractRole(c, userInfo.UserID)
+		if err != nil {
+			response.InternalError(c, fmt.Sprintf("failed to extract role: %v", err))
+			return
+		}
+		for _, role := range roles {
+			if slices.Contains(allowedRoles, string(role)) {
+				roleAllowed = true
+				break
+			}
+		}
 	}
 
 	// Check semester for certain upload types
@@ -321,7 +169,7 @@ func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType
 	}
 
 	// Validate file type
-	if err := validateFileType(fileHeader.Filename, uploadType); err != nil {
+	if err := ValidateFileType(fileHeader.Filename, uploadType); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
@@ -335,8 +183,83 @@ func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType
 	defer file.Close()
 
 	// Generate object path
-	objectPath := generateObjectPath(uploadType, userInfo, fileHeader.Filename)
-	contentType := getContentType(fileHeader.Filename)
+
+	// Get optional fields
+	title := c.PostForm("title")
+	if title == "" {
+		title = fileHeader.Filename
+	}
+	var option string
+	var tableID string
+	tableType := pb.TableType_TOPIC
+	tableTypeStr := c.PostForm("table_type")
+	switch tableTypeStr {
+	case "MIDTERM":
+		tableType = pb.TableType_MIDTERM
+		option = "midterm"
+		tableID = c.PostForm("table_id")
+		enrollmentID := c.PostForm("enrollment_id")
+		// check student_code == user_id
+		enrollment, err := h.ThesisClient.GetEnrollmentById(c.Request.Context(), enrollmentID)
+		if err != nil {
+			response.InternalError(c, fmt.Sprintf("failed to get enrollment: %v", err))
+			return
+		}
+
+		if enrollment.Enrollment.StudentCode != userInfo.UserID {
+			response.Forbidden(c, "you are not allowed 1 to upload this file")
+			return
+		}
+		if *enrollment.Enrollment.MidtermCode != tableID {
+			response.Forbidden(c, "you are not allowed 2 to upload this file")
+			return
+		}
+		// getMidterm check status is not submitted
+		midterm, err := h.ThesisClient.GetMidtermById(c.Request.Context(), *enrollment.Enrollment.MidtermCode)
+		if err != nil {
+			response.InternalError(c, fmt.Sprintf("failed to get midterm: %v", err))
+			return
+		}
+		if midterm.Midterm.Status != thesis.MidtermStatus_NOT_SUBMITTED {
+			response.Forbidden(c, "you are not allowed to upload this file")
+			return
+		}
+	case "FINAL":
+		tableType = pb.TableType_FINAL
+		option = "final"
+		tableID = c.PostForm("table_id")
+		enrollmentID := c.PostForm("enrollment_id")
+		enrollment, err := h.ThesisClient.GetEnrollmentById(c.Request.Context(), enrollmentID)
+		if err != nil {
+			response.InternalError(c, fmt.Sprintf("failed to get enrollment: %v", err))
+			return
+		}
+		if enrollment.Enrollment.StudentCode != userInfo.UserID {
+			response.Forbidden(c, "you are not allowed to upload this file")
+			return
+		}
+		if *enrollment.Enrollment.FinalCode != tableID {
+			response.Forbidden(c, "you are not allowed to upload this file")
+			return
+		}
+		// check status final
+		final, err := h.ThesisClient.GetFinalById(c.Request.Context(), *enrollment.Enrollment.FinalCode)
+		if err != nil {
+			response.InternalError(c, fmt.Sprintf("failed to get final: %v", err))
+			return
+		}
+		if final.Final.Status != thesis.FinalStatus_PENDING {
+			response.Forbidden(c, "you are not allowed to upload this file")
+			return
+		}
+	case "ORDER":
+		tableType = pb.TableType_ORDER
+		option = "excel"
+		tableID = "system"
+	}
+
+	objectPath := GenerateObjectPath(uploadType, userInfo, fileHeader.Filename)
+	contentType := GetContentType(fileHeader.Filename)
 
 	// Upload to MinIO
 	fileURL, err := h.MimIo.UploadFile(c.Request.Context(), objectPath, file, fileHeader.Size, contentType)
@@ -345,70 +268,64 @@ func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType
 		return
 	}
 
-	// Get optional fields
-	title := c.PostForm("title")
-	if title == "" {
-		title = fileHeader.Filename
-	}
-
-	tableType := pb.TableType_TOPIC
-	tableTypeStr := c.PostForm("table_type")
-	switch tableTypeStr {
-	case "TOPIC":
-		tableType = pb.TableType_TOPIC
-	case "MIDTERM":
-		tableType = pb.TableType_MIDTERM
-	case "FINAL":
-		tableType = pb.TableType_FINAL
-	case "ORDER":
-		tableType = pb.TableType_ORDER
-	}
-
 	// Get option with default value based on upload type
-	option := c.PostForm("option")
-	if option == "" {
-		switch uploadType {
-		case UploadTypeTemplate:
-			option = "template"
-		case UploadTypeListStudent:
-			option = "student_list"
-		case UploadTypeListTeacher:
-			option = "teacher_list"
-		case UploadTypeFinal:
-			option = "final_document"
-		default:
-			option = "general"
-		}
-	}
-
-	tableID := c.PostForm("table_id")
-	if tableID == "" {
-		tableID = "system"
-	}
+	// excel no save on database but save mongo db
 
 	// Save file metadata to database via gRPC
-	createResp, err := h.FileClient.CreateFile(c.Request.Context(), &pb.CreateFileRequest{
-		Title:     title,
-		File:      fileURL,
-		Status:    pb.FileStatus_FILE_PENDING,
-		Table:     tableType,
-		Option:    option,
-		TableId:   tableID,
-		CreatedBy: userInfo.UserID,
-	})
-
-	if err != nil {
-		// If database save fails, try to delete from MinIO
-		_ = h.MimIo.DeleteFile(c.Request.Context(), objectPath)
-		response.InternalError(c, fmt.Sprintf("failed to save file metadata: %v", err))
-		return
+	var fileID string
+	if option == "excel" {
+		// save to mongo db
+		excelDoc := &Excel{
+			File:       fileURL,
+			Title:      title,
+			TableType:  tableType,
+			Option:     option,
+			UploadType: uploadType,
+			Percentage: 0,
+			Status:     "pending",
+			Message:    "",
+			TableID:    tableID,
+			CreatedBy:  userInfo.UserID,
+			CreatedAt:  time.Now(),
+			UpdatedAt:  time.Now(),
+		}
+		result, err := h.Mongodb.GetCollection("Excel").InsertOne(c.Request.Context(), excelDoc)
+		if err != nil {
+			// If database save fails, try to delete from MinIO
+			_ = h.MimIo.DeleteFile(c.Request.Context(), objectPath)
+			response.InternalError(c, fmt.Sprintf("failed to save file to mongo db: %v", err))
+			return
+		}
+		// For excel files, use MongoDB ObjectID as file ID
+		if oid, ok := result.InsertedID.(primitive.ObjectID); ok {
+			fileID = oid.Hex()
+		} else {
+			fileID = "excel"
+		}
+	} else {
+		createResp, err := h.FileClient.CreateFile(c.Request.Context(), &pb.CreateFileRequest{
+			Title:     title,
+			File:      fileURL,
+			Status:    pb.FileStatus_FILE_PENDING,
+			Table:     tableType,
+			Option:    option,
+			TableId:   tableID,
+			CreatedBy: userInfo.UserID,
+		})
+		if err != nil {
+			// If database save fails, try to delete from MinIO
+			_ = h.MimIo.DeleteFile(c.Request.Context(), objectPath)
+			response.InternalError(c, fmt.Sprintf("failed to save file to database: %v", err))
+			return
+		}
+		fileID = createResp.File.Id
 	}
 
 	// Invalidate file cache
 	//_ = h.FileClient.InvalidateAllFileCache(c.Request.Context())
 
 	response.SuccessWithMessage(c, "File uploaded successfully", gin.H{
-		"file_id":       createResp.File.Id,
+		"file_id":       fileID,
 		"filename":      fileHeader.Filename,
 		"size":          fileHeader.Size,
 		"url":           fileURL,
@@ -418,54 +335,58 @@ func (h *APIHandler) uploadFileHandler(c *gin.Context, uploadType FileUploadType
 	})
 }
 
-// UploadTemplateFile handles template document upload (Word files)
-// POST /api/files/upload/template
-func (h *APIHandler) UploadTemplateFile(c *gin.Context) {
-	h.uploadFileHandler(c, UploadTypeTemplate, []string{"teacher"})
+// UploadGradeSuppervisorFile handles grade supervisor upload (Excel files)
+// POST /api/files/upload/grade-supervisor
+func (h *APIHandler) UploadGradeSuppervisorFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadTypeGradeSuppervisor, []string{"teacher"})
 }
 
-// UploadListStudentFile handles student list upload (Excel files)
-// POST /api/files/upload/list-student
-func (h *APIHandler) UploadListStudentFile(c *gin.Context) {
-	h.uploadFileHandler(c, UploadTypeListStudent, []string{"teacher"})
+// UploadGradeDefenceFile handles grade defence upload (Excel files)
+// POST /api/files/upload/grade-defence
+func (h *APIHandler) UploadGradeDefenceFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadTypeGradeDefence, []string{"teacher"})
 }
 
-// UploadListTeacherFile handles teacher list upload (Excel files)
-// POST /api/files/upload/list-teacher
-func (h *APIHandler) UploadListTeacherFile(c *gin.Context) {
-	h.uploadFileHandler(c, UploadTypeListTeacher, []string{"teacher"})
+// UploadTopicCouncilForDepartmentFile handles topic council for department upload (Excel files)
+// POST /api/files/upload/topic-council-for-department
+func (h *APIHandler) UploadTopicCouncilForDepartmentFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadTopicCouncilForDepartment, []string{"department"})
 }
 
-// UploadFinalFile handles final document upload (PDF files)
+// UploadCouncilForDepartmentFile handles council for department upload (Excel files)
+// POST /api/files/upload/council-for-department
+func (h *APIHandler) UploadCouncilForDepartmentFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadCouncilForDepartment, []string{"department"})
+}
+
+// UploadCouncilForAffairFile handles council for affair upload (Excel files)
+// POST /api/files/upload/council-for-affair
+func (h *APIHandler) UploadCouncilForAffairFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadCouncilForAffair, []string{"affair"})
+}
+
+// UploadUserForAffairFile handles user for affair upload (Excel files)
+// POST /api/files/upload/user-for-affair
+func (h *APIHandler) UploadUserForAffairFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadStudentForAffair, []string{"affair"})
+}
+
+// UploadTeacherForAffairFile handles teacher for affair upload (Excel files)
+// POST /api/files/upload/teacher-for-affair
+func (h *APIHandler) UploadTeacherForAffairFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadTeacherForAffair, []string{"affair"})
+}
+
+// UploadMidtermFile handles midterm upload (PDF files)
+// POST /api/files/upload/midterm
+func (h *APIHandler) UploadMidtermFile(c *gin.Context) {
+	h.uploadFileHandler(c, UploadTypeMidterm, []string{"student"})
+}
+
+// UploadFinalFile handles final upload (PDF files)
 // POST /api/files/upload/final
 func (h *APIHandler) UploadFinalFile(c *gin.Context) {
 	h.uploadFileHandler(c, UploadTypeFinal, []string{"student"})
-}
-
-// GetFile retrieves file information by ID
-// GET /api/files/:id
-func (h *APIHandler) GetFile(c *gin.Context) {
-	if h.FileClient == nil {
-		response.InternalError(c, "File service not available")
-		return
-	}
-
-	fileID := c.Param("id")
-	if fileID == "" {
-		response.BadRequest(c, "File ID required")
-		return
-	}
-
-	// Get file from database
-	fileResp, err := h.FileClient.GetFileById(c.Request.Context(), fileID)
-	if err != nil {
-		response.NotFound(c, fmt.Sprintf("File not found: %v", err))
-		return
-	}
-
-	response.Success(c, gin.H{
-		"file": fileResp.File,
-	})
 }
 
 // GetFileURL generates a presigned URL for file download
@@ -514,17 +435,17 @@ func (h *APIHandler) GetFileURL(c *gin.Context) {
 			return
 		}
 		presignedURL = fmt.Sprintf("%s://%s/api/v1/files/blob?token=%s",
-			getProtocol(c), c.Request.Host, token)
+			GetProtocol(c), c.Request.Host, token)
 		expiresIn = "1 hour"
 	} else {
 		// CODE CŨ: PRESIGNED URL
-		objectName := extractObjectName(fileResp.File.File)
+		objectName := ExtractObjectName(fileResp.File.File)
 		presignedURL, err = h.MimIo.GetFileURL(c.Request.Context(), objectName)
 		if err != nil {
 			response.InternalError(c, fmt.Sprintf("Failed to generate download URL: %v", err))
 			return
 		}
-		expiresIn = "7 days"
+		expiresIn = "5 minutes"
 	}
 
 	response.Success(c, gin.H{
@@ -533,23 +454,6 @@ func (h *APIHandler) GetFileURL(c *gin.Context) {
 		"filename":     fileResp.File.Title,
 		"expires_in":   expiresIn,
 	})
-}
-
-// Helper
-func getProtocol(c *gin.Context) string {
-	if c.Request.TLS != nil {
-		return "https"
-	}
-	return "http"
-}
-
-// Helper functions
-func extractObjectName(fileURL string) string {
-	parts := strings.Split(fileURL, "/")
-	if len(parts) < 5 {
-		return ""
-	}
-	return strings.Join(parts[4:], "/")
 }
 
 // DeleteFile deletes a file
@@ -589,13 +493,17 @@ func (h *APIHandler) DeleteFile(c *gin.Context) {
 	// Extract object path from file URL
 	fileURL := fileResp.File.File
 	parts := strings.Split(fileURL, "/")
-	if len(parts) >= 5 {
-		// URL format: http://host:port/bucket/path/to/file
-		// parts: [http:, , host:port, bucket, path, to, file]
-		// We need everything after bucket (index 4 onwards)
-		objectName := strings.Join(parts[4:], "/")
-		// Delete from MinIO (ignore error if file doesn't exist)
-		_ = h.MimIo.DeleteFile(c.Request.Context(), objectName)
+
+	// URL format: /bucket/path/to/file
+	// parts: [http:, , host:port, bucket, path, to, file]
+	// We need everything after bucket (index 4 onwards)
+	objectName := strings.Join(parts[0:], "/")
+	// Delete from MinIO (ignore error if file doesn't exist)
+	_ = h.MimIo.DeleteFile(c.Request.Context(), objectName)
+	_, err = h.FileClient.DeleteFile(c.Request.Context(), fileID)
+	if err != nil {
+		response.InternalError(c, fmt.Sprintf("Failed to delete file: %v", err))
+		return
 	}
 
 	// Delete from database (implement DeleteFile in client if not exists)
@@ -610,96 +518,44 @@ func (h *APIHandler) DeleteFile(c *gin.Context) {
 }
 
 // ListFiles lists files with filtering
-// GET /api/files
-func (h *APIHandler) ListFiles(c *gin.Context) {
-	if h.FileClient == nil {
-		response.InternalError(c, "File service not available")
-		return
-	}
-
-	// Extract user info
+// GET /api/files from mongodb fllow role and semester with x-role
+func (h *APIHandler) ListFilesExcel(c *gin.Context) {
 	userInfo, err := h.extractUserInfo(c)
 	if err != nil {
 		response.Unauthorized(c, err.Error())
 		return
 	}
-
-	// Build search request (you can add more filters from query params)
-	// For now, return user's files only
-	_ = userInfo // Use userInfo to filter files
-
-	// TODO: Build proper search request with filters
-	// files, err := h.FileClient.GetFileBySearch(c.Request.Context(), searchRequest)
-
-	response.Success(c, gin.H{
-		"message": "List files endpoint - implement search logic",
-	})
-}
-
-// GetBlobURL generates a temporary blob URL with token
-
-// GetFileBlob serves file content directly using token
-// GET /api/files/blob?token=xxx
-func (h *APIHandler) GetFileBlob(c *gin.Context) {
-	if h.FileClient == nil || h.MimIo == nil {
-		response.InternalError(c, "File service not available")
-		return
-	}
-
-	// Get token from query parameter
-	tokenString := c.Query("token")
-	if tokenString == "" {
-		response.Unauthorized(c, "Token required")
-		return
-	}
-
-	// Validate token and check browser fingerprint
-	claims, err := h.validateBlobToken(c, tokenString)
+	roleHeader := c.GetHeader("X-Role")
+	roles, err := h.extractRole(c, userInfo.UserID)
 	if err != nil {
-		response.Unauthorized(c, fmt.Sprintf("Invalid token: %v", err))
+		response.InternalError(c, fmt.Sprintf("failed to extract role: %v", err))
 		return
 	}
-
-	// Get file metadata
-	fileResp, err := h.FileClient.GetFileById(c.Request.Context(), claims.FileID)
-	if err != nil {
-		response.NotFound(c, fmt.Sprintf("File not found: %v", err))
-		return
+	for _, role := range roles {
+		if role == roleHeader {
+			// get files from mongodb follow role and semester
+			var uploadTypes []FileUploadType
+			switch roleHeader {
+			case "teacher":
+				uploadTypes = []FileUploadType{UploadTypeGradeSuppervisor, UploadTypeGradeDefence, UploadTopicCouncilForDepartment, UploadCouncilForDepartment, UploadCouncilForAffair}
+			case "department":
+				uploadTypes = []FileUploadType{UploadTopicCouncilForDepartment, UploadCouncilForDepartment, UploadCouncilForAffair}
+			case "affair":
+				uploadTypes = []FileUploadType{UploadCouncilForAffair, UploadStudentForAffair, UploadTeacherForAffair}
+			}
+			excel, err := h.Mongodb.GetCollection("Excel").Find(c.Request.Context(), bson.M{
+				"created_by": userInfo.UserID,
+				"upload_type": bson.M{
+					"$in": uploadTypes,
+				},
+			})
+			if err != nil {
+				response.InternalError(c, fmt.Sprintf("failed to get excel: %v", err))
+				return
+			}
+			response.Success(c, excel)
+		}
 	}
+	response.Forbidden(c, "You are not allowed to list files")
 
-	// Verify token file ID matches
-	if fileResp.File.Id != claims.FileID {
-		response.Forbidden(c, "Token does not match file")
-		return
-	}
-
-	// Extract object path from file URL
-	fileURL := fileResp.File.File
-	parts := strings.Split(fileURL, "/")
-	if len(parts) < 5 {
-		response.InternalError(c, "Invalid file URL format")
-		return
-	}
-
-	// URL format: http://host:port/bucket/path/to/file
-	// parts: [http:, , host:port, bucket, path, to, file]
-	// We need everything after bucket (index 4 onwards)
-	objectName := strings.Join(parts[4:], "/")
-
-	// Get file blob from MinIO
-	object, objectInfo, err := h.MimIo.GetFileBlob(c.Request.Context(), objectName)
-	if err != nil {
-		response.InternalError(c, fmt.Sprintf("Failed to retrieve file: %v", err))
-		return
-	}
-	defer object.Close()
-
-	// Set headers for file serving
-	c.Header("Content-Type", objectInfo.ContentType)
-	c.Header("Content-Length", fmt.Sprintf("%d", objectInfo.Size))
-	c.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", fileResp.File.Title))
-	c.Header("Cache-Control", "public, max-age=3600")
-
-	// Stream file to response
-	c.DataFromReader(200, objectInfo.Size, objectInfo.ContentType, object, nil)
 }

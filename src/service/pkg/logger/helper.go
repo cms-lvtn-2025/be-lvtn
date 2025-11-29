@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"runtime"
 	"strings"
 )
@@ -24,4 +25,23 @@ func GetCallerFunctionName(skip int) string {
 		return parts[len(parts)-1]
 	}
 	return fullName
+}
+
+// BuildQueryString builds a query string with arguments for logging
+func BuildQueryString(query string, args ...interface{}) string {
+	if len(args) == 0 {
+		return query
+	}
+
+	// Format query with args for logging
+	argsStr := "["
+	for i, arg := range args {
+		if i > 0 {
+			argsStr += ", "
+		}
+		argsStr += fmt.Sprintf("%v", arg)
+	}
+	argsStr += "]"
+
+	return fmt.Sprintf("%s | args: %s", query, argsStr)
 }

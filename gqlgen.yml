@@ -93,14 +93,10 @@ models:
     fields:
       topicCouncils:
         resolver: true
-      topicCouncilDetail:
-        resolver: true
 
   CouncilMemberQuery:
     fields:
       defences:
-        resolver: true
-      defenceDetail:
         resolver: true
 
 
@@ -147,11 +143,7 @@ models:
     fields:
       teachers:
         resolver: true
-      teacherDetail:
-        resolver: true
       students:
-        resolver: true
-      studentDetail:
         resolver: true
       semesters:
         resolver: true
@@ -161,17 +153,9 @@ models:
         resolver: true
       topics:
         resolver: true
-      topicDetail:
-        resolver: true
       enrollments:
         resolver: true
-      enrollmentDetail:
-        resolver: true
       councils:
-        resolver: true
-      councilDetail:
-        resolver: true
-      defencesByCouncil:
         resolver: true
       gradeDefences:
         resolver: true

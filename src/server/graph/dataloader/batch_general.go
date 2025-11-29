@@ -375,7 +375,7 @@ func createFilesByTopicIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []
 					{
 						Criteria: &common.FilterCriteria_Condition{
 							Condition: &common.FilterCondition{
-								Field:    "topic_code",
+								Field:    "table_id",
 								Operator: common.FilterOperator_EQUAL,
 								Values:   []string{topicId},
 							},
@@ -412,7 +412,7 @@ func createFilesByMidtermIdBatchFunc(client *client.GRPCfile) BatchFunc[string, 
 					{
 						Criteria: &common.FilterCriteria_Condition{
 							Condition: &common.FilterCondition{
-								Field:    "midterm_code",
+								Field:    "table_id",
 								Operator: common.FilterOperator_EQUAL,
 								Values:   []string{midtermId},
 							},
@@ -448,7 +448,7 @@ func createFilesByFinalIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []
 					{
 						Criteria: &common.FilterCriteria_Condition{
 							Condition: &common.FilterCondition{
-								Field:    "final_code",
+								Field:    "table_id",
 								Operator: common.FilterOperator_EQUAL,
 								Values:   []string{finalId},
 							},

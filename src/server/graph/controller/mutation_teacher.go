@@ -409,6 +409,10 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 		return nil, fmt.Errorf("curriculum is required")
 	}
 
+	if len(input.Students) == 0 {
+		return nil, fmt.Errorf("students are required")
+	}
+
 	// Track created resources for rollback
 	type createdResources struct {
 		topicId        string
@@ -489,11 +493,30 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 	// Create enrollments
 	for _, student := range input.Students {
 		idStudent := fmt.Sprint(student, "_", teacher.GetTeacher().GetSemesterCode())
+
+		midtermResp, err := c.thesis.CreateMidterm(ctx, &pbThesis.CreateMidtermRequest{
+			Title:     fmt.Sprintf("Midterm for %s", student),
+			Status:    pbThesis.MidtermStatus_NOT_SUBMITTED,
+			CreatedBy: *myId,
+		})
+		if err != nil {
+			return nil, err
+		}
+		finalResp, err := c.thesis.CreateFinal(ctx, &pbThesis.CreateFinalRequest{
+			Title:     fmt.Sprintf("Final for %s", student),
+			Status:    pbThesis.FinalStatus_PENDING,
+			CreatedBy: *myId,
+		})
+		if err != nil {
+			return nil, err
+		}
 		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, &pbThesis.CreateEnrollmentRequest{
 			TopicCouncilCode: resources.topicCouncilId,
 			StudentCode:      idStudent,
 			CreatedBy:        *myId,
 			Title:            fmt.Sprintf("Enrollment for %s", student),
+			MidtermCode:      &midtermResp.Midterm.Id,
+			FinalCode:        &finalResp.Final.Id,
 		})
 		if err != nil {
 			return nil, err

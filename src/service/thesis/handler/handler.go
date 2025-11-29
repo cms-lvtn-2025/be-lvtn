@@ -3,8 +3,10 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	pb "thaily/proto/thesis"
+	"thaily/src/service/pkg/logger"
 )
 
 type Handler struct {
@@ -17,13 +19,34 @@ func NewHandler(db *sql.DB) *Handler {
 }
 
 func (h *Handler) queryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
-	return h.db.QueryRowContext(ctx, query, args...)
+	start := time.Now()
+	row := h.db.QueryRowContext(ctx, query, args...)
+	duration := time.Since(start)
+
+	queryWithArgs := logger.BuildQueryString(query, args...)
+	logger.AddQueryToTrace(ctx, queryWithArgs, duration.Milliseconds())
+
+	return row
 }
 
 func (h *Handler) query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
-	return h.db.QueryContext(ctx, query, args...)
+	start := time.Now()
+	rows, err := h.db.QueryContext(ctx, query, args...)
+	duration := time.Since(start)
+
+	queryWithArgs := logger.BuildQueryString(query, args...)
+	logger.AddQueryToTrace(ctx, queryWithArgs, duration.Milliseconds())
+
+	return rows, err
 }
 
 func (h *Handler) execQuery(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
-	return h.db.ExecContext(ctx, query, args...)
+	start := time.Now()
+	result, err := h.db.ExecContext(ctx, query, args...)
+	duration := time.Since(start)
+
+	queryWithArgs := logger.BuildQueryString(query, args...)
+	logger.AddQueryToTrace(ctx, queryWithArgs, duration.Milliseconds())
+
+	return result, err
 }
