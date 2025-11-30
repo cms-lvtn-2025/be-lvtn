@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	pb "thaily/proto/common"
 	pbCouncil "thaily/proto/council"
 	pbFile "thaily/proto/file"
 	pbThesis "thaily/proto/thesis"
@@ -63,20 +62,17 @@ func (c *Controller) GradeMidterm(ctx context.Context, enrollmentID string, inpu
 	if !check || myId == nil {
 		return nil, fmt.Errorf("not authorized")
 	}
-
-	enrollment, err := c.thesis.GetEnrollmentById(ctx, enrollmentID)
+	// check midterm is not pass and not fail
+	midterm, err := c.thesis.GetMidtermById(ctx, enrollmentID)
 	if err != nil {
 		return nil, err
 	}
-
-	topicCouncilId := enrollment.GetEnrollment().GetTopicCouncilCode()
-	if !c.verifySupervisor(ctx, *myId, topicCouncilId) {
-		return nil, fmt.Errorf("not authorized: not supervisor of this topic")
+	if midterm.GetMidterm().GetStatus() == pbThesis.MidtermStatus_PASS || midterm.GetMidterm().GetStatus() == pbThesis.MidtermStatus_FAIL {
+		return nil, fmt.Errorf("midterm is already graded")
 	}
 
-	midtermCode := enrollment.GetEnrollment().GetMidtermCode()
-	if midtermCode == "" {
-		return nil, fmt.Errorf("no midterm found for this enrollment")
+	if midterm.GetMidterm().GetCreatedBy() != *myId {
+		return nil, fmt.Errorf("you are not the creator of this midterm")
 	}
 
 	var status pbThesis.MidtermStatus
@@ -93,7 +89,7 @@ func (c *Controller) GradeMidterm(ctx context.Context, enrollmentID string, inpu
 
 	grade := int32(input.Grade)
 	req := &pbThesis.UpdateMidtermRequest{
-		Id:        midtermCode,
+		Id:        midterm.GetMidterm().GetId(),
 		Grade:     &grade,
 		Status:    &status,
 		UpdatedBy: *myId,
@@ -125,32 +121,13 @@ func (c *Controller) FeedbackMidterm(ctx context.Context, midtermID string, feed
 	if err != nil {
 		return nil, err
 	}
+	// status is not submitted or not graded
+	if midterm.GetMidterm().GetStatus() != pbThesis.MidtermStatus_NOT_SUBMITTED && midterm.GetMidterm().GetStatus() != pbThesis.MidtermStatus_SUBMITTED {
+		return nil, fmt.Errorf("midterm is not submitted or not graded")
+	}
 
-	enrollmentSearch := pb.SearchRequest{
-		Pagination: &pb.Pagination{Page: 1, PageSize: 1},
-		Filters: []*pb.FilterCriteria{
-			{
-				Criteria: &pb.FilterCriteria_Condition{
-					Condition: &pb.FilterCondition{
-						Field:    "midterm_code",
-						Operator: pb.FilterOperator_EQUAL,
-						Values:   []string{midtermID},
-					},
-				},
-			},
-		},
-	}
-	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, &enrollmentSearch)
-	if err != nil {
-		return nil, err
-	}
-	if len(enrollments.GetEnrollments()) == 0 {
-		return nil, fmt.Errorf("no enrollment found for this midterm")
-	}
-	enrollment := enrollments.GetEnrollments()[0]
-
-	if !c.verifySupervisor(ctx, *myId, enrollment.GetTopicCouncilCode()) {
-		return nil, fmt.Errorf("not authorized")
+	if midterm.GetMidterm().GetCreatedBy() != *myId {
+		return nil, fmt.Errorf("you are not the creator of this midterm")
 	}
 
 	req := &pbThesis.UpdateMidtermRequest{
@@ -182,13 +159,21 @@ func (c *Controller) GradeFinal(ctx context.Context, enrollmentID string, input 
 		return nil, err
 	}
 
-	if !c.verifySupervisor(ctx, *myId, enrollment.GetEnrollment().GetTopicCouncilCode()) {
-		return nil, fmt.Errorf("not authorized")
-	}
-
 	finalCode := enrollment.GetEnrollment().GetFinalCode()
 	if finalCode == "" {
 		return nil, fmt.Errorf("no final found for this enrollment")
+	}
+	// status is not pending or not completed
+	final, err := c.thesis.GetFinalById(ctx, finalCode)
+	if err != nil {
+		return nil, err
+	}
+	if final.GetFinal().GetStatus() != pbThesis.FinalStatus_PENDING {
+		return nil, fmt.Errorf("final is not pending")
+	}
+
+	if final.GetFinal().GetCreatedBy() != *myId {
+		return nil, fmt.Errorf("you are not the creator of this final")
 	}
 
 	var status pbThesis.FinalStatus
@@ -238,31 +223,11 @@ func (c *Controller) FeedbackFinal(ctx context.Context, finalID string, notes st
 		return nil, err
 	}
 
-	enrollmentSearch := pb.SearchRequest{
-		Pagination: &pb.Pagination{Page: 1, PageSize: 1},
-		Filters: []*pb.FilterCriteria{
-			{
-				Criteria: &pb.FilterCriteria_Condition{
-					Condition: &pb.FilterCondition{
-						Field:    "final_code",
-						Operator: pb.FilterOperator_EQUAL,
-						Values:   []string{finalID},
-					},
-				},
-			},
-		},
+	if final.GetFinal().GetStatus() != pbThesis.FinalStatus_PENDING {
+		return nil, fmt.Errorf("final is not pending")
 	}
-	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, &enrollmentSearch)
-	if err != nil {
-		return nil, err
-	}
-	if len(enrollments.GetEnrollments()) == 0 {
-		return nil, fmt.Errorf("no enrollment found for this final")
-	}
-	enrollment := enrollments.GetEnrollments()[0]
-
-	if !c.verifySupervisor(ctx, *myId, enrollment.GetTopicCouncilCode()) {
-		return nil, fmt.Errorf("not authorized")
+	if final.GetFinal().GetCreatedBy() != *myId {
+		return nil, fmt.Errorf("you are not the creator of this final")
 	}
 
 	req := &pbThesis.UpdateFinalRequest{
@@ -412,6 +377,8 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 	if len(input.Students) == 0 {
 		return nil, fmt.Errorf("students are required")
 	}
+
+	// check teacher ID is member of topic council
 
 	// Track created resources for rollback
 	type createdResources struct {
@@ -598,6 +565,29 @@ func (c *Controller) CreateGradeDefence(ctx context.Context, input model.CreateG
 	if !check || myId == nil {
 		return nil, fmt.Errorf("not authorized")
 	}
+	// check defence have member
+	defence, err := c.council.GetDefenceById(ctx, input.DefenceCode)
+	if err != nil {
+		return nil, err
+	}
+	if defence.GetDefence().GetTeacherCode() != *myId {
+		return nil, fmt.Errorf("you are not a member of this defence")
+	}
+
+	// check enrollment is of defence topic council
+	enrollment, err := c.thesis.GetEnrollmentById(ctx, input.EnrollmentCode)
+	if err != nil {
+		return nil, err
+	}
+	// get topic council
+	topicCouncil, err := c.thesis.GetTopicCouncilById(ctx, enrollment.GetEnrollment().GetTopicCouncilCode())
+	if err != nil {
+		return nil, err
+	}
+	// check defence is council code
+	if defence.GetDefence().GetCouncilCode() != topicCouncil.GetTopicCouncil().GetId() {
+		return nil, fmt.Errorf("defence is not of this topic council")
+	}
 
 	req := &pbCouncil.CreateGradeDefenceRequest{
 		DefenceCode:    input.DefenceCode,
@@ -628,6 +618,14 @@ func (c *Controller) UpdateGradeDefence(ctx context.Context, id string, input mo
 	}
 	if !check || myId == nil {
 		return nil, fmt.Errorf("not authorized")
+	}
+	// check member
+	defence, err := c.council.GetDefenceById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if defence.GetDefence().GetTeacherCode() != *myId {
+		return nil, fmt.Errorf("you are not a member of this defence")
 	}
 
 	req := &pbCouncil.UpdateGradeDefenceRequest{
@@ -660,6 +658,16 @@ func (c *Controller) AddGradeDefenceCriterion(ctx context.Context, input model.C
 		return nil, fmt.Errorf("not authorized")
 	}
 
+	// check teacher is member of defence
+	defenceGrade, err := c.council.GetDefenceById(ctx, input.GradeDefenceCode)
+	if err != nil {
+		return nil, err
+	}
+	// check defence is member of defence
+	if defenceGrade.GetDefence().GetTeacherCode() != *myId {
+		return nil, fmt.Errorf("you are not a member of this defence")
+	}
+
 	resp, err := c.council.CreateGradeDefenceCriterion(ctx, &pbCouncil.CreateGradeDefenceCriterionRequest{
 		GradeDefenceCode: input.GradeDefenceCode,
 		Name:             &input.Name,
@@ -682,6 +690,14 @@ func (c *Controller) UpdateGradeDefenceCriterion(ctx context.Context, id string,
 	}
 	if !check || myId == nil {
 		return nil, fmt.Errorf("not authorized")
+	}
+	// check teacher is member of defence by created by
+	gradeCriterion, err := c.council.GetGradeCriterionById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if gradeCriterion.GetGradeDefenceCriterion().GetCreatedBy() != *myId {
+		return nil, fmt.Errorf("you are not the creator of this criterion")
 	}
 
 	updatedBy := *myId
@@ -731,32 +747,78 @@ func (c *Controller) DeleteGradeDefenceCriterion(ctx context.Context, id string)
 // ============================================
 
 // verifySupervisor checks if teacher is supervisor of a topic council
-func (c *Controller) verifySupervisor(ctx context.Context, teacherId string, topicCouncilId string) bool {
-	search := &pb.SearchRequest{
-		Pagination: &pb.Pagination{Page: 1, PageSize: 10},
-		Filters: []*pb.FilterCriteria{
-			{
-				Criteria: &pb.FilterCriteria_Condition{
-					Condition: &pb.FilterCondition{
-						Field:    "topic_council_code",
-						Operator: pb.FilterOperator_EQUAL,
-						Values:   []string{topicCouncilId},
-					},
-				},
-			},
-		},
-	}
+// func (c *Controller) verifySupervisor(ctx context.Context, teacherId string, topicCouncilId string) bool {
+// 	search := &pb.SearchRequest{
+// 		Pagination: &pb.Pagination{Page: 1, PageSize: 10},
+// 		Filters: []*pb.FilterCriteria{
+// 			{
+// 				Criteria: &pb.FilterCriteria_Condition{
+// 					Condition: &pb.FilterCondition{
+// 						Field:    "topic_council_code",
+// 						Operator: pb.FilterOperator_EQUAL,
+// 						Values:   []string{topicCouncilId},
+// 					},
+// 				},
+// 			},
+// 		},
+// 	}
 
-	supervisors, err := c.thesis.GetTopicCouncilSupervisorBySearch(ctx, search)
-	if err != nil {
-		return false
-	}
+// 	supervisors, err := c.thesis.GetTopicCouncilSupervisorBySearch(ctx, search)
+// 	if err != nil {
+// 		return false
+// 	}
 
-	for _, s := range supervisors.GetTopicCouncilSupervisors() {
-		if s.GetTeacherSupervisorCode() == teacherId {
-			return true
-		}
-	}
+// 	for _, s := range supervisors.GetTopicCouncilSupervisors() {
+// 		if s.GetTeacherSupervisorCode() == teacherId {
+// 			return true
+// 		}
+// 	}
 
-	return false
-}
+// 	return false
+// }
+
+// func (c *Controller) verifyTopic(ctx context.Context, topicId string) bool {
+// 	topic, err := c.thesis.GetTopicById(ctx, topicId)
+// 	if err != nil {
+// 		return false
+// 	}
+// 	if topic.GetTopic().GetStatus() != pbThesis.TopicStatus_IN_PROGRESS {
+// 		return false
+// 	}
+// 	return true
+// }
+
+// func (c *Controller) verifyDefenceMember(ctx context.Context, teacherId string, defenceId string) bool {
+// 	search := &pb.SearchRequest{
+// 		Pagination: &pb.Pagination{Page: 1, PageSize: 10},
+// 		Filters: []*pb.FilterCriteria{
+// 			{
+// 				Criteria: &pb.FilterCriteria_Condition{
+// 					Condition: &pb.FilterCondition{
+// 						Field:    "defence_code",
+// 						Operator: pb.FilterOperator_EQUAL,
+// 						Values:   []string{defenceId},
+// 					},
+// 				},
+// 			},
+// 			{
+// 				Criteria: &pb.FilterCriteria_Condition{
+// 					Condition: &pb.FilterCondition{
+// 						Field:    "teacher_code",
+// 						Operator: pb.FilterOperator_EQUAL,
+// 						Values:   []string{teacherId},
+// 					},
+// 				},
+// 			},
+// 		},
+// 	}
+
+// 	defences, err := c.council.GetDefencesBySearch(ctx, search)
+// 	if err != nil {
+// 		return false
+// 	}
+// 	if len(defences.GetDefences()) == 0 {
+// 		return false
+// 	}
+// 	return true
+// }
