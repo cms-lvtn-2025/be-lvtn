@@ -11,6 +11,7 @@ import (
 	pbThesis "thaily/proto/thesis"
 	pbUser "thaily/proto/user"
 	"thaily/src/server/graph/convert"
+	"thaily/src/server/graph/dataloader"
 	"thaily/src/server/graph/model"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -89,6 +90,11 @@ func (c *Controller) CreateTeacher(ctx context.Context, input model.CreateTeache
 			// Log warning but don't fail teacher creation
 			fmt.Printf("Warning: Failed to create roles for teacher %s: %v\n", input.Msgv, err)
 		}
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateTeacherBySemester(input.SemesterCode)
 	}
 
 	return convert.PbTeacherToModel(resp.GetTeacher()), nil
@@ -223,6 +229,14 @@ func (c *Controller) UpdateTeacher(ctx context.Context, id string, input model.U
 		}
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateTeacher(id)
+		if resp.GetTeacher() != nil {
+			loaders.InvalidateTeacherBySemester(resp.GetTeacher().GetSemesterCode())
+		}
+	}
+
 	return convert.PbTeacherToModel(resp.GetTeacher()), nil
 }
 
@@ -236,9 +250,20 @@ func (c *Controller) DeleteTeacher(ctx context.Context, id string) (bool, error)
 		return false, fmt.Errorf("not authorized: requires academic affairs staff role")
 	}
 
+	// Get teacher info before delete for cache invalidation
+	teacher, _ := c.user.GetTeacherById(ctx, id)
+
 	_, err = c.user.DeleteTeacher(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateTeacher(id)
+		if teacher != nil && teacher.GetTeacher() != nil {
+			loaders.InvalidateTeacherBySemester(teacher.GetTeacher().GetSemesterCode())
+		}
 	}
 
 	return true, nil
@@ -291,6 +316,11 @@ func (c *Controller) CreateStudent(ctx context.Context, input model.CreateStuden
 	resp, err := c.user.CreateStudent(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateStudentBySemester(input.SemesterCode)
 	}
 
 	return convert.PbStudentToModel(resp.GetStudent()), nil
@@ -353,6 +383,14 @@ func (c *Controller) UpdateStudent(ctx context.Context, id string, input model.U
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateStudent(id)
+		if resp.GetStudent() != nil {
+			loaders.InvalidateStudentBySemester(resp.GetStudent().GetSemesterCode())
+		}
+	}
+
 	return convert.PbStudentToModel(resp.GetStudent()), nil
 }
 
@@ -366,9 +404,20 @@ func (c *Controller) DeleteStudent(ctx context.Context, id string) (bool, error)
 		return false, fmt.Errorf("not authorized: requires academic affairs staff role")
 	}
 
+	// Get student info before delete for cache invalidation
+	student, _ := c.user.GetUserById(ctx, id)
+
 	_, err = c.user.DeleteStudent(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateStudent(id)
+		if student != nil && student.GetStudent() != nil {
+			loaders.InvalidateStudentBySemester(student.GetStudent().GetSemesterCode())
+		}
 	}
 
 	return true, nil
@@ -400,6 +449,8 @@ func (c *Controller) CreateSemester(ctx context.Context, input model.CreateSemes
 	if err != nil {
 		return nil, err
 	}
+
+	// No cache invalidation needed for create - new semester won't be in cache
 
 	return convert.PbSemesterToModel(resp.GetSemester()), nil
 }
@@ -433,6 +484,11 @@ func (c *Controller) UpdateSemester(ctx context.Context, id string, input model.
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateSemester(id)
+	}
+
 	return convert.PbSemesterToModel(resp.GetSemester()), nil
 }
 
@@ -449,6 +505,11 @@ func (c *Controller) DeleteSemester(ctx context.Context, id string) (bool, error
 	_, err = c.academic.DeleteSemester(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateSemester(id)
 	}
 
 	return true, nil
@@ -478,6 +539,11 @@ func (c *Controller) CreateMajor(ctx context.Context, input model.CreateMajorInp
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache - new major affects faculty's major list
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateMajorByFaculty(input.FacultyCode)
 	}
 
 	return convert.PbMajorToModel(resp.GetMajor()), nil
@@ -518,6 +584,14 @@ func (c *Controller) UpdateMajor(ctx context.Context, id string, input model.Upd
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateMajor(id)
+		if resp.GetMajor() != nil {
+			loaders.InvalidateMajorByFaculty(resp.GetMajor().GetFacultyCode())
+		}
+	}
+
 	return convert.PbMajorToModel(resp.GetMajor()), nil
 }
 
@@ -531,9 +605,20 @@ func (c *Controller) DeleteMajor(ctx context.Context, id string) (bool, error) {
 		return false, fmt.Errorf("not authorized: requires academic affairs staff role")
 	}
 
+	// Get major info before delete for cache invalidation
+	major, _ := c.academic.GetMajorById(ctx, id)
+
 	_, err = c.academic.DeleteMajor(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateMajor(id)
+		if major != nil && major.GetMajor() != nil {
+			loaders.InvalidateMajorByFaculty(major.GetMajor().GetFacultyCode())
+		}
 	}
 
 	return true, nil
@@ -651,6 +736,11 @@ func (c *Controller) ApproveCouncil(ctx context.Context, id string, timeStart ti
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateCouncil(id)
+	}
+
 	return convert.PbCouncilToModel(resp.GetCouncil()), nil
 }
 
@@ -687,6 +777,11 @@ func (c *Controller) UpdateCouncil(ctx context.Context, id string, input model.U
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateCouncil(id)
+	}
+
 	return convert.PbCouncilToModel(resp.GetCouncil()), nil
 }
 
@@ -703,6 +798,11 @@ func (c *Controller) DeleteCouncil(ctx context.Context, id string) (bool, error)
 	_, err = c.council.DeleteCouncil(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateCouncil(id)
 	}
 
 	return true, nil
@@ -739,6 +839,12 @@ func (c *Controller) ApproveTopic(ctx context.Context, id string) (*model.Topic,
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetTopic() != nil {
+		topic := resp.GetTopic()
+		loaders.InvalidateTopic(id, topic.GetMajorCode(), topic.GetSemesterCode())
+	}
+
 	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
@@ -767,6 +873,12 @@ func (c *Controller) RejectTopic(ctx context.Context, id string, reason *string)
 	resp, err := c.thesis.UpdateTopic(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetTopic() != nil {
+		topic := resp.GetTopic()
+		loaders.InvalidateTopic(id, topic.GetMajorCode(), topic.GetSemesterCode())
 	}
 
 	return convert.PbTopicToModel(resp.GetTopic()), nil
@@ -821,6 +933,12 @@ func (c *Controller) UpdateTopic(ctx context.Context, id string, input model.Upd
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetTopic() != nil {
+		topic := resp.GetTopic()
+		loaders.InvalidateTopic(id, topic.GetMajorCode(), topic.GetSemesterCode())
+	}
+
 	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
@@ -834,9 +952,23 @@ func (c *Controller) DeleteTopic(ctx context.Context, id string) (bool, error) {
 		return false, fmt.Errorf("not authorized: requires academic affairs staff role")
 	}
 
+	// Get topic info before delete for cache invalidation
+	topic, _ := c.thesis.GetTopicById(ctx, id)
+
 	_, err = c.thesis.DeleteTopic(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		majorCode := ""
+		semesterCode := ""
+		if topic != nil && topic.GetTopic() != nil {
+			majorCode = topic.GetTopic().GetMajorCode()
+			semesterCode = topic.GetTopic().GetSemesterCode()
+		}
+		loaders.InvalidateTopic(id, majorCode, semesterCode)
 	}
 
 	return true, nil

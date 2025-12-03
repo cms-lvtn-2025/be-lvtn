@@ -74,20 +74,12 @@ func (g *GRPCAcadamicClient) GetMajorsBySearch(ctx context.Context, search *pbCo
 }
 
 func (g *GRPCAcadamicClient) GetMajorById(ctx context.Context, id string) (*pb.GetMajorResponse, error) {
-	cacheKey := fmt.Sprintf("%s%s", majorCachePrefix, id)
-	var cached pb.GetMajorResponse
-	if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
-		log.Printf("Cache HIT for major: %s", id)
-		return &cached, nil
-	}
 
-	log.Printf("Cache MISS for major: %s", id)
 	resp, err := g.client.GetMajor(ctx, &pb.GetMajorRequest{Id: id})
 	if err != nil {
 		return nil, err
 	}
 
-	SetCachedProto(ctx, g.redisClient, cacheKey, resp, majorCacheTTL)
 	return resp, nil
 }
 

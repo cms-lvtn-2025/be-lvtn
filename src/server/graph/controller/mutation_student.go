@@ -6,6 +6,7 @@ import (
 
 	pbFile "thaily/proto/file"
 	"thaily/src/server/graph/convert"
+	"thaily/src/server/graph/dataloader"
 	"thaily/src/server/graph/model"
 )
 
@@ -42,6 +43,11 @@ func (c *Controller) UploadMidtermFile(ctx context.Context, input model.UploadFi
 		return nil, err
 	}
 
+	// Invalidate cache - file is associated with midterm via TableID
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateMidterm(input.TableID)
+	}
+
 	return convert.PbFileToModel(resp.GetFile()), nil
 }
 
@@ -71,6 +77,11 @@ func (c *Controller) UploadFinalFile(ctx context.Context, input model.UploadFile
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache - file is associated with final via TableID
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateFinal(input.TableID)
 	}
 
 	return convert.PbFileToModel(resp.GetFile()), nil

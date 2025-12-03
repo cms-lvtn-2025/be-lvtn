@@ -55,6 +55,17 @@ func setupCORS(r *gin.Engine) {
 }
 
 func setupGraphQL(r *gin.Engine, c *container.Container) {
+	// Create SINGLETON loaders - shared across all requests
+	// This prevents goroutine leaks from creating new loaders per request
+	sharedLoaders := dataloader2.NewLoaders(
+		c.Clients.User,
+		c.Clients.Thesis,
+		c.Clients.Council,
+		c.Clients.Academic,
+		c.Clients.Role,
+		c.Clients.File,
+	)
+
 	// Create controller với tất cả clients
 	ctrl := controller.NewController(
 		c.Clients.Academic,
@@ -94,8 +105,7 @@ func setupGraphQL(r *gin.Engine, c *container.Container) {
 	r.GET("/", gin.WrapH(playground.Handler("GraphQL Playground", "/query")))
 	r.Any("/query",
 		graphqlAuthMiddleware(c.Config.JWT, ctrl), // Then handle auth
-
-		dataloaderMiddleware(c), // Inject dataloaders first
+		dataloaderMiddleware(sharedLoaders),       // Inject shared dataloaders
 		gin.WrapH(srv))
 }
 
@@ -118,20 +128,11 @@ func setupRestAPI(r *gin.Engine, c *container.Container) {
 	apiHandler.RegisterRoutes(apiV1)
 }
 
-// dataloaderMiddleware injects dataloaders into the context
-func dataloaderMiddleware(c *container.Container) gin.HandlerFunc {
+// dataloaderMiddleware injects shared dataloaders into the context
+func dataloaderMiddleware(loaders *dataloader2.Loaders) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// Create new loaders for each request
-		loaders := dataloader2.NewLoaders(
-			c.Clients.User,
-			c.Clients.Thesis,
-			c.Clients.Council,
-			c.Clients.Academic,
-			c.Clients.Role,
-			c.Clients.File,
-		)
-
-		// Inject loaders into context
+		// Use shared loaders instead of creating new ones per request
+		// This prevents goroutine leaks from cleanup goroutines
 		requestCtx := dataloader.WithLoaders(ctx.Request.Context(), loaders)
 		ctx.Request = ctx.Request.WithContext(requestCtx)
 		ctx.Next()

@@ -8,6 +8,7 @@ import (
 	pbCouncil "thaily/proto/council"
 	pbThesis "thaily/proto/thesis"
 	"thaily/src/server/graph/convert"
+	"thaily/src/server/graph/dataloader"
 	"thaily/src/server/graph/model"
 )
 
@@ -47,6 +48,8 @@ func (c *Controller) CreateCouncil(ctx context.Context, input model.CreateCounci
 	if err != nil {
 		return nil, err
 	}
+
+	// No cache invalidation needed for create - new council won't be in cache
 
 	return convert.PbCouncilToModel(resp.GetCouncil()), nil
 }
@@ -94,6 +97,11 @@ func (c *Controller) UpdateDepartmentCouncil(ctx context.Context, id string, inp
 	updateCouncil, err := c.council.UpdateCouncil(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateCouncil(id)
 	}
 
 	return convert.PbCouncilToModel(updateCouncil.GetCouncil()), nil
@@ -178,6 +186,11 @@ func (c *Controller) AddDefenceToCouncil(ctx context.Context, input model.Create
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateDefence("", input.CouncilCode)
+	}
+
 	return convert.PbDefenceToModel(resp.GetDefence()), nil
 }
 
@@ -225,6 +238,11 @@ func (c *Controller) RemoveDefenceFromCouncil(ctx context.Context, id string) (b
 	_, err = c.council.DeleteDefence(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateDefence(id, council.GetCouncil().GetId())
 	}
 
 	return true, nil
@@ -275,6 +293,12 @@ func (c *Controller) ApproveTopicStage1(ctx context.Context, id string) (*model.
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetTopic() != nil {
+		t := resp.GetTopic()
+		loaders.InvalidateTopic(id, t.GetMajorCode(), t.GetSemesterCode())
+	}
+
 	return convert.PbTopicToModel(resp.GetTopic()), nil
 }
 
@@ -319,6 +343,12 @@ func (c *Controller) RejectTopicStage1(ctx context.Context, id string, reason *s
 	resp, err := c.thesis.UpdateTopic(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetTopic() != nil {
+		t := resp.GetTopic()
+		loaders.InvalidateTopic(id, t.GetMajorCode(), t.GetSemesterCode())
 	}
 
 	return convert.PbTopicToModel(resp.GetTopic()), nil
@@ -392,6 +422,12 @@ func (c *Controller) AssignTopicToCouncil(ctx context.Context, topicCouncilID st
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateTopicCouncil(topicCouncilID, topicCouncil.GetTopicCouncil().GetTopicCode(), councilID)
+		loaders.InvalidateCouncil(councilID)
+	}
+
 	return convert.PbTopicCouncilToModel(resp.GetTopicCouncil()), nil
 }
 
@@ -460,6 +496,12 @@ func (c *Controller) RemoveTopicFromCouncil(ctx context.Context, topicCouncilID 
 	_, err = c.thesis.UpdateTopicCouncil(ctx, req)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateTopicCouncil(topicCouncilID, topicCouncil.GetTopicCouncil().GetTopicCode(), councilID)
+		loaders.InvalidateCouncil(councilID)
 	}
 
 	return true, nil

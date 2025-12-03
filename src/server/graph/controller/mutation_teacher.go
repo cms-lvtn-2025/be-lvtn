@@ -9,6 +9,7 @@ import (
 	pbThesis "thaily/proto/thesis"
 	pbUser "thaily/proto/user"
 	"thaily/src/server/graph/convert"
+	"thaily/src/server/graph/dataloader"
 	"thaily/src/server/graph/model"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -44,6 +45,11 @@ func (c *Controller) UpdateMyTeacherProfile(ctx context.Context, input model.Upd
 	resp, err := c.user.UpdateTeacher(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateTeacher(*myId)
 	}
 
 	return convert.PbTeacherToModel(resp.GetTeacher()), nil
@@ -104,6 +110,11 @@ func (c *Controller) GradeMidterm(ctx context.Context, enrollmentID string, inpu
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetMidterm() != nil {
+		loaders.InvalidateMidterm(resp.GetMidterm().GetId())
+	}
+
 	return convert.PbMidtermToModel(resp.GetMidterm()), nil
 }
 
@@ -139,6 +150,11 @@ func (c *Controller) FeedbackMidterm(ctx context.Context, midtermID string, feed
 	resp, err := c.thesis.UpdateMidterm(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateMidterm(midtermID)
 	}
 
 	return convert.PbMidtermToModel(resp.GetMidterm()), nil
@@ -205,6 +221,11 @@ func (c *Controller) GradeFinal(ctx context.Context, enrollmentID string, input 
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetFinal() != nil {
+		loaders.InvalidateFinal(resp.GetFinal().GetId())
+	}
+
 	return convert.PbFinalToModel(resp.GetFinal()), nil
 }
 
@@ -241,6 +262,11 @@ func (c *Controller) FeedbackFinal(ctx context.Context, finalID string, notes st
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateFinal(finalID)
+	}
+
 	return convert.PbFinalToModel(resp.GetFinal()), nil
 }
 
@@ -269,6 +295,9 @@ func (c *Controller) ApproveMidtermFile(ctx context.Context, fileID string) (*mo
 	if err != nil {
 		return nil, err
 	}
+
+	// Note: File cache invalidation happens via FilesByMidtermId/FilesByFinalId
+	// Since we don't have the midterm/final ID here, cache will expire naturally
 
 	return convert.PbFileToModel(resp.GetFile()), nil
 }
@@ -607,6 +636,11 @@ func (c *Controller) CreateGradeDefence(ctx context.Context, input model.CreateG
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateGradeDefence(input.DefenceCode, input.EnrollmentCode)
+	}
+
 	return convert.PbGradeDefenceToModel(resp.GetGradeDefence()), nil
 }
 
@@ -645,6 +679,12 @@ func (c *Controller) UpdateGradeDefence(ctx context.Context, id string, input mo
 		return nil, err
 	}
 
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetGradeDefence() != nil {
+		gd := resp.GetGradeDefence()
+		loaders.InvalidateGradeDefence(gd.GetDefenceCode(), gd.GetEnrollmentCode())
+	}
+
 	return convert.PbGradeDefenceToModel(resp.GetGradeDefence()), nil
 }
 
@@ -677,6 +717,11 @@ func (c *Controller) AddGradeDefenceCriterion(ctx context.Context, input model.C
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	// Invalidate cache - criteria are cached by defence ID
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil {
+		loaders.InvalidateGradeDefence(input.GradeDefenceCode, "")
 	}
 
 	return convert.PbGradeDefenceCriterionToModel(resp.GetGradeDefenceCriterion()), nil
@@ -721,6 +766,11 @@ func (c *Controller) UpdateGradeDefenceCriterion(ctx context.Context, id string,
 		return nil, err
 	}
 
+	// Invalidate cache - criteria are cached by defence ID
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && resp.GetGradeDefenceCriterion() != nil {
+		loaders.InvalidateGradeDefence(resp.GetGradeDefenceCriterion().GetGradeDefenceCode(), "")
+	}
+
 	return convert.PbGradeDefenceCriterionToModel(resp.GetGradeDefenceCriterion()), nil
 }
 
@@ -734,9 +784,17 @@ func (c *Controller) DeleteGradeDefenceCriterion(ctx context.Context, id string)
 		return false, fmt.Errorf("not authorized")
 	}
 
+	// Get criterion before delete to know the grade defence ID
+	criterion, _ := c.council.GetGradeCriterionById(ctx, id)
+
 	_, err = c.council.DeleteGradeDefenceCriterion(ctx, id)
 	if err != nil {
 		return false, err
+	}
+
+	// Invalidate cache
+	if loaders := dataloader.GetLoaders(ctx); loaders != nil && criterion != nil && criterion.GetGradeDefenceCriterion() != nil {
+		loaders.InvalidateGradeDefence(criterion.GetGradeDefenceCriterion().GetGradeDefenceCode(), "")
 	}
 
 	return true, nil
