@@ -194,10 +194,11 @@ func NewLoaders(
 	fileClient *client.GRPCfile,
 ) *Loaders {
 	// Default configuration for all loaders
+	// L2TTL = 0 disables persistent cache, each request batch gets fresh data
 	defaultConfig := &Config{
 		BatchWindow:  2 * time.Millisecond,
 		MaxBatchSize: 300,
-		L2TTL:        5 * time.Minute,
+		L2TTL:        0, // Disable L2 cache - only batch within same request
 	}
 
 	return &Loaders{
