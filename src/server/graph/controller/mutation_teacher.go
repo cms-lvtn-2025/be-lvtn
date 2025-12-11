@@ -69,7 +69,12 @@ func (c *Controller) GradeMidterm(ctx context.Context, enrollmentID string, inpu
 		return nil, fmt.Errorf("not authorized")
 	}
 	// check midterm is not pass and not fail
-	midterm, err := c.thesis.GetMidtermById(ctx, enrollmentID)
+	// get enrollment
+	enrollment, err := c.thesis.GetEnrollmentById(ctx, enrollmentID)
+	if err != nil {
+		return nil, err
+	}
+	midterm, err := c.thesis.GetMidtermById(ctx, enrollment.GetEnrollment().GetMidtermCode())
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +112,7 @@ func (c *Controller) GradeMidterm(ctx context.Context, enrollmentID string, inpu
 
 	resp, err := c.thesis.UpdateMidterm(ctx, req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error")
 	}
 
 	// Invalidate cache
@@ -595,6 +600,7 @@ func (c *Controller) CreateGradeDefence(ctx context.Context, input model.CreateG
 		return nil, fmt.Errorf("not authorized")
 	}
 	// check defence have member
+
 	defence, err := c.council.GetDefenceById(ctx, input.DefenceCode)
 	if err != nil {
 		return nil, err
@@ -614,7 +620,7 @@ func (c *Controller) CreateGradeDefence(ctx context.Context, input model.CreateG
 		return nil, err
 	}
 	// check defence is council code
-	if defence.GetDefence().GetCouncilCode() != topicCouncil.GetTopicCouncil().GetId() {
+	if defence.GetDefence().GetCouncilCode() != topicCouncil.GetTopicCouncil().GetCouncilCode() {
 		return nil, fmt.Errorf("defence is not of this topic council")
 	}
 
@@ -654,11 +660,11 @@ func (c *Controller) UpdateGradeDefence(ctx context.Context, id string, input mo
 		return nil, fmt.Errorf("not authorized")
 	}
 	// check member
-	defence, err := c.council.GetDefenceById(ctx, id)
+	gradeDefence, err := c.council.GetGradeById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	if defence.GetDefence().GetTeacherCode() != *myId {
+	if gradeDefence.GetGradeDefence().GetCreatedBy() != *myId {
 		return nil, fmt.Errorf("you are not a member of this defence")
 	}
 
@@ -699,12 +705,12 @@ func (c *Controller) AddGradeDefenceCriterion(ctx context.Context, input model.C
 	}
 
 	// check teacher is member of defence
-	defenceGrade, err := c.council.GetDefenceById(ctx, input.GradeDefenceCode)
+	defenceGrade, err := c.council.GetGradeById(ctx, input.GradeDefenceCode)
 	if err != nil {
 		return nil, err
 	}
 	// check defence is member of defence
-	if defenceGrade.GetDefence().GetTeacherCode() != *myId {
+	if defenceGrade.GetGradeDefence().GetCreatedBy() != *myId {
 		return nil, fmt.Errorf("you are not a member of this defence")
 	}
 
