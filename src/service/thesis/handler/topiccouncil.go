@@ -9,7 +9,6 @@ import (
 	"thaily/src/service/pkg/helper"
 	"thaily/src/service/pkg/logger"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -28,8 +27,6 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	}
 
 	// Generate UUID
-	id := uuid.New().String()
-
 	// Convert Stage enum to string
 	StageValue := pb.TopicStage_STAGE_DACN
 
@@ -41,6 +38,7 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 	case pb.TopicStage_STAGE_LVTN:
 		StageStr = "stage_lvtn"
 	}
+	id := fmt.Sprint(req.GetTopicCode(), "_", StageStr)
 	timeStart := ""
 	if req.TimeStart != nil {
 		timeStart = req.TimeStart.AsTime().Format("2006-01-02 15:04:05")

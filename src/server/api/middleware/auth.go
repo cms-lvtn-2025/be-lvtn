@@ -1,21 +1,20 @@
-package api
+package middleware
 
 import (
-	"fmt"
 	"net/http"
-	"thaily/src/server/graph/helper"
-	"thaily/src/server/config"
 
 	"github.com/gin-gonic/gin"
+
+	"thaily/src/server/config"
+	"thaily/src/server/graph/helper"
 )
 
-// AuthMiddleware kiểm tra JWT token
+// AuthMiddleware validates JWT token
 func AuthMiddleware(cfg config.JWTConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 
 		claims, err := helper.ValidateAndParseClaims(authHeader, cfg.AccessSecret)
-
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": err.Error(),
@@ -23,19 +22,19 @@ func AuthMiddleware(cfg config.JWTConfig) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		fmt.Println(claims)
-		// Set claims vào context
+
+		// Set claims into context
 		c.Set(helper.Auth, claims)
 		c.Next()
 	}
 }
 
-// OptionalAuthMiddleware cho phép request không có token
+// OptionalAuthMiddleware allows requests without token
 func OptionalAuthMiddleware(cfg config.JWTConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 
-		// Chỉ validate nếu có Authorization header
+		// Only validate if Authorization header exists
 		if authHeader != "" {
 			claims, err := helper.ValidateAndParseClaims(authHeader, cfg.AccessSecret)
 			if err == nil && claims != nil {

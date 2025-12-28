@@ -511,6 +511,7 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 		if err != nil {
 			return nil, err
 		}
+		fmt.Print("this is bug", idStudent)
 		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, &pbThesis.CreateEnrollmentRequest{
 			TopicCouncilCode: resources.topicCouncilId,
 			StudentCode:      idStudent,
@@ -544,8 +545,52 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 		return nil, err
 	}
 
-	// Default to DACN stage
-	stage := pbThesis.TopicStage_STAGE_DACN
+	// Track created resources for rollback
+	type createdResources struct {
+		topicCouncilId string
+		supervisorId   string
+		enrollmentIds  []string
+		midtermIds     []string
+		finalIds       []string
+	}
+	resources := &createdResources{
+		enrollmentIds: make([]string, 0),
+		midtermIds:    make([]string, 0),
+		finalIds:      make([]string, 0),
+	}
+	shouldRollback := true
+
+	rollback := func() {
+		// Delete enrollments first (they reference midterm/final)
+		for _, enrollmentId := range resources.enrollmentIds {
+			_, _ = c.thesis.DeleteEnrollment(ctx, enrollmentId)
+		}
+		// Delete midterms
+		for _, midtermId := range resources.midtermIds {
+			_, _ = c.thesis.DeleteMidterm(ctx, midtermId)
+		}
+		// Delete finals
+		for _, finalId := range resources.finalIds {
+			_, _ = c.thesis.DeleteFinal(ctx, finalId)
+		}
+		// Delete supervisor
+		if resources.supervisorId != "" {
+			_, _ = c.thesis.DeleteTopicCouncilSupervisor(ctx, resources.supervisorId)
+		}
+		// Delete topic council
+		if resources.topicCouncilId != "" {
+			_, _ = c.thesis.DeleteTopicCouncil(ctx, resources.topicCouncilId)
+		}
+	}
+
+	defer func() {
+		if shouldRollback {
+			rollback()
+		}
+	}()
+
+	// Default to LVTN stage
+	stage := pbThesis.TopicStage_STAGE_LVTN
 
 	topicCouncilResp, err := c.thesis.CreateTopicCouncil(ctx, &pbThesis.CreateTopicCouncilRequest{
 		Title:     fmt.Sprintf("Topic Council for %s", input.TopicCode),
@@ -558,31 +603,61 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 	if err != nil {
 		return nil, err
 	}
+	resources.topicCouncilId = topicCouncilResp.GetTopicCouncil().GetId()
 
 	// Add supervisor
-	_, err = c.thesis.CreateTopicCouncilSupervisor(ctx, &pbThesis.CreateTopicCouncilSupervisorRequest{
-		TopicCouncilCode:      topicCouncilResp.GetTopicCouncil().GetId(),
+	supervisorResp, err := c.thesis.CreateTopicCouncilSupervisor(ctx, &pbThesis.CreateTopicCouncilSupervisorRequest{
+		TopicCouncilCode:      resources.topicCouncilId,
 		TeacherSupervisorCode: *myId,
 		CreatedBy:             *myId,
 	})
 	if err != nil {
 		return nil, err
 	}
+	resources.supervisorId = supervisorResp.GetTopicCouncilSupervisor().GetId()
 
-	// Create enrollments
+	// Create enrollments with midterm and final
 	for _, student := range input.Students {
 		idStudent := fmt.Sprint(student, "_", teacher.GetTeacher().GetSemesterCode())
-		_, err = c.thesis.CreateEnrollment(ctx, &pbThesis.CreateEnrollmentRequest{
-			TopicCouncilCode: topicCouncilResp.GetTopicCouncil().GetId(),
-			StudentCode:      idStudent,
-			CreatedBy:        *myId,
-			Title:            fmt.Sprintf("Enrollment for %s", student),
+
+		// Create midterm
+		midtermResp, err := c.thesis.CreateMidterm(ctx, &pbThesis.CreateMidtermRequest{
+			Title:     fmt.Sprintf("Midterm for %s", student),
+			Status:    pbThesis.MidtermStatus_NOT_SUBMITTED,
+			CreatedBy: *myId,
 		})
 		if err != nil {
 			return nil, err
 		}
+		resources.midtermIds = append(resources.midtermIds, midtermResp.GetMidterm().GetId())
+
+		// Create final
+		finalResp, err := c.thesis.CreateFinal(ctx, &pbThesis.CreateFinalRequest{
+			Title:     fmt.Sprintf("Final for %s", student),
+			Status:    pbThesis.FinalStatus_PENDING,
+			CreatedBy: *myId,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resources.finalIds = append(resources.finalIds, finalResp.GetFinal().GetId())
+
+		// Create enrollment with midterm and final codes
+		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, &pbThesis.CreateEnrollmentRequest{
+			TopicCouncilCode: resources.topicCouncilId,
+			StudentCode:      idStudent,
+			CreatedBy:        *myId,
+			Title:            fmt.Sprintf("Enrollment for %s", student),
+			MidtermCode:      &midtermResp.Midterm.Id,
+			FinalCode:        &finalResp.Final.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resources.enrollmentIds = append(resources.enrollmentIds, enrollmentResp.GetEnrollment().GetId())
 	}
 
+	shouldRollback = false
 	return convert.PbTopicCouncilToModel(topicCouncilResp.GetTopicCouncil()), nil
 }
 

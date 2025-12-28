@@ -47,7 +47,7 @@ func setupCORS(r *gin.Engine) {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "x-semester"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "x-semester", "x-role"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -110,22 +110,21 @@ func setupGraphQL(r *gin.Engine, c *container.Container) {
 }
 
 func setupRestAPI(r *gin.Engine, c *container.Container) {
-	// Create API handler với clients cần thiết
-	apiHandler := api.NewAPIHandler(
-		api.WithConfig(c.Config),
-		api.WithUserClient(c.Clients.User),
-		api.WithFileClient(c.Clients.File),
-		api.WithAcademicClient(c.Clients.Academic),
-		api.WithRedisClient(c.Clients.Redis),
-		api.WithMongoClient(c.Clients.MongoDB),
-		api.WithMimIo(c.Clients.MinIO),
-		api.WithThesisClient(c.Clients.Thesis),
-		api.WithRoleClient(c.Clients.Role),
+	// Create router with all clients
+	router := api.SetupRouterWithClients(
+		c.Config,
+		c.Clients.User,
+		c.Clients.Role,
+		c.Clients.File,
+		c.Clients.Thesis,
+		c.Clients.Redis,
+		c.Clients.MongoDB,
+		c.Clients.MinIO,
 	)
 
 	// Register routes
 	apiV1 := r.Group("/api/v1")
-	apiHandler.RegisterRoutes(apiV1)
+	router.RegisterRoutes(apiV1)
 }
 
 // dataloaderMiddleware injects shared dataloaders into the context
