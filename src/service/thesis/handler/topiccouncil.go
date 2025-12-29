@@ -48,6 +48,7 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 		timeEnd = req.TimeEnd.AsTime().Format("2006-01-02 15:04:05")
 	}
 	// Insert into database
+	fmt.Print(id)
 	query := `
 		INSERT INTO Topic_council (id, title, stage, topic_code, council_code, time_start, time_end, created_by, updated_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
@@ -87,7 +88,7 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
-
+	fmt.Print(req.Id)
 	query := `
 		SELECT id, title, stage, topic_code, council_code,time_start, time_end, created_at, updated_at, created_by, updated_by
 		FROM Topic_council
