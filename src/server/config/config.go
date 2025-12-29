@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -14,6 +15,11 @@ type Config struct {
 	Redis    RedisConfig
 	MongoDB  MongoConfig
 	JWT      JWTConfig
+	CORS     CORSConfig
+}
+
+type CORSConfig struct {
+	AllowOrigins []string
 }
 
 type ServerConfig struct {
@@ -171,6 +177,9 @@ func Load() (*Config, error) {
 			AccessTokenExpiry:  getEnvAsInt("JWT_ACCESS_EXPIRY", 15), // 15 minutes
 			RefreshTokenExpiry: getEnvAsInt("JWT_REFRESH_EXPIRY", 7), // 7 days
 		},
+		CORS: CORSConfig{
+			AllowOrigins: getEnvAsSlice("CORS_ALLOW_ORIGINS", []string{"http://localhost:3000"}),
+		},
 	}
 
 	return cfg, nil
@@ -194,4 +203,23 @@ func getEnvAsInt(key string, defaultValue int) int {
 		return defaultValue
 	}
 	return value
+}
+
+func getEnvAsSlice(key string, defaultValue []string) []string {
+	valueStr := os.Getenv(key)
+	if valueStr == "" {
+		return defaultValue
+	}
+	// Split by comma: "http://localhost:3000,https://example.com"
+	var result []string
+	for _, v := range strings.Split(valueStr, ",") {
+		trimmed := strings.TrimSpace(v)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	if len(result) == 0 {
+		return defaultValue
+	}
+	return result
 }

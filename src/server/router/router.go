@@ -32,7 +32,7 @@ func Setup(cfg *config.Config, c *container.Container) *gin.Engine {
 	r := gin.Default()
 
 	// Setup CORS
-	setupCORS(r)
+	setupCORS(r, cfg.CORS.AllowOrigins)
 
 	// Setup GraphQL
 	setupGraphQL(r, c)
@@ -43,9 +43,9 @@ func Setup(cfg *config.Config, c *container.Container) *gin.Engine {
 	return r
 }
 
-func setupCORS(r *gin.Engine) {
+func setupCORS(r *gin.Engine, allowOrigins []string) {
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     allowOrigins,
 		AllowMethods:     []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "x-semester", "x-role"},
 		ExposeHeaders:    []string{"Content-Length"},
