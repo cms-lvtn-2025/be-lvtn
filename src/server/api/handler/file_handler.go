@@ -223,5 +223,9 @@ func (h *Handler) ListFilesExcel(c *gin.Context) {
 		return
 	}
 
+	// Ensure we return empty array instead of null
+	if files == nil {
+		files = []model.Excel{}
+	}
 	response.Success(c, files)
 }
