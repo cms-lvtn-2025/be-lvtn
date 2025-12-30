@@ -539,12 +539,11 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 	if !check || myId == nil {
 		return nil, fmt.Errorf("not authorized")
 	}
-
 	teacher, err := c.user.GetTeacherById(ctx, *myId)
 	if err != nil {
 		return nil, err
 	}
-
+	var erros []error
 	// Track created resources for rollback
 	type createdResources struct {
 		topicCouncilId string
@@ -601,7 +600,7 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 		CreatedBy: *myId,
 	})
 	if err != nil {
-		return nil, err
+		erros = append(erros, fmt.Errorf("failed to create topic council: %v", err))
 	}
 	resources.topicCouncilId = topicCouncilResp.GetTopicCouncil().GetId()
 
@@ -612,7 +611,7 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 		CreatedBy:             *myId,
 	})
 	if err != nil {
-		return nil, err
+		erros = append(erros, fmt.Errorf("failed to create topic council: %v", err))
 	}
 	resources.supervisorId = supervisorResp.GetTopicCouncilSupervisor().GetId()
 
@@ -627,7 +626,7 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 			CreatedBy: *myId,
 		})
 		if err != nil {
-			return nil, err
+			erros = append(erros, fmt.Errorf("failed to create Midterm: %v", err))
 		}
 		resources.midtermIds = append(resources.midtermIds, midtermResp.GetMidterm().GetId())
 
@@ -638,7 +637,7 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 			CreatedBy: *myId,
 		})
 		if err != nil {
-			return nil, err
+			erros = append(erros, fmt.Errorf("failed to create final: %v", err))
 		}
 		resources.finalIds = append(resources.finalIds, finalResp.GetFinal().GetId())
 
@@ -652,13 +651,17 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 			FinalCode:        &finalResp.Final.Id,
 		})
 		if err != nil {
-			return nil, err
+			erros = append(erros, fmt.Errorf("failed to create enrollment: %v", err))
 		}
 		resources.enrollmentIds = append(resources.enrollmentIds, enrollmentResp.GetEnrollment().GetId())
 	}
+	var errNew string
+	for err = range erros {
+		errNew += err.Error()
+	}
 
 	shouldRollback = false
-	return convert.PbTopicCouncilToModel(topicCouncilResp.GetTopicCouncil()), nil
+	return convert.PbTopicCouncilToModel(topicCouncilResp.GetTopicCouncil()), fmt.Errorf(errNew)
 }
 
 // ============================================
