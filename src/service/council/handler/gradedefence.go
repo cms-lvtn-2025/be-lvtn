@@ -9,7 +9,6 @@ import (
 	"thaily/src/service/pkg/helper"
 	"thaily/src/service/pkg/logger"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -28,7 +27,7 @@ func (h *Handler) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDef
 	}
 
 	// Generate UUID
-	id := uuid.New().String()
+	id := fmt.Sprint(req.DefenceCode, "_", req.EnrollmentCode)
 
 	// Prepare fields
 	Note := ""
