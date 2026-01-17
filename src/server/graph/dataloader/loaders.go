@@ -50,8 +50,8 @@ type Loaders struct {
 	TopicCouncilByCouncilId     *DataLoader[string, []*model.TopicCouncil]
 	EnrollmentById              *DataLoader[string, *model.Enrollment]
 	EnrollmentByTopicCouncilId  *DataLoader[string, []*model.Enrollment]
-	MidtermByID                 *DataLoader[string, *model.Midterm]
-	FinalByID                   *DataLoader[string, *model.Final]
+	MidtermByEnrollmentId       *DataLoader[string, *model.Midterm]
+	FinalByEnrollmentId         *DataLoader[string, *model.Final]
 	SupervisorsByTopicCouncilId *DataLoader[string, []*model.TopicCouncilSupervisor]
 	FilesByTopicId              *DataLoader[string, []*model.File]
 	FilesByMidtermId            *DataLoader[string, []*model.File]
@@ -169,13 +169,13 @@ func (l *Loaders) InvalidateGradeDefence(defenceId string, enrollmentId string) 
 
 // InvalidateMidterm clears all caches related to a midterm
 func (l *Loaders) InvalidateMidterm(id string) {
-	l.MidtermByID.ClearL2Key(id)
+	l.MidtermByEnrollmentId.ClearL2Key(id)
 	l.FilesByMidtermId.ClearL2Key(id)
 }
 
 // InvalidateFinal clears all caches related to a final
 func (l *Loaders) InvalidateFinal(id string) {
-	l.FinalByID.ClearL2Key(id)
+	l.FinalByEnrollmentId.ClearL2Key(id)
 	l.FilesByFinalId.ClearL2Key(id)
 }
 
@@ -317,11 +317,11 @@ func NewLoaders(
 			createEnrollmentsByTopicCouncilIdBatchFunc(thesisClient),
 			defaultConfig,
 		),
-		MidtermByID: NewDataLoader(
+		MidtermByEnrollmentId: NewDataLoader(
 			createMidtermBatchFunc(thesisClient),
 			defaultConfig,
 		),
-		FinalByID: NewDataLoader(
+		FinalByEnrollmentId: NewDataLoader(
 			createFinalBatchFunc(thesisClient),
 			defaultConfig,
 		),

@@ -43,21 +43,21 @@ const (
 // ============= Service =============
 type AcademicServiceClient interface {
 	// Semester
-	CreateSemester(ctx context.Context, in *CreateSemesterRequest, opts ...grpc.CallOption) (*CreateSemesterResponse, error)
-	GetSemester(ctx context.Context, in *GetSemesterRequest, opts ...grpc.CallOption) (*GetSemesterResponse, error)
-	UpdateSemester(ctx context.Context, in *UpdateSemesterRequest, opts ...grpc.CallOption) (*UpdateSemesterResponse, error)
+	CreateSemester(ctx context.Context, in *CreateSemesterRequest, opts ...grpc.CallOption) (*SemesterResponse, error)
+	GetSemester(ctx context.Context, in *GetSemesterRequest, opts ...grpc.CallOption) (*SemesterResponse, error)
+	UpdateSemester(ctx context.Context, in *UpdateSemesterRequest, opts ...grpc.CallOption) (*SemesterResponse, error)
 	DeleteSemester(ctx context.Context, in *DeleteSemesterRequest, opts ...grpc.CallOption) (*DeleteSemesterResponse, error)
 	ListSemesters(ctx context.Context, in *ListSemestersRequest, opts ...grpc.CallOption) (*ListSemestersResponse, error)
 	// Faculty
-	CreateFaculty(ctx context.Context, in *CreateFacultyRequest, opts ...grpc.CallOption) (*CreateFacultyResponse, error)
-	GetFaculty(ctx context.Context, in *GetFacultyRequest, opts ...grpc.CallOption) (*GetFacultyResponse, error)
-	UpdateFaculty(ctx context.Context, in *UpdateFacultyRequest, opts ...grpc.CallOption) (*UpdateFacultyResponse, error)
+	CreateFaculty(ctx context.Context, in *CreateFacultyRequest, opts ...grpc.CallOption) (*FacultyResponse, error)
+	GetFaculty(ctx context.Context, in *GetFacultyRequest, opts ...grpc.CallOption) (*FacultyResponse, error)
+	UpdateFaculty(ctx context.Context, in *UpdateFacultyRequest, opts ...grpc.CallOption) (*FacultyResponse, error)
 	DeleteFaculty(ctx context.Context, in *DeleteFacultyRequest, opts ...grpc.CallOption) (*DeleteFacultyResponse, error)
 	ListFaculties(ctx context.Context, in *ListFacultiesRequest, opts ...grpc.CallOption) (*ListFacultiesResponse, error)
 	// Major
-	CreateMajor(ctx context.Context, in *CreateMajorRequest, opts ...grpc.CallOption) (*CreateMajorResponse, error)
-	GetMajor(ctx context.Context, in *GetMajorRequest, opts ...grpc.CallOption) (*GetMajorResponse, error)
-	UpdateMajor(ctx context.Context, in *UpdateMajorRequest, opts ...grpc.CallOption) (*UpdateMajorResponse, error)
+	CreateMajor(ctx context.Context, in *CreateMajorRequest, opts ...grpc.CallOption) (*MajorResponse, error)
+	GetMajor(ctx context.Context, in *GetMajorRequest, opts ...grpc.CallOption) (*MajorResponse, error)
+	UpdateMajor(ctx context.Context, in *UpdateMajorRequest, opts ...grpc.CallOption) (*MajorResponse, error)
 	DeleteMajor(ctx context.Context, in *DeleteMajorRequest, opts ...grpc.CallOption) (*DeleteMajorResponse, error)
 	ListMajors(ctx context.Context, in *ListMajorsRequest, opts ...grpc.CallOption) (*ListMajorsResponse, error)
 }
@@ -70,9 +70,9 @@ func NewAcademicServiceClient(cc grpc.ClientConnInterface) AcademicServiceClient
 	return &academicServiceClient{cc}
 }
 
-func (c *academicServiceClient) CreateSemester(ctx context.Context, in *CreateSemesterRequest, opts ...grpc.CallOption) (*CreateSemesterResponse, error) {
+func (c *academicServiceClient) CreateSemester(ctx context.Context, in *CreateSemesterRequest, opts ...grpc.CallOption) (*SemesterResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateSemesterResponse)
+	out := new(SemesterResponse)
 	err := c.cc.Invoke(ctx, AcademicService_CreateSemester_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -80,9 +80,9 @@ func (c *academicServiceClient) CreateSemester(ctx context.Context, in *CreateSe
 	return out, nil
 }
 
-func (c *academicServiceClient) GetSemester(ctx context.Context, in *GetSemesterRequest, opts ...grpc.CallOption) (*GetSemesterResponse, error) {
+func (c *academicServiceClient) GetSemester(ctx context.Context, in *GetSemesterRequest, opts ...grpc.CallOption) (*SemesterResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetSemesterResponse)
+	out := new(SemesterResponse)
 	err := c.cc.Invoke(ctx, AcademicService_GetSemester_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -90,9 +90,9 @@ func (c *academicServiceClient) GetSemester(ctx context.Context, in *GetSemester
 	return out, nil
 }
 
-func (c *academicServiceClient) UpdateSemester(ctx context.Context, in *UpdateSemesterRequest, opts ...grpc.CallOption) (*UpdateSemesterResponse, error) {
+func (c *academicServiceClient) UpdateSemester(ctx context.Context, in *UpdateSemesterRequest, opts ...grpc.CallOption) (*SemesterResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateSemesterResponse)
+	out := new(SemesterResponse)
 	err := c.cc.Invoke(ctx, AcademicService_UpdateSemester_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -120,9 +120,9 @@ func (c *academicServiceClient) ListSemesters(ctx context.Context, in *ListSemes
 	return out, nil
 }
 
-func (c *academicServiceClient) CreateFaculty(ctx context.Context, in *CreateFacultyRequest, opts ...grpc.CallOption) (*CreateFacultyResponse, error) {
+func (c *academicServiceClient) CreateFaculty(ctx context.Context, in *CreateFacultyRequest, opts ...grpc.CallOption) (*FacultyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateFacultyResponse)
+	out := new(FacultyResponse)
 	err := c.cc.Invoke(ctx, AcademicService_CreateFaculty_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -130,9 +130,9 @@ func (c *academicServiceClient) CreateFaculty(ctx context.Context, in *CreateFac
 	return out, nil
 }
 
-func (c *academicServiceClient) GetFaculty(ctx context.Context, in *GetFacultyRequest, opts ...grpc.CallOption) (*GetFacultyResponse, error) {
+func (c *academicServiceClient) GetFaculty(ctx context.Context, in *GetFacultyRequest, opts ...grpc.CallOption) (*FacultyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetFacultyResponse)
+	out := new(FacultyResponse)
 	err := c.cc.Invoke(ctx, AcademicService_GetFaculty_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -140,9 +140,9 @@ func (c *academicServiceClient) GetFaculty(ctx context.Context, in *GetFacultyRe
 	return out, nil
 }
 
-func (c *academicServiceClient) UpdateFaculty(ctx context.Context, in *UpdateFacultyRequest, opts ...grpc.CallOption) (*UpdateFacultyResponse, error) {
+func (c *academicServiceClient) UpdateFaculty(ctx context.Context, in *UpdateFacultyRequest, opts ...grpc.CallOption) (*FacultyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateFacultyResponse)
+	out := new(FacultyResponse)
 	err := c.cc.Invoke(ctx, AcademicService_UpdateFaculty_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -170,9 +170,9 @@ func (c *academicServiceClient) ListFaculties(ctx context.Context, in *ListFacul
 	return out, nil
 }
 
-func (c *academicServiceClient) CreateMajor(ctx context.Context, in *CreateMajorRequest, opts ...grpc.CallOption) (*CreateMajorResponse, error) {
+func (c *academicServiceClient) CreateMajor(ctx context.Context, in *CreateMajorRequest, opts ...grpc.CallOption) (*MajorResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateMajorResponse)
+	out := new(MajorResponse)
 	err := c.cc.Invoke(ctx, AcademicService_CreateMajor_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -180,9 +180,9 @@ func (c *academicServiceClient) CreateMajor(ctx context.Context, in *CreateMajor
 	return out, nil
 }
 
-func (c *academicServiceClient) GetMajor(ctx context.Context, in *GetMajorRequest, opts ...grpc.CallOption) (*GetMajorResponse, error) {
+func (c *academicServiceClient) GetMajor(ctx context.Context, in *GetMajorRequest, opts ...grpc.CallOption) (*MajorResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetMajorResponse)
+	out := new(MajorResponse)
 	err := c.cc.Invoke(ctx, AcademicService_GetMajor_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -190,9 +190,9 @@ func (c *academicServiceClient) GetMajor(ctx context.Context, in *GetMajorReques
 	return out, nil
 }
 
-func (c *academicServiceClient) UpdateMajor(ctx context.Context, in *UpdateMajorRequest, opts ...grpc.CallOption) (*UpdateMajorResponse, error) {
+func (c *academicServiceClient) UpdateMajor(ctx context.Context, in *UpdateMajorRequest, opts ...grpc.CallOption) (*MajorResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateMajorResponse)
+	out := new(MajorResponse)
 	err := c.cc.Invoke(ctx, AcademicService_UpdateMajor_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -227,21 +227,21 @@ func (c *academicServiceClient) ListMajors(ctx context.Context, in *ListMajorsRe
 // ============= Service =============
 type AcademicServiceServer interface {
 	// Semester
-	CreateSemester(context.Context, *CreateSemesterRequest) (*CreateSemesterResponse, error)
-	GetSemester(context.Context, *GetSemesterRequest) (*GetSemesterResponse, error)
-	UpdateSemester(context.Context, *UpdateSemesterRequest) (*UpdateSemesterResponse, error)
+	CreateSemester(context.Context, *CreateSemesterRequest) (*SemesterResponse, error)
+	GetSemester(context.Context, *GetSemesterRequest) (*SemesterResponse, error)
+	UpdateSemester(context.Context, *UpdateSemesterRequest) (*SemesterResponse, error)
 	DeleteSemester(context.Context, *DeleteSemesterRequest) (*DeleteSemesterResponse, error)
 	ListSemesters(context.Context, *ListSemestersRequest) (*ListSemestersResponse, error)
 	// Faculty
-	CreateFaculty(context.Context, *CreateFacultyRequest) (*CreateFacultyResponse, error)
-	GetFaculty(context.Context, *GetFacultyRequest) (*GetFacultyResponse, error)
-	UpdateFaculty(context.Context, *UpdateFacultyRequest) (*UpdateFacultyResponse, error)
+	CreateFaculty(context.Context, *CreateFacultyRequest) (*FacultyResponse, error)
+	GetFaculty(context.Context, *GetFacultyRequest) (*FacultyResponse, error)
+	UpdateFaculty(context.Context, *UpdateFacultyRequest) (*FacultyResponse, error)
 	DeleteFaculty(context.Context, *DeleteFacultyRequest) (*DeleteFacultyResponse, error)
 	ListFaculties(context.Context, *ListFacultiesRequest) (*ListFacultiesResponse, error)
 	// Major
-	CreateMajor(context.Context, *CreateMajorRequest) (*CreateMajorResponse, error)
-	GetMajor(context.Context, *GetMajorRequest) (*GetMajorResponse, error)
-	UpdateMajor(context.Context, *UpdateMajorRequest) (*UpdateMajorResponse, error)
+	CreateMajor(context.Context, *CreateMajorRequest) (*MajorResponse, error)
+	GetMajor(context.Context, *GetMajorRequest) (*MajorResponse, error)
+	UpdateMajor(context.Context, *UpdateMajorRequest) (*MajorResponse, error)
 	DeleteMajor(context.Context, *DeleteMajorRequest) (*DeleteMajorResponse, error)
 	ListMajors(context.Context, *ListMajorsRequest) (*ListMajorsResponse, error)
 	mustEmbedUnimplementedAcademicServiceServer()
@@ -254,13 +254,13 @@ type AcademicServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAcademicServiceServer struct{}
 
-func (UnimplementedAcademicServiceServer) CreateSemester(context.Context, *CreateSemesterRequest) (*CreateSemesterResponse, error) {
+func (UnimplementedAcademicServiceServer) CreateSemester(context.Context, *CreateSemesterRequest) (*SemesterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSemester not implemented")
 }
-func (UnimplementedAcademicServiceServer) GetSemester(context.Context, *GetSemesterRequest) (*GetSemesterResponse, error) {
+func (UnimplementedAcademicServiceServer) GetSemester(context.Context, *GetSemesterRequest) (*SemesterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSemester not implemented")
 }
-func (UnimplementedAcademicServiceServer) UpdateSemester(context.Context, *UpdateSemesterRequest) (*UpdateSemesterResponse, error) {
+func (UnimplementedAcademicServiceServer) UpdateSemester(context.Context, *UpdateSemesterRequest) (*SemesterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSemester not implemented")
 }
 func (UnimplementedAcademicServiceServer) DeleteSemester(context.Context, *DeleteSemesterRequest) (*DeleteSemesterResponse, error) {
@@ -269,13 +269,13 @@ func (UnimplementedAcademicServiceServer) DeleteSemester(context.Context, *Delet
 func (UnimplementedAcademicServiceServer) ListSemesters(context.Context, *ListSemestersRequest) (*ListSemestersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSemesters not implemented")
 }
-func (UnimplementedAcademicServiceServer) CreateFaculty(context.Context, *CreateFacultyRequest) (*CreateFacultyResponse, error) {
+func (UnimplementedAcademicServiceServer) CreateFaculty(context.Context, *CreateFacultyRequest) (*FacultyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFaculty not implemented")
 }
-func (UnimplementedAcademicServiceServer) GetFaculty(context.Context, *GetFacultyRequest) (*GetFacultyResponse, error) {
+func (UnimplementedAcademicServiceServer) GetFaculty(context.Context, *GetFacultyRequest) (*FacultyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFaculty not implemented")
 }
-func (UnimplementedAcademicServiceServer) UpdateFaculty(context.Context, *UpdateFacultyRequest) (*UpdateFacultyResponse, error) {
+func (UnimplementedAcademicServiceServer) UpdateFaculty(context.Context, *UpdateFacultyRequest) (*FacultyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFaculty not implemented")
 }
 func (UnimplementedAcademicServiceServer) DeleteFaculty(context.Context, *DeleteFacultyRequest) (*DeleteFacultyResponse, error) {
@@ -284,13 +284,13 @@ func (UnimplementedAcademicServiceServer) DeleteFaculty(context.Context, *Delete
 func (UnimplementedAcademicServiceServer) ListFaculties(context.Context, *ListFacultiesRequest) (*ListFacultiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFaculties not implemented")
 }
-func (UnimplementedAcademicServiceServer) CreateMajor(context.Context, *CreateMajorRequest) (*CreateMajorResponse, error) {
+func (UnimplementedAcademicServiceServer) CreateMajor(context.Context, *CreateMajorRequest) (*MajorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMajor not implemented")
 }
-func (UnimplementedAcademicServiceServer) GetMajor(context.Context, *GetMajorRequest) (*GetMajorResponse, error) {
+func (UnimplementedAcademicServiceServer) GetMajor(context.Context, *GetMajorRequest) (*MajorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMajor not implemented")
 }
-func (UnimplementedAcademicServiceServer) UpdateMajor(context.Context, *UpdateMajorRequest) (*UpdateMajorResponse, error) {
+func (UnimplementedAcademicServiceServer) UpdateMajor(context.Context, *UpdateMajorRequest) (*MajorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMajor not implemented")
 }
 func (UnimplementedAcademicServiceServer) DeleteMajor(context.Context, *DeleteMajorRequest) (*DeleteMajorResponse, error) {

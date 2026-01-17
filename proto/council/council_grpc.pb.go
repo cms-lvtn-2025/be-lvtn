@@ -48,27 +48,27 @@ const (
 // ============= Service =============
 type CouncilServiceClient interface {
 	// Council
-	CreateCouncil(ctx context.Context, in *CreateCouncilRequest, opts ...grpc.CallOption) (*CreateCouncilResponse, error)
-	GetCouncil(ctx context.Context, in *GetCouncilRequest, opts ...grpc.CallOption) (*GetCouncilResponse, error)
-	UpdateCouncil(ctx context.Context, in *UpdateCouncilRequest, opts ...grpc.CallOption) (*UpdateCouncilResponse, error)
+	CreateCouncil(ctx context.Context, in *CreateCouncilRequest, opts ...grpc.CallOption) (*CouncilResponse, error)
+	GetCouncil(ctx context.Context, in *GetCouncilRequest, opts ...grpc.CallOption) (*CouncilResponse, error)
+	UpdateCouncil(ctx context.Context, in *UpdateCouncilRequest, opts ...grpc.CallOption) (*CouncilResponse, error)
 	DeleteCouncil(ctx context.Context, in *DeleteCouncilRequest, opts ...grpc.CallOption) (*DeleteCouncilResponse, error)
 	ListCouncils(ctx context.Context, in *ListCouncilsRequest, opts ...grpc.CallOption) (*ListCouncilsResponse, error)
 	// Defence
-	CreateDefence(ctx context.Context, in *CreateDefenceRequest, opts ...grpc.CallOption) (*CreateDefenceResponse, error)
-	GetDefence(ctx context.Context, in *GetDefenceRequest, opts ...grpc.CallOption) (*GetDefenceResponse, error)
-	UpdateDefence(ctx context.Context, in *UpdateDefenceRequest, opts ...grpc.CallOption) (*UpdateDefenceResponse, error)
+	CreateDefence(ctx context.Context, in *CreateDefenceRequest, opts ...grpc.CallOption) (*DefenceResponse, error)
+	GetDefence(ctx context.Context, in *GetDefenceRequest, opts ...grpc.CallOption) (*DefenceResponse, error)
+	UpdateDefence(ctx context.Context, in *UpdateDefenceRequest, opts ...grpc.CallOption) (*DefenceResponse, error)
 	DeleteDefence(ctx context.Context, in *DeleteDefenceRequest, opts ...grpc.CallOption) (*DeleteDefenceResponse, error)
 	ListDefences(ctx context.Context, in *ListDefencesRequest, opts ...grpc.CallOption) (*ListDefencesResponse, error)
 	// GradeDefence
-	CreateGradeDefence(ctx context.Context, in *CreateGradeDefenceRequest, opts ...grpc.CallOption) (*CreateGradeDefenceResponse, error)
-	GetGradeDefence(ctx context.Context, in *GetGradeDefenceRequest, opts ...grpc.CallOption) (*GetGradeDefenceResponse, error)
-	UpdateGradeDefence(ctx context.Context, in *UpdateGradeDefenceRequest, opts ...grpc.CallOption) (*UpdateGradeDefenceResponse, error)
+	CreateGradeDefence(ctx context.Context, in *CreateGradeDefenceRequest, opts ...grpc.CallOption) (*GradeDefenceResponse, error)
+	GetGradeDefence(ctx context.Context, in *GetGradeDefenceRequest, opts ...grpc.CallOption) (*GradeDefenceResponse, error)
+	UpdateGradeDefence(ctx context.Context, in *UpdateGradeDefenceRequest, opts ...grpc.CallOption) (*GradeDefenceResponse, error)
 	DeleteGradeDefence(ctx context.Context, in *DeleteGradeDefenceRequest, opts ...grpc.CallOption) (*DeleteGradeDefenceResponse, error)
 	ListGradeDefences(ctx context.Context, in *ListGradeDefencesRequest, opts ...grpc.CallOption) (*ListGradeDefencesResponse, error)
 	// GradeDefenceCriterion
-	CreateGradeDefenceCriterion(ctx context.Context, in *CreateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*CreateGradeDefenceCriterionResponse, error)
-	GetGradeDefenceCriterion(ctx context.Context, in *GetGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GetGradeDefenceCriterionResponse, error)
-	UpdateGradeDefenceCriterion(ctx context.Context, in *UpdateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*UpdateGradeDefenceCriterionResponse, error)
+	CreateGradeDefenceCriterion(ctx context.Context, in *CreateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GradeDefenceCriterionResponse, error)
+	GetGradeDefenceCriterion(ctx context.Context, in *GetGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GradeDefenceCriterionResponse, error)
+	UpdateGradeDefenceCriterion(ctx context.Context, in *UpdateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GradeDefenceCriterionResponse, error)
 	DeleteGradeDefenceCriterion(ctx context.Context, in *DeleteGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*DeleteGradeDefenceCriterionResponse, error)
 	ListGradeDefenceCriteria(ctx context.Context, in *ListGradeDefenceCriteriaRequest, opts ...grpc.CallOption) (*ListGradeDefenceCriteriaResponse, error)
 }
@@ -81,9 +81,9 @@ func NewCouncilServiceClient(cc grpc.ClientConnInterface) CouncilServiceClient {
 	return &councilServiceClient{cc}
 }
 
-func (c *councilServiceClient) CreateCouncil(ctx context.Context, in *CreateCouncilRequest, opts ...grpc.CallOption) (*CreateCouncilResponse, error) {
+func (c *councilServiceClient) CreateCouncil(ctx context.Context, in *CreateCouncilRequest, opts ...grpc.CallOption) (*CouncilResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateCouncilResponse)
+	out := new(CouncilResponse)
 	err := c.cc.Invoke(ctx, CouncilService_CreateCouncil_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -91,9 +91,9 @@ func (c *councilServiceClient) CreateCouncil(ctx context.Context, in *CreateCoun
 	return out, nil
 }
 
-func (c *councilServiceClient) GetCouncil(ctx context.Context, in *GetCouncilRequest, opts ...grpc.CallOption) (*GetCouncilResponse, error) {
+func (c *councilServiceClient) GetCouncil(ctx context.Context, in *GetCouncilRequest, opts ...grpc.CallOption) (*CouncilResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCouncilResponse)
+	out := new(CouncilResponse)
 	err := c.cc.Invoke(ctx, CouncilService_GetCouncil_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -101,9 +101,9 @@ func (c *councilServiceClient) GetCouncil(ctx context.Context, in *GetCouncilReq
 	return out, nil
 }
 
-func (c *councilServiceClient) UpdateCouncil(ctx context.Context, in *UpdateCouncilRequest, opts ...grpc.CallOption) (*UpdateCouncilResponse, error) {
+func (c *councilServiceClient) UpdateCouncil(ctx context.Context, in *UpdateCouncilRequest, opts ...grpc.CallOption) (*CouncilResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateCouncilResponse)
+	out := new(CouncilResponse)
 	err := c.cc.Invoke(ctx, CouncilService_UpdateCouncil_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -131,9 +131,9 @@ func (c *councilServiceClient) ListCouncils(ctx context.Context, in *ListCouncil
 	return out, nil
 }
 
-func (c *councilServiceClient) CreateDefence(ctx context.Context, in *CreateDefenceRequest, opts ...grpc.CallOption) (*CreateDefenceResponse, error) {
+func (c *councilServiceClient) CreateDefence(ctx context.Context, in *CreateDefenceRequest, opts ...grpc.CallOption) (*DefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateDefenceResponse)
+	out := new(DefenceResponse)
 	err := c.cc.Invoke(ctx, CouncilService_CreateDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -141,9 +141,9 @@ func (c *councilServiceClient) CreateDefence(ctx context.Context, in *CreateDefe
 	return out, nil
 }
 
-func (c *councilServiceClient) GetDefence(ctx context.Context, in *GetDefenceRequest, opts ...grpc.CallOption) (*GetDefenceResponse, error) {
+func (c *councilServiceClient) GetDefence(ctx context.Context, in *GetDefenceRequest, opts ...grpc.CallOption) (*DefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetDefenceResponse)
+	out := new(DefenceResponse)
 	err := c.cc.Invoke(ctx, CouncilService_GetDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -151,9 +151,9 @@ func (c *councilServiceClient) GetDefence(ctx context.Context, in *GetDefenceReq
 	return out, nil
 }
 
-func (c *councilServiceClient) UpdateDefence(ctx context.Context, in *UpdateDefenceRequest, opts ...grpc.CallOption) (*UpdateDefenceResponse, error) {
+func (c *councilServiceClient) UpdateDefence(ctx context.Context, in *UpdateDefenceRequest, opts ...grpc.CallOption) (*DefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateDefenceResponse)
+	out := new(DefenceResponse)
 	err := c.cc.Invoke(ctx, CouncilService_UpdateDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -181,9 +181,9 @@ func (c *councilServiceClient) ListDefences(ctx context.Context, in *ListDefence
 	return out, nil
 }
 
-func (c *councilServiceClient) CreateGradeDefence(ctx context.Context, in *CreateGradeDefenceRequest, opts ...grpc.CallOption) (*CreateGradeDefenceResponse, error) {
+func (c *councilServiceClient) CreateGradeDefence(ctx context.Context, in *CreateGradeDefenceRequest, opts ...grpc.CallOption) (*GradeDefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateGradeDefenceResponse)
+	out := new(GradeDefenceResponse)
 	err := c.cc.Invoke(ctx, CouncilService_CreateGradeDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -191,9 +191,9 @@ func (c *councilServiceClient) CreateGradeDefence(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *councilServiceClient) GetGradeDefence(ctx context.Context, in *GetGradeDefenceRequest, opts ...grpc.CallOption) (*GetGradeDefenceResponse, error) {
+func (c *councilServiceClient) GetGradeDefence(ctx context.Context, in *GetGradeDefenceRequest, opts ...grpc.CallOption) (*GradeDefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetGradeDefenceResponse)
+	out := new(GradeDefenceResponse)
 	err := c.cc.Invoke(ctx, CouncilService_GetGradeDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -201,9 +201,9 @@ func (c *councilServiceClient) GetGradeDefence(ctx context.Context, in *GetGrade
 	return out, nil
 }
 
-func (c *councilServiceClient) UpdateGradeDefence(ctx context.Context, in *UpdateGradeDefenceRequest, opts ...grpc.CallOption) (*UpdateGradeDefenceResponse, error) {
+func (c *councilServiceClient) UpdateGradeDefence(ctx context.Context, in *UpdateGradeDefenceRequest, opts ...grpc.CallOption) (*GradeDefenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateGradeDefenceResponse)
+	out := new(GradeDefenceResponse)
 	err := c.cc.Invoke(ctx, CouncilService_UpdateGradeDefence_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -231,9 +231,9 @@ func (c *councilServiceClient) ListGradeDefences(ctx context.Context, in *ListGr
 	return out, nil
 }
 
-func (c *councilServiceClient) CreateGradeDefenceCriterion(ctx context.Context, in *CreateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*CreateGradeDefenceCriterionResponse, error) {
+func (c *councilServiceClient) CreateGradeDefenceCriterion(ctx context.Context, in *CreateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GradeDefenceCriterionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateGradeDefenceCriterionResponse)
+	out := new(GradeDefenceCriterionResponse)
 	err := c.cc.Invoke(ctx, CouncilService_CreateGradeDefenceCriterion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -241,9 +241,9 @@ func (c *councilServiceClient) CreateGradeDefenceCriterion(ctx context.Context, 
 	return out, nil
 }
 
-func (c *councilServiceClient) GetGradeDefenceCriterion(ctx context.Context, in *GetGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GetGradeDefenceCriterionResponse, error) {
+func (c *councilServiceClient) GetGradeDefenceCriterion(ctx context.Context, in *GetGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GradeDefenceCriterionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetGradeDefenceCriterionResponse)
+	out := new(GradeDefenceCriterionResponse)
 	err := c.cc.Invoke(ctx, CouncilService_GetGradeDefenceCriterion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -251,9 +251,9 @@ func (c *councilServiceClient) GetGradeDefenceCriterion(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *councilServiceClient) UpdateGradeDefenceCriterion(ctx context.Context, in *UpdateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*UpdateGradeDefenceCriterionResponse, error) {
+func (c *councilServiceClient) UpdateGradeDefenceCriterion(ctx context.Context, in *UpdateGradeDefenceCriterionRequest, opts ...grpc.CallOption) (*GradeDefenceCriterionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateGradeDefenceCriterionResponse)
+	out := new(GradeDefenceCriterionResponse)
 	err := c.cc.Invoke(ctx, CouncilService_UpdateGradeDefenceCriterion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -288,27 +288,27 @@ func (c *councilServiceClient) ListGradeDefenceCriteria(ctx context.Context, in 
 // ============= Service =============
 type CouncilServiceServer interface {
 	// Council
-	CreateCouncil(context.Context, *CreateCouncilRequest) (*CreateCouncilResponse, error)
-	GetCouncil(context.Context, *GetCouncilRequest) (*GetCouncilResponse, error)
-	UpdateCouncil(context.Context, *UpdateCouncilRequest) (*UpdateCouncilResponse, error)
+	CreateCouncil(context.Context, *CreateCouncilRequest) (*CouncilResponse, error)
+	GetCouncil(context.Context, *GetCouncilRequest) (*CouncilResponse, error)
+	UpdateCouncil(context.Context, *UpdateCouncilRequest) (*CouncilResponse, error)
 	DeleteCouncil(context.Context, *DeleteCouncilRequest) (*DeleteCouncilResponse, error)
 	ListCouncils(context.Context, *ListCouncilsRequest) (*ListCouncilsResponse, error)
 	// Defence
-	CreateDefence(context.Context, *CreateDefenceRequest) (*CreateDefenceResponse, error)
-	GetDefence(context.Context, *GetDefenceRequest) (*GetDefenceResponse, error)
-	UpdateDefence(context.Context, *UpdateDefenceRequest) (*UpdateDefenceResponse, error)
+	CreateDefence(context.Context, *CreateDefenceRequest) (*DefenceResponse, error)
+	GetDefence(context.Context, *GetDefenceRequest) (*DefenceResponse, error)
+	UpdateDefence(context.Context, *UpdateDefenceRequest) (*DefenceResponse, error)
 	DeleteDefence(context.Context, *DeleteDefenceRequest) (*DeleteDefenceResponse, error)
 	ListDefences(context.Context, *ListDefencesRequest) (*ListDefencesResponse, error)
 	// GradeDefence
-	CreateGradeDefence(context.Context, *CreateGradeDefenceRequest) (*CreateGradeDefenceResponse, error)
-	GetGradeDefence(context.Context, *GetGradeDefenceRequest) (*GetGradeDefenceResponse, error)
-	UpdateGradeDefence(context.Context, *UpdateGradeDefenceRequest) (*UpdateGradeDefenceResponse, error)
+	CreateGradeDefence(context.Context, *CreateGradeDefenceRequest) (*GradeDefenceResponse, error)
+	GetGradeDefence(context.Context, *GetGradeDefenceRequest) (*GradeDefenceResponse, error)
+	UpdateGradeDefence(context.Context, *UpdateGradeDefenceRequest) (*GradeDefenceResponse, error)
 	DeleteGradeDefence(context.Context, *DeleteGradeDefenceRequest) (*DeleteGradeDefenceResponse, error)
 	ListGradeDefences(context.Context, *ListGradeDefencesRequest) (*ListGradeDefencesResponse, error)
 	// GradeDefenceCriterion
-	CreateGradeDefenceCriterion(context.Context, *CreateGradeDefenceCriterionRequest) (*CreateGradeDefenceCriterionResponse, error)
-	GetGradeDefenceCriterion(context.Context, *GetGradeDefenceCriterionRequest) (*GetGradeDefenceCriterionResponse, error)
-	UpdateGradeDefenceCriterion(context.Context, *UpdateGradeDefenceCriterionRequest) (*UpdateGradeDefenceCriterionResponse, error)
+	CreateGradeDefenceCriterion(context.Context, *CreateGradeDefenceCriterionRequest) (*GradeDefenceCriterionResponse, error)
+	GetGradeDefenceCriterion(context.Context, *GetGradeDefenceCriterionRequest) (*GradeDefenceCriterionResponse, error)
+	UpdateGradeDefenceCriterion(context.Context, *UpdateGradeDefenceCriterionRequest) (*GradeDefenceCriterionResponse, error)
 	DeleteGradeDefenceCriterion(context.Context, *DeleteGradeDefenceCriterionRequest) (*DeleteGradeDefenceCriterionResponse, error)
 	ListGradeDefenceCriteria(context.Context, *ListGradeDefenceCriteriaRequest) (*ListGradeDefenceCriteriaResponse, error)
 	mustEmbedUnimplementedCouncilServiceServer()
@@ -321,13 +321,13 @@ type CouncilServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCouncilServiceServer struct{}
 
-func (UnimplementedCouncilServiceServer) CreateCouncil(context.Context, *CreateCouncilRequest) (*CreateCouncilResponse, error) {
+func (UnimplementedCouncilServiceServer) CreateCouncil(context.Context, *CreateCouncilRequest) (*CouncilResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCouncil not implemented")
 }
-func (UnimplementedCouncilServiceServer) GetCouncil(context.Context, *GetCouncilRequest) (*GetCouncilResponse, error) {
+func (UnimplementedCouncilServiceServer) GetCouncil(context.Context, *GetCouncilRequest) (*CouncilResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCouncil not implemented")
 }
-func (UnimplementedCouncilServiceServer) UpdateCouncil(context.Context, *UpdateCouncilRequest) (*UpdateCouncilResponse, error) {
+func (UnimplementedCouncilServiceServer) UpdateCouncil(context.Context, *UpdateCouncilRequest) (*CouncilResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCouncil not implemented")
 }
 func (UnimplementedCouncilServiceServer) DeleteCouncil(context.Context, *DeleteCouncilRequest) (*DeleteCouncilResponse, error) {
@@ -336,13 +336,13 @@ func (UnimplementedCouncilServiceServer) DeleteCouncil(context.Context, *DeleteC
 func (UnimplementedCouncilServiceServer) ListCouncils(context.Context, *ListCouncilsRequest) (*ListCouncilsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCouncils not implemented")
 }
-func (UnimplementedCouncilServiceServer) CreateDefence(context.Context, *CreateDefenceRequest) (*CreateDefenceResponse, error) {
+func (UnimplementedCouncilServiceServer) CreateDefence(context.Context, *CreateDefenceRequest) (*DefenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDefence not implemented")
 }
-func (UnimplementedCouncilServiceServer) GetDefence(context.Context, *GetDefenceRequest) (*GetDefenceResponse, error) {
+func (UnimplementedCouncilServiceServer) GetDefence(context.Context, *GetDefenceRequest) (*DefenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDefence not implemented")
 }
-func (UnimplementedCouncilServiceServer) UpdateDefence(context.Context, *UpdateDefenceRequest) (*UpdateDefenceResponse, error) {
+func (UnimplementedCouncilServiceServer) UpdateDefence(context.Context, *UpdateDefenceRequest) (*DefenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDefence not implemented")
 }
 func (UnimplementedCouncilServiceServer) DeleteDefence(context.Context, *DeleteDefenceRequest) (*DeleteDefenceResponse, error) {
@@ -351,13 +351,13 @@ func (UnimplementedCouncilServiceServer) DeleteDefence(context.Context, *DeleteD
 func (UnimplementedCouncilServiceServer) ListDefences(context.Context, *ListDefencesRequest) (*ListDefencesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDefences not implemented")
 }
-func (UnimplementedCouncilServiceServer) CreateGradeDefence(context.Context, *CreateGradeDefenceRequest) (*CreateGradeDefenceResponse, error) {
+func (UnimplementedCouncilServiceServer) CreateGradeDefence(context.Context, *CreateGradeDefenceRequest) (*GradeDefenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGradeDefence not implemented")
 }
-func (UnimplementedCouncilServiceServer) GetGradeDefence(context.Context, *GetGradeDefenceRequest) (*GetGradeDefenceResponse, error) {
+func (UnimplementedCouncilServiceServer) GetGradeDefence(context.Context, *GetGradeDefenceRequest) (*GradeDefenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGradeDefence not implemented")
 }
-func (UnimplementedCouncilServiceServer) UpdateGradeDefence(context.Context, *UpdateGradeDefenceRequest) (*UpdateGradeDefenceResponse, error) {
+func (UnimplementedCouncilServiceServer) UpdateGradeDefence(context.Context, *UpdateGradeDefenceRequest) (*GradeDefenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGradeDefence not implemented")
 }
 func (UnimplementedCouncilServiceServer) DeleteGradeDefence(context.Context, *DeleteGradeDefenceRequest) (*DeleteGradeDefenceResponse, error) {
@@ -366,13 +366,13 @@ func (UnimplementedCouncilServiceServer) DeleteGradeDefence(context.Context, *De
 func (UnimplementedCouncilServiceServer) ListGradeDefences(context.Context, *ListGradeDefencesRequest) (*ListGradeDefencesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGradeDefences not implemented")
 }
-func (UnimplementedCouncilServiceServer) CreateGradeDefenceCriterion(context.Context, *CreateGradeDefenceCriterionRequest) (*CreateGradeDefenceCriterionResponse, error) {
+func (UnimplementedCouncilServiceServer) CreateGradeDefenceCriterion(context.Context, *CreateGradeDefenceCriterionRequest) (*GradeDefenceCriterionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGradeDefenceCriterion not implemented")
 }
-func (UnimplementedCouncilServiceServer) GetGradeDefenceCriterion(context.Context, *GetGradeDefenceCriterionRequest) (*GetGradeDefenceCriterionResponse, error) {
+func (UnimplementedCouncilServiceServer) GetGradeDefenceCriterion(context.Context, *GetGradeDefenceCriterionRequest) (*GradeDefenceCriterionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGradeDefenceCriterion not implemented")
 }
-func (UnimplementedCouncilServiceServer) UpdateGradeDefenceCriterion(context.Context, *UpdateGradeDefenceCriterionRequest) (*UpdateGradeDefenceCriterionResponse, error) {
+func (UnimplementedCouncilServiceServer) UpdateGradeDefenceCriterion(context.Context, *UpdateGradeDefenceCriterionRequest) (*GradeDefenceCriterionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGradeDefenceCriterion not implemented")
 }
 func (UnimplementedCouncilServiceServer) DeleteGradeDefenceCriterion(context.Context, *DeleteGradeDefenceCriterionRequest) (*DeleteGradeDefenceCriterionResponse, error) {

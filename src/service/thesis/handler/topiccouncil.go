@@ -15,54 +15,54 @@ import (
 )
 
 // CreateTopicCouncil creates a new TopicCouncil record
-func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCouncilRequest) (*pb.CreateTopicCouncilResponse, error) {
+func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCouncilRequest) (*pb.TopicCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetTopicCouncil().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	if req.TopicCode == "" {
+	if req.GetTopicCouncil().GetTopicCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "topic_code is required")
 	}
 
-	// Generate UUID
 	// Convert Stage enum to string
-	StageValue := pb.TopicStage_STAGE_DACN
-
-	StageValue = req.Stage
 	StageStr := "stage_dacn"
-	switch StageValue {
+	switch req.GetTopicCouncil().GetStage() {
 	case pb.TopicStage_STAGE_DACN:
 		StageStr = "stage_dacn"
 	case pb.TopicStage_STAGE_LVTN:
 		StageStr = "stage_lvtn"
 	}
-	id := fmt.Sprint(req.GetTopicCode(), "_", StageStr)
+
+	// Generate ID from topic_code and stage
+	id := fmt.Sprint(req.GetTopicCouncil().GetTopicCode(), "_", StageStr)
+
 	timeStart := ""
-	if req.TimeStart != nil {
-		timeStart = req.TimeStart.AsTime().Format("2006-01-02 15:04:05")
+	if req.GetTopicCouncil().GetTimeStart() != nil {
+		timeStart = req.GetTopicCouncil().GetTimeStart().AsTime().Format("2006-01-02 15:04:05")
 	}
 	timeEnd := ""
-	if req.TimeEnd != nil {
-		timeEnd = req.TimeEnd.AsTime().Format("2006-01-02 15:04:05")
+	if req.GetTopicCouncil().GetTimeEnd() != nil {
+		timeEnd = req.GetTopicCouncil().GetTimeEnd().AsTime().Format("2006-01-02 15:04:05")
 	}
+
 	// Insert into database
-	fmt.Print(id)
 	query := `
 		INSERT INTO Topic_council (id, title, stage, topic_code, council_code, time_start, time_end, created_by, updated_by, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
+
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
+		req.GetTopicCouncil().GetTitle(),
 		StageStr,
-		req.TopicCode,
-		req.CouncilCode,
+		req.GetTopicCouncil().CouncilCode,
+		req.GetTopicCouncil().GetCouncilCode(),
 		timeStart,
 		timeEnd,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetTopicCouncil().GetCreatedBy(),
+		req.GetTopicCouncil().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -72,40 +72,57 @@ func (h *Handler) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCou
 		return nil, status.Errorf(codes.Internal, "failed to create topiccouncil: %v", err)
 	}
 
-	result, err := h.GetTopicCouncil(ctx, &pb.GetTopicCouncilRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get topiccouncil")
-	}
-	return &pb.CreateTopicCouncilResponse{
-		TopicCouncil: result.GetTopicCouncil(),
-	}, nil
+	return h.GetTopicCouncil(ctx, &pb.GetTopicCouncilRequest{Id: id})
 }
 
 // GetTopicCouncil retrieves a TopicCouncil by ID
-func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRequest) (*pb.GetTopicCouncilResponse, error) {
+func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRequest) (*pb.TopicCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
-	fmt.Print(req.Id)
-	query := `
-		SELECT id, title, stage, topic_code, council_code,time_start, time_end, created_at, updated_at, created_by, updated_by
+
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"title":        true,
+		"stage":        true,
+		"topic_code":   true,
+		"council_code": true,
+		"time_start":   true,
+		"time_end":     true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
+		SELECT id, title, stage, topic_code, council_code, time_start, time_end, created_at, updated_at, created_by, updated_by
 		FROM Topic_council
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.TopicCouncil
 	var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
-	var updatedBy sql.NullString
+	var updatedBy, councilCode sql.NullString
 	var StageStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&StageStr,
 		&entity.TopicCode,
-		&entity.CouncilCode,
+		&councilCode,
 		&timeStart,
 		&timeEnd,
 		&createdAt,
@@ -146,14 +163,17 @@ func (h *Handler) GetTopicCouncil(ctx context.Context, req *pb.GetTopicCouncilRe
 	if updatedBy.Valid {
 		entity.UpdatedBy = updatedBy.String
 	}
+	if councilCode.Valid {
+		entity.CouncilCode = councilCode.String
+	}
 
-	return &pb.GetTopicCouncilResponse{
+	return &pb.TopicCouncilResponse{
 		TopicCouncil: &entity,
 	}, nil
 }
 
 // UpdateTopicCouncil updates an existing TopicCouncil
-func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCouncilRequest) (*pb.UpdateTopicCouncilResponse, error) {
+func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCouncilRequest) (*pb.TopicCouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -164,32 +184,36 @@ func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCou
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetTopicCouncil().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetTopicCouncil().GetTitle())
 	}
-	if req.Stage != nil {
-		updateFields = append(updateFields, "stage = ?")
-		StageStr := "stage_dacn"
-		switch *req.Stage {
-		case pb.TopicStage_STAGE_DACN:
-			StageStr = "stage_dacn"
-		case pb.TopicStage_STAGE_LVTN:
-			StageStr = "stage_lvtn"
-		}
-		args = append(args, StageStr)
-
+	// Stage enum - always include
+	updateFields = append(updateFields, "stage = ?")
+	StageStr := "stage_dacn"
+	switch req.GetTopicCouncil().GetStage() {
+	case pb.TopicStage_STAGE_DACN:
+		StageStr = "stage_dacn"
+	case pb.TopicStage_STAGE_LVTN:
+		StageStr = "stage_lvtn"
 	}
-	if req.TopicCode != nil {
+	args = append(args, StageStr)
+
+	if req.GetTopicCouncil().GetTopicCode() != "" {
 		updateFields = append(updateFields, "topic_code = ?")
-		args = append(args, *req.TopicCode)
-
+		args = append(args, req.GetTopicCouncil().GetTopicCode())
 	}
-	if req.CouncilCode != nil {
+	if req.GetTopicCouncil().GetCouncilCode() != "" {
 		updateFields = append(updateFields, "council_code = ?")
-		args = append(args, *req.CouncilCode)
-
+		args = append(args, req.GetTopicCouncil().CouncilCode)
+	}
+	if req.GetTopicCouncil().GetTimeStart() != nil {
+		updateFields = append(updateFields, "time_start = ?")
+		args = append(args, req.GetTopicCouncil().GetTimeStart().AsTime().Format("2006-01-02 15:04:05"))
+	}
+	if req.GetTopicCouncil().GetTimeEnd() != nil {
+		updateFields = append(updateFields, "time_end = ?")
+		args = append(args, req.GetTopicCouncil().GetTimeEnd().AsTime().Format("2006-01-02 15:04:05"))
 	}
 
 	if len(updateFields) == 0 {
@@ -198,30 +222,43 @@ func (h *Handler) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCou
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetTopicCouncil().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"title":        true,
+		"stage":        true,
+		"topic_code":   true,
+		"council_code": true,
+		"time_start":   true,
+		"time_end":     true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE Topic_council
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update topiccouncil: %v", err)
 	}
 
-	result, err := h.GetTopicCouncil(ctx, &pb.GetTopicCouncilRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get topiccouncil")
-	}
-	return &pb.UpdateTopicCouncilResponse{
-		TopicCouncil: result.GetTopicCouncil(),
-	}, nil
+	return h.GetTopicCouncil(ctx, &pb.GetTopicCouncilRequest{Id: req.Id})
 }
 
 // DeleteTopicCouncil deletes a TopicCouncil by ID
@@ -232,9 +269,32 @@ func (h *Handler) DeleteTopicCouncil(ctx context.Context, req *pb.DeleteTopicCou
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Topic_council WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"title":        true,
+		"stage":        true,
+		"topic_code":   true,
+		"council_code": true,
+		"time_start":   true,
+		"time_end":     true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM Topic_council %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete topiccouncil: %v", err)
 	}
@@ -291,7 +351,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 		"time_end":     true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause
@@ -328,7 +388,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 	for rows.Next() {
 		var entity pb.TopicCouncil
 		var createdAt, updatedAt, timeStart, timeEnd sql.NullTime
-		var updatedBy sql.NullString
+		var updatedBy, councilCode sql.NullString
 		var StageStr string
 
 		err := rows.Scan(
@@ -336,7 +396,7 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 			&entity.Title,
 			&StageStr,
 			&entity.TopicCode,
-			&entity.CouncilCode,
+			&councilCode,
 			&timeStart,
 			&timeEnd,
 			&createdAt,
@@ -372,6 +432,9 @@ func (h *Handler) ListTopicCouncils(ctx context.Context, req *pb.ListTopicCounci
 		}
 		if updatedBy.Valid {
 			entity.UpdatedBy = updatedBy.String
+		}
+		if councilCode.Valid {
+			entity.CouncilCode = councilCode.String
 		}
 
 		entities = append(entities, &entity)

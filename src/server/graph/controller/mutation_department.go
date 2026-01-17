@@ -40,10 +40,12 @@ func (c *Controller) CreateCouncil(ctx context.Context, input model.CreateCounci
 	}
 
 	resp, err := c.council.CreateCouncil(ctx, &pbCouncil.CreateCouncilRequest{
-		Title:        input.Title,
-		MajorCode:    input.MajorCode,
-		SemesterCode: teacher.GetTeacher().SemesterCode,
-		CreatedBy:    *userInfo,
+		Council: &pbCouncil.CouncilAction{
+			Title:        input.Title,
+			MajorCode:    input.MajorCode,
+			SemesterCode: teacher.GetTeacher().SemesterCode,
+			CreatedBy:    *userInfo,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -89,9 +91,11 @@ func (c *Controller) UpdateDepartmentCouncil(ctx context.Context, id string, inp
 	updatedBy := *myId
 	// update council
 	req := &pbCouncil.UpdateCouncilRequest{
-		Id:        id,
-		Title:     input.Title,
-		UpdatedBy: updatedBy,
+		Id: id,
+		Council: &pbCouncil.CouncilAction{
+			Title:     *input.Title,
+			UpdatedBy: updatedBy,
+		},
 	}
 
 	updateCouncil, err := c.council.UpdateCouncil(ctx, req)
@@ -176,11 +180,13 @@ func (c *Controller) AddDefenceToCouncil(ctx context.Context, input model.Create
 	}
 
 	resp, err := c.council.CreateDefence(ctx, &pbCouncil.CreateDefenceRequest{
-		Title:       input.Title,
-		CouncilCode: input.CouncilCode,
-		TeacherCode: input.TeacherCode,
-		Position:    position,
-		CreatedBy:   createdBy,
+		Defence: &pbCouncil.DefenceAction{
+			Title:       input.Title,
+			CouncilCode: input.CouncilCode,
+			TeacherCode: input.TeacherCode,
+			Position:    position,
+			CreatedBy:   createdBy,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -283,9 +289,11 @@ func (c *Controller) ApproveTopicStage1(ctx context.Context, id string) (*model.
 
 	status := pbThesis.TopicStatus_APPROVED_1
 	req := &pbThesis.UpdateTopicRequest{
-		Id:        id,
-		Status:    &status,
-		UpdatedBy: updatedBy,
+		Id: id,
+		Topic: &pbThesis.TopicAction{
+			Status:    status,
+			UpdatedBy: updatedBy,
+		},
 	}
 
 	resp, err := c.thesis.UpdateTopic(ctx, req)
@@ -335,9 +343,11 @@ func (c *Controller) RejectTopicStage1(ctx context.Context, id string, reason *s
 
 	status := pbThesis.TopicStatus_REJECTED
 	req := &pbThesis.UpdateTopicRequest{
-		Id:        id,
-		Status:    &status,
-		UpdatedBy: updatedBy,
+		Id: id,
+		Topic: &pbThesis.TopicAction{
+			Status:    status,
+			UpdatedBy: updatedBy,
+		},
 	}
 
 	resp, err := c.thesis.UpdateTopic(ctx, req)
@@ -412,9 +422,11 @@ func (c *Controller) AssignTopicToCouncil(ctx context.Context, topicCouncilID st
 	}
 
 	req := &pbThesis.UpdateTopicCouncilRequest{
-		Id:          topicCouncilID,
-		CouncilCode: &councilID,
-		UpdatedBy:   updatedBy,
+		Id: topicCouncilID,
+		TopicCouncil: &pbThesis.TopicCouncilAction{
+			CouncilCode: &councilID,
+			UpdatedBy:   updatedBy,
+		},
 	}
 
 	resp, err := c.thesis.UpdateTopicCouncil(ctx, req)
@@ -488,9 +500,11 @@ func (c *Controller) RemoveTopicFromCouncil(ctx context.Context, topicCouncilID 
 	// Remove by setting council_code to "remove"
 	removeString := "remove"
 	req := &pbThesis.UpdateTopicCouncilRequest{
-		Id:          topicCouncilID,
-		CouncilCode: &removeString,
-		UpdatedBy:   updatedBy,
+		Id: topicCouncilID,
+		TopicCouncil: &pbThesis.TopicCouncilAction{
+			CouncilCode: &removeString,
+			UpdatedBy:   updatedBy,
+		},
 	}
 
 	_, err = c.thesis.UpdateTopicCouncil(ctx, req)

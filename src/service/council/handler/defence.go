@@ -16,17 +16,17 @@ import (
 )
 
 // CreateDefence creates a new Defence record
-func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceRequest) (*pb.CreateDefenceResponse, error) {
+func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceRequest) (*pb.DefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetDefence().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	if req.CouncilCode == "" {
+	if req.GetDefence().GetCouncilCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "council_code is required")
 	}
-	if req.TeacherCode == "" {
+	if req.GetDefence().GetTeacherCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "teacher_code is required")
 	}
 
@@ -38,7 +38,7 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 	// Convert Position enum to string
 	PositionValue := pb.DefencePosition_PRESIDENT
 
-	PositionValue = req.Position
+	PositionValue = req.GetDefence().GetPosition()
 	PositionStr := "president"
 	switch PositionValue {
 	case pb.DefencePosition_PRESIDENT:
@@ -59,12 +59,12 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.CouncilCode,
-		req.TeacherCode,
+		req.GetDefence().GetTitle(),
+		req.GetDefence().GetCouncilCode(),
+		req.GetDefence().GetTeacherCode(),
 		PositionStr,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetDefence().GetCreatedBy(),
+		req.GetDefence().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -73,36 +73,53 @@ func (h *Handler) CreateDefence(ctx context.Context, req *pb.CreateDefenceReques
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create defence: %v", err)
 	}
-	id = fmt.Sprint(req.CouncilCode, "_", req.TeacherCode)
+	id = fmt.Sprint(req.GetDefence().GetCouncilCode(), "_", req.GetDefence().GetTeacherCode())
 	result, err := h.GetDefence(ctx, &pb.GetDefenceRequest{Id: id})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get defence")
 	}
-	return &pb.CreateDefenceResponse{
+	return &pb.DefenceResponse{
 		Defence: result.GetDefence(),
 	}, nil
 }
 
 // GetDefence retrieves a Defence by ID
-func (h *Handler) GetDefence(ctx context.Context, req *pb.GetDefenceRequest) (*pb.GetDefenceResponse, error) {
+func (h *Handler) GetDefence(ctx context.Context, req *pb.GetDefenceRequest) (*pb.DefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":           true,
+		"title":        true,
+		"council_code": true,
+		"teacher_code": true,
+		"position":     true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, title, council_code, teacher_code, position, created_at, updated_at, created_by, updated_by
 		FROM Defence
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Defence
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var PositionStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.CouncilCode,
@@ -145,13 +162,13 @@ func (h *Handler) GetDefence(ctx context.Context, req *pb.GetDefenceRequest) (*p
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetDefenceResponse{
+	return &pb.DefenceResponse{
 		Defence: &entity,
 	}, nil
 }
 
 // UpdateDefence updates an existing Defence
-func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceRequest) (*pb.UpdateDefenceResponse, error) {
+func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceRequest) (*pb.DefenceResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -162,25 +179,23 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetDefence().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
+		args = append(args, req.GetDefence().GetTitle())
 	}
-	if req.CouncilCode != nil {
+	if req.GetDefence().GetCouncilCode() != "" {
 		updateFields = append(updateFields, "council_code = ?")
-		args = append(args, *req.CouncilCode)
-
+		args = append(args, req.GetDefence().GetCouncilCode())
 	}
-	if req.TeacherCode != nil {
+	if req.GetDefence().GetTeacherCode() != "" {
 		updateFields = append(updateFields, "teacher_code = ?")
-		args = append(args, *req.TeacherCode)
-
+		args = append(args, req.GetDefence().GetTeacherCode())
 	}
 
-	if req.Position != nil {
+	if req.GetDefence().GetPosition() != 0 {
 		updateFields = append(updateFields, "position = ?")
 		PositionStr := "president"
-		switch *req.Position {
+		switch req.GetDefence().GetPosition() {
 		case pb.DefencePosition_PRESIDENT:
 			PositionStr = "president"
 		case pb.DefencePosition_SECRETARY:
@@ -191,7 +206,6 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 			PositionStr = "member"
 		}
 		args = append(args, PositionStr)
-
 	}
 
 	if len(updateFields) == 0 {
@@ -200,17 +214,31 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetDefence().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
-	args = append(args, req.Id)
+	// Build WHERE clause from filters
+	whereClause := ""
+	whiteMap := map[string]bool{
+		"id":           true,
+		"title":        true,
+		"council_code": true,
+		"teacher_code": true,
+		"position":     true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.GetId())
 
 	query := fmt.Sprintf(`
 		UPDATE Defence
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
@@ -221,7 +249,7 @@ func (h *Handler) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceReques
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get defence")
 	}
-	return &pb.UpdateDefenceResponse{
+	return &pb.DefenceResponse{
 		Defence: result.GetDefence(),
 	}, nil
 }
@@ -234,9 +262,27 @@ func (h *Handler) DeleteDefence(ctx context.Context, req *pb.DeleteDefenceReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Defence WHERE id = ?`
+	// Build WHERE clause from filters
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":           true,
+		"title":        true,
+		"council_code": true,
+		"teacher_code": true,
+		"position":     true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	query := fmt.Sprintf(`DELETE FROM Defence %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete defence: %v", err)
 	}
@@ -291,7 +337,7 @@ func (h *Handler) ListDefences(ctx context.Context, req *pb.ListDefencesRequest)
 		"position":     true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

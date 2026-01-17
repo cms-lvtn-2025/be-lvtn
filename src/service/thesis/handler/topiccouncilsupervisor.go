@@ -16,21 +16,19 @@ import (
 )
 
 // CreateTopicCouncilSupervisor creates a new TopicCouncilSupervisor record
-func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.CreateTopicCouncilSupervisorRequest) (*pb.CreateTopicCouncilSupervisorResponse, error) {
+func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.CreateTopicCouncilSupervisorRequest) (*pb.TopicCouncilSupervisorResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.TeacherSupervisorCode == "" {
+	if req.GetTopicCouncilSupervisor().GetTeacherSupervisorCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "teacher_supervisor_code is required")
 	}
-	if req.TopicCouncilCode == "" {
+	if req.GetTopicCouncilSupervisor().GetTopicCouncilCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "topic_council_code is required")
 	}
 
 	// Generate UUID
 	id := uuid.New().String()
-
-	// Prepare fields
 
 	// Insert into database
 	query := `
@@ -40,10 +38,10 @@ func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.Crea
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.TeacherSupervisorCode,
-		req.TopicCouncilCode,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetTopicCouncilSupervisor().GetTeacherSupervisorCode(),
+		req.GetTopicCouncilSupervisor().GetTopicCouncilCode(),
+		req.GetTopicCouncilSupervisor().GetCreatedBy(),
+		req.GetTopicCouncilSupervisor().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -53,34 +51,47 @@ func (h *Handler) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.Crea
 		return nil, status.Errorf(codes.Internal, "failed to create topiccouncilsupervisor: %v", err)
 	}
 
-	result, err := h.GetTopicCouncilSupervisor(ctx, &pb.GetTopicCouncilSupervisorRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get topiccouncilsupervisor")
-	}
-	return &pb.CreateTopicCouncilSupervisorResponse{
-		TopicCouncilSupervisor: result.GetTopicCouncilSupervisor(),
-	}, nil
+	return h.GetTopicCouncilSupervisor(ctx, &pb.GetTopicCouncilSupervisorRequest{Id: id})
 }
 
 // GetTopicCouncilSupervisor retrieves a TopicCouncilSupervisor by ID
-func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopicCouncilSupervisorRequest) (*pb.GetTopicCouncilSupervisorResponse, error) {
+func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopicCouncilSupervisorRequest) (*pb.TopicCouncilSupervisorResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"teacher_supervisor_code": true,
+		"topic_council_code":      true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, teacher_supervisor_code, topic_council_code, created_at, updated_at, created_by, updated_by
 		FROM Topic_council_supervisor
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.TopicCouncilSupervisor
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.TeacherSupervisorCode,
 		&entity.TopicCouncilCode,
@@ -107,13 +118,13 @@ func (h *Handler) GetTopicCouncilSupervisor(ctx context.Context, req *pb.GetTopi
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetTopicCouncilSupervisorResponse{
+	return &pb.TopicCouncilSupervisorResponse{
 		TopicCouncilSupervisor: &entity,
 	}, nil
 }
 
 // UpdateTopicCouncilSupervisor updates an existing TopicCouncilSupervisor
-func (h *Handler) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.UpdateTopicCouncilSupervisorRequest) (*pb.UpdateTopicCouncilSupervisorResponse, error) {
+func (h *Handler) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.UpdateTopicCouncilSupervisorRequest) (*pb.TopicCouncilSupervisorResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -124,15 +135,13 @@ func (h *Handler) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.Upda
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.TeacherSupervisorCode != nil {
+	if req.GetTopicCouncilSupervisor().GetTeacherSupervisorCode() != "" {
 		updateFields = append(updateFields, "teacher_supervisor_code = ?")
-		args = append(args, *req.TeacherSupervisorCode)
-
+		args = append(args, req.GetTopicCouncilSupervisor().GetTeacherSupervisorCode())
 	}
-	if req.TopicCouncilCode != nil {
+	if req.GetTopicCouncilSupervisor().GetTopicCouncilCode() != "" {
 		updateFields = append(updateFields, "topic_council_code = ?")
-		args = append(args, *req.TopicCouncilCode)
-
+		args = append(args, req.GetTopicCouncilSupervisor().GetTopicCouncilCode())
 	}
 
 	if len(updateFields) == 0 {
@@ -141,30 +150,39 @@ func (h *Handler) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.Upda
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetTopicCouncilSupervisor().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"teacher_supervisor_code": true,
+		"topic_council_code":      true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
-		UPDATE TopicCouncilSupervisor
+		UPDATE Topic_council_supervisor
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update topiccouncilsupervisor: %v", err)
 	}
 
-	result, err := h.GetTopicCouncilSupervisor(ctx, &pb.GetTopicCouncilSupervisorRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get topiccouncilsupervisor")
-	}
-	return &pb.UpdateTopicCouncilSupervisorResponse{
-		TopicCouncilSupervisor: result.GetTopicCouncilSupervisor(),
-	}, nil
+	return h.GetTopicCouncilSupervisor(ctx, &pb.GetTopicCouncilSupervisorRequest{Id: req.Id})
 }
 
 // DeleteTopicCouncilSupervisor deletes a TopicCouncilSupervisor by ID
@@ -175,9 +193,28 @@ func (h *Handler) DeleteTopicCouncilSupervisor(ctx context.Context, req *pb.Dele
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Topic_council_supervisor WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"teacher_supervisor_code": true,
+		"topic_council_code":      true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM Topic_council_supervisor %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete topiccouncilsupervisor: %v", err)
 	}
@@ -225,13 +262,12 @@ func (h *Handler) ListTopicCouncilSupervisors(ctx context.Context, req *pb.ListT
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":                      true,
 		"teacher_supervisor_code": true,
 		"topic_council_code":      true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

@@ -16,11 +16,11 @@ import (
 )
 
 // CreateSemester creates a new Semester record
-func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequest) (*pb.CreateSemesterResponse, error) {
+func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequest) (*pb.SemesterResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetSemester().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
 
@@ -37,9 +37,9 @@ func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequ
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetSemester().GetTitle(),
+		req.GetSemester().GetCreatedBy(),
+		req.GetSemester().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -52,7 +52,7 @@ func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequ
 	slugQuery := "SELECT create_slug(?) AS slug"
 
 	// Sử dụng QueryRowContext để thực thi và lấy 1 hàng kết quả
-	row := h.db.QueryRowContext(ctx, slugQuery, req.Title)
+	row := h.db.QueryRowContext(ctx, slugQuery, req.GetSemester().GetTitle())
 
 	// Hứng kết quả (slug) vào biến đã khai báo
 	err = row.Scan(&slug)
@@ -65,34 +65,42 @@ func (h *Handler) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequ
 		return nil, status.Error(codes.Internal, "generated slug is empty")
 	}
 
-	result, err := h.GetSemester(ctx, &pb.GetSemesterRequest{Id: slug})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get semester")
-	}
-	return &pb.CreateSemesterResponse{
-		Semester: result.GetSemester(),
-	}, nil
+	return h.GetSemester(ctx, &pb.GetSemesterRequest{Id: slug})
 }
 
 // GetSemester retrieves a Semester by ID
-func (h *Handler) GetSemester(ctx context.Context, req *pb.GetSemesterRequest) (*pb.GetSemesterResponse, error) {
+func (h *Handler) GetSemester(ctx context.Context, req *pb.GetSemesterRequest) (*pb.SemesterResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
-		SELECT id, title, created_at, updated_at, created_by, updated_by
-		FROM Semester
-		WHERE id = ?
-	`
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":    true,
+		"title": true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
+	SELECT id, title, created_at, updated_at, created_by, updated_by
+	FROM Semester
+	%s
+`, whereClause)
 
 	var entity pb.Semester
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&createdAt,
@@ -118,16 +126,16 @@ func (h *Handler) GetSemester(ctx context.Context, req *pb.GetSemesterRequest) (
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetSemesterResponse{
+	return &pb.SemesterResponse{
 		Semester: &entity,
 	}, nil
 }
 
 // UpdateSemester updates an existing Semester
-func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequest) (*pb.UpdateSemesterResponse, error) {
+func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequest) (*pb.SemesterResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
-	if req.Id == "" {
+	if req.GetSemester().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
@@ -135,10 +143,9 @@ func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequ
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetSemester().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetSemester().GetTitle())
 	}
 
 	if len(updateFields) == 0 {
@@ -147,17 +154,28 @@ func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequ
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetSemester().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
-	args = append(args, req.Id)
+	// Build WHERE clause from filters
+	whereClause := ""
+	whiteMap := map[string]bool{
+		"id":    true,
+		"title": true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.GetId())
 
 	query := fmt.Sprintf(`
 		UPDATE Semester
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
@@ -168,7 +186,7 @@ func (h *Handler) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequ
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get semester")
 	}
-	return &pb.UpdateSemesterResponse{
+	return &pb.SemesterResponse{
 		Semester: result.GetSemester(),
 	}, nil
 }
@@ -181,9 +199,24 @@ func (h *Handler) DeleteSemester(ctx context.Context, req *pb.DeleteSemesterRequ
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Semester WHERE id = ?`
+	// Build WHERE clause from filters
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":    true,
+		"title": true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	query := fmt.Sprintf(`DELETE FROM Semester %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete semester: %v", err)
 	}
@@ -235,7 +268,7 @@ func (h *Handler) ListSemesters(ctx context.Context, req *pb.ListSemestersReques
 		"title": true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

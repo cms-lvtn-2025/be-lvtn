@@ -143,13 +143,14 @@ func (s *FileService) validateAndGetTableInfo(ctx context.Context, params *Uploa
 		if enrollment.Enrollment.StudentCode != params.UserInfo.UserID {
 			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
 		}
-		if *enrollment.Enrollment.MidtermCode != tableID {
-			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
-		}
 
-		midterm, err := s.ThesisClient.GetMidtermById(ctx, *enrollment.Enrollment.MidtermCode)
+		// Get midterm by the provided tableID and verify it belongs to this enrollment
+		midterm, err := s.ThesisClient.GetMidtermById(ctx, tableID)
 		if err != nil {
 			return "", 0, "", fmt.Errorf("failed to get midterm: %w", err)
+		}
+		if midterm.Midterm.EnrollmentCode != params.EnrollmentID {
+			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
 		}
 		if midterm.Midterm.Status != thesis.MidtermStatus_NOT_SUBMITTED {
 			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
@@ -168,13 +169,14 @@ func (s *FileService) validateAndGetTableInfo(ctx context.Context, params *Uploa
 		if enrollment.Enrollment.StudentCode != params.UserInfo.UserID {
 			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
 		}
-		if *enrollment.Enrollment.FinalCode != tableID {
-			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
-		}
 
-		final, err := s.ThesisClient.GetFinalById(ctx, *enrollment.Enrollment.FinalCode)
+		// Get final by the provided tableID and verify it belongs to this enrollment
+		final, err := s.ThesisClient.GetFinalById(ctx, tableID)
 		if err != nil {
 			return "", 0, "", fmt.Errorf("failed to get final: %w", err)
+		}
+		if final.Final.EnrollmentCode != params.EnrollmentID {
+			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
 		}
 		if final.Final.Status != thesis.FinalStatus_PENDING {
 			return "", 0, "", fmt.Errorf("you are not allowed to upload this file")
@@ -218,13 +220,15 @@ func (s *FileService) saveExcelToMongo(ctx context.Context, fileURL string, para
 
 func (s *FileService) saveFileToGRPC(ctx context.Context, fileURL string, params *UploadFileParams, tableType pb.TableType, option, tableID string) (string, error) {
 	createResp, err := s.FileClient.CreateFile(ctx, &pb.CreateFileRequest{
-		Title:     params.Title,
-		File:      fileURL,
-		Status:    pb.FileStatus_FILE_PENDING,
-		Table:     tableType,
-		Option:    option,
-		TableId:   tableID,
-		CreatedBy: params.UserInfo.UserID,
+		File: &pb.FileAction{
+			Title:     params.Title,
+			File:      fileURL,
+			Status:    pb.FileStatus_FILE_PENDING,
+			Table:     tableType,
+			Option:    option,
+			TableId:   tableID,
+			CreatedBy: params.UserInfo.UserID,
+		},
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to save file to database: %w", err)

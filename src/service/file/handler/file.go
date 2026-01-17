@@ -16,34 +16,29 @@ import (
 )
 
 // CreateFile creates a new File record
-func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*pb.CreateFileResponse, error) {
+func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*pb.FileResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetFile().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	if req.File == "" {
+	if req.GetFile().GetFile() == "" {
 		return nil, status.Error(codes.InvalidArgument, "file is required")
 	}
-	if req.Option == "" {
+	if req.GetFile().GetOption() == "" {
 		return nil, status.Error(codes.InvalidArgument, "option is required")
 	}
-	if req.TableId == "" {
+	if req.GetFile().GetTableId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "table_id is required")
 	}
 
 	// Generate UUID
 	id := uuid.New().String()
 
-	// Prepare fields
-
 	// Convert Status enum to string
-	StatusValue := pb.FileStatus_FILE_PENDING
-
-	StatusValue = req.Status
 	StatusStr := "file_pending"
-	switch StatusValue {
+	switch req.GetFile().GetStatus() {
 	case pb.FileStatus_FILE_PENDING:
 		StatusStr = "file_pending"
 	case pb.FileStatus_APPROVED:
@@ -51,12 +46,10 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 	case pb.FileStatus_REJECTED:
 		StatusStr = "rejected"
 	}
-	// Convert Table enum to string
-	TableValue := pb.TableType_TOPIC
 
-	TableValue = req.Table
+	// Convert Table enum to string
 	TableStr := "topic"
-	switch TableValue {
+	switch req.GetFile().GetTable() {
 	case pb.TableType_TOPIC:
 		TableStr = "topic"
 	case pb.TableType_MIDTERM:
@@ -75,14 +68,14 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.File,
+		req.GetFile().GetTitle(),
+		req.GetFile().GetFile(),
 		StatusStr,
 		TableStr,
-		req.Option,
-		req.TableId,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetFile().GetOption(),
+		req.GetFile().GetTableId(),
+		req.GetFile().GetCreatedBy(),
+		req.GetFile().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -92,28 +85,46 @@ func (h *Handler) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*p
 		return nil, status.Errorf(codes.Internal, "failed to create file: %v", err)
 	}
 
-	result, err := h.GetFile(ctx, &pb.GetFileRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get file")
-	}
-	return &pb.CreateFileResponse{
-		File: result.GetFile(),
-	}, nil
+	return h.GetFile(ctx, &pb.GetFileRequest{Id: id})
 }
 
 // GetFile retrieves a File by ID
-func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetFileResponse, error) {
+func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.FileResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
-		SELECT id, title, file, status, ` + "`table`" + `, ` + "`option`" + `, table_id, created_at, updated_at, created_by, updated_by
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":       true,
+		"title":    true,
+		"file":     true,
+		"status":   true,
+		"table":    true,
+		"option":   true,
+		"table_id": true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
+		SELECT id, title, file, status, `+"`table`"+`, `+"`option`"+`, table_id, created_at, updated_at, created_by, updated_by
 		FROM File
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.File
 	var createdAt, updatedAt sql.NullTime
@@ -121,7 +132,7 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 	var StatusStr string
 	var TableStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.File,
@@ -153,6 +164,7 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 	default:
 		entity.Status = pb.FileStatus_FILE_PENDING
 	}
+
 	// Convert Table string to enum
 	switch TableStr {
 	case "topic":
@@ -177,13 +189,13 @@ func (h *Handler) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetF
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetFileResponse{
+	return &pb.FileResponse{
 		File: &entity,
 	}, nil
 }
 
 // UpdateFile updates an existing File
-func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*pb.UpdateFileResponse, error) {
+func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*pb.FileResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -194,55 +206,50 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetFile().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetFile().GetTitle())
 	}
-	if req.File != nil {
+	if req.GetFile().GetFile() != "" {
 		updateFields = append(updateFields, "file = ?")
-		args = append(args, *req.File)
-
+		args = append(args, req.GetFile().GetFile())
 	}
-	if req.Status != nil {
-		updateFields = append(updateFields, "status = ?")
-		StatusStr := "file_pending"
-		switch *req.Status {
-		case pb.FileStatus_FILE_PENDING:
-			StatusStr = "file_pending"
-		case pb.FileStatus_APPROVED:
-			StatusStr = "approved"
-		case pb.FileStatus_REJECTED:
-			StatusStr = "rejected"
-		}
-		args = append(args, StatusStr)
 
+	// Status enum - always include
+	updateFields = append(updateFields, "status = ?")
+	StatusStr := "file_pending"
+	switch req.GetFile().GetStatus() {
+	case pb.FileStatus_FILE_PENDING:
+		StatusStr = "file_pending"
+	case pb.FileStatus_APPROVED:
+		StatusStr = "approved"
+	case pb.FileStatus_REJECTED:
+		StatusStr = "rejected"
 	}
-	if req.Table != nil {
-		updateFields = append(updateFields, "`table` = ?")
-		TableStr := "topic"
-		switch *req.Table {
-		case pb.TableType_TOPIC:
-			TableStr = "topic"
-		case pb.TableType_MIDTERM:
-			TableStr = "midterm"
-		case pb.TableType_FINAL:
-			TableStr = "final"
-		case pb.TableType_ORDER:
-			TableStr = "order"
-		}
-		args = append(args, TableStr)
+	args = append(args, StatusStr)
 
+	// Table enum - always include
+	updateFields = append(updateFields, "`table` = ?")
+	TableStr := "topic"
+	switch req.GetFile().GetTable() {
+	case pb.TableType_TOPIC:
+		TableStr = "topic"
+	case pb.TableType_MIDTERM:
+		TableStr = "midterm"
+	case pb.TableType_FINAL:
+		TableStr = "final"
+	case pb.TableType_ORDER:
+		TableStr = "order"
 	}
-	if req.Option != nil {
+	args = append(args, TableStr)
+
+	if req.GetFile().GetOption() != "" {
 		updateFields = append(updateFields, "`option` = ?")
-		args = append(args, *req.Option)
-
+		args = append(args, req.GetFile().GetOption())
 	}
-	if req.TableId != nil {
+	if req.GetFile().GetTableId() != "" {
 		updateFields = append(updateFields, "table_id = ?")
-		args = append(args, *req.TableId)
-
+		args = append(args, req.GetFile().GetTableId())
 	}
 
 	if len(updateFields) == 0 {
@@ -251,30 +258,44 @@ func (h *Handler) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*p
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetFile().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"id":       true,
+		"title":    true,
+		"file":     true,
+		"status":   true,
+		"table":    true,
+		"option":   true,
+		"table_id": true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE File
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update file: %v", err)
 	}
 
-	result, err := h.GetFile(ctx, &pb.GetFileRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get file")
-	}
-	return &pb.UpdateFileResponse{
-		File: result.GetFile(),
-	}, nil
+	return h.GetFile(ctx, &pb.GetFileRequest{Id: req.Id})
 }
 
 // DeleteFile deletes a File by ID
@@ -285,9 +306,33 @@ func (h *Handler) DeleteFile(ctx context.Context, req *pb.DeleteFileRequest) (*p
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM File WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":       true,
+		"title":    true,
+		"file":     true,
+		"status":   true,
+		"table":    true,
+		"option":   true,
+		"table_id": true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM File %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete file: %v", err)
 	}
@@ -335,8 +380,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":       true,
 		"title":    true,
 		"file":     true,
 		"status":   true,
@@ -345,7 +389,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 		"table_id": true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause
@@ -414,6 +458,7 @@ func (h *Handler) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.
 		default:
 			entity.Status = pb.FileStatus_FILE_PENDING
 		}
+
 		// Convert Table string to enum
 		switch TableStr {
 		case "topic":

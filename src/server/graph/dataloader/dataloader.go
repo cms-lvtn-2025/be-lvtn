@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"thaily/src/server/graph/model"
 	"time"
 )
 
 // BatchFunc defines the function signature for batch loading
 // Input: slice of keys, Output: map of key->value and error
-type BatchFunc[K comparable, V any] func(ctx context.Context, keys []K) (map[K]V, error)
+type BatchFunc[K comparable, V any] func(ctx context.Context, keys []K, filters []*model.FilterCriteriaInput) (map[K]V, error)
 
 // DataLoader provides batching and caching for data fetching
 type DataLoader[K comparable, V any] struct {
@@ -27,9 +28,10 @@ type DataLoader[K comparable, V any] struct {
 	maxBatchSize int           // maximum batch size (0 = unlimited)
 
 	// Current batch state
-	batch      map[K][]chan<- *Result[V] // pending requests grouped by key
-	batchMutex sync.Mutex
-	batchTimer *time.Timer
+	batch          map[K][]chan<- *Result[V]    // pending requests grouped by key
+	pendingFilters []*model.FilterCriteriaInput // <-- Thêm field này để lưu tạm search
+	batchMutex     sync.Mutex
+	batchTimer     *time.Timer
 }
 
 // Result represents the result of a load operation
@@ -84,7 +86,7 @@ func NewDataLoader[K comparable, V any](batchFn BatchFunc[K, V], cfg *Config) *D
 }
 
 // Load loads a single key
-func (dl *DataLoader[K, V]) Load(ctx context.Context, key K) (V, error) {
+func (dl *DataLoader[K, V]) Load(ctx context.Context, key K, filters []*model.FilterCriteriaInput) (V, error) {
 	// Check L2 cache first
 	if dl.l2Enabled {
 		if value, found := dl.getFromL2(key); found {
@@ -100,6 +102,10 @@ func (dl *DataLoader[K, V]) Load(ctx context.Context, key K) (V, error) {
 
 	// Add to batch
 	dl.batchMutex.Lock()
+
+	if len(dl.batch) == 0 {
+		dl.pendingFilters = filters
+	}
 	dl.batch[key] = append(dl.batch[key], resultCh)
 
 	// Schedule batch execution if not already scheduled
@@ -282,7 +288,11 @@ func (dl *DataLoader[K, V]) executeBatch(ctx context.Context) {
 
 	// Take current batch
 	currentBatch := dl.batch
+	currentFilters := dl.pendingFilters // Lấy filters đã lưu ra
+
 	dl.batch = make(map[K][]chan<- *Result[V])
+
+	dl.pendingFilters = nil // Reset để batch sau dùng filters mới
 	dl.batchTimer = nil
 
 	dl.batchMutex.Unlock()
@@ -312,7 +322,7 @@ func (dl *DataLoader[K, V]) executeBatch(ctx context.Context) {
 			fmt.Printf("[DataLoader] Executing chunk %d/%d with %d keys\n",
 				i+1, len(chunks), len(chunk))
 
-			chunkResults, err := dl.batchFn(ctx, chunk)
+			chunkResults, err := dl.batchFn(ctx, chunk, currentFilters)
 			if err != nil {
 				fmt.Printf("[DataLoader] Chunk %d failed: %v\n", i+1, err)
 				lastErr = err
@@ -334,7 +344,7 @@ func (dl *DataLoader[K, V]) executeBatch(ctx context.Context) {
 	}
 
 	// Original path for small batches
-	results, err := dl.batchFn(ctx, keys)
+	results, err := dl.batchFn(ctx, keys, currentFilters)
 
 	if err != nil {
 		fmt.Printf("[DataLoader] Batch execution failed: %v\n", err)

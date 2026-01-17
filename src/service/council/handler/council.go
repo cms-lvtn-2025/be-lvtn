@@ -16,17 +16,17 @@ import (
 )
 
 // CreateCouncil creates a new Council record
-func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilRequest) (*pb.CreateCouncilResponse, error) {
+func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilRequest) (*pb.CouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetCouncil().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	if req.MajorCode == "" {
+	if req.GetCouncil().GetMajorCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "major_code is required")
 	}
-	if req.SemesterCode == "" {
+	if req.GetCouncil().GetSemesterCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
@@ -43,11 +43,11 @@ func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilReques
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.MajorCode,
-		req.SemesterCode,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetCouncil().GetTitle(),
+		req.GetCouncil().GetMajorCode(),
+		req.GetCouncil().GetSemesterCode(),
+		req.GetCouncil().GetCreatedBy(),
+		req.GetCouncil().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -61,30 +61,46 @@ func (h *Handler) CreateCouncil(ctx context.Context, req *pb.CreateCouncilReques
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get council")
 	}
-	return &pb.CreateCouncilResponse{
+	return &pb.CouncilResponse{
 		Council: result.GetCouncil(),
 	}, nil
 }
 
 // GetCouncil retrieves a Council by ID
-func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*pb.GetCouncilResponse, error) {
+func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*pb.CouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"title":         true,
+		"major_code":    true,
+		"semester_code": true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, title, major_code, semester_code, time_start, created_at, updated_at, created_by, updated_by
 		FROM Council
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Council
 	var createdAt, updatedAt, timeStart sql.NullTime
 	var updatedBy sql.NullString
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.MajorCode,
@@ -117,13 +133,13 @@ func (h *Handler) GetCouncil(ctx context.Context, req *pb.GetCouncilRequest) (*p
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetCouncilResponse{
+	return &pb.CouncilResponse{
 		Council: &entity,
 	}, nil
 }
 
 // UpdateCouncil updates an existing Council
-func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilRequest) (*pb.UpdateCouncilResponse, error) {
+func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilRequest) (*pb.CouncilResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -134,25 +150,22 @@ func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilReques
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetCouncil().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetCouncil().GetTitle())
 	}
-	if req.MajorCode != nil {
+	if req.GetCouncil().GetMajorCode() != "" {
 		updateFields = append(updateFields, "major_code = ?")
-		args = append(args, *req.MajorCode)
-
+		args = append(args, req.GetCouncil().GetMajorCode())
 	}
-	if req.SemesterCode != nil {
+	if req.GetCouncil().GetSemesterCode() != "" {
 		updateFields = append(updateFields, "semester_code = ?")
-		args = append(args, *req.SemesterCode)
-
+		args = append(args, req.GetCouncil().GetSemesterCode())
 	}
 
-	if req.TimeStart != nil {
+	if req.GetCouncil().GetTimeStart() != nil {
 		updateFields = append(updateFields, "time_start = ?")
-		args = append(args, req.TimeStart.AsTime())
+		args = append(args, req.GetCouncil().GetTimeStart().AsTime())
 	}
 
 	if len(updateFields) == 0 {
@@ -161,17 +174,30 @@ func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilReques
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetCouncil().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
-	args = append(args, req.Id)
+	// Build WHERE clause from filters
+	whereClause := ""
+	whiteMap := map[string]bool{
+		"id":            true,
+		"title":         true,
+		"major_code":    true,
+		"semester_code": true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.GetId())
 
 	query := fmt.Sprintf(`
 		UPDATE Council
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
@@ -182,7 +208,7 @@ func (h *Handler) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilReques
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get council")
 	}
-	return &pb.UpdateCouncilResponse{
+	return &pb.CouncilResponse{
 		Council: result.GetCouncil(),
 	}, nil
 }
@@ -195,9 +221,26 @@ func (h *Handler) DeleteCouncil(ctx context.Context, req *pb.DeleteCouncilReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Council WHERE id = ?`
+	// Build WHERE clause from filters
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"title":         true,
+		"major_code":    true,
+		"semester_code": true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	query := fmt.Sprintf(`DELETE FROM Council %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete council: %v", err)
 	}
@@ -251,7 +294,7 @@ func (h *Handler) ListCouncils(ctx context.Context, req *pb.ListCouncilsRequest)
 		"semester_code": true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

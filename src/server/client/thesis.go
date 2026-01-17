@@ -26,7 +26,6 @@ const (
 	enrollmentCacheTTL             = 2 * time.Minute
 	midtermCacheTTL                = 10 * time.Minute
 	finalCacheTTL                  = 10 * time.Minute
-	gradeReviewCacheTTL            = 10 * time.Minute
 	topicCouncilCacheTTL           = 5 * time.Minute
 	topicCouncilSupervisorCacheTTL = 5 * time.Minute
 
@@ -35,7 +34,6 @@ const (
 	enrollmentCachePrefix             = "thesis:enrollment:"
 	midtermCachePrefix                = "thesis:midterm:"
 	finalCachePrefix                  = "thesis:final:"
-	gradeReviewCachePrefix            = "thesis:grade_review:"
 	topicCouncilCachePrefix           = "thesis:topic_council:"
 	topicCouncilSupervisorCachePrefix = "thesis:topic_council_supervisor:"
 )
@@ -64,7 +62,7 @@ func NewGRPCthesis(addr string, redisClient *redis.Client) (*GRPCthesis, error) 
 // TOPIC METHODS
 // ============================================
 
-func (t *GRPCthesis) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (*pb.CreateTopicResponse, error) {
+func (t *GRPCthesis) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (*pb.TopicResponse, error) {
 	resp, err := t.client.CreateTopic(ctx, req)
 	if err != nil {
 		return nil, err
@@ -93,9 +91,9 @@ func (t *GRPCthesis) GetTopicBySearch(ctx context.Context, search *pbCommon.Sear
 	return resp, nil
 }
 
-func (t *GRPCthesis) GetTopicById(ctx context.Context, id string) (*pb.GetTopicResponse, error) {
+func (t *GRPCthesis) GetTopicById(ctx context.Context, id string) (*pb.TopicResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", topicCachePrefix, id)
-	var cached pb.GetTopicResponse
+	var cached pb.TopicResponse
 	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for topic: %s", id)
 		return &cached, nil
@@ -111,7 +109,7 @@ func (t *GRPCthesis) GetTopicById(ctx context.Context, id string) (*pb.GetTopicR
 	return resp, nil
 }
 
-func (t *GRPCthesis) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (*pb.UpdateTopicResponse, error) {
+func (t *GRPCthesis) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (*pb.TopicResponse, error) {
 	resp, err := t.client.UpdateTopic(ctx, req)
 	if err != nil {
 		return nil, err
@@ -153,7 +151,7 @@ func (t *GRPCthesis) GetTopicsByIds(ctx context.Context, ids []string) (*pb.List
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", topicCachePrefix, id)
-		var cached pb.GetTopicResponse
+		var cached pb.TopicResponse
 
 		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 			if cached.Topic != nil {
@@ -202,7 +200,7 @@ func (t *GRPCthesis) GetTopicsByIds(ctx context.Context, ids []string) (*pb.List
 			for _, topic := range resp.Topics {
 				if topic != nil {
 					cacheKey := fmt.Sprintf("%s%s", topicCachePrefix, topic.Id)
-					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetTopicResponse{Topic: topic}, topicCacheTTL)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.TopicResponse{Topic: topic}, topicCacheTTL)
 					result.Topics = append(result.Topics, topic)
 				}
 			}
@@ -216,7 +214,7 @@ func (t *GRPCthesis) GetTopicsByIds(ctx context.Context, ids []string) (*pb.List
 // ENROLLMENT METHODS
 // ============================================
 
-func (t *GRPCthesis) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollmentRequest) (*pb.CreateEnrollmentResponse, error) {
+func (t *GRPCthesis) CreateEnrollment(ctx context.Context, req *pb.CreateEnrollmentRequest) (*pb.EnrollmentResponse, error) {
 	resp, err := t.client.CreateEnrollment(ctx, req)
 	if err != nil {
 		return nil, err
@@ -244,9 +242,9 @@ func (t *GRPCthesis) GetEnrollmentBySearch(ctx context.Context, search *pbCommon
 	return resp, nil
 }
 
-func (t *GRPCthesis) GetEnrollmentById(ctx context.Context, id string) (*pb.GetEnrollmentResponse, error) {
+func (t *GRPCthesis) GetEnrollmentById(ctx context.Context, id string) (*pb.EnrollmentResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", enrollmentCachePrefix, id)
-	var cached pb.GetEnrollmentResponse
+	var cached pb.EnrollmentResponse
 	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for enrollment: %s", id)
 		return &cached, nil
@@ -262,7 +260,7 @@ func (t *GRPCthesis) GetEnrollmentById(ctx context.Context, id string) (*pb.GetE
 	return resp, nil
 }
 
-func (t *GRPCthesis) UpdateEnrollment(ctx context.Context, req *pb.UpdateEnrollmentRequest) (*pb.UpdateEnrollmentResponse, error) {
+func (t *GRPCthesis) UpdateEnrollment(ctx context.Context, req *pb.UpdateEnrollmentRequest) (*pb.EnrollmentResponse, error) {
 	resp, err := t.client.UpdateEnrollment(ctx, req)
 	if err != nil {
 		return nil, err
@@ -304,7 +302,7 @@ func (t *GRPCthesis) GetEnrollmentsByIds(ctx context.Context, ids []string) (*pb
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", enrollmentCachePrefix, id)
-		var cached pb.GetEnrollmentResponse
+		var cached pb.EnrollmentResponse
 
 		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 			if cached.Enrollment != nil {
@@ -353,7 +351,7 @@ func (t *GRPCthesis) GetEnrollmentsByIds(ctx context.Context, ids []string) (*pb
 			for _, enrollment := range resp.Enrollments {
 				if enrollment != nil {
 					cacheKey := fmt.Sprintf("%s%s", enrollmentCachePrefix, enrollment.Id)
-					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetEnrollmentResponse{Enrollment: enrollment}, enrollmentCacheTTL)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.EnrollmentResponse{Enrollment: enrollment}, enrollmentCacheTTL)
 					result.Enrollments = append(result.Enrollments, enrollment)
 				}
 			}
@@ -367,7 +365,7 @@ func (t *GRPCthesis) GetEnrollmentsByIds(ctx context.Context, ids []string) (*pb
 // MIDTERM METHODS
 // ============================================
 
-func (t *GRPCthesis) CreateMidterm(ctx context.Context, req *pb.CreateMidtermRequest) (*pb.CreateMidtermResponse, error) {
+func (t *GRPCthesis) CreateMidterm(ctx context.Context, req *pb.CreateMidtermRequest) (*pb.MidtermResponse, error) {
 	resp, err := t.client.CreateMidterm(ctx, req)
 	if err != nil {
 		return nil, err
@@ -395,9 +393,9 @@ func (t *GRPCthesis) GetMidtermBySearch(ctx context.Context, search *pbCommon.Se
 	return resp, nil
 }
 
-func (t *GRPCthesis) GetMidtermById(ctx context.Context, id string) (*pb.GetMidtermResponse, error) {
+func (t *GRPCthesis) GetMidtermById(ctx context.Context, id string) (*pb.MidtermResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", midtermCachePrefix, id)
-	var cached pb.GetMidtermResponse
+	var cached pb.MidtermResponse
 	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for midterm: %s", id)
 		return &cached, nil
@@ -413,7 +411,7 @@ func (t *GRPCthesis) GetMidtermById(ctx context.Context, id string) (*pb.GetMidt
 	return resp, nil
 }
 
-func (t *GRPCthesis) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermRequest) (*pb.UpdateMidtermResponse, error) {
+func (t *GRPCthesis) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermRequest) (*pb.MidtermResponse, error) {
 	resp, err := t.client.UpdateMidterm(ctx, req)
 	if err != nil {
 		return nil, err
@@ -455,7 +453,7 @@ func (t *GRPCthesis) GetMidtermsByIds(ctx context.Context, ids []string) (*pb.Li
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", midtermCachePrefix, id)
-		var cached pb.GetMidtermResponse
+		var cached pb.MidtermResponse
 
 		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 			if cached.Midterm != nil {
@@ -504,7 +502,7 @@ func (t *GRPCthesis) GetMidtermsByIds(ctx context.Context, ids []string) (*pb.Li
 			for _, midterm := range resp.Midterms {
 				if midterm != nil {
 					cacheKey := fmt.Sprintf("%s%s", midtermCachePrefix, midterm.Id)
-					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetMidtermResponse{Midterm: midterm}, midtermCacheTTL)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.MidtermResponse{Midterm: midterm}, midtermCacheTTL)
 					result.Midterms = append(result.Midterms, midterm)
 				}
 			}
@@ -518,7 +516,7 @@ func (t *GRPCthesis) GetMidtermsByIds(ctx context.Context, ids []string) (*pb.Li
 // FINAL METHODS
 // ============================================
 
-func (t *GRPCthesis) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (*pb.CreateFinalResponse, error) {
+func (t *GRPCthesis) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (*pb.FinalResponse, error) {
 
 	resp, err := t.client.CreateFinal(ctx, req)
 	if err != nil {
@@ -547,9 +545,9 @@ func (t *GRPCthesis) GetFinalBySearch(ctx context.Context, search *pbCommon.Sear
 	return resp, nil
 }
 
-func (t *GRPCthesis) GetFinalById(ctx context.Context, id string) (*pb.GetFinalResponse, error) {
+func (t *GRPCthesis) GetFinalById(ctx context.Context, id string) (*pb.FinalResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", finalCachePrefix, id)
-	var cached pb.GetFinalResponse
+	var cached pb.FinalResponse
 	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for final: %s", id)
 		return &cached, nil
@@ -565,7 +563,7 @@ func (t *GRPCthesis) GetFinalById(ctx context.Context, id string) (*pb.GetFinalR
 	return resp, nil
 }
 
-func (t *GRPCthesis) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (*pb.UpdateFinalResponse, error) {
+func (t *GRPCthesis) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (*pb.FinalResponse, error) {
 	resp, err := t.client.UpdateFinal(ctx, req)
 	if err != nil {
 		return nil, err
@@ -607,7 +605,7 @@ func (t *GRPCthesis) GetFinalsByIds(ctx context.Context, ids []string) (*pb.List
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", finalCachePrefix, id)
-		var cached pb.GetFinalResponse
+		var cached pb.FinalResponse
 
 		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 			if cached.Final != nil {
@@ -656,149 +654,8 @@ func (t *GRPCthesis) GetFinalsByIds(ctx context.Context, ids []string) (*pb.List
 			for _, final := range resp.Finals {
 				if final != nil {
 					cacheKey := fmt.Sprintf("%s%s", finalCachePrefix, final.Id)
-					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetFinalResponse{Final: final}, finalCacheTTL)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.FinalResponse{Final: final}, finalCacheTTL)
 					result.Finals = append(result.Finals, final)
-				}
-			}
-		}
-	}
-
-	return result, nil
-}
-
-// ============================================
-// GRADE REVIEW METHODS
-// ============================================
-
-func (t *GRPCthesis) GetGradeReviewBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListGradeReviewsResponse, error) {
-	cacheKey := GenerateCacheKey(gradeReviewCachePrefix, search)
-	var cached pb.ListGradeReviewsResponse
-	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
-		log.Printf("Cache HIT for grade review search")
-		return &cached, nil
-	}
-
-	log.Printf("Cache MISS for grade review search")
-	resp, err := t.client.ListGradeReviews(ctx, &pb.ListGradeReviewsRequest{Search: search})
-	if err != nil {
-		return nil, err
-	}
-
-	SetCachedProto(ctx, t.redisClient, cacheKey, resp, gradeReviewCacheTTL)
-	return resp, nil
-}
-
-func (t *GRPCthesis) GetGradeReviewById(ctx context.Context, id string) (*pb.GetGradeReviewResponse, error) {
-	cacheKey := fmt.Sprintf("%s%s", gradeReviewCachePrefix, id)
-	var cached pb.GetGradeReviewResponse
-	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
-		log.Printf("Cache HIT for grade review: %s", id)
-		return &cached, nil
-	}
-
-	log.Printf("Cache MISS for grade review: %s", id)
-	resp, err := t.client.GetGradeReview(ctx, &pb.GetGradeReviewRequest{Id: id})
-	if err != nil {
-		return nil, err
-	}
-
-	SetCachedProto(ctx, t.redisClient, cacheKey, resp, gradeReviewCacheTTL)
-	return resp, nil
-}
-
-func (t *GRPCthesis) UpdateGradeReview(ctx context.Context, req *pb.UpdateGradeReviewRequest) (*pb.UpdateGradeReviewResponse, error) {
-	resp, err := t.client.UpdateGradeReview(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	// Invalidate cache
-	if req.Id != "" {
-		cacheKey := fmt.Sprintf("%s%s", gradeReviewCachePrefix, req.Id)
-		InvalidateCacheByKey(ctx, t.redisClient, cacheKey)
-		InvalidateCacheByPattern(ctx, t.redisClient, gradeReviewCachePrefix+"*")
-	}
-
-	return resp, nil
-}
-
-func (t *GRPCthesis) DeleteGradeReview(ctx context.Context, id string) (*pb.DeleteGradeReviewResponse, error) {
-	resp, err := t.client.DeleteGradeReview(ctx, &pb.DeleteGradeReviewRequest{Id: id})
-	if err != nil {
-		return nil, err
-	}
-
-	// Invalidate cache
-	cacheKey := fmt.Sprintf("%s%s", gradeReviewCachePrefix, id)
-	InvalidateCacheByKey(ctx, t.redisClient, cacheKey)
-	InvalidateCacheByPattern(ctx, t.redisClient, gradeReviewCachePrefix+"*")
-
-	return resp, nil
-}
-
-func (t *GRPCthesis) GetGradeReviewsByIds(ctx context.Context, ids []string) (*pb.ListGradeReviewsResponse, error) {
-	if len(ids) == 0 {
-		return &pb.ListGradeReviewsResponse{GradeReviews: []*pb.GradeReview{}}, nil
-	}
-
-	result := &pb.ListGradeReviewsResponse{GradeReviews: []*pb.GradeReview{}}
-	missingIds := []string{}
-	cacheHits := 0
-
-	// Check Redis cache for each ID
-	for _, id := range ids {
-		cacheKey := fmt.Sprintf("%s%s", gradeReviewCachePrefix, id)
-		var cached pb.GetGradeReviewResponse
-
-		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
-			if cached.GradeReview != nil {
-				result.GradeReviews = append(result.GradeReviews, cached.GradeReview)
-				cacheHits++
-			} else {
-				missingIds = append(missingIds, id)
-			}
-		} else {
-			missingIds = append(missingIds, id)
-		}
-	}
-
-	log.Printf("[GetGradeReviewsByIds] Total: %d, Cache hits: %d, Database queries needed: %d", len(ids), cacheHits, len(missingIds))
-
-	// Fetch missing IDs from database
-	if len(missingIds) > 0 {
-		resp, err := t.client.ListGradeReviews(ctx, &pb.ListGradeReviewsRequest{
-			Search: &pbCommon.SearchRequest{
-				Pagination: &pbCommon.Pagination{
-					Descending: false,
-					Page:       1,
-					PageSize:   int32(len(missingIds)),
-					SortBy:     "id",
-				},
-				Filters: []*pbCommon.FilterCriteria{
-					{
-						Criteria: &pbCommon.FilterCriteria_Condition{
-							Condition: &pbCommon.FilterCondition{
-								Field:    "id",
-								Operator: pbCommon.FilterOperator_IN,
-								Values:   missingIds,
-							},
-						},
-					},
-				},
-			},
-		})
-
-		if err != nil {
-			return nil, err
-		}
-
-		// Store fetched items to Redis and add to result
-		if resp != nil && resp.GradeReviews != nil {
-			for _, gradeReview := range resp.GradeReviews {
-				if gradeReview != nil {
-					cacheKey := fmt.Sprintf("%s%s", gradeReviewCachePrefix, gradeReview.Id)
-					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetGradeReviewResponse{GradeReview: gradeReview}, gradeReviewCacheTTL)
-					result.GradeReviews = append(result.GradeReviews, gradeReview)
 				}
 			}
 		}
@@ -811,7 +668,7 @@ func (t *GRPCthesis) GetGradeReviewsByIds(ctx context.Context, ids []string) (*p
 // TOPIC COUNCIL METHODS
 // ============================================
 
-func (t *GRPCthesis) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCouncilRequest) (*pb.CreateTopicCouncilResponse, error) {
+func (t *GRPCthesis) CreateTopicCouncil(ctx context.Context, req *pb.CreateTopicCouncilRequest) (*pb.TopicCouncilResponse, error) {
 	resp, err := t.client.CreateTopicCouncil(ctx, req)
 	if err != nil {
 		return nil, err
@@ -839,9 +696,9 @@ func (t *GRPCthesis) GetTopicCouncilBySearch(ctx context.Context, search *pbComm
 	return resp, nil
 }
 
-func (t *GRPCthesis) GetTopicCouncilById(ctx context.Context, id string) (*pb.GetTopicCouncilResponse, error) {
+func (t *GRPCthesis) GetTopicCouncilById(ctx context.Context, id string) (*pb.TopicCouncilResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", topicCouncilCachePrefix, id)
-	var cached pb.GetTopicCouncilResponse
+	var cached pb.TopicCouncilResponse
 	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for topic council: %s", id)
 		return &cached, nil
@@ -857,7 +714,7 @@ func (t *GRPCthesis) GetTopicCouncilById(ctx context.Context, id string) (*pb.Ge
 	return resp, nil
 }
 
-func (t *GRPCthesis) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCouncilRequest) (*pb.UpdateTopicCouncilResponse, error) {
+func (t *GRPCthesis) UpdateTopicCouncil(ctx context.Context, req *pb.UpdateTopicCouncilRequest) (*pb.TopicCouncilResponse, error) {
 	resp, err := t.client.UpdateTopicCouncil(ctx, req)
 	if err != nil {
 		return nil, err
@@ -899,7 +756,7 @@ func (t *GRPCthesis) GetTopicCouncilsByIds(ctx context.Context, ids []string) (*
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", topicCouncilCachePrefix, id)
-		var cached pb.GetTopicCouncilResponse
+		var cached pb.TopicCouncilResponse
 
 		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 			if cached.TopicCouncil != nil {
@@ -948,7 +805,7 @@ func (t *GRPCthesis) GetTopicCouncilsByIds(ctx context.Context, ids []string) (*
 			for _, topicCouncil := range resp.TopicCouncils {
 				if topicCouncil != nil {
 					cacheKey := fmt.Sprintf("%s%s", topicCouncilCachePrefix, topicCouncil.Id)
-					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetTopicCouncilResponse{TopicCouncil: topicCouncil}, topicCouncilCacheTTL)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.TopicCouncilResponse{TopicCouncil: topicCouncil}, topicCouncilCacheTTL)
 					result.TopicCouncils = append(result.TopicCouncils, topicCouncil)
 				}
 			}
@@ -961,7 +818,7 @@ func (t *GRPCthesis) GetTopicCouncilsByIds(ctx context.Context, ids []string) (*
 // ============================================
 // TOPIC COUNCIL SUPERVISOR METHODS
 // ============================================
-func (t *GRPCthesis) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.CreateTopicCouncilSupervisorRequest) (*pb.CreateTopicCouncilSupervisorResponse, error) {
+func (t *GRPCthesis) CreateTopicCouncilSupervisor(ctx context.Context, req *pb.CreateTopicCouncilSupervisorRequest) (*pb.TopicCouncilSupervisorResponse, error) {
 	resp, err := t.client.CreateTopicCouncilSupervisor(ctx, req)
 	if err != nil {
 		return nil, err
@@ -988,9 +845,9 @@ func (t *GRPCthesis) GetTopicCouncilSupervisorBySearch(ctx context.Context, sear
 	return resp, nil
 }
 
-func (t *GRPCthesis) GetTopicCouncilSupervisorById(ctx context.Context, id string) (*pb.GetTopicCouncilSupervisorResponse, error) {
+func (t *GRPCthesis) GetTopicCouncilSupervisorById(ctx context.Context, id string) (*pb.TopicCouncilSupervisorResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", topicCouncilSupervisorCachePrefix, id)
-	var cached pb.GetTopicCouncilSupervisorResponse
+	var cached pb.TopicCouncilSupervisorResponse
 	if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for topic council supervisor: %s", id)
 		return &cached, nil
@@ -1006,7 +863,7 @@ func (t *GRPCthesis) GetTopicCouncilSupervisorById(ctx context.Context, id strin
 	return resp, nil
 }
 
-func (t *GRPCthesis) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.UpdateTopicCouncilSupervisorRequest) (*pb.UpdateTopicCouncilSupervisorResponse, error) {
+func (t *GRPCthesis) UpdateTopicCouncilSupervisor(ctx context.Context, req *pb.UpdateTopicCouncilSupervisorRequest) (*pb.TopicCouncilSupervisorResponse, error) {
 	resp, err := t.client.UpdateTopicCouncilSupervisor(ctx, req)
 	if err != nil {
 		return nil, err
@@ -1048,7 +905,7 @@ func (t *GRPCthesis) GetTopicCouncilSupervisorsByIds(ctx context.Context, ids []
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", topicCouncilSupervisorCachePrefix, id)
-		var cached pb.GetTopicCouncilSupervisorResponse
+		var cached pb.TopicCouncilSupervisorResponse
 
 		if hit, _ := GetCachedProto(ctx, t.redisClient, cacheKey, &cached); hit {
 			if cached.TopicCouncilSupervisor != nil {
@@ -1097,7 +954,7 @@ func (t *GRPCthesis) GetTopicCouncilSupervisorsByIds(ctx context.Context, ids []
 			for _, supervisor := range resp.TopicCouncilSupervisors {
 				if supervisor != nil {
 					cacheKey := fmt.Sprintf("%s%s", topicCouncilSupervisorCachePrefix, supervisor.Id)
-					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.GetTopicCouncilSupervisorResponse{TopicCouncilSupervisor: supervisor}, topicCouncilSupervisorCacheTTL)
+					SetCachedProto(ctx, t.redisClient, cacheKey, &pb.TopicCouncilSupervisorResponse{TopicCouncilSupervisor: supervisor}, topicCouncilSupervisorCacheTTL)
 					result.TopicCouncilSupervisors = append(result.TopicCouncilSupervisors, supervisor)
 				}
 			}

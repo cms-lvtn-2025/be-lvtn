@@ -12,9 +12,10 @@ func PbMidtermToModel(pb *thesis.Midterm) *model.Midterm {
 	}
 
 	result := &model.Midterm{
-		ID:     pb.Id,
-		Title:  pb.Title,
-		Status: PbMidtermStatusToModel(pb.Status),
+		ID:             pb.Id,
+		Title:          pb.Title,
+		EnrollmentCode: pb.EnrollmentCode,
+		Status:         PbMidtermStatusToModel(pb.Status),
 	}
 
 	// Handle optional Grade
@@ -60,12 +61,12 @@ func PbFinalToModel(pb *thesis.Final) *model.Final {
 		Status: PbFinalStatusToModel(pb.Status),
 	}
 
-	// Handle optional grades
+	// Handle optional EnrollmentCode
+	if pb.EnrollmentCode != "" {
+		result.EnrollmentCode = &pb.EnrollmentCode
+	}
 	if pb.SupervisorGrade != 0 {
 		result.SupervisorGrade = &pb.SupervisorGrade
-	}
-	if pb.DepartmentGrade != 0 {
-		result.DepartmentGrade = &pb.DepartmentGrade
 	}
 	if pb.FinalGrade != 0 {
 		result.FinalGrade = &pb.FinalGrade
@@ -116,11 +117,11 @@ func PbTopicToModel(pb *thesis.Topic) *model.Topic {
 	}
 
 	// Handle optional PercentStage fields
-	if pb.PercentStage_1 != nil {
-		result.PercentStage1 = pb.PercentStage_1
+	if pb.PercentStage_1 != 0 {
+		result.PercentStage1 = &pb.PercentStage_1
 	}
-	if pb.PercentStage_2 != nil {
-		result.PercentStage2 = pb.PercentStage_2
+	if pb.PercentStage_2 != 0 {
+		result.PercentStage2 = &pb.PercentStage_2
 	}
 
 	// Handle timestamps
@@ -268,17 +269,6 @@ func PbEnrollmentToModel(pb *thesis.Enrollment) *model.Enrollment {
 		TopicCouncilCode: pb.TopicCouncilCode,
 	}
 
-	// Handle optional codes
-	if pb.FinalCode != nil {
-		result.FinalCode = pb.FinalCode
-	}
-	if pb.GradeReviewCode != nil {
-		result.GradeReviewCode = pb.GradeReviewCode
-	}
-	if pb.MidtermCode != nil {
-		result.MidtermCode = pb.MidtermCode
-	}
-
 	// Handle timestamps
 	if pb.CreatedAt != nil {
 		t := pb.CreatedAt.AsTime()
@@ -329,8 +319,8 @@ func PbTopicCouncilToModel(pb *thesis.TopicCouncil) *model.TopicCouncil {
 	}
 
 	// Handle optional CouncilCode
-	if pb.CouncilCode != nil {
-		result.CouncilCode = pb.CouncilCode
+	if pb.CouncilCode != "" {
+		result.CouncilCode = &pb.CouncilCode
 	}
 
 	// Handle required timestamps (convert from *timestamppb to time.Time)
@@ -470,13 +460,3 @@ func CreateTopicCouncilListResponse(topicCouncils []*model.TopicCouncil, total i
 		Total: total,
 	}
 }
-
-// CreateTopicCouncilSupervisorListResponse creates a TopicCouncilSupervisorListResponse
-// func CreateTopicCouncilSupervisorListResponse(supervisors []*model.TopicCouncilSupervisor, total int32) *model.TopicCouncilSupervisorListResponse {
-// 	return &model.TopicCouncilSupervisorListResponse{
-// 		Data:  supervisors,
-// 		Total: total,
-// 	}
-// }
-
-// CreateGradeReviewListResponse creates a GradeReviewListResponse

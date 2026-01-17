@@ -171,7 +171,7 @@ func BuildFilterGroupWithWhitelist(group *pbCommon.FilterGroup, args *[]interfac
 // BuildWhereClause is a high-level helper that builds complete WHERE clause from filters
 // This is the recommended function to use in handlers for consistency
 // It handles both simple conditions and nested groups with field validation
-func BuildWhereClause(filters []*pbCommon.FilterCriteria, args *[]interface{}, whiteMap map[string]bool) string {
+func BuildWhereClause(filters []*pbCommon.FilterCriteria, args *[]interface{}, whiteMap map[string]bool, where bool) string {
 	if len(filters) == 0 {
 		return ""
 	}
@@ -188,5 +188,8 @@ func BuildWhereClause(filters []*pbCommon.FilterCriteria, args *[]interface{}, w
 		return ""
 	}
 
-	return "WHERE " + strings.Join(whereConditions, " AND ")
+	if where {
+		return "WHERE " + strings.Join(whereConditions, " AND ")
+	}
+	return strings.Join(whereConditions, " AND ")
 }

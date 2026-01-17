@@ -70,9 +70,9 @@ func (r *GRPCRole) GetRoleBySearch(ctx context.Context, search *pbCommon.SearchR
 	return resp, nil
 }
 
-func (r *GRPCRole) GetRoleById(ctx context.Context, id string) (*pb.GetRoleSystemResponse, error) {
+func (r *GRPCRole) GetRoleById(ctx context.Context, id string) (*pb.RoleSystemResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", roleSystemCachePrefix, id)
-	var cached pb.GetRoleSystemResponse
+	var cached pb.RoleSystemResponse
 	if hit, _ := GetCachedProto(ctx, r.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for role: %s", id)
 		return &cached, nil
@@ -88,7 +88,7 @@ func (r *GRPCRole) GetRoleById(ctx context.Context, id string) (*pb.GetRoleSyste
 	return resp, nil
 }
 
-func (r *GRPCRole) UpdateRole(ctx context.Context, req *pb.UpdateRoleSystemRequest) (*pb.UpdateRoleSystemResponse, error) {
+func (r *GRPCRole) UpdateRole(ctx context.Context, req *pb.UpdateRoleSystemRequest) (*pb.RoleSystemResponse, error) {
 	resp, err := r.client.UpdateRoleSystem(ctx, req)
 	if err != nil {
 		return nil, err
@@ -101,8 +101,8 @@ func (r *GRPCRole) UpdateRole(ctx context.Context, req *pb.UpdateRoleSystemReque
 		InvalidateCacheByPattern(ctx, r.redisClient, roleSystemCachePrefix+"*")
 
 		// Also invalidate teacher-specific cache if teacher_code changed
-		if req.TeacherCode != nil && *req.TeacherCode != "" {
-			InvalidateCacheByPattern(ctx, r.redisClient, fmt.Sprintf("%steacher:%s*", roleSystemCachePrefix, *req.TeacherCode))
+		if req.RoleSystem != nil && req.RoleSystem.TeacherCode != "" {
+			InvalidateCacheByPattern(ctx, r.redisClient, fmt.Sprintf("%steacher:%s*", roleSystemCachePrefix, req.RoleSystem.TeacherCode))
 		}
 	}
 
@@ -135,7 +135,7 @@ func (r *GRPCRole) GetRolesByIds(ctx context.Context, ids []string) (*pb.ListRol
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", roleSystemCachePrefix, id)
-		var cached pb.GetRoleSystemResponse
+		var cached pb.RoleSystemResponse
 
 		if hit, _ := GetCachedProto(ctx, r.redisClient, cacheKey, &cached); hit {
 			if cached.RoleSystem != nil {
@@ -184,7 +184,7 @@ func (r *GRPCRole) GetRolesByIds(ctx context.Context, ids []string) (*pb.ListRol
 			for _, role := range resp.RoleSystems {
 				if role != nil {
 					cacheKey := fmt.Sprintf("%s%s", roleSystemCachePrefix, role.Id)
-					SetCachedProto(ctx, r.redisClient, cacheKey, &pb.GetRoleSystemResponse{RoleSystem: role}, roleSystemCacheTTL)
+					SetCachedProto(ctx, r.redisClient, cacheKey, &pb.RoleSystemResponse{RoleSystem: role}, roleSystemCacheTTL)
 					result.RoleSystems = append(result.RoleSystems, role)
 				}
 			}
@@ -307,23 +307,25 @@ func (r *GRPCRole) GetRolesByTeacherIds(ctx context.Context, teacherIds []string
 	return result, nil
 }
 
-func (r *GRPCRole) CreateRoles(ctx context.Context, req *pb.CreateRoleSystemRequest, roles []pb.RoleType) (*pb.CreateRoleSystemResponse, error) {
+func (r *GRPCRole) CreateRoles(ctx context.Context, req *pb.CreateRoleSystemRequest, roles []pb.RoleType) (*pb.RoleSystemResponse, error) {
 	if len(roles) == 0 {
 		return nil, fmt.Errorf("at least one role type is required")
 	}
 
-	var lastResp *pb.CreateRoleSystemResponse
+	var lastResp *pb.RoleSystemResponse
 	var lastErr error
 
 	// Create each role
 	for _, roleType := range roles {
 		createReq := &pb.CreateRoleSystemRequest{
-			Title:        req.Title,
-			TeacherCode:  req.TeacherCode,
-			Role:         roleType,
-			SemesterCode: req.SemesterCode,
-			Activate:     req.Activate,
-			CreatedBy:    req.CreatedBy,
+			RoleSystem: &pb.RoleSystemAction{
+				Title:        req.RoleSystem.Title,
+				TeacherCode:  req.RoleSystem.TeacherCode,
+				Role:         roleType,
+				SemesterCode: req.RoleSystem.SemesterCode,
+				Activate:     req.RoleSystem.Activate,
+				CreatedBy:    req.RoleSystem.CreatedBy,
+			},
 		}
 
 		resp, err := r.client.CreateRoleSystem(ctx, createReq)
@@ -344,8 +346,8 @@ func (r *GRPCRole) CreateRoles(ctx context.Context, req *pb.CreateRoleSystemRequ
 
 	// Invalidate pattern cache to ensure consistency
 	InvalidateCacheByPattern(ctx, r.redisClient, roleSystemCachePrefix+"*")
-	if req.TeacherCode != "" {
-		InvalidateCacheByPattern(ctx, r.redisClient, fmt.Sprintf("%steacher:%s*", roleSystemCachePrefix, req.TeacherCode))
+	if req.RoleSystem != nil && req.RoleSystem.TeacherCode != "" {
+		InvalidateCacheByPattern(ctx, r.redisClient, fmt.Sprintf("%steacher:%s*", roleSystemCachePrefix, req.RoleSystem.TeacherCode))
 	}
 
 	// Return the last created role, or error if all failed

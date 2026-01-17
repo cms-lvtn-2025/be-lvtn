@@ -28,41 +28,37 @@ message Council {
   string updated_by = 9;
 }
 
-message CreateCouncilRequest {
+message CouncilAction {
   string title = 1;
   string major_code = 2;
   string semester_code = 3;
-  optional google.protobuf.Timestamp time_start = 4;
+  google.protobuf.Timestamp time_start = 4;
   string created_by = 5;
-}
-
-message CreateCouncilResponse {
-  Council council = 1;
+  string updated_by = 6;
 }
 
 message GetCouncilRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
-message GetCouncilResponse {
-  Council council = 1;
+message CreateCouncilRequest {
+  CouncilAction council = 1;
 }
 
 message UpdateCouncilRequest {
   string id = 1;
-  optional string title = 2;
-  optional string major_code = 3;
-  optional string semester_code = 4;
-  optional google.protobuf.Timestamp time_start = 5;
-  string updated_by = 6;
-}
-
-message UpdateCouncilResponse {
-  Council council = 1;
+  repeated common.FilterCriteria filter = 2;
+  CouncilAction council = 3;
 }
 
 message DeleteCouncilRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
+}
+
+message CouncilResponse {
+  Council council = 1;
 }
 
 message DeleteCouncilResponse {
@@ -93,41 +89,37 @@ message Defence {
   string updated_by = 9;
 }
 
-message CreateDefenceRequest {
+message DefenceAction {
   string title = 1;
   string council_code = 2;
   string teacher_code = 3;
   DefencePosition position = 4;
   string created_by = 5;
-}
-
-message CreateDefenceResponse {
-  Defence defence = 1;
+  string updated_by = 6;
 }
 
 message GetDefenceRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
-message GetDefenceResponse {
-  Defence defence = 1;
+message CreateDefenceRequest {
+  DefenceAction defence = 1;
 }
 
 message UpdateDefenceRequest {
   string id = 1;
-  optional string title = 2;
-  optional string council_code = 3;
-  optional string teacher_code = 4;
-  optional DefencePosition position = 5;
-  string updated_by = 6;
-}
-
-message UpdateDefenceResponse {
-  Defence defence = 1;
+  repeated common.FilterCriteria filter = 2;
+  DefenceAction defence = 3;
 }
 
 message DeleteDefenceRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
+}
+
+message DefenceResponse {
+  Defence defence = 1;
 }
 
 message DeleteDefenceResponse {
@@ -145,7 +137,7 @@ message ListDefencesResponse {
   int32 page_size = 4;
 }
 
-// ============= Grade_defence =============
+// ============= GradeDefence =============
 message GradeDefence {
   string id = 1;
   string defence_code = 2;
@@ -158,41 +150,37 @@ message GradeDefence {
   string updated_by = 9;
 }
 
-message CreateGradeDefenceRequest {
+message GradeDefenceAction {
   string defence_code = 1;
   string enrollment_code = 2;
-  optional string note = 3;
-  optional int32 total_score = 4;
+  string note = 3;
+  int32 total_score = 4;
   string created_by = 5;
-}
-
-message CreateGradeDefenceResponse {
-  GradeDefence grade_defence = 1;
+  string updated_by = 6;
 }
 
 message GetGradeDefenceRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
-message GetGradeDefenceResponse {
-  GradeDefence grade_defence = 1;
+message CreateGradeDefenceRequest {
+  GradeDefenceAction grade_defence = 1;
 }
 
 message UpdateGradeDefenceRequest {
   string id = 1;
-  optional string defence_code = 2;
-  optional string enrollment_code = 3;
-  optional string note = 4;
-  optional int32 total_score = 5;
-  string updated_by = 6;
-}
-
-message UpdateGradeDefenceResponse {
-  GradeDefence grade_defence = 1;
+  repeated common.FilterCriteria filter = 2;
+  GradeDefenceAction grade_defence = 3;
 }
 
 message DeleteGradeDefenceRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
+}
+
+message GradeDefenceResponse {
+  GradeDefence grade_defence = 1;
 }
 
 message DeleteGradeDefenceResponse {
@@ -210,7 +198,7 @@ message ListGradeDefencesResponse {
   int32 page_size = 4;
 }
 
-// ============= Grade_defence_criterion =============
+// ============= GradeDefenceCriterion =============
 message GradeDefenceCriterion {
   string id = 1;
   string grade_defence_code = 2;
@@ -223,41 +211,37 @@ message GradeDefenceCriterion {
   string updated_by = 9;
 }
 
-message CreateGradeDefenceCriterionRequest {
+message GradeDefenceCriterionAction {
   string grade_defence_code = 1;
-  optional string name = 2;
-  optional string score = 3;
-  optional string maxScore = 4;
-  optional string created_by = 5;
-}
-
-message CreateGradeDefenceCriterionResponse {
-  GradeDefenceCriterion grade_defence_criterion = 1;
+  string name = 2;
+  string score = 3;
+  string maxScore = 4;
+  string created_by = 5;
+  string updated_by = 6;
 }
 
 message GetGradeDefenceCriterionRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
-message GetGradeDefenceCriterionResponse {
-  GradeDefenceCriterion grade_defence_criterion = 1;
+message CreateGradeDefenceCriterionRequest {
+  GradeDefenceCriterionAction grade_defence_criterion = 1;
 }
 
 message UpdateGradeDefenceCriterionRequest {
   string id = 1;
-  optional string grade_defence_code = 2;
-  optional string name = 3;
-  optional string score = 4;
-  optional string maxScore = 5;
-  optional string updated_by = 6;
-}
-
-message UpdateGradeDefenceCriterionResponse {
-  GradeDefenceCriterion grade_defence_criterion = 1;
+  repeated common.FilterCriteria filter = 2;
+  GradeDefenceCriterionAction grade_defence_criterion = 3;
 }
 
 message DeleteGradeDefenceCriterionRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
+}
+
+message GradeDefenceCriterionResponse {
+  GradeDefenceCriterion grade_defence_criterion = 1;
 }
 
 message DeleteGradeDefenceCriterionResponse {
@@ -278,30 +262,30 @@ message ListGradeDefenceCriteriaResponse {
 // ============= Service =============
 service CouncilService {
   // Council
-  rpc CreateCouncil(CreateCouncilRequest) returns (CreateCouncilResponse);
-  rpc GetCouncil(GetCouncilRequest) returns (GetCouncilResponse);
-  rpc UpdateCouncil(UpdateCouncilRequest) returns (UpdateCouncilResponse);
+  rpc CreateCouncil(CreateCouncilRequest) returns (CouncilResponse);
+  rpc GetCouncil(GetCouncilRequest) returns (CouncilResponse);
+  rpc UpdateCouncil(UpdateCouncilRequest) returns (CouncilResponse);
   rpc DeleteCouncil(DeleteCouncilRequest) returns (DeleteCouncilResponse);
   rpc ListCouncils(ListCouncilsRequest) returns (ListCouncilsResponse);
 
   // Defence
-  rpc CreateDefence(CreateDefenceRequest) returns (CreateDefenceResponse);
-  rpc GetDefence(GetDefenceRequest) returns (GetDefenceResponse);
-  rpc UpdateDefence(UpdateDefenceRequest) returns (UpdateDefenceResponse);
+  rpc CreateDefence(CreateDefenceRequest) returns (DefenceResponse);
+  rpc GetDefence(GetDefenceRequest) returns (DefenceResponse);
+  rpc UpdateDefence(UpdateDefenceRequest) returns (DefenceResponse);
   rpc DeleteDefence(DeleteDefenceRequest) returns (DeleteDefenceResponse);
   rpc ListDefences(ListDefencesRequest) returns (ListDefencesResponse);
 
   // GradeDefence
-  rpc CreateGradeDefence(CreateGradeDefenceRequest) returns (CreateGradeDefenceResponse);
-  rpc GetGradeDefence(GetGradeDefenceRequest) returns (GetGradeDefenceResponse);
-  rpc UpdateGradeDefence(UpdateGradeDefenceRequest) returns (UpdateGradeDefenceResponse);
+  rpc CreateGradeDefence(CreateGradeDefenceRequest) returns (GradeDefenceResponse);
+  rpc GetGradeDefence(GetGradeDefenceRequest) returns (GradeDefenceResponse);
+  rpc UpdateGradeDefence(UpdateGradeDefenceRequest) returns (GradeDefenceResponse);
   rpc DeleteGradeDefence(DeleteGradeDefenceRequest) returns (DeleteGradeDefenceResponse);
   rpc ListGradeDefences(ListGradeDefencesRequest) returns (ListGradeDefencesResponse);
 
   // GradeDefenceCriterion
-  rpc CreateGradeDefenceCriterion(CreateGradeDefenceCriterionRequest) returns (CreateGradeDefenceCriterionResponse);
-  rpc GetGradeDefenceCriterion(GetGradeDefenceCriterionRequest) returns (GetGradeDefenceCriterionResponse);
-  rpc UpdateGradeDefenceCriterion(UpdateGradeDefenceCriterionRequest) returns (UpdateGradeDefenceCriterionResponse);
+  rpc CreateGradeDefenceCriterion(CreateGradeDefenceCriterionRequest) returns (GradeDefenceCriterionResponse);
+  rpc GetGradeDefenceCriterion(GetGradeDefenceCriterionRequest) returns (GradeDefenceCriterionResponse);
+  rpc UpdateGradeDefenceCriterion(UpdateGradeDefenceCriterionRequest) returns (GradeDefenceCriterionResponse);
   rpc DeleteGradeDefenceCriterion(DeleteGradeDefenceCriterionRequest) returns (DeleteGradeDefenceCriterionResponse);
   rpc ListGradeDefenceCriteria(ListGradeDefenceCriteriaRequest) returns (ListGradeDefenceCriteriaResponse);
 }

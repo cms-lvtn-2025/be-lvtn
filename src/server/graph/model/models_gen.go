@@ -64,36 +64,20 @@ type AffairMutation struct {
 type AffairQuery struct {
 	// Lay danh sach giao vien
 	Teachers *TeacherListResponse `json:"teachers"`
-	// Lay chi tiet giao vien
-	TeacherDetail *Teacher `json:"teacherDetail,omitempty"`
 	// Lay danh sach sinh vien
 	Students *StudentListResponse `json:"students"`
-	// Lay chi tiet sinh vien
-	StudentDetail *Student `json:"studentDetail,omitempty"`
 	// Lay danh sach semester
 	Semesters *SemesterListResponse `json:"semesters"`
-	// Lay chi tiet semester
-	SemesterDetail *Semester `json:"semesterDetail,omitempty"`
 	// Lay danh sach major
 	Majors *MajorListResponse `json:"majors"`
-	// Lay chi tiet major
-	MajorDetail *Major `json:"majorDetail,omitempty"`
 	// Lay danh sach faculty
 	Faculties *FacultyListResponse `json:"faculties"`
-	// Lay chi tiet faculty
-	FacultyDetail *Faculty `json:"facultyDetail,omitempty"`
 	// Lay danh sach topic voi day du thong tin
 	Topics *TopicListResponse `json:"topics"`
-	// Lay chi tiet topic
-	TopicDetail *Topic `json:"topicDetail,omitempty"`
 	// Lay danh sach enrollment
 	Enrollments *EnrollmentListResponse `json:"enrollments"`
-	// Lay chi tiet enrollment voi day du thong tin
-	EnrollmentDetail *Enrollment `json:"enrollmentDetail,omitempty"`
 	// Lay danh sach council
 	Councils *CouncilListResponse `json:"councils"`
-	// Lay chi tiet council
-	CouncilDetail *Council `json:"councilDetail,omitempty"`
 	// Lay danh sach defence cua mot council
 	DefencesByCouncil *DefenceListResponse `json:"defencesByCouncil"`
 	// Lay danh sach grade defence
@@ -301,9 +285,6 @@ type Enrollment struct {
 	Title            string          `json:"title"`
 	StudentCode      string          `json:"studentCode"`
 	TopicCouncilCode string          `json:"topicCouncilCode"`
-	FinalCode        *string         `json:"finalCode,omitempty"`
-	GradeReviewCode  *string         `json:"gradeReviewCode,omitempty"`
-	MidtermCode      *string         `json:"midtermCode,omitempty"`
 	CreatedAt        *time.Time      `json:"createdAt,omitempty"`
 	UpdatedAt        *time.Time      `json:"updatedAt,omitempty"`
 	CreatedBy        *string         `json:"createdBy,omitempty"`
@@ -375,7 +356,7 @@ type Final struct {
 	ID              string      `json:"id"`
 	Title           string      `json:"title"`
 	SupervisorGrade *int32      `json:"supervisorGrade,omitempty"`
-	DepartmentGrade *int32      `json:"departmentGrade,omitempty"`
+	EnrollmentCode  *string     `json:"enrollmentCode,omitempty"`
 	FinalGrade      *int32      `json:"finalGrade,omitempty"`
 	Status          FinalStatus `json:"status"`
 	Notes           *string     `json:"notes,omitempty"`
@@ -466,16 +447,17 @@ type MajorListResponse struct {
 }
 
 type Midterm struct {
-	ID        string        `json:"id"`
-	Title     string        `json:"title"`
-	Grade     *int32        `json:"grade,omitempty"`
-	Status    MidtermStatus `json:"status"`
-	Feedback  *string       `json:"feedback,omitempty"`
-	CreatedAt *time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt *time.Time    `json:"updatedAt,omitempty"`
-	CreatedBy *string       `json:"createdBy,omitempty"`
-	UpdatedBy *string       `json:"updatedBy,omitempty"`
-	Files     []*File       `json:"files,omitempty"`
+	ID             string        `json:"id"`
+	Title          string        `json:"title"`
+	Grade          *int32        `json:"grade,omitempty"`
+	EnrollmentCode string        `json:"enrollmentCode"`
+	Status         MidtermStatus `json:"status"`
+	Feedback       *string       `json:"feedback,omitempty"`
+	CreatedAt      *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time    `json:"updatedAt,omitempty"`
+	CreatedBy      *string       `json:"createdBy,omitempty"`
+	UpdatedBy      *string       `json:"updatedBy,omitempty"`
+	Files          []*File       `json:"files,omitempty"`
 }
 
 type MidtermListResponse struct {

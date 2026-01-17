@@ -54,7 +54,7 @@ func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *mod
 		},
 	}
 
-	supervisors, err := c.thesis.GetTopicCouncilSupervisorBySearch(ctx, c.ConvertSearchRequestToPB(supervisorSearch))
+	supervisors, err := c.thesis.GetTopicCouncilSupervisorBySearch(ctx, convert.ConvertSearchRequestToPB(supervisorSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (c *Controller) GetSupervisedTopicCouncils(ctx context.Context, search *mod
 		}
 	}
 
-	topicCouncils, err := c.thesis.GetTopicCouncilBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	topicCouncils, err := c.thesis.GetTopicCouncilBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (c *Controller) GetMyDefences(ctx context.Context, search *model.SearchRequ
 		}
 	}
 
-	defences, err := c.council.GetDefencesBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	defences, err := c.council.GetDefencesBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}

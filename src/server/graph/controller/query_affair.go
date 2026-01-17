@@ -19,7 +19,7 @@ import (
 
 // GetListTeachers returns all teachers with pagination
 func (c *Controller) GetListTeachers(ctx context.Context, search model.SearchRequestInput) (*model.TeacherListResponse, error) {
-	teachers, err := c.user.GetTeachersBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	teachers, err := c.user.GetTeachersBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (c *Controller) GetListTeachers(ctx context.Context, search model.SearchReq
 
 // GetListStudents returns all students with pagination
 func (c *Controller) GetListStudents(ctx context.Context, search model.SearchRequestInput) (*model.StudentListResponse, error) {
-	students, err := c.user.GetStudentsBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	students, err := c.user.GetStudentsBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (c *Controller) GetListStudents(ctx context.Context, search model.SearchReq
 
 // GetAllSemesters returns all semesters
 func (c *Controller) GetAllSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error) {
-	semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	semesters, err := c.academic.GetSemestersBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *Controller) GetAllSemesters(ctx context.Context, search model.SearchReq
 
 // GetAllMajors returns all majors
 func (c *Controller) GetAllMajors(ctx context.Context, search model.SearchRequestInput) (*model.MajorListResponse, error) {
-	majors, err := c.academic.GetMajorsBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	majors, err := c.academic.GetMajorsBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *Controller) GetAllMajors(ctx context.Context, search model.SearchReques
 
 // GetAllFaculties returns all faculties
 func (c *Controller) GetAllFaculties(ctx context.Context, search model.SearchRequestInput) (*model.FacultyListResponse, error) {
-	faculties, err := c.academic.GetFacultiesBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	faculties, err := c.academic.GetFacultiesBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (c *Controller) GetAllFaculties(ctx context.Context, search model.SearchReq
 
 // GetAllTopics returns all topics
 func (c *Controller) GetAllTopics(ctx context.Context, search model.SearchRequestInput) (*model.TopicListResponse, error) {
-	topics, err := c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	topics, err := c.thesis.GetTopicBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (c *Controller) GetAllTopics(ctx context.Context, search model.SearchReques
 
 // GetAllEnrollments returns all enrollments
 func (c *Controller) GetAllEnrollments(ctx context.Context, search model.SearchRequestInput) (*model.EnrollmentListResponse, error) {
-	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (c *Controller) GetAllEnrollments(ctx context.Context, search model.SearchR
 
 // GetAllCouncils returns all councils
 func (c *Controller) GetAllCouncils(ctx context.Context, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
-	councils, err := c.council.GetCouncilBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	councils, err := c.council.GetCouncilBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func (c *Controller) GetAllCouncils(ctx context.Context, search model.SearchRequ
 
 // GetAllGradeDefences returns all grade defences
 func (c *Controller) GetAllGradeDefences(ctx context.Context, search model.SearchRequestInput) (*model.GradeDefenceListResponse, error) {
-	gradeDefences, err := c.council.GetGradeDefenceBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	gradeDefences, err := c.council.GetGradeDefenceBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}

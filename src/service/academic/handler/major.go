@@ -15,19 +15,19 @@ import (
 )
 
 // CreateMajor creates a new Major record
-func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (*pb.CreateMajorResponse, error) {
+func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (*pb.MajorResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetMajor().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	if req.FacultyCode == "" {
+	if req.GetMajor().GetFacultyCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "faculty_code is required")
 	}
 
 	// Use provided ID
-	id := req.Id
+	id := req.GetMajor().GetId()
 	if id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
@@ -42,11 +42,11 @@ func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.FacultyCode,
-		req.Ms,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetMajor().GetTitle(),
+		req.GetMajor().GetFacultyCode(),
+		req.GetMajor().GetMs(),
+		req.GetMajor().GetCreatedBy(),
+		req.GetMajor().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -56,34 +56,50 @@ func (h *Handler) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (
 		return nil, status.Errorf(codes.Internal, "failed to create major: %v", err)
 	}
 
-	result, err := h.GetMajor(ctx, &pb.GetMajorRequest{Id: req.Ms})
+	result, err := h.GetMajor(ctx, &pb.GetMajorRequest{Id: req.GetMajor().GetMs()})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get major")
 	}
-	return &pb.CreateMajorResponse{
+	return &pb.MajorResponse{
 		Major: result.GetMajor(),
 	}, nil
 }
 
 // GetMajor retrieves a Major by ID
-func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.GetMajorResponse, error) {
+func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.MajorResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":           true,
+		"title":        true,
+		"faculty_code": true,
+		"ms":           true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, title, faculty_code, ms, created_at, updated_at, created_by, updated_by
 		FROM Major
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Major
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.FacultyCode,
@@ -111,13 +127,13 @@ func (h *Handler) GetMajor(ctx context.Context, req *pb.GetMajorRequest) (*pb.Ge
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetMajorResponse{
+	return &pb.MajorResponse{
 		Major: &entity,
 	}, nil
 }
 
 // UpdateMajor updates an existing Major
-func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (*pb.UpdateMajorResponse, error) {
+func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (*pb.MajorResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -128,20 +144,17 @@ func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetMajor().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetMajor().GetTitle())
 	}
-	if req.FacultyCode != nil {
+	if req.GetMajor().GetFacultyCode() != "" {
 		updateFields = append(updateFields, "faculty_code = ?")
-		args = append(args, *req.FacultyCode)
-
+		args = append(args, req.GetMajor().GetFacultyCode())
 	}
-	if req.Ms != nil {
+	if req.GetMajor().GetMs() != "" {
 		updateFields = append(updateFields, "ms = ?")
-		args = append(args, *req.Ms)
-
+		args = append(args, req.GetMajor().GetMs())
 	}
 
 	if len(updateFields) == 0 {
@@ -150,17 +163,30 @@ func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetMajor().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
-	args = append(args, req.Id)
+	// Build WHERE clause from filters
+	whereClause := ""
+	whiteMap := map[string]bool{
+		"id":           true,
+		"title":        true,
+		"faculty_code": true,
+		"ms":           true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.GetId())
 
 	query := fmt.Sprintf(`
 		UPDATE Major
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
@@ -171,7 +197,7 @@ func (h *Handler) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get major")
 	}
-	return &pb.UpdateMajorResponse{
+	return &pb.MajorResponse{
 		Major: result.GetMajor(),
 	}, nil
 }
@@ -184,9 +210,26 @@ func (h *Handler) DeleteMajor(ctx context.Context, req *pb.DeleteMajorRequest) (
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Major WHERE id = ?`
+	// Build WHERE clause from filters
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":           true,
+		"title":        true,
+		"faculty_code": true,
+		"ms":           true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	query := fmt.Sprintf(`DELETE FROM Major %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete major: %v", err)
 	}
@@ -237,9 +280,10 @@ func (h *Handler) ListMajors(ctx context.Context, req *pb.ListMajorsRequest) (*p
 		"id":           true,
 		"title":        true,
 		"faculty_code": true,
+		"ms":           true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

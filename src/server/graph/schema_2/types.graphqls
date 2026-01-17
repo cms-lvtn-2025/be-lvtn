@@ -73,7 +73,7 @@ type Teacher {
     updatedBy: String
 
     # Relations - RBAC: null neu la student
-    roles: [RoleSystem!]
+    roles(filters: [FilterCriteriaInput!]): [RoleSystem!]
 }
 
 type Faculty {
@@ -86,7 +86,7 @@ type Faculty {
     updatedBy: String
 
     # Relations
-    majors: [Major!]!
+    majors(filters: [FilterCriteriaInput!]): [Major!]!
 }
 
 type Major {
@@ -159,10 +159,10 @@ type Topic {
     updatedBy: String
 
     # Relations - RBAC controlled
-    major: MajorInfo           # all
-    semester: SemesterInfo     # all
-    files: [File!]             # all
-    topicCouncils: [TopicCouncil!]  # RBAC: null neu la student
+    major(filters: [FilterCriteriaInput!]): MajorInfo           # all
+    semester(filters: [FilterCriteriaInput!]): SemesterInfo     # all
+    files(filters: [FilterCriteriaInput!]): [File!]             # all
+    topicCouncils(filters: [FilterCriteriaInput!]): [TopicCouncil!]  # RBAC: null neu la student
 }
 
 """
@@ -184,10 +184,10 @@ type TopicCouncil {
     updatedBy: String
 
     # Relations - RBAC controlled
-    topic: Topic               # all
-    council: Council           # all (student chi xem basic info)
-    supervisors: [TopicCouncilSupervisor!]  # all
-    enrollments: [Enrollment!] # RBAC: null neu la student
+    topic(filters: [FilterCriteriaInput!]): Topic               # all
+    council(filters: [FilterCriteriaInput!]): Council           # all (student chi xem basic info)
+    supervisors(filters: [FilterCriteriaInput!]): [TopicCouncilSupervisor!]  # all
+    enrollments(filters: [FilterCriteriaInput!]): [Enrollment!] # RBAC: null neu la student
 }
 
 type TopicCouncilSupervisor {
@@ -200,7 +200,7 @@ type TopicCouncilSupervisor {
     updatedBy: String
 
     # Relations - RBAC controlled
-    teacher: Teacher           # all (student se nhan TeacherInfo thay vi Teacher day du)
+    teacher(filters: [FilterCriteriaInput!]): Teacher           # all (student se nhan TeacherInfo thay vi Teacher day du)
 }
 
 """
@@ -214,26 +214,24 @@ type Enrollment {
     title: String!
     studentCode: String!
     topicCouncilCode: String!
-    finalCode: String
-    gradeReviewCode: String
-    midtermCode: String
     createdAt: Time
     updatedAt: Time
     createdBy: String
     updatedBy: String
 
     # Relations - RBAC controlled
-    student: Student           # RBAC: null neu la student role
-    topicCouncil: TopicCouncil # all
-    midterm: Midterm           # RBAC: supervisor, department, affair, student (chi cua minh)
-    final: Final               # RBAC: supervisor, department, affair, student (chi cua minh)
-    gradeDefences: [GradeDefence!]  # RBAC: supervisor, department, student, affair
+    student(filters: [FilterCriteriaInput!]): Student           # RBAC: null neu la student role
+    topicCouncil(filters: [FilterCriteriaInput!]): TopicCouncil # all
+    midterm(filters: [FilterCriteriaInput!]): Midterm           # RBAC: supervisor, department, affair, student (chi cua minh)
+    final(filters: [FilterCriteriaInput!]): Final               # RBAC: supervisor, department, affair, student (chi cua minh)
+    gradeDefences(filters: [FilterCriteriaInput!]): [GradeDefence!]  # RBAC: supervisor, department, student, affair
 }
 
 type Midterm {
     id: ID!
     title: String!
     grade: Int
+    enrollmentCode: String!
     status: MidtermStatus!
     feedback: String
     createdAt: Time
@@ -242,14 +240,14 @@ type Midterm {
     updatedBy: String
 
     # Relations
-    files: [File!]
+    files(filters: [FilterCriteriaInput!]): [File!]
 }
 
 type Final {
     id: ID!
     title: String!
     supervisorGrade: Int
-    departmentGrade: Int
+    enrollmentCode: String
     finalGrade: Int
     status: FinalStatus!
     notes: String
@@ -260,7 +258,7 @@ type Final {
     updatedBy: String
 
     # Relations
-    files: [File!]             # all
+    files(filters: [FilterCriteriaInput!]): [File!]             # all
 }
 
 
@@ -282,10 +280,10 @@ type Council {
     updatedBy: String
 
     # Relations - RBAC controlled
-    major: MajorInfo           # all
-    semester: SemesterInfo     # all
-    defences: [Defence!]       # RBAC: council, affair, department
-    topicCouncils: [TopicCouncil!]  # RBAC: null neu la student
+    major(filters: [FilterCriteriaInput!]): MajorInfo           # all
+    semester(filters: [FilterCriteriaInput!]): SemesterInfo     # all
+    defences(filters: [FilterCriteriaInput!]): [Defence!]       # RBAC: council, affair, department
+    topicCouncils(filters: [FilterCriteriaInput!]): [TopicCouncil!]  # RBAC: null neu la student
 }
 
 """
@@ -303,9 +301,9 @@ type Defence {
     updatedBy: String
 
     # Relations - RBAC controlled
-    council: Council           # RBAC: council, department, affair
-    teacher: Teacher           # RBAC: council, department, affair
-    gradeDefences: [GradeDefence!]  # RBAC: council, department, affair
+    council(filters: [FilterCriteriaInput!]): Council           # RBAC: council, department, affair
+    teacher(filters: [FilterCriteriaInput!]): Teacher           # RBAC: council, department, affair
+    gradeDefences(filters: [FilterCriteriaInput!]): [GradeDefence!]  # RBAC: council, department, affair
 }
 
 type GradeDefence {
@@ -320,9 +318,9 @@ type GradeDefence {
     updatedBy: String
 
     # Relations
-    defence: Defence           # all
-    enrollment: Enrollment     # RBAC controlled
-    criteria: [GradeDefenceCriterion!]  # all
+    defence(filters: [FilterCriteriaInput!]): Defence           # all
+    enrollment(filters: [FilterCriteriaInput!]): Enrollment     # RBAC controlled
+    criteria(filters: [FilterCriteriaInput!]): [GradeDefenceCriterion!]  # all
 }
 
 type GradeDefenceCriterion {

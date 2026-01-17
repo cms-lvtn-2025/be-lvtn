@@ -57,7 +57,7 @@ func (c *Controller) GetEnrollmentsForStudent(ctx context.Context, search *model
 		}
 	}
 
-	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (c *Controller) GetMySemesters(ctx context.Context, search *model.SearchReq
 		}
 	}
 
-	semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	semesters, err := c.academic.GetSemestersBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (c *Controller) GetGradeDefenceCriterionByDefenceCode(ctx context.Context, 
 		},
 	}
 
-	criteria, err := c.council.GetGradeDefenceCriteriaBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	criteria, err := c.council.GetGradeDefenceCriteriaBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}

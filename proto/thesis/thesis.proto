@@ -49,43 +49,41 @@ message Midterm {
   google.protobuf.Timestamp updated_at = 7;
   string created_by = 8;
   string updated_by = 9;
+  string enrollment_code = 10;
+}
+
+message MidtermAction {
+  string title = 1;
+  int32 grade = 2;
+  MidtermStatus status = 3;
+  string feedback = 4;
+  string created_by = 5;
+  string updated_by = 6;
+  string enrollment_code = 7;
+}
+
+message MidtermResponse {
+  Midterm midterm = 1;
 }
 
 message CreateMidtermRequest {
-  string title = 1;
-  optional int32 grade = 2;
-  MidtermStatus status = 3;
-  optional string feedback = 4;
-  string created_by = 5;
-}
-
-message CreateMidtermResponse {
-  Midterm midterm = 1;
+  MidtermAction midterm = 1;
 }
 
 message GetMidtermRequest {
   string id = 1;
-}
-
-message GetMidtermResponse {
-  Midterm midterm = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message UpdateMidtermRequest {
   string id = 1;
-  optional string title = 2;
-  optional int32 grade = 3;
-  optional MidtermStatus status = 4;
-  optional string feedback = 5;
-  string updated_by = 6;
-}
-
-message UpdateMidtermResponse {
-  Midterm midterm = 1;
+  MidtermAction midterm = 2;
+  repeated common.FilterCriteria filter = 3;
 }
 
 message DeleteMidtermRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message DeleteMidtermResponse {
@@ -108,7 +106,7 @@ message Final {
   string id = 1;
   string title = 2;
   int32 supervisor_grade = 3;
-  int32 department_grade = 4;
+  string enrollment_code = 4;
   int32 final_grade = 5;
   FinalStatus status = 6;
   string notes = 7;
@@ -119,47 +117,40 @@ message Final {
   string updated_by = 12;
 }
 
-message CreateFinalRequest {
+message FinalAction {
   string title = 1;
-  optional int32 supervisor_grade = 2;
-  optional int32 department_grade = 3;
-  optional int32 final_grade = 4;
+  int32 supervisor_grade = 2;
+  string enrollment_code = 3;
+  int32 final_grade = 4;
   FinalStatus status = 5;
-  optional string notes = 6;
-  optional google.protobuf.Timestamp completion_date = 7;
+  string notes = 6;
+  google.protobuf.Timestamp completion_date = 7;
   string created_by = 8;
+  string updated_by = 9;
 }
 
-message CreateFinalResponse {
+message FinalResponse {
   Final final = 1;
+}
+
+message CreateFinalRequest {
+  FinalAction final = 1;
 }
 
 message GetFinalRequest {
   string id = 1;
-}
-
-message GetFinalResponse {
-  Final final = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message UpdateFinalRequest {
   string id = 1;
-  optional string title = 2;
-  optional int32 supervisor_grade = 3;
-  optional int32 department_grade = 4;
-  optional int32 final_grade = 5;
-  optional FinalStatus status = 6;
-  optional string notes = 7;
-  optional google.protobuf.Timestamp completion_date = 8;
-  string updated_by = 9;
-}
-
-message UpdateFinalResponse {
-  Final final = 1;
+  FinalAction final = 2;
+  repeated common.FilterCriteria filter = 3;
 }
 
 message DeleteFinalRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message DeleteFinalResponse {
@@ -183,54 +174,48 @@ message Enrollment {
   string title = 2;
   string student_code = 3;
   string topic_council_code = 4;
-  optional string final_code = 5;
-  optional string grade_review_code = 6;
-  optional string midterm_code = 7;
+  string final_code = 5;
+  string grade_review_code = 6;
+  string midterm_code = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
   string created_by = 10;
   string updated_by = 11;
 }
 
-message CreateEnrollmentRequest {
+message EnrollmentAction {
   string title = 1;
   string student_code = 2;
   string topic_council_code = 3;
-  optional string final_code = 4;
-  optional string grade_review_code = 5;
-  optional string midterm_code = 6;
+  string final_code = 4;
+  string grade_review_code = 5;
+  string midterm_code = 6;
   string created_by = 7;
+  string updated_by = 8;
 }
 
-message CreateEnrollmentResponse {
+message EnrollmentResponse {
   Enrollment enrollment = 1;
+}
+
+message CreateEnrollmentRequest {
+  EnrollmentAction enrollment = 1;
 }
 
 message GetEnrollmentRequest {
   string id = 1;
-}
-
-message GetEnrollmentResponse {
-  Enrollment enrollment = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message UpdateEnrollmentRequest {
   string id = 1;
-  optional string title = 2;
-  optional string student_code = 3;
-  optional string topic_council_code = 4;
-  optional string final_code = 5;
-  optional string grade_review_code = 6;
-  optional string midterm_code = 7;
-  string updated_by = 8;
-}
-
-message UpdateEnrollmentResponse {
-  Enrollment enrollment = 1;
+  EnrollmentAction enrollment = 2;
+  repeated common.FilterCriteria filter = 3;
 }
 
 message DeleteEnrollmentRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message DeleteEnrollmentResponse {
@@ -260,13 +245,13 @@ message Topic {
   TopicStatus status = 8;
   google.protobuf.Timestamp created_at = 9;
   google.protobuf.Timestamp updated_at = 10;
-  optional int32 percent_stage_1 = 11;
-  optional int32 percent_stage_2 = 12;
+  int32 percent_stage_1 = 11;
+  int32 percent_stage_2 = 12;
   string created_by = 13;
   string updated_by = 14;
 }
 
-message CreateTopicRequest {
+message TopicAction {
   string title = 1;
   string title_en = 2;
   string description = 3;
@@ -274,40 +259,34 @@ message CreateTopicRequest {
   string curriculum = 5;
   string semester_code = 6;
   TopicStatus status = 7;
-  optional int32 percent_stage_1 = 8;
-  optional int32 percent_stage_2 = 9;
+  int32 percent_stage_1 = 8;
+  int32 percent_stage_2 = 9;
   string created_by = 10;
+  string updated_by = 11;
 }
 
-message CreateTopicResponse {
+message TopicResponse {
   Topic topic = 1;
+}
+
+message CreateTopicRequest {
+  TopicAction topic = 1;
 }
 
 message GetTopicRequest {
   string id = 1;
-}
-
-message GetTopicResponse {
-  Topic topic = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message UpdateTopicRequest {
   string id = 1;
-  optional string title = 2;
-  optional string major_code = 3;
-  optional string semester_code = 4;
-  optional TopicStatus status = 5;
-  optional int32 percent_stage_1 = 6;
-  optional int32 percent_stage_2 = 7;
-  string updated_by = 8;
-}
-
-message UpdateTopicResponse {
-  Topic topic = 1;
+  TopicAction topic = 2;
+  repeated common.FilterCriteria filter = 3;
 }
 
 message DeleteTopicRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message DeleteTopicResponse {
@@ -331,7 +310,7 @@ message TopicCouncil {
   string title = 2;
   TopicStage stage = 3;
   string topic_code = 4;
-  optional string council_code = 5;
+  string council_code = 5;
   google.protobuf.Timestamp time_start = 6;
   google.protobuf.Timestamp time_end = 7;
   google.protobuf.Timestamp created_at = 8;
@@ -340,7 +319,7 @@ message TopicCouncil {
   string updated_by = 11;
 }
 
-message CreateTopicCouncilRequest {
+message TopicCouncilAction {
   string title = 1;
   TopicStage stage = 2;
   string topic_code = 3;
@@ -348,37 +327,31 @@ message CreateTopicCouncilRequest {
   google.protobuf.Timestamp time_start = 5;
   google.protobuf.Timestamp time_end = 6;
   string created_by = 7;
+  string updated_by = 8;
 }
 
-message CreateTopicCouncilResponse {
+message TopicCouncilResponse {
   TopicCouncil topic_council = 1;
+}
+
+message CreateTopicCouncilRequest {
+  TopicCouncilAction topic_council = 1;
 }
 
 message GetTopicCouncilRequest {
   string id = 1;
-}
-
-message GetTopicCouncilResponse {
-  TopicCouncil topic_council = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message UpdateTopicCouncilRequest {
   string id = 1;
-  optional string title = 2;
-  optional TopicStage stage = 3;
-  optional string topic_code = 4;
-  optional string council_code = 5;
-  optional google.protobuf.Timestamp time_start = 6;
-  optional google.protobuf.Timestamp time_end = 7;
-  string updated_by = 8;
-}
-
-message UpdateTopicCouncilResponse {
-  TopicCouncil topic_council = 1;
+  TopicCouncilAction topic_council = 2;
+  repeated common.FilterCriteria filter = 3;
 }
 
 message DeleteTopicCouncilRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message DeleteTopicCouncilResponse {
@@ -407,37 +380,35 @@ message TopicCouncilSupervisor {
   string updated_by = 7;
 }
 
-message CreateTopicCouncilSupervisorRequest {
+message TopicCouncilSupervisorAction {
   string teacher_supervisor_code = 1;
   string topic_council_code = 2;
   string created_by = 3;
+  string updated_by = 4;
 }
 
-message CreateTopicCouncilSupervisorResponse {
+message TopicCouncilSupervisorResponse {
   TopicCouncilSupervisor topic_council_supervisor = 1;
+}
+
+message CreateTopicCouncilSupervisorRequest {
+  TopicCouncilSupervisorAction topic_council_supervisor = 1;
 }
 
 message GetTopicCouncilSupervisorRequest {
   string id = 1;
-}
-
-message GetTopicCouncilSupervisorResponse {
-  TopicCouncilSupervisor topic_council_supervisor = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message UpdateTopicCouncilSupervisorRequest {
   string id = 1;
-  optional string teacher_supervisor_code = 2;
-  optional string topic_council_code = 3;
-  string updated_by = 4;
-}
-
-message UpdateTopicCouncilSupervisorResponse {
-  TopicCouncilSupervisor topic_council_supervisor = 1;
+  TopicCouncilSupervisorAction topic_council_supervisor = 2;
+  repeated common.FilterCriteria filter = 3;
 }
 
 message DeleteTopicCouncilSupervisorRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message DeleteTopicCouncilSupervisorResponse {
@@ -455,125 +426,47 @@ message ListTopicCouncilSupervisorsResponse {
   int32 page_size = 4;
 }
 
-// ============= GradeReview =============
-message GradeReview {
-  string id = 1;
-  string title = 2;
-  optional int32 review_grade = 3;
-  string teacher_code = 4;
-  FinalStatus status = 5;
-  optional string notes = 6;
-  optional google.protobuf.Timestamp completion_date = 7;
-  google.protobuf.Timestamp created_at = 8;
-  google.protobuf.Timestamp updated_at = 9;
-  string created_by = 10;
-  string updated_by = 11;
-}
-
-message CreateGradeReviewRequest {
-  string title = 1;
-  optional int32 review_grade = 2;
-  string teacher_code = 3;
-  FinalStatus status = 4;
-  optional string notes = 5;
-  optional google.protobuf.Timestamp completion_date = 6;
-  string created_by = 7;
-}
-
-message CreateGradeReviewResponse {
-  GradeReview grade_review = 1;
-}
-
-message GetGradeReviewRequest {
-  string id = 1;
-}
-
-message GetGradeReviewResponse {
-  GradeReview grade_review = 1;
-}
-
-message UpdateGradeReviewRequest {
-  string id = 1;
-  optional string title = 2;
-  optional int32 review_grade = 3;
-  optional string teacher_code = 4;
-  optional FinalStatus status = 5;
-  optional string notes = 6;
-  optional google.protobuf.Timestamp completion_date = 7;
-  string updated_by = 8;
-}
-
-message UpdateGradeReviewResponse {
-  GradeReview grade_review = 1;
-}
-
-message DeleteGradeReviewRequest {
-  string id = 1;
-}
-
-message DeleteGradeReviewResponse {
-  bool success = 1;
-}
-
-message ListGradeReviewsRequest {
-  common.SearchRequest search = 1;
-}
-
-message ListGradeReviewsResponse {
-  repeated GradeReview grade_reviews = 1;
-  int32 total = 2;
-  int32 page = 3;
-  int32 page_size = 4;
-}
-
 // ============= Service =============
 service ThesisService {
   // Midterm
-  rpc CreateMidterm(CreateMidtermRequest) returns (CreateMidtermResponse);
-  rpc GetMidterm(GetMidtermRequest) returns (GetMidtermResponse);
-  rpc UpdateMidterm(UpdateMidtermRequest) returns (UpdateMidtermResponse);
+  rpc CreateMidterm(CreateMidtermRequest) returns (MidtermResponse);
+  rpc GetMidterm(GetMidtermRequest) returns (MidtermResponse);
+  rpc UpdateMidterm(UpdateMidtermRequest) returns (MidtermResponse);
   rpc DeleteMidterm(DeleteMidtermRequest) returns (DeleteMidtermResponse);
   rpc ListMidterms(ListMidtermsRequest) returns (ListMidtermsResponse);
 
   // Final
-  rpc CreateFinal(CreateFinalRequest) returns (CreateFinalResponse);
-  rpc GetFinal(GetFinalRequest) returns (GetFinalResponse);
-  rpc UpdateFinal(UpdateFinalRequest) returns (UpdateFinalResponse);
+  rpc CreateFinal(CreateFinalRequest) returns (FinalResponse);
+  rpc GetFinal(GetFinalRequest) returns (FinalResponse);
+  rpc UpdateFinal(UpdateFinalRequest) returns (FinalResponse);
   rpc DeleteFinal(DeleteFinalRequest) returns (DeleteFinalResponse);
   rpc ListFinals(ListFinalsRequest) returns (ListFinalsResponse);
 
   // Enrollment
-  rpc CreateEnrollment(CreateEnrollmentRequest) returns (CreateEnrollmentResponse);
-  rpc GetEnrollment(GetEnrollmentRequest) returns (GetEnrollmentResponse);
-  rpc UpdateEnrollment(UpdateEnrollmentRequest) returns (UpdateEnrollmentResponse);
+  rpc CreateEnrollment(CreateEnrollmentRequest) returns (EnrollmentResponse);
+  rpc GetEnrollment(GetEnrollmentRequest) returns (EnrollmentResponse);
+  rpc UpdateEnrollment(UpdateEnrollmentRequest) returns (EnrollmentResponse);
   rpc DeleteEnrollment(DeleteEnrollmentRequest) returns (DeleteEnrollmentResponse);
   rpc ListEnrollments(ListEnrollmentsRequest) returns (ListEnrollmentsResponse);
 
   // Topic
-  rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse);
-  rpc GetTopic(GetTopicRequest) returns (GetTopicResponse);
-  rpc UpdateTopic(UpdateTopicRequest) returns (UpdateTopicResponse);
+  rpc CreateTopic(CreateTopicRequest) returns (TopicResponse);
+  rpc GetTopic(GetTopicRequest) returns (TopicResponse);
+  rpc UpdateTopic(UpdateTopicRequest) returns (TopicResponse);
   rpc DeleteTopic(DeleteTopicRequest) returns (DeleteTopicResponse);
   rpc ListTopics(ListTopicsRequest) returns (ListTopicsResponse);
 
   // TopicCouncil
-  rpc CreateTopicCouncil(CreateTopicCouncilRequest) returns (CreateTopicCouncilResponse);
-  rpc GetTopicCouncil(GetTopicCouncilRequest) returns (GetTopicCouncilResponse);
-  rpc UpdateTopicCouncil(UpdateTopicCouncilRequest) returns (UpdateTopicCouncilResponse);
+  rpc CreateTopicCouncil(CreateTopicCouncilRequest) returns (TopicCouncilResponse);
+  rpc GetTopicCouncil(GetTopicCouncilRequest) returns (TopicCouncilResponse);
+  rpc UpdateTopicCouncil(UpdateTopicCouncilRequest) returns (TopicCouncilResponse);
   rpc DeleteTopicCouncil(DeleteTopicCouncilRequest) returns (DeleteTopicCouncilResponse);
   rpc ListTopicCouncils(ListTopicCouncilsRequest) returns (ListTopicCouncilsResponse);
 
   // TopicCouncilSupervisor
-  rpc CreateTopicCouncilSupervisor(CreateTopicCouncilSupervisorRequest) returns (CreateTopicCouncilSupervisorResponse);
-  rpc GetTopicCouncilSupervisor(GetTopicCouncilSupervisorRequest) returns (GetTopicCouncilSupervisorResponse);
-  rpc UpdateTopicCouncilSupervisor(UpdateTopicCouncilSupervisorRequest) returns (UpdateTopicCouncilSupervisorResponse);
+  rpc CreateTopicCouncilSupervisor(CreateTopicCouncilSupervisorRequest) returns (TopicCouncilSupervisorResponse);
+  rpc GetTopicCouncilSupervisor(GetTopicCouncilSupervisorRequest) returns (TopicCouncilSupervisorResponse);
+  rpc UpdateTopicCouncilSupervisor(UpdateTopicCouncilSupervisorRequest) returns (TopicCouncilSupervisorResponse);
   rpc DeleteTopicCouncilSupervisor(DeleteTopicCouncilSupervisorRequest) returns (DeleteTopicCouncilSupervisorResponse);
   rpc ListTopicCouncilSupervisors(ListTopicCouncilSupervisorsRequest) returns (ListTopicCouncilSupervisorsResponse);
-
-  // GradeReview
-  rpc CreateGradeReview(CreateGradeReviewRequest) returns (CreateGradeReviewResponse);
-  rpc GetGradeReview(GetGradeReviewRequest) returns (GetGradeReviewResponse);
-  rpc UpdateGradeReview(UpdateGradeReviewRequest) returns (UpdateGradeReviewResponse);
-  rpc DeleteGradeReview(DeleteGradeReviewRequest) returns (DeleteGradeReviewResponse);
-  rpc ListGradeReviews(ListGradeReviewsRequest) returns (ListGradeReviewsResponse);
 }

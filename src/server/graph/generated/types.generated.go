@@ -18,59 +18,367 @@ import (
 // region    ************************** generated!.gotpl **************************
 
 type CouncilResolver interface {
-	Major(ctx context.Context, obj *model.Council) (*model.MajorInfo, error)
-	Semester(ctx context.Context, obj *model.Council) (*model.SemesterInfo, error)
-	Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error)
-	TopicCouncils(ctx context.Context, obj *model.Council) ([]*model.TopicCouncil, error)
+	Major(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) (*model.MajorInfo, error)
+	Semester(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) (*model.SemesterInfo, error)
+	Defences(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) ([]*model.Defence, error)
+	TopicCouncils(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) ([]*model.TopicCouncil, error)
 }
 type DefenceResolver interface {
-	Council(ctx context.Context, obj *model.Defence) (*model.Council, error)
-	Teacher(ctx context.Context, obj *model.Defence) (*model.Teacher, error)
-	GradeDefences(ctx context.Context, obj *model.Defence) ([]*model.GradeDefence, error)
+	Council(ctx context.Context, obj *model.Defence, filters []*model.FilterCriteriaInput) (*model.Council, error)
+	Teacher(ctx context.Context, obj *model.Defence, filters []*model.FilterCriteriaInput) (*model.Teacher, error)
+	GradeDefences(ctx context.Context, obj *model.Defence, filters []*model.FilterCriteriaInput) ([]*model.GradeDefence, error)
 }
 type EnrollmentResolver interface {
-	Student(ctx context.Context, obj *model.Enrollment) (*model.Student, error)
-	TopicCouncil(ctx context.Context, obj *model.Enrollment) (*model.TopicCouncil, error)
-	Midterm(ctx context.Context, obj *model.Enrollment) (*model.Midterm, error)
-	Final(ctx context.Context, obj *model.Enrollment) (*model.Final, error)
-	GradeDefences(ctx context.Context, obj *model.Enrollment) ([]*model.GradeDefence, error)
+	Student(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.Student, error)
+	TopicCouncil(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.TopicCouncil, error)
+	Midterm(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.Midterm, error)
+	Final(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.Final, error)
+	GradeDefences(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) ([]*model.GradeDefence, error)
 }
 type FacultyResolver interface {
-	Majors(ctx context.Context, obj *model.Faculty) ([]*model.Major, error)
+	Majors(ctx context.Context, obj *model.Faculty, filters []*model.FilterCriteriaInput) ([]*model.Major, error)
 }
 type FinalResolver interface {
-	Files(ctx context.Context, obj *model.Final) ([]*model.File, error)
+	Files(ctx context.Context, obj *model.Final, filters []*model.FilterCriteriaInput) ([]*model.File, error)
 }
 type GradeDefenceResolver interface {
-	Defence(ctx context.Context, obj *model.GradeDefence) (*model.Defence, error)
-	Enrollment(ctx context.Context, obj *model.GradeDefence) (*model.Enrollment, error)
-	Criteria(ctx context.Context, obj *model.GradeDefence) ([]*model.GradeDefenceCriterion, error)
+	Defence(ctx context.Context, obj *model.GradeDefence, filters []*model.FilterCriteriaInput) (*model.Defence, error)
+	Enrollment(ctx context.Context, obj *model.GradeDefence, filters []*model.FilterCriteriaInput) (*model.Enrollment, error)
+	Criteria(ctx context.Context, obj *model.GradeDefence, filters []*model.FilterCriteriaInput) ([]*model.GradeDefenceCriterion, error)
 }
 type MidtermResolver interface {
-	Files(ctx context.Context, obj *model.Midterm) ([]*model.File, error)
+	Files(ctx context.Context, obj *model.Midterm, filters []*model.FilterCriteriaInput) ([]*model.File, error)
 }
 type TeacherResolver interface {
-	Roles(ctx context.Context, obj *model.Teacher) ([]*model.RoleSystem, error)
+	Roles(ctx context.Context, obj *model.Teacher, filters []*model.FilterCriteriaInput) ([]*model.RoleSystem, error)
 }
 type TopicResolver interface {
-	Major(ctx context.Context, obj *model.Topic) (*model.MajorInfo, error)
-	Semester(ctx context.Context, obj *model.Topic) (*model.SemesterInfo, error)
-	Files(ctx context.Context, obj *model.Topic) ([]*model.File, error)
-	TopicCouncils(ctx context.Context, obj *model.Topic) ([]*model.TopicCouncil, error)
+	Major(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) (*model.MajorInfo, error)
+	Semester(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) (*model.SemesterInfo, error)
+	Files(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) ([]*model.File, error)
+	TopicCouncils(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) ([]*model.TopicCouncil, error)
 }
 type TopicCouncilResolver interface {
-	Topic(ctx context.Context, obj *model.TopicCouncil) (*model.Topic, error)
-	Council(ctx context.Context, obj *model.TopicCouncil) (*model.Council, error)
-	Supervisors(ctx context.Context, obj *model.TopicCouncil) ([]*model.TopicCouncilSupervisor, error)
-	Enrollments(ctx context.Context, obj *model.TopicCouncil) ([]*model.Enrollment, error)
+	Topic(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) (*model.Topic, error)
+	Council(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) (*model.Council, error)
+	Supervisors(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) ([]*model.TopicCouncilSupervisor, error)
+	Enrollments(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) ([]*model.Enrollment, error)
 }
 type TopicCouncilSupervisorResolver interface {
-	Teacher(ctx context.Context, obj *model.TopicCouncilSupervisor) (*model.Teacher, error)
+	Teacher(ctx context.Context, obj *model.TopicCouncilSupervisor, filters []*model.FilterCriteriaInput) (*model.Teacher, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Council_defences_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Council_major_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Council_semester_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Council_topicCouncils_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Defence_council_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Defence_gradeDefences_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Defence_teacher_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Enrollment_final_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Enrollment_gradeDefences_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Enrollment_midterm_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Enrollment_student_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Enrollment_topicCouncil_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Faculty_majors_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Final_files_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_GradeDefence_criteria_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_GradeDefence_defence_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_GradeDefence_enrollment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Midterm_files_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Teacher_roles_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_TopicCouncilSupervisor_teacher_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_TopicCouncil_council_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_TopicCouncil_enrollments_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_TopicCouncil_supervisors_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_TopicCouncil_topic_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Topic_files_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Topic_major_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Topic_semester_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Topic_topicCouncils_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filters", ec.unmarshalOFilterCriteriaInput2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFilterCriteriaInputᚄ)
+	if err != nil {
+		return nil, err
+	}
+	args["filters"] = arg0
+	return args, nil
+}
 
 // endregion ***************************** args.gotpl *****************************
 
@@ -348,7 +656,8 @@ func (ec *executionContext) _Council_major(ctx context.Context, field graphql.Co
 		field,
 		ec.fieldContext_Council_major,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Council().Major(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Council().Major(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOMajorInfo2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajorInfo,
@@ -357,7 +666,7 @@ func (ec *executionContext) _Council_major(ctx context.Context, field graphql.Co
 	)
 }
 
-func (ec *executionContext) fieldContext_Council_major(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Council_major(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
@@ -375,6 +684,17 @@ func (ec *executionContext) fieldContext_Council_major(_ context.Context, field 
 			return nil, fmt.Errorf("no field named %q was found under type MajorInfo", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Council_major_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -385,7 +705,8 @@ func (ec *executionContext) _Council_semester(ctx context.Context, field graphql
 		field,
 		ec.fieldContext_Council_semester,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Council().Semester(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Council().Semester(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOSemesterInfo2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemesterInfo,
@@ -394,7 +715,7 @@ func (ec *executionContext) _Council_semester(ctx context.Context, field graphql
 	)
 }
 
-func (ec *executionContext) fieldContext_Council_semester(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Council_semester(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
@@ -410,6 +731,17 @@ func (ec *executionContext) fieldContext_Council_semester(_ context.Context, fie
 			return nil, fmt.Errorf("no field named %q was found under type SemesterInfo", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Council_semester_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -420,7 +752,8 @@ func (ec *executionContext) _Council_defences(ctx context.Context, field graphql
 		field,
 		ec.fieldContext_Council_defences,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Council().Defences(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Council().Defences(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalODefence2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐDefenceᚄ,
@@ -429,7 +762,7 @@ func (ec *executionContext) _Council_defences(ctx context.Context, field graphql
 	)
 }
 
-func (ec *executionContext) fieldContext_Council_defences(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Council_defences(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
@@ -465,6 +798,17 @@ func (ec *executionContext) fieldContext_Council_defences(_ context.Context, fie
 			return nil, fmt.Errorf("no field named %q was found under type Defence", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Council_defences_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -475,7 +819,8 @@ func (ec *executionContext) _Council_topicCouncils(ctx context.Context, field gr
 		field,
 		ec.fieldContext_Council_topicCouncils,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Council().TopicCouncils(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Council().TopicCouncils(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOTopicCouncil2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicCouncilᚄ,
@@ -484,7 +829,7 @@ func (ec *executionContext) _Council_topicCouncils(ctx context.Context, field gr
 	)
 }
 
-func (ec *executionContext) fieldContext_Council_topicCouncils(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Council_topicCouncils(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Council",
 		Field:      field,
@@ -525,6 +870,17 @@ func (ec *executionContext) fieldContext_Council_topicCouncils(_ context.Context
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TopicCouncil", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Council_topicCouncils_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -883,7 +1239,8 @@ func (ec *executionContext) _Defence_council(ctx context.Context, field graphql.
 		field,
 		ec.fieldContext_Defence_council,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Defence().Council(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Defence().Council(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOCouncil2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncil,
@@ -892,7 +1249,7 @@ func (ec *executionContext) _Defence_council(ctx context.Context, field graphql.
 	)
 }
 
-func (ec *executionContext) fieldContext_Defence_council(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Defence_council(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Defence",
 		Field:      field,
@@ -930,6 +1287,17 @@ func (ec *executionContext) fieldContext_Defence_council(_ context.Context, fiel
 			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Defence_council_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -940,7 +1308,8 @@ func (ec *executionContext) _Defence_teacher(ctx context.Context, field graphql.
 		field,
 		ec.fieldContext_Defence_teacher,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Defence().Teacher(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Defence().Teacher(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOTeacher2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTeacher,
@@ -949,7 +1318,7 @@ func (ec *executionContext) _Defence_teacher(ctx context.Context, field graphql.
 	)
 }
 
-func (ec *executionContext) fieldContext_Defence_teacher(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Defence_teacher(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Defence",
 		Field:      field,
@@ -985,6 +1354,17 @@ func (ec *executionContext) fieldContext_Defence_teacher(_ context.Context, fiel
 			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Defence_teacher_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -995,7 +1375,8 @@ func (ec *executionContext) _Defence_gradeDefences(ctx context.Context, field gr
 		field,
 		ec.fieldContext_Defence_gradeDefences,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Defence().GradeDefences(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Defence().GradeDefences(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOGradeDefence2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeDefenceᚄ,
@@ -1004,7 +1385,7 @@ func (ec *executionContext) _Defence_gradeDefences(ctx context.Context, field gr
 	)
 }
 
-func (ec *executionContext) fieldContext_Defence_gradeDefences(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Defence_gradeDefences(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Defence",
 		Field:      field,
@@ -1039,6 +1420,17 @@ func (ec *executionContext) fieldContext_Defence_gradeDefences(_ context.Context
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GradeDefence", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Defence_gradeDefences_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -1243,93 +1635,6 @@ func (ec *executionContext) fieldContext_Enrollment_topicCouncilCode(_ context.C
 	return fc, nil
 }
 
-func (ec *executionContext) _Enrollment_finalCode(ctx context.Context, field graphql.CollectedField, obj *model.Enrollment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Enrollment_finalCode,
-		func(ctx context.Context) (any, error) {
-			return obj.FinalCode, nil
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Enrollment_finalCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Enrollment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Enrollment_gradeReviewCode(ctx context.Context, field graphql.CollectedField, obj *model.Enrollment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Enrollment_gradeReviewCode,
-		func(ctx context.Context) (any, error) {
-			return obj.GradeReviewCode, nil
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Enrollment_gradeReviewCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Enrollment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Enrollment_midtermCode(ctx context.Context, field graphql.CollectedField, obj *model.Enrollment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Enrollment_midtermCode,
-		func(ctx context.Context) (any, error) {
-			return obj.MidtermCode, nil
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Enrollment_midtermCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Enrollment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Enrollment_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Enrollment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1453,7 +1758,8 @@ func (ec *executionContext) _Enrollment_student(ctx context.Context, field graph
 		field,
 		ec.fieldContext_Enrollment_student,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Enrollment().Student(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Enrollment().Student(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOStudent2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐStudent,
@@ -1462,7 +1768,7 @@ func (ec *executionContext) _Enrollment_student(ctx context.Context, field graph
 	)
 }
 
-func (ec *executionContext) fieldContext_Enrollment_student(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Enrollment_student(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
@@ -1500,6 +1806,17 @@ func (ec *executionContext) fieldContext_Enrollment_student(_ context.Context, f
 			return nil, fmt.Errorf("no field named %q was found under type Student", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Enrollment_student_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -1510,7 +1827,8 @@ func (ec *executionContext) _Enrollment_topicCouncil(ctx context.Context, field 
 		field,
 		ec.fieldContext_Enrollment_topicCouncil,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Enrollment().TopicCouncil(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Enrollment().TopicCouncil(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOTopicCouncil2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicCouncil,
@@ -1519,7 +1837,7 @@ func (ec *executionContext) _Enrollment_topicCouncil(ctx context.Context, field 
 	)
 }
 
-func (ec *executionContext) fieldContext_Enrollment_topicCouncil(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Enrollment_topicCouncil(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
@@ -1561,6 +1879,17 @@ func (ec *executionContext) fieldContext_Enrollment_topicCouncil(_ context.Conte
 			return nil, fmt.Errorf("no field named %q was found under type TopicCouncil", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Enrollment_topicCouncil_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -1571,7 +1900,8 @@ func (ec *executionContext) _Enrollment_midterm(ctx context.Context, field graph
 		field,
 		ec.fieldContext_Enrollment_midterm,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Enrollment().Midterm(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Enrollment().Midterm(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOMidterm2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMidterm,
@@ -1580,7 +1910,7 @@ func (ec *executionContext) _Enrollment_midterm(ctx context.Context, field graph
 	)
 }
 
-func (ec *executionContext) fieldContext_Enrollment_midterm(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Enrollment_midterm(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
@@ -1594,6 +1924,8 @@ func (ec *executionContext) fieldContext_Enrollment_midterm(_ context.Context, f
 				return ec.fieldContext_Midterm_title(ctx, field)
 			case "grade":
 				return ec.fieldContext_Midterm_grade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Midterm_enrollmentCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Midterm_status(ctx, field)
 			case "feedback":
@@ -1612,6 +1944,17 @@ func (ec *executionContext) fieldContext_Enrollment_midterm(_ context.Context, f
 			return nil, fmt.Errorf("no field named %q was found under type Midterm", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Enrollment_midterm_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -1622,7 +1965,8 @@ func (ec *executionContext) _Enrollment_final(ctx context.Context, field graphql
 		field,
 		ec.fieldContext_Enrollment_final,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Enrollment().Final(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Enrollment().Final(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOFinal2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFinal,
@@ -1631,7 +1975,7 @@ func (ec *executionContext) _Enrollment_final(ctx context.Context, field graphql
 	)
 }
 
-func (ec *executionContext) fieldContext_Enrollment_final(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Enrollment_final(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
@@ -1645,8 +1989,8 @@ func (ec *executionContext) fieldContext_Enrollment_final(_ context.Context, fie
 				return ec.fieldContext_Final_title(ctx, field)
 			case "supervisorGrade":
 				return ec.fieldContext_Final_supervisorGrade(ctx, field)
-			case "departmentGrade":
-				return ec.fieldContext_Final_departmentGrade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Final_enrollmentCode(ctx, field)
 			case "finalGrade":
 				return ec.fieldContext_Final_finalGrade(ctx, field)
 			case "status":
@@ -1669,6 +2013,17 @@ func (ec *executionContext) fieldContext_Enrollment_final(_ context.Context, fie
 			return nil, fmt.Errorf("no field named %q was found under type Final", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Enrollment_final_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -1679,7 +2034,8 @@ func (ec *executionContext) _Enrollment_gradeDefences(ctx context.Context, field
 		field,
 		ec.fieldContext_Enrollment_gradeDefences,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Enrollment().GradeDefences(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Enrollment().GradeDefences(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOGradeDefence2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeDefenceᚄ,
@@ -1688,7 +2044,7 @@ func (ec *executionContext) _Enrollment_gradeDefences(ctx context.Context, field
 	)
 }
 
-func (ec *executionContext) fieldContext_Enrollment_gradeDefences(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Enrollment_gradeDefences(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Enrollment",
 		Field:      field,
@@ -1723,6 +2079,17 @@ func (ec *executionContext) fieldContext_Enrollment_gradeDefences(_ context.Cont
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GradeDefence", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Enrollment_gradeDefences_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -1788,12 +2155,6 @@ func (ec *executionContext) fieldContext_EnrollmentListResponse_data(_ context.C
 				return ec.fieldContext_Enrollment_studentCode(ctx, field)
 			case "topicCouncilCode":
 				return ec.fieldContext_Enrollment_topicCouncilCode(ctx, field)
-			case "finalCode":
-				return ec.fieldContext_Enrollment_finalCode(ctx, field)
-			case "gradeReviewCode":
-				return ec.fieldContext_Enrollment_gradeReviewCode(ctx, field)
-			case "midtermCode":
-				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Enrollment_createdAt(ctx, field)
 			case "updatedAt":
@@ -2029,7 +2390,8 @@ func (ec *executionContext) _Faculty_majors(ctx context.Context, field graphql.C
 		field,
 		ec.fieldContext_Faculty_majors,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Faculty().Majors(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Faculty().Majors(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalNMajor2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajorᚄ,
@@ -2038,7 +2400,7 @@ func (ec *executionContext) _Faculty_majors(ctx context.Context, field graphql.C
 	)
 }
 
-func (ec *executionContext) fieldContext_Faculty_majors(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Faculty_majors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Faculty",
 		Field:      field,
@@ -2065,6 +2427,17 @@ func (ec *executionContext) fieldContext_Faculty_majors(_ context.Context, field
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Major", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Faculty_majors_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -2633,30 +3006,30 @@ func (ec *executionContext) fieldContext_Final_supervisorGrade(_ context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Final_departmentGrade(ctx context.Context, field graphql.CollectedField, obj *model.Final) (ret graphql.Marshaler) {
+func (ec *executionContext) _Final_enrollmentCode(ctx context.Context, field graphql.CollectedField, obj *model.Final) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Final_departmentGrade,
+		ec.fieldContext_Final_enrollmentCode,
 		func(ctx context.Context) (any, error) {
-			return obj.DepartmentGrade, nil
+			return obj.EnrollmentCode, nil
 		},
 		nil,
-		ec.marshalOInt2ᚖint32,
+		ec.marshalOString2ᚖstring,
 		true,
 		false,
 	)
 }
 
-func (ec *executionContext) fieldContext_Final_departmentGrade(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Final_enrollmentCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Final",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2901,7 +3274,8 @@ func (ec *executionContext) _Final_files(ctx context.Context, field graphql.Coll
 		field,
 		ec.fieldContext_Final_files,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Final().Files(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Final().Files(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOFile2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFileᚄ,
@@ -2910,7 +3284,7 @@ func (ec *executionContext) _Final_files(ctx context.Context, field graphql.Coll
 	)
 }
 
-func (ec *executionContext) fieldContext_Final_files(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Final_files(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Final",
 		Field:      field,
@@ -2943,6 +3317,17 @@ func (ec *executionContext) fieldContext_Final_files(_ context.Context, field gr
 			}
 			return nil, fmt.Errorf("no field named %q was found under type File", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Final_files_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -3006,8 +3391,8 @@ func (ec *executionContext) fieldContext_FinalListResponse_data(_ context.Contex
 				return ec.fieldContext_Final_title(ctx, field)
 			case "supervisorGrade":
 				return ec.fieldContext_Final_supervisorGrade(ctx, field)
-			case "departmentGrade":
-				return ec.fieldContext_Final_departmentGrade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Final_enrollmentCode(ctx, field)
 			case "finalGrade":
 				return ec.fieldContext_Final_finalGrade(ctx, field)
 			case "status":
@@ -3301,7 +3686,8 @@ func (ec *executionContext) _GradeDefence_defence(ctx context.Context, field gra
 		field,
 		ec.fieldContext_GradeDefence_defence,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.GradeDefence().Defence(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.GradeDefence().Defence(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalODefence2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐDefence,
@@ -3310,7 +3696,7 @@ func (ec *executionContext) _GradeDefence_defence(ctx context.Context, field gra
 	)
 }
 
-func (ec *executionContext) fieldContext_GradeDefence_defence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GradeDefence_defence(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
@@ -3346,6 +3732,17 @@ func (ec *executionContext) fieldContext_GradeDefence_defence(_ context.Context,
 			return nil, fmt.Errorf("no field named %q was found under type Defence", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_GradeDefence_defence_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -3356,7 +3753,8 @@ func (ec *executionContext) _GradeDefence_enrollment(ctx context.Context, field 
 		field,
 		ec.fieldContext_GradeDefence_enrollment,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.GradeDefence().Enrollment(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.GradeDefence().Enrollment(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOEnrollment2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐEnrollment,
@@ -3365,7 +3763,7 @@ func (ec *executionContext) _GradeDefence_enrollment(ctx context.Context, field 
 	)
 }
 
-func (ec *executionContext) fieldContext_GradeDefence_enrollment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GradeDefence_enrollment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
@@ -3381,12 +3779,6 @@ func (ec *executionContext) fieldContext_GradeDefence_enrollment(_ context.Conte
 				return ec.fieldContext_Enrollment_studentCode(ctx, field)
 			case "topicCouncilCode":
 				return ec.fieldContext_Enrollment_topicCouncilCode(ctx, field)
-			case "finalCode":
-				return ec.fieldContext_Enrollment_finalCode(ctx, field)
-			case "gradeReviewCode":
-				return ec.fieldContext_Enrollment_gradeReviewCode(ctx, field)
-			case "midtermCode":
-				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Enrollment_createdAt(ctx, field)
 			case "updatedAt":
@@ -3409,6 +3801,17 @@ func (ec *executionContext) fieldContext_GradeDefence_enrollment(_ context.Conte
 			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_GradeDefence_enrollment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -3419,7 +3822,8 @@ func (ec *executionContext) _GradeDefence_criteria(ctx context.Context, field gr
 		field,
 		ec.fieldContext_GradeDefence_criteria,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.GradeDefence().Criteria(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.GradeDefence().Criteria(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOGradeDefenceCriterion2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐGradeDefenceCriterionᚄ,
@@ -3428,7 +3832,7 @@ func (ec *executionContext) _GradeDefence_criteria(ctx context.Context, field gr
 	)
 }
 
-func (ec *executionContext) fieldContext_GradeDefence_criteria(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_GradeDefence_criteria(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "GradeDefence",
 		Field:      field,
@@ -3457,6 +3861,17 @@ func (ec *executionContext) fieldContext_GradeDefence_criteria(_ context.Context
 			}
 			return nil, fmt.Errorf("no field named %q was found under type GradeDefenceCriterion", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_GradeDefence_criteria_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -4366,6 +4781,35 @@ func (ec *executionContext) fieldContext_Midterm_grade(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Midterm_enrollmentCode(ctx context.Context, field graphql.CollectedField, obj *model.Midterm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Midterm_enrollmentCode,
+		func(ctx context.Context) (any, error) {
+			return obj.EnrollmentCode, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Midterm_enrollmentCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Midterm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Midterm_status(ctx context.Context, field graphql.CollectedField, obj *model.Midterm) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -4547,7 +4991,8 @@ func (ec *executionContext) _Midterm_files(ctx context.Context, field graphql.Co
 		field,
 		ec.fieldContext_Midterm_files,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Midterm().Files(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Midterm().Files(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOFile2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFileᚄ,
@@ -4556,7 +5001,7 @@ func (ec *executionContext) _Midterm_files(ctx context.Context, field graphql.Co
 	)
 }
 
-func (ec *executionContext) fieldContext_Midterm_files(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Midterm_files(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Midterm",
 		Field:      field,
@@ -4589,6 +5034,17 @@ func (ec *executionContext) fieldContext_Midterm_files(_ context.Context, field 
 			}
 			return nil, fmt.Errorf("no field named %q was found under type File", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Midterm_files_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -4652,6 +5108,8 @@ func (ec *executionContext) fieldContext_MidtermListResponse_data(_ context.Cont
 				return ec.fieldContext_Midterm_title(ctx, field)
 			case "grade":
 				return ec.fieldContext_Midterm_grade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Midterm_enrollmentCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Midterm_status(ctx, field)
 			case "feedback":
@@ -6136,7 +6594,8 @@ func (ec *executionContext) _Teacher_roles(ctx context.Context, field graphql.Co
 		field,
 		ec.fieldContext_Teacher_roles,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Teacher().Roles(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Teacher().Roles(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalORoleSystem2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐRoleSystemᚄ,
@@ -6145,7 +6604,7 @@ func (ec *executionContext) _Teacher_roles(ctx context.Context, field graphql.Co
 	)
 }
 
-func (ec *executionContext) fieldContext_Teacher_roles(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Teacher_roles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Teacher",
 		Field:      field,
@@ -6176,6 +6635,17 @@ func (ec *executionContext) fieldContext_Teacher_roles(_ context.Context, field 
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RoleSystem", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Teacher_roles_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -6735,7 +7205,8 @@ func (ec *executionContext) _Topic_major(ctx context.Context, field graphql.Coll
 		field,
 		ec.fieldContext_Topic_major,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Topic().Major(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Topic().Major(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOMajorInfo2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajorInfo,
@@ -6744,7 +7215,7 @@ func (ec *executionContext) _Topic_major(ctx context.Context, field graphql.Coll
 	)
 }
 
-func (ec *executionContext) fieldContext_Topic_major(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Topic_major(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
@@ -6762,6 +7233,17 @@ func (ec *executionContext) fieldContext_Topic_major(_ context.Context, field gr
 			return nil, fmt.Errorf("no field named %q was found under type MajorInfo", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Topic_major_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -6772,7 +7254,8 @@ func (ec *executionContext) _Topic_semester(ctx context.Context, field graphql.C
 		field,
 		ec.fieldContext_Topic_semester,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Topic().Semester(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Topic().Semester(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOSemesterInfo2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemesterInfo,
@@ -6781,7 +7264,7 @@ func (ec *executionContext) _Topic_semester(ctx context.Context, field graphql.C
 	)
 }
 
-func (ec *executionContext) fieldContext_Topic_semester(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Topic_semester(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
@@ -6797,6 +7280,17 @@ func (ec *executionContext) fieldContext_Topic_semester(_ context.Context, field
 			return nil, fmt.Errorf("no field named %q was found under type SemesterInfo", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Topic_semester_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -6807,7 +7301,8 @@ func (ec *executionContext) _Topic_files(ctx context.Context, field graphql.Coll
 		field,
 		ec.fieldContext_Topic_files,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Topic().Files(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Topic().Files(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOFile2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFileᚄ,
@@ -6816,7 +7311,7 @@ func (ec *executionContext) _Topic_files(ctx context.Context, field graphql.Coll
 	)
 }
 
-func (ec *executionContext) fieldContext_Topic_files(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Topic_files(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
@@ -6850,6 +7345,17 @@ func (ec *executionContext) fieldContext_Topic_files(_ context.Context, field gr
 			return nil, fmt.Errorf("no field named %q was found under type File", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Topic_files_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -6860,7 +7366,8 @@ func (ec *executionContext) _Topic_topicCouncils(ctx context.Context, field grap
 		field,
 		ec.fieldContext_Topic_topicCouncils,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Topic().TopicCouncils(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Topic().TopicCouncils(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOTopicCouncil2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicCouncilᚄ,
@@ -6869,7 +7376,7 @@ func (ec *executionContext) _Topic_topicCouncils(ctx context.Context, field grap
 	)
 }
 
-func (ec *executionContext) fieldContext_Topic_topicCouncils(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Topic_topicCouncils(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Topic",
 		Field:      field,
@@ -6910,6 +7417,17 @@ func (ec *executionContext) fieldContext_Topic_topicCouncils(_ context.Context, 
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TopicCouncil", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Topic_topicCouncils_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -7240,7 +7758,8 @@ func (ec *executionContext) _TopicCouncil_topic(ctx context.Context, field graph
 		field,
 		ec.fieldContext_TopicCouncil_topic,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.TopicCouncil().Topic(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.TopicCouncil().Topic(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOTopic2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopic,
@@ -7249,7 +7768,7 @@ func (ec *executionContext) _TopicCouncil_topic(ctx context.Context, field graph
 	)
 }
 
-func (ec *executionContext) fieldContext_TopicCouncil_topic(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_TopicCouncil_topic(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
@@ -7291,6 +7810,17 @@ func (ec *executionContext) fieldContext_TopicCouncil_topic(_ context.Context, f
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_TopicCouncil_topic_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -7301,7 +7831,8 @@ func (ec *executionContext) _TopicCouncil_council(ctx context.Context, field gra
 		field,
 		ec.fieldContext_TopicCouncil_council,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.TopicCouncil().Council(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.TopicCouncil().Council(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOCouncil2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐCouncil,
@@ -7310,7 +7841,7 @@ func (ec *executionContext) _TopicCouncil_council(ctx context.Context, field gra
 	)
 }
 
-func (ec *executionContext) fieldContext_TopicCouncil_council(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_TopicCouncil_council(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
@@ -7348,6 +7879,17 @@ func (ec *executionContext) fieldContext_TopicCouncil_council(_ context.Context,
 			return nil, fmt.Errorf("no field named %q was found under type Council", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_TopicCouncil_council_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -7358,7 +7900,8 @@ func (ec *executionContext) _TopicCouncil_supervisors(ctx context.Context, field
 		field,
 		ec.fieldContext_TopicCouncil_supervisors,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.TopicCouncil().Supervisors(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.TopicCouncil().Supervisors(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOTopicCouncilSupervisor2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTopicCouncilSupervisorᚄ,
@@ -7367,7 +7910,7 @@ func (ec *executionContext) _TopicCouncil_supervisors(ctx context.Context, field
 	)
 }
 
-func (ec *executionContext) fieldContext_TopicCouncil_supervisors(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_TopicCouncil_supervisors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
@@ -7395,6 +7938,17 @@ func (ec *executionContext) fieldContext_TopicCouncil_supervisors(_ context.Cont
 			return nil, fmt.Errorf("no field named %q was found under type TopicCouncilSupervisor", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_TopicCouncil_supervisors_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -7405,7 +7959,8 @@ func (ec *executionContext) _TopicCouncil_enrollments(ctx context.Context, field
 		field,
 		ec.fieldContext_TopicCouncil_enrollments,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.TopicCouncil().Enrollments(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.TopicCouncil().Enrollments(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOEnrollment2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐEnrollmentᚄ,
@@ -7414,7 +7969,7 @@ func (ec *executionContext) _TopicCouncil_enrollments(ctx context.Context, field
 	)
 }
 
-func (ec *executionContext) fieldContext_TopicCouncil_enrollments(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_TopicCouncil_enrollments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncil",
 		Field:      field,
@@ -7430,12 +7985,6 @@ func (ec *executionContext) fieldContext_TopicCouncil_enrollments(_ context.Cont
 				return ec.fieldContext_Enrollment_studentCode(ctx, field)
 			case "topicCouncilCode":
 				return ec.fieldContext_Enrollment_topicCouncilCode(ctx, field)
-			case "finalCode":
-				return ec.fieldContext_Enrollment_finalCode(ctx, field)
-			case "gradeReviewCode":
-				return ec.fieldContext_Enrollment_gradeReviewCode(ctx, field)
-			case "midtermCode":
-				return ec.fieldContext_Enrollment_midtermCode(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Enrollment_createdAt(ctx, field)
 			case "updatedAt":
@@ -7457,6 +8006,17 @@ func (ec *executionContext) fieldContext_TopicCouncil_enrollments(_ context.Cont
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_TopicCouncil_enrollments_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -7761,7 +8321,8 @@ func (ec *executionContext) _TopicCouncilSupervisor_teacher(ctx context.Context,
 		field,
 		ec.fieldContext_TopicCouncilSupervisor_teacher,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.TopicCouncilSupervisor().Teacher(ctx, obj)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.TopicCouncilSupervisor().Teacher(ctx, obj, fc.Args["filters"].([]*model.FilterCriteriaInput))
 		},
 		nil,
 		ec.marshalOTeacher2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐTeacher,
@@ -7770,7 +8331,7 @@ func (ec *executionContext) _TopicCouncilSupervisor_teacher(ctx context.Context,
 	)
 }
 
-func (ec *executionContext) fieldContext_TopicCouncilSupervisor_teacher(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_TopicCouncilSupervisor_teacher(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "TopicCouncilSupervisor",
 		Field:      field,
@@ -7805,6 +8366,17 @@ func (ec *executionContext) fieldContext_TopicCouncilSupervisor_teacher(_ contex
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_TopicCouncilSupervisor_teacher_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -8392,12 +8964,6 @@ func (ec *executionContext) _Enrollment(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "finalCode":
-			out.Values[i] = ec._Enrollment_finalCode(ctx, field, obj)
-		case "gradeReviewCode":
-			out.Values[i] = ec._Enrollment_gradeReviewCode(ctx, field, obj)
-		case "midtermCode":
-			out.Values[i] = ec._Enrollment_midtermCode(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._Enrollment_createdAt(ctx, field, obj)
 		case "updatedAt":
@@ -8913,8 +9479,8 @@ func (ec *executionContext) _Final(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "supervisorGrade":
 			out.Values[i] = ec._Final_supervisorGrade(ctx, field, obj)
-		case "departmentGrade":
-			out.Values[i] = ec._Final_departmentGrade(ctx, field, obj)
+		case "enrollmentCode":
+			out.Values[i] = ec._Final_enrollmentCode(ctx, field, obj)
 		case "finalGrade":
 			out.Values[i] = ec._Final_finalGrade(ctx, field, obj)
 		case "status":
@@ -9518,6 +10084,11 @@ func (ec *executionContext) _Midterm(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "grade":
 			out.Values[i] = ec._Midterm_grade(ctx, field, obj)
+		case "enrollmentCode":
+			out.Values[i] = ec._Midterm_enrollmentCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "status":
 			out.Values[i] = ec._Midterm_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -12008,13 +12579,6 @@ func (ec *executionContext) marshalOEnrollment2ᚖthailyᚋsrcᚋserverᚋgraph�
 	return ec._Enrollment(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOFaculty2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFaculty(ctx context.Context, sel ast.SelectionSet, v *model.Faculty) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Faculty(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalOFile2ᚕᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐFileᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.File) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -12163,13 +12727,6 @@ func (ec *executionContext) marshalOGradeDefenceCriterion2ᚕᚖthailyᚋsrcᚋs
 	return ret
 }
 
-func (ec *executionContext) marshalOMajor2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajor(ctx context.Context, sel ast.SelectionSet, v *model.Major) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Major(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalOMajorInfo2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐMajorInfo(ctx context.Context, sel ast.SelectionSet, v *model.MajorInfo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -12229,13 +12786,6 @@ func (ec *executionContext) marshalORoleSystem2ᚕᚖthailyᚋsrcᚋserverᚋgra
 	}
 
 	return ret
-}
-
-func (ec *executionContext) marshalOSemester2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemester(ctx context.Context, sel ast.SelectionSet, v *model.Semester) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Semester(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSemesterInfo2ᚖthailyᚋsrcᚋserverᚋgraphᚋmodelᚐSemesterInfo(ctx context.Context, sel ast.SelectionSet, v *model.SemesterInfo) graphql.Marshaler {

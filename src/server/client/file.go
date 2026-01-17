@@ -70,9 +70,9 @@ func (f *GRPCfile) GetFileBySearch(ctx context.Context, search *pbCommon.SearchR
 	return resp, nil
 }
 
-func (f *GRPCfile) GetFileById(ctx context.Context, id string) (*pb.GetFileResponse, error) {
+func (f *GRPCfile) GetFileById(ctx context.Context, id string) (*pb.FileResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, id)
-	var cached pb.GetFileResponse
+	var cached pb.FileResponse
 	if hit, _ := GetCachedProto(ctx, f.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for file: %s", id)
 		return &cached, nil
@@ -88,7 +88,7 @@ func (f *GRPCfile) GetFileById(ctx context.Context, id string) (*pb.GetFileRespo
 	return resp, nil
 }
 
-func (f *GRPCfile) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*pb.CreateFileResponse, error) {
+func (f *GRPCfile) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*pb.FileResponse, error) {
 	resp, err := f.client.CreateFile(ctx, req)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (f *GRPCfile) CreateFile(ctx context.Context, req *pb.CreateFileRequest) (*
 	return resp, nil
 }
 
-func (f *GRPCfile) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*pb.UpdateFileResponse, error) {
+func (f *GRPCfile) UpdateFile(ctx context.Context, req *pb.UpdateFileRequest) (*pb.FileResponse, error) {
 	resp, err := f.client.UpdateFile(ctx, req)
 	if err != nil {
 		return nil, err
@@ -142,7 +142,7 @@ func (f *GRPCfile) GetFilesByIds(ctx context.Context, ids []string) (*pb.ListFil
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, id)
-		var cached pb.GetFileResponse
+		var cached pb.FileResponse
 
 		if hit, _ := GetCachedProto(ctx, f.redisClient, cacheKey, &cached); hit {
 			if cached.File != nil {
@@ -191,7 +191,7 @@ func (f *GRPCfile) GetFilesByIds(ctx context.Context, ids []string) (*pb.ListFil
 			for _, file := range resp.Files {
 				if file != nil {
 					cacheKey := fmt.Sprintf("%s%s", fileCachePrefix, file.Id)
-					SetCachedProto(ctx, f.redisClient, cacheKey, &pb.GetFileResponse{File: file}, fileCacheTTL)
+					SetCachedProto(ctx, f.redisClient, cacheKey, &pb.FileResponse{File: file}, fileCacheTTL)
 					result.Files = append(result.Files, file)
 				}
 			}

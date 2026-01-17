@@ -139,7 +139,7 @@ func (c *Controller) GetDefencesByCouncil(ctx context.Context, councilID string)
 		},
 	}
 
-	defences, err := c.council.GetDefencesBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	defences, err := c.council.GetDefencesBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, err
 	}

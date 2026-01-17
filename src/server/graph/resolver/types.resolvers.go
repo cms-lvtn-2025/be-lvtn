@@ -7,208 +7,207 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/server/graph/dataloader"
 	"thaily/src/server/graph/generated"
 	"thaily/src/server/graph/model"
 )
 
 // Major is the resolver for the major field.
-func (r *councilResolver) Major(ctx context.Context, obj *model.Council) (*model.MajorInfo, error) {
-	return dataloader.GetLoaders(ctx).MajorInfoById.Load(ctx, obj.MajorCode)
+func (r *councilResolver) Major(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) (*model.MajorInfo, error) {
+	return dataloader.GetLoaders(ctx).MajorInfoById.Load(ctx, obj.MajorCode, filters)
 }
 
 // Semester is the resolver for the semester field.
-func (r *councilResolver) Semester(ctx context.Context, obj *model.Council) (*model.SemesterInfo, error) {
-	return dataloader.GetLoaders(ctx).SemesterInfoById.Load(ctx, obj.SemesterCode)
+func (r *councilResolver) Semester(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) (*model.SemesterInfo, error) {
+	return dataloader.GetLoaders(ctx).SemesterInfoById.Load(ctx, obj.SemesterCode, filters)
 }
 
 // Defences is the resolver for the defences field.
 // RBAC: council, department, affair
-func (r *councilResolver) Defences(ctx context.Context, obj *model.Council) ([]*model.Defence, error) {
+func (r *councilResolver) Defences(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) ([]*model.Defence, error) {
 	access, _ := r.RbacAccess(ctx, []string{"council", "department", "affair"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).DefenceByCouncilId.Load(ctx, obj.ID)
+	return dataloader.GetLoaders(ctx).DefenceByCouncilId.Load(ctx, obj.ID, filters)
 }
 
 // TopicCouncils is the resolver for the topicCouncils field.
 // RBAC: !student
-func (r *councilResolver) TopicCouncils(ctx context.Context, obj *model.Council) ([]*model.TopicCouncil, error) {
+func (r *councilResolver) TopicCouncils(ctx context.Context, obj *model.Council, filters []*model.FilterCriteriaInput) ([]*model.TopicCouncil, error) {
 	access, _ := r.RbacAccess(ctx, []string{"supervisor", "council", "reviewer", "department", "affair"})
+	fmt.Print("hehehehehehe")
+
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).TopicCouncilByCouncilId.Load(ctx, obj.ID)
+	return dataloader.GetLoaders(ctx).TopicCouncilByCouncilId.Load(ctx, obj.ID, filters)
 }
 
 // Council is the resolver for the council field.
 // RBAC: council, department, affair
-func (r *defenceResolver) Council(ctx context.Context, obj *model.Defence) (*model.Council, error) {
+func (r *defenceResolver) Council(ctx context.Context, obj *model.Defence, filters []*model.FilterCriteriaInput) (*model.Council, error) {
 	access, _ := r.RbacAccess(ctx, []string{"council", "department", "affair"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).CouncilByID.Load(ctx, obj.CouncilCode)
+	return dataloader.GetLoaders(ctx).CouncilByID.Load(ctx, obj.CouncilCode, filters)
 }
 
 // Teacher is the resolver for the teacher field.
 // RBAC: council, department, affair
-func (r *defenceResolver) Teacher(ctx context.Context, obj *model.Defence) (*model.Teacher, error) {
+func (r *defenceResolver) Teacher(ctx context.Context, obj *model.Defence, filters []*model.FilterCriteriaInput) (*model.Teacher, error) {
 	access, _ := r.RbacAccess(ctx, []string{"council", "department", "affair"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).TeacherById.Load(ctx, obj.TeacherCode)
+	return dataloader.GetLoaders(ctx).TeacherById.Load(ctx, obj.TeacherCode, filters)
 }
 
 // GradeDefences is the resolver for the gradeDefences field.
 // RBAC: council, department, affair
-func (r *defenceResolver) GradeDefences(ctx context.Context, obj *model.Defence) ([]*model.GradeDefence, error) {
+func (r *defenceResolver) GradeDefences(ctx context.Context, obj *model.Defence, filters []*model.FilterCriteriaInput) ([]*model.GradeDefence, error) {
 	access, _ := r.RbacAccess(ctx, []string{"council", "department", "affair"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).GradeDefenceByDefenceId.Load(ctx, obj.ID)
+	return dataloader.GetLoaders(ctx).GradeDefenceByDefenceId.Load(ctx, obj.ID, filters)
 }
 
 // Student is the resolver for the student field.
 // RBAC: !student (student không xem được info student khác)
-func (r *enrollmentResolver) Student(ctx context.Context, obj *model.Enrollment) (*model.Student, error) {
+func (r *enrollmentResolver) Student(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.Student, error) {
 	access, _ := r.RbacAccess(ctx, []string{"supervisor", "council", "reviewer", "department", "affair"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).StudentById.Load(ctx, obj.StudentCode)
+	return dataloader.GetLoaders(ctx).StudentById.Load(ctx, obj.StudentCode, filters)
 }
 
 // TopicCouncil is the resolver for the topicCouncil field.
-func (r *enrollmentResolver) TopicCouncil(ctx context.Context, obj *model.Enrollment) (*model.TopicCouncil, error) {
-	return dataloader.GetLoaders(ctx).TopicCouncilById.Load(ctx, obj.TopicCouncilCode)
+func (r *enrollmentResolver) TopicCouncil(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.TopicCouncil, error) {
+	return dataloader.GetLoaders(ctx).TopicCouncilById.Load(ctx, obj.TopicCouncilCode, filters)
 }
 
 // Midterm is the resolver for the midterm field.
-func (r *enrollmentResolver) Midterm(ctx context.Context, obj *model.Enrollment) (*model.Midterm, error) {
-	if obj.MidtermCode == nil {
-		return nil, nil
-	}
-	return dataloader.GetLoaders(ctx).MidtermByID.Load(ctx, *obj.MidtermCode)
+func (r *enrollmentResolver) Midterm(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.Midterm, error) {
+	return dataloader.GetLoaders(ctx).MidtermByEnrollmentId.Load(ctx, obj.ID, filters)
 }
 
 // Final is the resolver for the final field.
-func (r *enrollmentResolver) Final(ctx context.Context, obj *model.Enrollment) (*model.Final, error) {
-	if obj.FinalCode == nil {
-		return nil, nil
-	}
-	return dataloader.GetLoaders(ctx).FinalByID.Load(ctx, *obj.FinalCode)
+func (r *enrollmentResolver) Final(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) (*model.Final, error) {
+	return dataloader.GetLoaders(ctx).FinalByEnrollmentId.Load(ctx, obj.ID, filters)
 }
 
 // GradeDefences is the resolver for the gradeDefences field.
 // RBAC: student, supervisor, department, affair
-func (r *enrollmentResolver) GradeDefences(ctx context.Context, obj *model.Enrollment) ([]*model.GradeDefence, error) {
+func (r *enrollmentResolver) GradeDefences(ctx context.Context, obj *model.Enrollment, filters []*model.FilterCriteriaInput) ([]*model.GradeDefence, error) {
 	access, _ := r.RbacAccess(ctx, []string{"student", "supervisor", "department", "affair"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).GradeDefenceByEnrollmentId.Load(ctx, obj.ID)
+	return dataloader.GetLoaders(ctx).GradeDefenceByEnrollmentId.Load(ctx, obj.ID, filters)
 }
 
 // Majors is the resolver for the majors field.
-func (r *facultyResolver) Majors(ctx context.Context, obj *model.Faculty) ([]*model.Major, error) {
-	return dataloader.GetLoaders(ctx).MajorByFacultyId.Load(ctx, obj.ID)
+func (r *facultyResolver) Majors(ctx context.Context, obj *model.Faculty, filters []*model.FilterCriteriaInput) ([]*model.Major, error) {
+	return dataloader.GetLoaders(ctx).MajorByFacultyId.Load(ctx, obj.ID, filters)
 }
 
 // Files is the resolver for the files field.
-func (r *finalResolver) Files(ctx context.Context, obj *model.Final) ([]*model.File, error) {
-	return dataloader.GetLoaders(ctx).FilesByFinalId.Load(ctx, obj.ID)
+func (r *finalResolver) Files(ctx context.Context, obj *model.Final, filters []*model.FilterCriteriaInput) ([]*model.File, error) {
+	return dataloader.GetLoaders(ctx).FilesByFinalId.Load(ctx, obj.ID, filters)
 }
 
 // Defence is the resolver for the defence field.
-func (r *gradeDefenceResolver) Defence(ctx context.Context, obj *model.GradeDefence) (*model.Defence, error) {
-	return dataloader.GetLoaders(ctx).DefenceById.Load(ctx, obj.DefenceCode)
+func (r *gradeDefenceResolver) Defence(ctx context.Context, obj *model.GradeDefence, filters []*model.FilterCriteriaInput) (*model.Defence, error) {
+	return dataloader.GetLoaders(ctx).DefenceById.Load(ctx, obj.DefenceCode, filters)
 }
 
 // Enrollment is the resolver for the enrollment field.
-func (r *gradeDefenceResolver) Enrollment(ctx context.Context, obj *model.GradeDefence) (*model.Enrollment, error) {
-	return dataloader.GetLoaders(ctx).EnrollmentById.Load(ctx, obj.EnrollmentCode)
+func (r *gradeDefenceResolver) Enrollment(ctx context.Context, obj *model.GradeDefence, filters []*model.FilterCriteriaInput) (*model.Enrollment, error) {
+	return dataloader.GetLoaders(ctx).EnrollmentById.Load(ctx, obj.EnrollmentCode, filters)
 }
 
 // Criteria is the resolver for the criteria field.
-func (r *gradeDefenceResolver) Criteria(ctx context.Context, obj *model.GradeDefence) ([]*model.GradeDefenceCriterion, error) {
-	return dataloader.GetLoaders(ctx).GradeDefenceCriteriaByDefenceId.Load(ctx, obj.ID)
+func (r *gradeDefenceResolver) Criteria(ctx context.Context, obj *model.GradeDefence, filters []*model.FilterCriteriaInput) ([]*model.GradeDefenceCriterion, error) {
+	return dataloader.GetLoaders(ctx).GradeDefenceCriteriaByDefenceId.Load(ctx, obj.ID, filters)
 }
 
 // Files is the resolver for the files field.
-func (r *midtermResolver) Files(ctx context.Context, obj *model.Midterm) ([]*model.File, error) {
-	return dataloader.GetLoaders(ctx).FilesByMidtermId.Load(ctx, obj.ID)
+func (r *midtermResolver) Files(ctx context.Context, obj *model.Midterm, filters []*model.FilterCriteriaInput) ([]*model.File, error) {
+	return dataloader.GetLoaders(ctx).FilesByMidtermId.Load(ctx, obj.ID, filters)
 }
 
 // Roles is the resolver for the roles field.
 // RBAC: !student
-func (r *teacherResolver) Roles(ctx context.Context, obj *model.Teacher) ([]*model.RoleSystem, error) {
+func (r *teacherResolver) Roles(ctx context.Context, obj *model.Teacher, filters []*model.FilterCriteriaInput) ([]*model.RoleSystem, error) {
 	access, _ := r.RbacAccess(ctx, []string{"supervisor", "council", "reviewer", "department", "affair", "teacher"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).RolesByTeacherId.Load(ctx, obj.ID)
+	return dataloader.GetLoaders(ctx).RolesByTeacherId.Load(ctx, obj.ID, filters)
 }
 
 // Major is the resolver for the major field.
-func (r *topicResolver) Major(ctx context.Context, obj *model.Topic) (*model.MajorInfo, error) {
-	return dataloader.GetLoaders(ctx).MajorInfoById.Load(ctx, obj.MajorCode)
+func (r *topicResolver) Major(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) (*model.MajorInfo, error) {
+	return dataloader.GetLoaders(ctx).MajorInfoById.Load(ctx, obj.MajorCode, filters)
 }
 
 // Semester is the resolver for the semester field.
-func (r *topicResolver) Semester(ctx context.Context, obj *model.Topic) (*model.SemesterInfo, error) {
-	return dataloader.GetLoaders(ctx).SemesterInfoById.Load(ctx, obj.SemesterCode)
+func (r *topicResolver) Semester(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) (*model.SemesterInfo, error) {
+	return dataloader.GetLoaders(ctx).SemesterInfoById.Load(ctx, obj.SemesterCode, filters)
 }
 
 // Files is the resolver for the files field.
-func (r *topicResolver) Files(ctx context.Context, obj *model.Topic) ([]*model.File, error) {
-	return dataloader.GetLoaders(ctx).FilesByTopicId.Load(ctx, obj.ID)
+func (r *topicResolver) Files(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) ([]*model.File, error) {
+	return dataloader.GetLoaders(ctx).FilesByTopicId.Load(ctx, obj.ID, filters)
 }
 
 // TopicCouncils is the resolver for the topicCouncils field.
 // RBAC: !student
-func (r *topicResolver) TopicCouncils(ctx context.Context, obj *model.Topic) ([]*model.TopicCouncil, error) {
+func (r *topicResolver) TopicCouncils(ctx context.Context, obj *model.Topic, filters []*model.FilterCriteriaInput) ([]*model.TopicCouncil, error) {
 	access, _ := r.RbacAccess(ctx, []string{"supervisor", "council", "reviewer", "department", "affair"})
+	fmt.Print("hehehehe")
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).TopicCouncilByTopicId.Load(ctx, obj.ID)
+	fmt.Print("cc")
+	return dataloader.GetLoaders(ctx).TopicCouncilByTopicId.Load(ctx, obj.ID, filters)
 }
 
 // Topic is the resolver for the topic field.
-func (r *topicCouncilResolver) Topic(ctx context.Context, obj *model.TopicCouncil) (*model.Topic, error) {
-	return dataloader.GetLoaders(ctx).TopicByID.Load(ctx, obj.TopicCode)
+func (r *topicCouncilResolver) Topic(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) (*model.Topic, error) {
+	return dataloader.GetLoaders(ctx).TopicByID.Load(ctx, obj.TopicCode, filters)
 }
 
 // Council is the resolver for the council field.
-func (r *topicCouncilResolver) Council(ctx context.Context, obj *model.TopicCouncil) (*model.Council, error) {
+func (r *topicCouncilResolver) Council(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) (*model.Council, error) {
 	if obj.CouncilCode == nil {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).CouncilByID.Load(ctx, *obj.CouncilCode)
+	return dataloader.GetLoaders(ctx).CouncilByID.Load(ctx, *obj.CouncilCode, filters)
 }
 
 // Supervisors is the resolver for the supervisors field.
-func (r *topicCouncilResolver) Supervisors(ctx context.Context, obj *model.TopicCouncil) ([]*model.TopicCouncilSupervisor, error) {
-	return dataloader.GetLoaders(ctx).SupervisorsByTopicCouncilId.Load(ctx, obj.ID)
+func (r *topicCouncilResolver) Supervisors(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) ([]*model.TopicCouncilSupervisor, error) {
+	return dataloader.GetLoaders(ctx).SupervisorsByTopicCouncilId.Load(ctx, obj.ID, filters)
 }
 
 // Enrollments is the resolver for the enrollments field.
 // RBAC: !student
-func (r *topicCouncilResolver) Enrollments(ctx context.Context, obj *model.TopicCouncil) ([]*model.Enrollment, error) {
+func (r *topicCouncilResolver) Enrollments(ctx context.Context, obj *model.TopicCouncil, filters []*model.FilterCriteriaInput) ([]*model.Enrollment, error) {
 	access, _ := r.RbacAccess(ctx, []string{"supervisor", "council", "reviewer", "department", "affair"})
 	if !access {
 		return nil, nil
 	}
-	return dataloader.GetLoaders(ctx).EnrollmentByTopicCouncilId.Load(ctx, obj.ID)
+	return dataloader.GetLoaders(ctx).EnrollmentByTopicCouncilId.Load(ctx, obj.ID, filters)
 }
 
 // Teacher is the resolver for the teacher field.
-func (r *topicCouncilSupervisorResolver) Teacher(ctx context.Context, obj *model.TopicCouncilSupervisor) (*model.Teacher, error) {
-	return dataloader.GetLoaders(ctx).TeacherById.Load(ctx, obj.TeacherSupervisorCode)
+func (r *topicCouncilSupervisorResolver) Teacher(ctx context.Context, obj *model.TopicCouncilSupervisor, filters []*model.FilterCriteriaInput) (*model.Teacher, error) {
+	return dataloader.GetLoaders(ctx).TeacherById.Load(ctx, obj.TeacherSupervisorCode, filters)
 }
 
 // Council returns generated.CouncilResolver implementation.

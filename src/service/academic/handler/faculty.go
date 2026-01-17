@@ -15,16 +15,16 @@ import (
 )
 
 // CreateFaculty creates a new Faculty record
-func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyRequest) (*pb.CreateFacultyResponse, error) {
+func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyRequest) (*pb.FacultyResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetFaculty().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
 
 	// Use provided ID
-	id := req.Id
+	id := req.GetFaculty().GetId()
 	if id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
@@ -39,10 +39,10 @@ func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyReques
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.Ms,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetFaculty().GetTitle(),
+		req.GetFaculty().GetMs(),
+		req.GetFaculty().GetCreatedBy(),
+		req.GetFaculty().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -52,34 +52,49 @@ func (h *Handler) CreateFaculty(ctx context.Context, req *pb.CreateFacultyReques
 		return nil, status.Errorf(codes.Internal, "failed to create faculty: %v", err)
 	}
 
-	result, err := h.GetFaculty(ctx, &pb.GetFacultyRequest{Id: req.Ms})
+	result, err := h.GetFaculty(ctx, &pb.GetFacultyRequest{Id: req.GetFaculty().GetMs()})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get faculty")
 	}
-	return &pb.CreateFacultyResponse{
+	return &pb.FacultyResponse{
 		Faculty: result.GetFaculty(),
 	}, nil
 }
 
 // GetFaculty retrieves a Faculty by ID
-func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*pb.GetFacultyResponse, error) {
+func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*pb.FacultyResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":    true,
+		"title": true,
+		"ms":    true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, title, ms, created_at, updated_at, created_by, updated_by
 		FROM Faculty
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Faculty
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.Ms,
@@ -106,13 +121,13 @@ func (h *Handler) GetFaculty(ctx context.Context, req *pb.GetFacultyRequest) (*p
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetFacultyResponse{
+	return &pb.FacultyResponse{
 		Faculty: &entity,
 	}, nil
 }
 
 // UpdateFaculty updates an existing Faculty
-func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyRequest) (*pb.UpdateFacultyResponse, error) {
+func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyRequest) (*pb.FacultyResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -123,15 +138,13 @@ func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyReques
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetFaculty().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetFaculty().GetTitle())
 	}
-	if req.Ms != nil {
+	if req.GetFaculty().GetMs() != "" {
 		updateFields = append(updateFields, "ms = ?")
-		args = append(args, *req.Ms)
-
+		args = append(args, req.GetFaculty().GetMs())
 	}
 
 	if len(updateFields) == 0 {
@@ -140,17 +153,29 @@ func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyReques
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetFaculty().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
-	args = append(args, req.Id)
+	// Build WHERE clause from filters
+	whereClause := ""
+	whiteMap := map[string]bool{
+		"id":    true,
+		"title": true,
+		"ms":    true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.GetId())
 
 	query := fmt.Sprintf(`
 		UPDATE Faculty
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
@@ -161,7 +186,7 @@ func (h *Handler) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyReques
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get faculty")
 	}
-	return &pb.UpdateFacultyResponse{
+	return &pb.FacultyResponse{
 		Faculty: result.GetFaculty(),
 	}, nil
 }
@@ -174,9 +199,25 @@ func (h *Handler) DeleteFaculty(ctx context.Context, req *pb.DeleteFacultyReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Faculty WHERE id = ?`
+	// Build WHERE clause from filters
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":    true,
+		"title": true,
+		"ms":    true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	query := fmt.Sprintf(`DELETE FROM Faculty %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete faculty: %v", err)
 	}
@@ -226,9 +267,10 @@ func (h *Handler) ListFaculties(ctx context.Context, req *pb.ListFacultiesReques
 	whiteMap := map[string]bool{
 		"id":    true,
 		"title": true,
+		"ms":    true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

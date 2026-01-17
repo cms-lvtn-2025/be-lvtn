@@ -86,50 +86,26 @@ type AffairQuery {
     """Lay danh sach giao vien"""
     teachers(search: SearchRequestInput!): TeacherListResponse!
 
-    """Lay chi tiet giao vien"""
-    teacherDetail(id: ID!): Teacher
-
     """Lay danh sach sinh vien"""
     students(search: SearchRequestInput!): StudentListResponse!
-
-    """Lay chi tiet sinh vien"""
-    studentDetail(id: ID!): Student
 
     """Lay danh sach semester"""
     semesters(search: SearchRequestInput!): SemesterListResponse!
 
-    """Lay chi tiet semester"""
-    semesterDetail(id: ID!): Semester
-
     """Lay danh sach major"""
     majors(search: SearchRequestInput!): MajorListResponse!
-
-    """Lay chi tiet major"""
-    majorDetail(id: ID!): Major
 
     """Lay danh sach faculty"""
     faculties(search: SearchRequestInput!): FacultyListResponse!
 
-    """Lay chi tiet faculty"""
-    facultyDetail(id: ID!): Faculty
-
     """Lay danh sach topic voi day du thong tin"""
     topics(search: SearchRequestInput!): TopicListResponse!
-
-    """Lay chi tiet topic"""
-    topicDetail(id: ID!): Topic
 
     """Lay danh sach enrollment"""
     enrollments(search: SearchRequestInput!): EnrollmentListResponse!
 
-    """Lay chi tiet enrollment voi day du thong tin"""
-    enrollmentDetail(id: ID!): Enrollment
-
     """Lay danh sach council"""
     councils(search: SearchRequestInput!): CouncilListResponse!
-
-    """Lay chi tiet council"""
-    councilDetail(id: ID!): Council
 
     """Lay danh sach defence cua mot council"""
     defencesByCouncil(councilId: ID!): DefenceListResponse!

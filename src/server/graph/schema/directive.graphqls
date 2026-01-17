@@ -1,5 +1,0 @@
-# Directive for role-based access control on relationships
-# This directive enforces a specific role context for a query and its children
-# Each query subtree gets its own isolated context - no race conditions
-
-directive @rbacRole(role: String!) on FIELD_DEFINITION

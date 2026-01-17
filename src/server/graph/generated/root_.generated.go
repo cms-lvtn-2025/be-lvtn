@@ -93,38 +93,30 @@ type ComplexityRoot struct {
 	}
 
 	AffairQuery struct {
-		CouncilDetail     func(childComplexity int, id string) int
 		Councils          func(childComplexity int, search model.SearchRequestInput) int
 		DefencesByCouncil func(childComplexity int, councilID string) int
-		EnrollmentDetail  func(childComplexity int, id string) int
 		Enrollments       func(childComplexity int, search model.SearchRequestInput) int
 		Faculties         func(childComplexity int, search model.SearchRequestInput) int
-		FacultyDetail     func(childComplexity int, id string) int
 		GradeDefences     func(childComplexity int, search model.SearchRequestInput) int
-		MajorDetail       func(childComplexity int, id string) int
 		Majors            func(childComplexity int, search model.SearchRequestInput) int
-		SemesterDetail    func(childComplexity int, id string) int
 		Semesters         func(childComplexity int, search model.SearchRequestInput) int
-		StudentDetail     func(childComplexity int, id string) int
 		Students          func(childComplexity int, search model.SearchRequestInput) int
-		TeacherDetail     func(childComplexity int, id string) int
 		Teachers          func(childComplexity int, search model.SearchRequestInput) int
-		TopicDetail       func(childComplexity int, id string) int
 		Topics            func(childComplexity int, search model.SearchRequestInput) int
 	}
 
 	Council struct {
 		CreatedAt     func(childComplexity int) int
 		CreatedBy     func(childComplexity int) int
-		Defences      func(childComplexity int) int
+		Defences      func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		ID            func(childComplexity int) int
-		Major         func(childComplexity int) int
+		Major         func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		MajorCode     func(childComplexity int) int
-		Semester      func(childComplexity int) int
+		Semester      func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		SemesterCode  func(childComplexity int) int
 		TimeStart     func(childComplexity int) int
 		Title         func(childComplexity int) int
-		TopicCouncils func(childComplexity int) int
+		TopicCouncils func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		UpdatedAt     func(childComplexity int) int
 		UpdatedBy     func(childComplexity int) int
 	}
@@ -147,14 +139,14 @@ type ComplexityRoot struct {
 	}
 
 	Defence struct {
-		Council       func(childComplexity int) int
+		Council       func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		CouncilCode   func(childComplexity int) int
 		CreatedAt     func(childComplexity int) int
 		CreatedBy     func(childComplexity int) int
-		GradeDefences func(childComplexity int) int
+		GradeDefences func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		ID            func(childComplexity int) int
 		Position      func(childComplexity int) int
-		Teacher       func(childComplexity int) int
+		Teacher       func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		TeacherCode   func(childComplexity int) int
 		Title         func(childComplexity int) int
 		UpdatedAt     func(childComplexity int) int
@@ -192,17 +184,14 @@ type ComplexityRoot struct {
 	Enrollment struct {
 		CreatedAt        func(childComplexity int) int
 		CreatedBy        func(childComplexity int) int
-		Final            func(childComplexity int) int
-		FinalCode        func(childComplexity int) int
-		GradeDefences    func(childComplexity int) int
-		GradeReviewCode  func(childComplexity int) int
+		Final            func(childComplexity int, filters []*model.FilterCriteriaInput) int
+		GradeDefences    func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		ID               func(childComplexity int) int
-		Midterm          func(childComplexity int) int
-		MidtermCode      func(childComplexity int) int
-		Student          func(childComplexity int) int
+		Midterm          func(childComplexity int, filters []*model.FilterCriteriaInput) int
+		Student          func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		StudentCode      func(childComplexity int) int
 		Title            func(childComplexity int) int
-		TopicCouncil     func(childComplexity int) int
+		TopicCouncil     func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		TopicCouncilCode func(childComplexity int) int
 		UpdatedAt        func(childComplexity int) int
 		UpdatedBy        func(childComplexity int) int
@@ -217,7 +206,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
 		ID        func(childComplexity int) int
-		Majors    func(childComplexity int) int
+		Majors    func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		Ms        func(childComplexity int) int
 		Title     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
@@ -252,8 +241,8 @@ type ComplexityRoot struct {
 		CompletionDate  func(childComplexity int) int
 		CreatedAt       func(childComplexity int) int
 		CreatedBy       func(childComplexity int) int
-		DepartmentGrade func(childComplexity int) int
-		Files           func(childComplexity int) int
+		EnrollmentCode  func(childComplexity int) int
+		Files           func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		FinalGrade      func(childComplexity int) int
 		ID              func(childComplexity int) int
 		Notes           func(childComplexity int) int
@@ -272,10 +261,10 @@ type ComplexityRoot struct {
 	GradeDefence struct {
 		CreatedAt      func(childComplexity int) int
 		CreatedBy      func(childComplexity int) int
-		Criteria       func(childComplexity int) int
-		Defence        func(childComplexity int) int
+		Criteria       func(childComplexity int, filters []*model.FilterCriteriaInput) int
+		Defence        func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		DefenceCode    func(childComplexity int) int
-		Enrollment     func(childComplexity int) int
+		Enrollment     func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		EnrollmentCode func(childComplexity int) int
 		ID             func(childComplexity int) int
 		Note           func(childComplexity int) int
@@ -329,16 +318,17 @@ type ComplexityRoot struct {
 	}
 
 	Midterm struct {
-		CreatedAt func(childComplexity int) int
-		CreatedBy func(childComplexity int) int
-		Feedback  func(childComplexity int) int
-		Files     func(childComplexity int) int
-		Grade     func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Status    func(childComplexity int) int
-		Title     func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
-		UpdatedBy func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		CreatedBy      func(childComplexity int) int
+		EnrollmentCode func(childComplexity int) int
+		Feedback       func(childComplexity int) int
+		Files          func(childComplexity int, filters []*model.FilterCriteriaInput) int
+		Grade          func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Status         func(childComplexity int) int
+		Title          func(childComplexity int) int
+		UpdatedAt      func(childComplexity int) int
+		UpdatedBy      func(childComplexity int) int
 	}
 
 	MidtermListResponse struct {
@@ -458,7 +448,7 @@ type ComplexityRoot struct {
 		ID           func(childComplexity int) int
 		MajorCode    func(childComplexity int) int
 		Msgv         func(childComplexity int) int
-		Roles        func(childComplexity int) int
+		Roles        func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		SemesterCode func(childComplexity int) int
 		UpdatedAt    func(childComplexity int) int
 		UpdatedBy    func(childComplexity int) int
@@ -493,34 +483,34 @@ type ComplexityRoot struct {
 	Topic struct {
 		CreatedAt     func(childComplexity int) int
 		CreatedBy     func(childComplexity int) int
-		Files         func(childComplexity int) int
+		Files         func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		ID            func(childComplexity int) int
-		Major         func(childComplexity int) int
+		Major         func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		MajorCode     func(childComplexity int) int
 		PercentStage1 func(childComplexity int) int
 		PercentStage2 func(childComplexity int) int
-		Semester      func(childComplexity int) int
+		Semester      func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		SemesterCode  func(childComplexity int) int
 		Status        func(childComplexity int) int
 		Title         func(childComplexity int) int
-		TopicCouncils func(childComplexity int) int
+		TopicCouncils func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		UpdatedAt     func(childComplexity int) int
 		UpdatedBy     func(childComplexity int) int
 	}
 
 	TopicCouncil struct {
-		Council     func(childComplexity int) int
+		Council     func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		CouncilCode func(childComplexity int) int
 		CreatedAt   func(childComplexity int) int
 		CreatedBy   func(childComplexity int) int
-		Enrollments func(childComplexity int) int
+		Enrollments func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		ID          func(childComplexity int) int
 		Stage       func(childComplexity int) int
-		Supervisors func(childComplexity int) int
+		Supervisors func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		TimeEnd     func(childComplexity int) int
 		TimeStart   func(childComplexity int) int
 		Title       func(childComplexity int) int
-		Topic       func(childComplexity int) int
+		Topic       func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		TopicCode   func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
 		UpdatedBy   func(childComplexity int) int
@@ -535,7 +525,7 @@ type ComplexityRoot struct {
 		CreatedAt             func(childComplexity int) int
 		CreatedBy             func(childComplexity int) int
 		ID                    func(childComplexity int) int
-		Teacher               func(childComplexity int) int
+		Teacher               func(childComplexity int, filters []*model.FilterCriteriaInput) int
 		TeacherSupervisorCode func(childComplexity int) int
 		TopicCouncilCode      func(childComplexity int) int
 		UpdatedAt             func(childComplexity int) int
@@ -831,18 +821,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AffairMutation.UpdateTopic(childComplexity, args["id"].(string), args["input"].(model.UpdateTopicInput)), true
 
-	case "AffairQuery.councilDetail":
-		if e.complexity.AffairQuery.CouncilDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_councilDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.CouncilDetail(childComplexity, args["id"].(string)), true
-
 	case "AffairQuery.councils":
 		if e.complexity.AffairQuery.Councils == nil {
 			break
@@ -866,18 +844,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.AffairQuery.DefencesByCouncil(childComplexity, args["councilId"].(string)), true
-
-	case "AffairQuery.enrollmentDetail":
-		if e.complexity.AffairQuery.EnrollmentDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_enrollmentDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.EnrollmentDetail(childComplexity, args["id"].(string)), true
 
 	case "AffairQuery.enrollments":
 		if e.complexity.AffairQuery.Enrollments == nil {
@@ -903,18 +869,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AffairQuery.Faculties(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "AffairQuery.facultyDetail":
-		if e.complexity.AffairQuery.FacultyDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_facultyDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.FacultyDetail(childComplexity, args["id"].(string)), true
-
 	case "AffairQuery.gradeDefences":
 		if e.complexity.AffairQuery.GradeDefences == nil {
 			break
@@ -926,18 +880,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.AffairQuery.GradeDefences(childComplexity, args["search"].(model.SearchRequestInput)), true
-
-	case "AffairQuery.majorDetail":
-		if e.complexity.AffairQuery.MajorDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_majorDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.MajorDetail(childComplexity, args["id"].(string)), true
 
 	case "AffairQuery.majors":
 		if e.complexity.AffairQuery.Majors == nil {
@@ -951,18 +893,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AffairQuery.Majors(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "AffairQuery.semesterDetail":
-		if e.complexity.AffairQuery.SemesterDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_semesterDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.SemesterDetail(childComplexity, args["id"].(string)), true
-
 	case "AffairQuery.semesters":
 		if e.complexity.AffairQuery.Semesters == nil {
 			break
@@ -974,18 +904,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.AffairQuery.Semesters(childComplexity, args["search"].(model.SearchRequestInput)), true
-
-	case "AffairQuery.studentDetail":
-		if e.complexity.AffairQuery.StudentDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_studentDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.StudentDetail(childComplexity, args["id"].(string)), true
 
 	case "AffairQuery.students":
 		if e.complexity.AffairQuery.Students == nil {
@@ -999,18 +917,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AffairQuery.Students(childComplexity, args["search"].(model.SearchRequestInput)), true
 
-	case "AffairQuery.teacherDetail":
-		if e.complexity.AffairQuery.TeacherDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_teacherDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.TeacherDetail(childComplexity, args["id"].(string)), true
-
 	case "AffairQuery.teachers":
 		if e.complexity.AffairQuery.Teachers == nil {
 			break
@@ -1022,18 +928,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.AffairQuery.Teachers(childComplexity, args["search"].(model.SearchRequestInput)), true
-
-	case "AffairQuery.topicDetail":
-		if e.complexity.AffairQuery.TopicDetail == nil {
-			break
-		}
-
-		args, err := ec.field_AffairQuery_topicDetail_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AffairQuery.TopicDetail(childComplexity, args["id"].(string)), true
 
 	case "AffairQuery.topics":
 		if e.complexity.AffairQuery.Topics == nil {
@@ -1066,7 +960,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Council.Defences(childComplexity), true
+		args, err := ec.field_Council_defences_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Council.Defences(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Council.id":
 		if e.complexity.Council.ID == nil {
@@ -1080,7 +979,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Council.Major(childComplexity), true
+		args, err := ec.field_Council_major_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Council.Major(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Council.majorCode":
 		if e.complexity.Council.MajorCode == nil {
@@ -1094,7 +998,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Council.Semester(childComplexity), true
+		args, err := ec.field_Council_semester_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Council.Semester(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Council.semesterCode":
 		if e.complexity.Council.SemesterCode == nil {
@@ -1122,7 +1031,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Council.TopicCouncils(childComplexity), true
+		args, err := ec.field_Council_topicCouncils_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Council.TopicCouncils(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Council.updatedAt":
 		if e.complexity.Council.UpdatedAt == nil {
@@ -1229,7 +1143,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Defence.Council(childComplexity), true
+		args, err := ec.field_Defence_council_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Defence.Council(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Defence.councilCode":
 		if e.complexity.Defence.CouncilCode == nil {
@@ -1257,7 +1176,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Defence.GradeDefences(childComplexity), true
+		args, err := ec.field_Defence_gradeDefences_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Defence.GradeDefences(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Defence.id":
 		if e.complexity.Defence.ID == nil {
@@ -1278,7 +1202,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Defence.Teacher(childComplexity), true
+		args, err := ec.field_Defence_teacher_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Defence.Teacher(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Defence.teacherCode":
 		if e.complexity.Defence.TeacherCode == nil {
@@ -1545,28 +1474,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Enrollment.Final(childComplexity), true
-
-	case "Enrollment.finalCode":
-		if e.complexity.Enrollment.FinalCode == nil {
-			break
+		args, err := ec.field_Enrollment_final_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
 		}
 
-		return e.complexity.Enrollment.FinalCode(childComplexity), true
+		return e.complexity.Enrollment.Final(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Enrollment.gradeDefences":
 		if e.complexity.Enrollment.GradeDefences == nil {
 			break
 		}
 
-		return e.complexity.Enrollment.GradeDefences(childComplexity), true
-
-	case "Enrollment.gradeReviewCode":
-		if e.complexity.Enrollment.GradeReviewCode == nil {
-			break
+		args, err := ec.field_Enrollment_gradeDefences_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
 		}
 
-		return e.complexity.Enrollment.GradeReviewCode(childComplexity), true
+		return e.complexity.Enrollment.GradeDefences(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Enrollment.id":
 		if e.complexity.Enrollment.ID == nil {
@@ -1580,21 +1505,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Enrollment.Midterm(childComplexity), true
-
-	case "Enrollment.midtermCode":
-		if e.complexity.Enrollment.MidtermCode == nil {
-			break
+		args, err := ec.field_Enrollment_midterm_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
 		}
 
-		return e.complexity.Enrollment.MidtermCode(childComplexity), true
+		return e.complexity.Enrollment.Midterm(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Enrollment.student":
 		if e.complexity.Enrollment.Student == nil {
 			break
 		}
 
-		return e.complexity.Enrollment.Student(childComplexity), true
+		args, err := ec.field_Enrollment_student_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Enrollment.Student(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Enrollment.studentCode":
 		if e.complexity.Enrollment.StudentCode == nil {
@@ -1615,7 +1543,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Enrollment.TopicCouncil(childComplexity), true
+		args, err := ec.field_Enrollment_topicCouncil_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Enrollment.TopicCouncil(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Enrollment.topicCouncilCode":
 		if e.complexity.Enrollment.TopicCouncilCode == nil {
@@ -1678,7 +1611,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Faculty.Majors(childComplexity), true
+		args, err := ec.field_Faculty_majors_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Faculty.Majors(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Faculty.ms":
 		if e.complexity.Faculty.Ms == nil {
@@ -1834,19 +1772,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Final.CreatedBy(childComplexity), true
 
-	case "Final.departmentGrade":
-		if e.complexity.Final.DepartmentGrade == nil {
+	case "Final.enrollmentCode":
+		if e.complexity.Final.EnrollmentCode == nil {
 			break
 		}
 
-		return e.complexity.Final.DepartmentGrade(childComplexity), true
+		return e.complexity.Final.EnrollmentCode(childComplexity), true
 
 	case "Final.files":
 		if e.complexity.Final.Files == nil {
 			break
 		}
 
-		return e.complexity.Final.Files(childComplexity), true
+		args, err := ec.field_Final_files_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Final.Files(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Final.finalGrade":
 		if e.complexity.Final.FinalGrade == nil {
@@ -1937,14 +1880,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.GradeDefence.Criteria(childComplexity), true
+		args, err := ec.field_GradeDefence_criteria_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GradeDefence.Criteria(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "GradeDefence.defence":
 		if e.complexity.GradeDefence.Defence == nil {
 			break
 		}
 
-		return e.complexity.GradeDefence.Defence(childComplexity), true
+		args, err := ec.field_GradeDefence_defence_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GradeDefence.Defence(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "GradeDefence.defenceCode":
 		if e.complexity.GradeDefence.DefenceCode == nil {
@@ -1958,7 +1911,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.GradeDefence.Enrollment(childComplexity), true
+		args, err := ec.field_GradeDefence_enrollment_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.GradeDefence.Enrollment(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "GradeDefence.enrollmentCode":
 		if e.complexity.GradeDefence.EnrollmentCode == nil {
@@ -2198,6 +2156,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Midterm.CreatedBy(childComplexity), true
 
+	case "Midterm.enrollmentCode":
+		if e.complexity.Midterm.EnrollmentCode == nil {
+			break
+		}
+
+		return e.complexity.Midterm.EnrollmentCode(childComplexity), true
+
 	case "Midterm.feedback":
 		if e.complexity.Midterm.Feedback == nil {
 			break
@@ -2210,7 +2175,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Midterm.Files(childComplexity), true
+		args, err := ec.field_Midterm_files_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Midterm.Files(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Midterm.grade":
 		if e.complexity.Midterm.Grade == nil {
@@ -2831,7 +2801,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Teacher.Roles(childComplexity), true
+		args, err := ec.field_Teacher_roles_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Teacher.Roles(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Teacher.semesterCode":
 		if e.complexity.Teacher.SemesterCode == nil {
@@ -2976,7 +2951,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Topic.Files(childComplexity), true
+		args, err := ec.field_Topic_files_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Topic.Files(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Topic.id":
 		if e.complexity.Topic.ID == nil {
@@ -2990,7 +2970,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Topic.Major(childComplexity), true
+		args, err := ec.field_Topic_major_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Topic.Major(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Topic.majorCode":
 		if e.complexity.Topic.MajorCode == nil {
@@ -3018,7 +3003,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Topic.Semester(childComplexity), true
+		args, err := ec.field_Topic_semester_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Topic.Semester(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Topic.semesterCode":
 		if e.complexity.Topic.SemesterCode == nil {
@@ -3046,7 +3036,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Topic.TopicCouncils(childComplexity), true
+		args, err := ec.field_Topic_topicCouncils_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Topic.TopicCouncils(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "Topic.updatedAt":
 		if e.complexity.Topic.UpdatedAt == nil {
@@ -3067,7 +3062,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.TopicCouncil.Council(childComplexity), true
+		args, err := ec.field_TopicCouncil_council_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.TopicCouncil.Council(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "TopicCouncil.councilCode":
 		if e.complexity.TopicCouncil.CouncilCode == nil {
@@ -3095,7 +3095,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.TopicCouncil.Enrollments(childComplexity), true
+		args, err := ec.field_TopicCouncil_enrollments_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.TopicCouncil.Enrollments(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "TopicCouncil.id":
 		if e.complexity.TopicCouncil.ID == nil {
@@ -3116,7 +3121,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.TopicCouncil.Supervisors(childComplexity), true
+		args, err := ec.field_TopicCouncil_supervisors_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.TopicCouncil.Supervisors(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "TopicCouncil.timeEnd":
 		if e.complexity.TopicCouncil.TimeEnd == nil {
@@ -3144,7 +3154,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.TopicCouncil.Topic(childComplexity), true
+		args, err := ec.field_TopicCouncil_topic_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.TopicCouncil.Topic(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "TopicCouncil.topicCode":
 		if e.complexity.TopicCouncil.TopicCode == nil {
@@ -3207,7 +3222,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.TopicCouncilSupervisor.Teacher(childComplexity), true
+		args, err := ec.field_TopicCouncilSupervisor_teacher_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.TopicCouncilSupervisor.Teacher(childComplexity, args["filters"].([]*model.FilterCriteriaInput)), true
 
 	case "TopicCouncilSupervisor.teacherSupervisorCode":
 		if e.complexity.TopicCouncilSupervisor.TeacherSupervisorCode == nil {
@@ -4064,50 +4084,26 @@ type AffairQuery {
     """Lay danh sach giao vien"""
     teachers(search: SearchRequestInput!): TeacherListResponse!
 
-    """Lay chi tiet giao vien"""
-    teacherDetail(id: ID!): Teacher
-
     """Lay danh sach sinh vien"""
     students(search: SearchRequestInput!): StudentListResponse!
-
-    """Lay chi tiet sinh vien"""
-    studentDetail(id: ID!): Student
 
     """Lay danh sach semester"""
     semesters(search: SearchRequestInput!): SemesterListResponse!
 
-    """Lay chi tiet semester"""
-    semesterDetail(id: ID!): Semester
-
     """Lay danh sach major"""
     majors(search: SearchRequestInput!): MajorListResponse!
-
-    """Lay chi tiet major"""
-    majorDetail(id: ID!): Major
 
     """Lay danh sach faculty"""
     faculties(search: SearchRequestInput!): FacultyListResponse!
 
-    """Lay chi tiet faculty"""
-    facultyDetail(id: ID!): Faculty
-
     """Lay danh sach topic voi day du thong tin"""
     topics(search: SearchRequestInput!): TopicListResponse!
-
-    """Lay chi tiet topic"""
-    topicDetail(id: ID!): Topic
 
     """Lay danh sach enrollment"""
     enrollments(search: SearchRequestInput!): EnrollmentListResponse!
 
-    """Lay chi tiet enrollment voi day du thong tin"""
-    enrollmentDetail(id: ID!): Enrollment
-
     """Lay danh sach council"""
     councils(search: SearchRequestInput!): CouncilListResponse!
-
-    """Lay chi tiet council"""
-    councilDetail(id: ID!): Council
 
     """Lay danh sach defence cua mot council"""
     defencesByCouncil(councilId: ID!): DefenceListResponse!
@@ -4236,7 +4232,7 @@ type Teacher {
     updatedBy: String
 
     # Relations - RBAC: null neu la student
-    roles: [RoleSystem!]
+    roles(filters: [FilterCriteriaInput!]): [RoleSystem!]
 }
 
 type Faculty {
@@ -4249,7 +4245,7 @@ type Faculty {
     updatedBy: String
 
     # Relations
-    majors: [Major!]!
+    majors(filters: [FilterCriteriaInput!]): [Major!]!
 }
 
 type Major {
@@ -4322,10 +4318,10 @@ type Topic {
     updatedBy: String
 
     # Relations - RBAC controlled
-    major: MajorInfo           # all
-    semester: SemesterInfo     # all
-    files: [File!]             # all
-    topicCouncils: [TopicCouncil!]  # RBAC: null neu la student
+    major(filters: [FilterCriteriaInput!]): MajorInfo           # all
+    semester(filters: [FilterCriteriaInput!]): SemesterInfo     # all
+    files(filters: [FilterCriteriaInput!]): [File!]             # all
+    topicCouncils(filters: [FilterCriteriaInput!]): [TopicCouncil!]  # RBAC: null neu la student
 }
 
 """
@@ -4347,10 +4343,10 @@ type TopicCouncil {
     updatedBy: String
 
     # Relations - RBAC controlled
-    topic: Topic               # all
-    council: Council           # all (student chi xem basic info)
-    supervisors: [TopicCouncilSupervisor!]  # all
-    enrollments: [Enrollment!] # RBAC: null neu la student
+    topic(filters: [FilterCriteriaInput!]): Topic               # all
+    council(filters: [FilterCriteriaInput!]): Council           # all (student chi xem basic info)
+    supervisors(filters: [FilterCriteriaInput!]): [TopicCouncilSupervisor!]  # all
+    enrollments(filters: [FilterCriteriaInput!]): [Enrollment!] # RBAC: null neu la student
 }
 
 type TopicCouncilSupervisor {
@@ -4363,7 +4359,7 @@ type TopicCouncilSupervisor {
     updatedBy: String
 
     # Relations - RBAC controlled
-    teacher: Teacher           # all (student se nhan TeacherInfo thay vi Teacher day du)
+    teacher(filters: [FilterCriteriaInput!]): Teacher           # all (student se nhan TeacherInfo thay vi Teacher day du)
 }
 
 """
@@ -4377,26 +4373,24 @@ type Enrollment {
     title: String!
     studentCode: String!
     topicCouncilCode: String!
-    finalCode: String
-    gradeReviewCode: String
-    midtermCode: String
     createdAt: Time
     updatedAt: Time
     createdBy: String
     updatedBy: String
 
     # Relations - RBAC controlled
-    student: Student           # RBAC: null neu la student role
-    topicCouncil: TopicCouncil # all
-    midterm: Midterm           # RBAC: supervisor, department, affair, student (chi cua minh)
-    final: Final               # RBAC: supervisor, department, affair, student (chi cua minh)
-    gradeDefences: [GradeDefence!]  # RBAC: supervisor, department, student, affair
+    student(filters: [FilterCriteriaInput!]): Student           # RBAC: null neu la student role
+    topicCouncil(filters: [FilterCriteriaInput!]): TopicCouncil # all
+    midterm(filters: [FilterCriteriaInput!]): Midterm           # RBAC: supervisor, department, affair, student (chi cua minh)
+    final(filters: [FilterCriteriaInput!]): Final               # RBAC: supervisor, department, affair, student (chi cua minh)
+    gradeDefences(filters: [FilterCriteriaInput!]): [GradeDefence!]  # RBAC: supervisor, department, student, affair
 }
 
 type Midterm {
     id: ID!
     title: String!
     grade: Int
+    enrollmentCode: String!
     status: MidtermStatus!
     feedback: String
     createdAt: Time
@@ -4405,14 +4399,14 @@ type Midterm {
     updatedBy: String
 
     # Relations
-    files: [File!]             # all
+    files(filters: [FilterCriteriaInput!]): [File!]
 }
 
 type Final {
     id: ID!
     title: String!
     supervisorGrade: Int
-    departmentGrade: Int
+    enrollmentCode: String
     finalGrade: Int
     status: FinalStatus!
     notes: String
@@ -4423,7 +4417,7 @@ type Final {
     updatedBy: String
 
     # Relations
-    files: [File!]             # all
+    files(filters: [FilterCriteriaInput!]): [File!]             # all
 }
 
 
@@ -4445,10 +4439,10 @@ type Council {
     updatedBy: String
 
     # Relations - RBAC controlled
-    major: MajorInfo           # all
-    semester: SemesterInfo     # all
-    defences: [Defence!]       # RBAC: council, affair, department
-    topicCouncils: [TopicCouncil!]  # RBAC: null neu la student
+    major(filters: [FilterCriteriaInput!]): MajorInfo           # all
+    semester(filters: [FilterCriteriaInput!]): SemesterInfo     # all
+    defences(filters: [FilterCriteriaInput!]): [Defence!]       # RBAC: council, affair, department
+    topicCouncils(filters: [FilterCriteriaInput!]): [TopicCouncil!]  # RBAC: null neu la student
 }
 
 """
@@ -4466,9 +4460,9 @@ type Defence {
     updatedBy: String
 
     # Relations - RBAC controlled
-    council: Council           # RBAC: council, department, affair
-    teacher: Teacher           # RBAC: council, department, affair
-    gradeDefences: [GradeDefence!]  # RBAC: council, department, affair
+    council(filters: [FilterCriteriaInput!]): Council           # RBAC: council, department, affair
+    teacher(filters: [FilterCriteriaInput!]): Teacher           # RBAC: council, department, affair
+    gradeDefences(filters: [FilterCriteriaInput!]): [GradeDefence!]  # RBAC: council, department, affair
 }
 
 type GradeDefence {
@@ -4483,9 +4477,9 @@ type GradeDefence {
     updatedBy: String
 
     # Relations
-    defence: Defence           # all
-    enrollment: Enrollment     # RBAC controlled
-    criteria: [GradeDefenceCriterion!]  # all
+    defence(filters: [FilterCriteriaInput!]): Defence           # all
+    enrollment(filters: [FilterCriteriaInput!]): Enrollment     # RBAC controlled
+    criteria(filters: [FilterCriteriaInput!]): [GradeDefenceCriterion!]  # all
 }
 
 type GradeDefenceCriterion {

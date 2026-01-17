@@ -15,45 +15,35 @@ import (
 )
 
 // CreateStudent creates a new Student record
-func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentRequest) (*pb.CreateStudentResponse, error) {
+func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentRequest) (*pb.StudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Email == "" {
+	if req.GetStudent().GetEmail() == "" {
 		return nil, status.Error(codes.InvalidArgument, "email is required")
 	}
-	if req.Username == "" {
+	if req.GetStudent().GetUsername() == "" {
 		return nil, status.Error(codes.InvalidArgument, "username is required")
 	}
-	if req.MajorCode == "" {
+	if req.GetStudent().GetMajorCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "major_code is required")
 	}
-	if req.ClassCode == "" {
+	if req.GetStudent().GetClassCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "class_code is required")
 	}
-	if req.SemesterCode == "" {
+	if req.GetStudent().GetSemesterCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
 	// Use provided ID
-	id := req.Id
+	id := req.GetStudent().GetId()
 	if id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	// Prepare fields
-	Phone := ""
-	if req.Phone != nil {
-		Phone = *req.Phone
-	}
-
 	// Convert Gender enum to string
-	GenderValue := pb.Gender_MALE
-	if req.Gender != nil {
-		GenderValue = *req.Gender
-	}
 	GenderStr := "male"
-	switch GenderValue {
+	switch req.GetStudent().GetGender() {
 	case pb.Gender_MALE:
 		GenderStr = "male"
 	case pb.Gender_FEMALE:
@@ -70,16 +60,16 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Email,
-		Phone,
-		req.Username,
+		req.GetStudent().GetEmail(),
+		req.GetStudent().GetPhone(),
+		req.GetStudent().GetUsername(),
 		GenderStr,
-		req.MajorCode,
-		req.ClassCode,
-		req.SemesterCode,
-		req.Mssv,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetStudent().GetMajorCode(),
+		req.GetStudent().GetClassCode(),
+		req.GetStudent().GetSemesterCode(),
+		req.GetStudent().GetMssv(),
+		req.GetStudent().GetCreatedBy(),
+		req.GetStudent().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -88,37 +78,57 @@ func (h *Handler) CreateStudent(ctx context.Context, req *pb.CreateStudentReques
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create student: %v", err)
 	}
-	id = fmt.Sprint(req.Mssv, "_", req.SemesterCode)
 
-	result, err := h.GetStudent(ctx, &pb.GetStudentRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get student")
-	}
-	return &pb.CreateStudentResponse{
-		Student: result.GetStudent(),
-	}, nil
+	id = fmt.Sprint(req.GetStudent().GetMssv(), "_", req.GetStudent().GetSemesterCode())
+	return h.GetStudent(ctx, &pb.GetStudentRequest{Id: id})
 }
 
 // GetStudent retrieves a Student by ID
-func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*pb.GetStudentResponse, error) {
+func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*pb.StudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"email":         true,
+		"phone":         true,
+		"username":      true,
+		"gender":        true,
+		"major_code":    true,
+		"class_code":    true,
+		"semester_code": true,
+		"mssv":          true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, email, phone, username, gender, major_code, class_code, semester_code, mssv, created_at, updated_at, created_by, updated_by
 		FROM Student
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Student
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var GenderStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Email,
 		&entity.Phone,
@@ -163,13 +173,13 @@ func (h *Handler) GetStudent(ctx context.Context, req *pb.GetStudentRequest) (*p
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetStudentResponse{
+	return &pb.StudentResponse{
 		Student: &entity,
 	}, nil
 }
 
 // UpdateStudent updates an existing Student
-func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentRequest) (*pb.UpdateStudentResponse, error) {
+func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentRequest) (*pb.StudentResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -180,54 +190,47 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Email != nil {
+	if req.GetStudent().GetEmail() != "" {
 		updateFields = append(updateFields, "email = ?")
-		args = append(args, *req.Email)
-
+		args = append(args, req.GetStudent().GetEmail())
 	}
-	if req.Phone != nil {
+	if req.GetStudent().GetPhone() != "" {
 		updateFields = append(updateFields, "phone = ?")
-		args = append(args, *req.Phone)
-
+		args = append(args, req.GetStudent().GetPhone())
 	}
-	if req.Username != nil {
+	if req.GetStudent().GetUsername() != "" {
 		updateFields = append(updateFields, "username = ?")
-		args = append(args, *req.Username)
-
+		args = append(args, req.GetStudent().GetUsername())
 	}
-	if req.Gender != nil {
-		updateFields = append(updateFields, "gender = ?")
-		GenderStr := "male"
-		switch *req.Gender {
-		case pb.Gender_MALE:
-			GenderStr = "male"
-		case pb.Gender_FEMALE:
-			GenderStr = "female"
-		case pb.Gender_OTHER:
-			GenderStr = "other"
-		}
-		args = append(args, GenderStr)
 
+	// Gender enum - always include
+	updateFields = append(updateFields, "gender = ?")
+	GenderStr := "male"
+	switch req.GetStudent().GetGender() {
+	case pb.Gender_MALE:
+		GenderStr = "male"
+	case pb.Gender_FEMALE:
+		GenderStr = "female"
+	case pb.Gender_OTHER:
+		GenderStr = "other"
 	}
-	if req.MajorCode != nil {
+	args = append(args, GenderStr)
+
+	if req.GetStudent().GetMajorCode() != "" {
 		updateFields = append(updateFields, "major_code = ?")
-		args = append(args, *req.MajorCode)
-
+		args = append(args, req.GetStudent().GetMajorCode())
 	}
-	if req.ClassCode != nil {
+	if req.GetStudent().GetClassCode() != "" {
 		updateFields = append(updateFields, "class_code = ?")
-		args = append(args, *req.ClassCode)
-
+		args = append(args, req.GetStudent().GetClassCode())
 	}
-	if req.SemesterCode != nil {
+	if req.GetStudent().GetSemesterCode() != "" {
 		updateFields = append(updateFields, "semester_code = ?")
-		args = append(args, *req.SemesterCode)
-
+		args = append(args, req.GetStudent().GetSemesterCode())
 	}
-	if req.Mssv != nil {
+	if req.GetStudent().GetMssv() != "" {
 		updateFields = append(updateFields, "mssv = ?")
-		args = append(args, *req.Mssv)
-
+		args = append(args, req.GetStudent().GetMssv())
 	}
 
 	if len(updateFields) == 0 {
@@ -236,30 +239,46 @@ func (h *Handler) UpdateStudent(ctx context.Context, req *pb.UpdateStudentReques
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetStudent().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"id":            true,
+		"email":         true,
+		"phone":         true,
+		"username":      true,
+		"gender":        true,
+		"major_code":    true,
+		"class_code":    true,
+		"semester_code": true,
+		"mssv":          true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE Student
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update student: %v", err)
 	}
 
-	result, err := h.GetStudent(ctx, &pb.GetStudentRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get student")
-	}
-	return &pb.UpdateStudentResponse{
-		Student: result.GetStudent(),
-	}, nil
+	return h.GetStudent(ctx, &pb.GetStudentRequest{Id: req.Id})
 }
 
 // DeleteStudent deletes a Student by ID
@@ -270,9 +289,35 @@ func (h *Handler) DeleteStudent(ctx context.Context, req *pb.DeleteStudentReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Student WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"email":         true,
+		"phone":         true,
+		"username":      true,
+		"gender":        true,
+		"major_code":    true,
+		"class_code":    true,
+		"semester_code": true,
+		"mssv":          true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM Student %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete student: %v", err)
 	}
@@ -320,8 +365,7 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":            true,
 		"email":         true,
 		"phone":         true,
 		"username":      true,
@@ -329,9 +373,10 @@ func (h *Handler) ListStudents(ctx context.Context, req *pb.ListStudentsRequest)
 		"major_code":    true,
 		"class_code":    true,
 		"semester_code": true,
+		"mssv":          true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

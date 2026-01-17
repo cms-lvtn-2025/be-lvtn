@@ -16,30 +16,16 @@ import (
 )
 
 // CreateGradeDefenceCriterion creates a new GradeDefenceCriterion record
-func (h *Handler) CreateGradeDefenceCriterion(ctx context.Context, req *pb.CreateGradeDefenceCriterionRequest) (*pb.CreateGradeDefenceCriterionResponse, error) {
+func (h *Handler) CreateGradeDefenceCriterion(ctx context.Context, req *pb.CreateGradeDefenceCriterionRequest) (*pb.GradeDefenceCriterionResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields
-	if req.GradeDefenceCode == "" {
+	if req.GetGradeDefenceCriterion().GetGradeDefenceCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "grade_defence_code is required")
 	}
 
 	// Generate UUID
 	id := uuid.New().String()
-
-	// Prepare optional fields
-	name := ""
-	if req.Name != nil {
-		name = *req.Name
-	}
-	score := ""
-	if req.Score != nil {
-		score = *req.Score
-	}
-	maxScore := ""
-	if req.MaxScore != nil {
-		maxScore = *req.MaxScore
-	}
 
 	// Insert into database
 	query := `
@@ -49,12 +35,12 @@ func (h *Handler) CreateGradeDefenceCriterion(ctx context.Context, req *pb.Creat
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.GradeDefenceCode,
-		name,
-		score,
-		maxScore,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetGradeDefenceCriterion().GetGradeDefenceCode(),
+		req.GetGradeDefenceCriterion().GetName(),
+		req.GetGradeDefenceCriterion().GetScore(),
+		req.GetGradeDefenceCriterion().GetMaxScore(),
+		req.GetGradeDefenceCriterion().GetCreatedBy(),
+		req.GetGradeDefenceCriterion().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -68,30 +54,47 @@ func (h *Handler) CreateGradeDefenceCriterion(ctx context.Context, req *pb.Creat
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get grade defence criterion")
 	}
-	return &pb.CreateGradeDefenceCriterionResponse{
+	return &pb.GradeDefenceCriterionResponse{
 		GradeDefenceCriterion: result.GetGradeDefenceCriterion(),
 	}, nil
 }
 
 // GetGradeDefenceCriterion retrieves a GradeDefenceCriterion by ID
-func (h *Handler) GetGradeDefenceCriterion(ctx context.Context, req *pb.GetGradeDefenceCriterionRequest) (*pb.GetGradeDefenceCriterionResponse, error) {
+func (h *Handler) GetGradeDefenceCriterion(ctx context.Context, req *pb.GetGradeDefenceCriterionRequest) (*pb.GradeDefenceCriterionResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":                 true,
+		"grade_defence_code": true,
+		"name":               true,
+		"score":              true,
+		"maxScore":           true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, grade_defence_code, name, score, maxScore, created_at, updated_at, created_by, updated_by
 		FROM Grade_defence_criterion
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.GradeDefenceCriterion
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.GradeDefenceCode,
 		&entity.Name,
@@ -120,13 +123,13 @@ func (h *Handler) GetGradeDefenceCriterion(ctx context.Context, req *pb.GetGrade
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetGradeDefenceCriterionResponse{
+	return &pb.GradeDefenceCriterionResponse{
 		GradeDefenceCriterion: &entity,
 	}, nil
 }
 
 // UpdateGradeDefenceCriterion updates an existing GradeDefenceCriterion
-func (h *Handler) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.UpdateGradeDefenceCriterionRequest) (*pb.UpdateGradeDefenceCriterionResponse, error) {
+func (h *Handler) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.UpdateGradeDefenceCriterionRequest) (*pb.GradeDefenceCriterionResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -137,21 +140,21 @@ func (h *Handler) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.Updat
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.GradeDefenceCode != nil {
+	if req.GetGradeDefenceCriterion().GetGradeDefenceCode() != "" {
 		updateFields = append(updateFields, "grade_defence_code = ?")
-		args = append(args, *req.GradeDefenceCode)
+		args = append(args, req.GetGradeDefenceCriterion().GetGradeDefenceCode())
 	}
-	if req.Name != nil {
+	if req.GetGradeDefenceCriterion().GetName() != "" {
 		updateFields = append(updateFields, "name = ?")
-		args = append(args, *req.Name)
+		args = append(args, req.GetGradeDefenceCriterion().GetName())
 	}
-	if req.Score != nil {
+	if req.GetGradeDefenceCriterion().GetScore() != "" {
 		updateFields = append(updateFields, "score = ?")
-		args = append(args, *req.Score)
+		args = append(args, req.GetGradeDefenceCriterion().GetScore())
 	}
-	if req.MaxScore != nil {
+	if req.GetGradeDefenceCriterion().GetMaxScore() != "" {
 		updateFields = append(updateFields, "maxScore = ?")
-		args = append(args, *req.MaxScore)
+		args = append(args, req.GetGradeDefenceCriterion().GetMaxScore())
 	}
 
 	if len(updateFields) == 0 {
@@ -160,17 +163,31 @@ func (h *Handler) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.Updat
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetGradeDefenceCriterion().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
-	args = append(args, req.Id)
+	// Build WHERE clause from filters
+	whereClause := ""
+	whiteMap := map[string]bool{
+		"id":                 true,
+		"grade_defence_code": true,
+		"name":               true,
+		"score":              true,
+		"maxScore":           true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.GetId())
 
 	query := fmt.Sprintf(`
 		UPDATE Grade_defence_criterion
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
@@ -181,7 +198,7 @@ func (h *Handler) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.Updat
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get grade defence criterion")
 	}
-	return &pb.UpdateGradeDefenceCriterionResponse{
+	return &pb.GradeDefenceCriterionResponse{
 		GradeDefenceCriterion: result.GetGradeDefenceCriterion(),
 	}, nil
 }
@@ -194,9 +211,27 @@ func (h *Handler) DeleteGradeDefenceCriterion(ctx context.Context, req *pb.Delet
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Grade_defence_criterion WHERE id = ?`
+	// Build WHERE clause from filters
+	whereClause := ""
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":                 true,
+		"grade_defence_code": true,
+		"name":               true,
+		"score":              true,
+		"maxScore":           true,
+	}
+	if req.Filter != nil && len(req.Filter) > 0 {
+		whereClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+		whereClause = "WHERE " + whereClause + " AND id = ?"
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	query := fmt.Sprintf(`DELETE FROM Grade_defence_criterion %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete grade defence criterion: %v", err)
 	}
@@ -251,7 +286,7 @@ func (h *Handler) ListGradeDefenceCriteria(ctx context.Context, req *pb.ListGrad
 		"maxScore":           true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

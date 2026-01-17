@@ -3297,6 +3297,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_gradeMidterm(ctx con
 				return ec.fieldContext_Midterm_title(ctx, field)
 			case "grade":
 				return ec.fieldContext_Midterm_grade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Midterm_enrollmentCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Midterm_status(ctx, field)
 			case "feedback":
@@ -3360,6 +3362,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_feedbackMidterm(ctx 
 				return ec.fieldContext_Midterm_title(ctx, field)
 			case "grade":
 				return ec.fieldContext_Midterm_grade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Midterm_enrollmentCode(ctx, field)
 			case "status":
 				return ec.fieldContext_Midterm_status(ctx, field)
 			case "feedback":
@@ -3423,8 +3427,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_gradeFinal(ctx conte
 				return ec.fieldContext_Final_title(ctx, field)
 			case "supervisorGrade":
 				return ec.fieldContext_Final_supervisorGrade(ctx, field)
-			case "departmentGrade":
-				return ec.fieldContext_Final_departmentGrade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Final_enrollmentCode(ctx, field)
 			case "finalGrade":
 				return ec.fieldContext_Final_finalGrade(ctx, field)
 			case "status":
@@ -3492,8 +3496,8 @@ func (ec *executionContext) fieldContext_SupervisorMutation_feedbackFinal(ctx co
 				return ec.fieldContext_Final_title(ctx, field)
 			case "supervisorGrade":
 				return ec.fieldContext_Final_supervisorGrade(ctx, field)
-			case "departmentGrade":
-				return ec.fieldContext_Final_departmentGrade(ctx, field)
+			case "enrollmentCode":
+				return ec.fieldContext_Final_enrollmentCode(ctx, field)
 			case "finalGrade":
 				return ec.fieldContext_Final_finalGrade(ctx, field)
 			case "status":

@@ -32,9 +32,9 @@ const (
 //
 // ============= Service =============
 type RoleServiceClient interface {
-	CreateRoleSystem(ctx context.Context, in *CreateRoleSystemRequest, opts ...grpc.CallOption) (*CreateRoleSystemResponse, error)
-	GetRoleSystem(ctx context.Context, in *GetRoleSystemRequest, opts ...grpc.CallOption) (*GetRoleSystemResponse, error)
-	UpdateRoleSystem(ctx context.Context, in *UpdateRoleSystemRequest, opts ...grpc.CallOption) (*UpdateRoleSystemResponse, error)
+	CreateRoleSystem(ctx context.Context, in *CreateRoleSystemRequest, opts ...grpc.CallOption) (*RoleSystemResponse, error)
+	GetRoleSystem(ctx context.Context, in *GetRoleSystemRequest, opts ...grpc.CallOption) (*RoleSystemResponse, error)
+	UpdateRoleSystem(ctx context.Context, in *UpdateRoleSystemRequest, opts ...grpc.CallOption) (*RoleSystemResponse, error)
 	DeleteRoleSystem(ctx context.Context, in *DeleteRoleSystemRequest, opts ...grpc.CallOption) (*DeleteRoleSystemResponse, error)
 	ListRoleSystems(ctx context.Context, in *ListRoleSystemsRequest, opts ...grpc.CallOption) (*ListRoleSystemsResponse, error)
 }
@@ -47,9 +47,9 @@ func NewRoleServiceClient(cc grpc.ClientConnInterface) RoleServiceClient {
 	return &roleServiceClient{cc}
 }
 
-func (c *roleServiceClient) CreateRoleSystem(ctx context.Context, in *CreateRoleSystemRequest, opts ...grpc.CallOption) (*CreateRoleSystemResponse, error) {
+func (c *roleServiceClient) CreateRoleSystem(ctx context.Context, in *CreateRoleSystemRequest, opts ...grpc.CallOption) (*RoleSystemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateRoleSystemResponse)
+	out := new(RoleSystemResponse)
 	err := c.cc.Invoke(ctx, RoleService_CreateRoleSystem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -57,9 +57,9 @@ func (c *roleServiceClient) CreateRoleSystem(ctx context.Context, in *CreateRole
 	return out, nil
 }
 
-func (c *roleServiceClient) GetRoleSystem(ctx context.Context, in *GetRoleSystemRequest, opts ...grpc.CallOption) (*GetRoleSystemResponse, error) {
+func (c *roleServiceClient) GetRoleSystem(ctx context.Context, in *GetRoleSystemRequest, opts ...grpc.CallOption) (*RoleSystemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetRoleSystemResponse)
+	out := new(RoleSystemResponse)
 	err := c.cc.Invoke(ctx, RoleService_GetRoleSystem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -67,9 +67,9 @@ func (c *roleServiceClient) GetRoleSystem(ctx context.Context, in *GetRoleSystem
 	return out, nil
 }
 
-func (c *roleServiceClient) UpdateRoleSystem(ctx context.Context, in *UpdateRoleSystemRequest, opts ...grpc.CallOption) (*UpdateRoleSystemResponse, error) {
+func (c *roleServiceClient) UpdateRoleSystem(ctx context.Context, in *UpdateRoleSystemRequest, opts ...grpc.CallOption) (*RoleSystemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateRoleSystemResponse)
+	out := new(RoleSystemResponse)
 	err := c.cc.Invoke(ctx, RoleService_UpdateRoleSystem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -103,9 +103,9 @@ func (c *roleServiceClient) ListRoleSystems(ctx context.Context, in *ListRoleSys
 //
 // ============= Service =============
 type RoleServiceServer interface {
-	CreateRoleSystem(context.Context, *CreateRoleSystemRequest) (*CreateRoleSystemResponse, error)
-	GetRoleSystem(context.Context, *GetRoleSystemRequest) (*GetRoleSystemResponse, error)
-	UpdateRoleSystem(context.Context, *UpdateRoleSystemRequest) (*UpdateRoleSystemResponse, error)
+	CreateRoleSystem(context.Context, *CreateRoleSystemRequest) (*RoleSystemResponse, error)
+	GetRoleSystem(context.Context, *GetRoleSystemRequest) (*RoleSystemResponse, error)
+	UpdateRoleSystem(context.Context, *UpdateRoleSystemRequest) (*RoleSystemResponse, error)
 	DeleteRoleSystem(context.Context, *DeleteRoleSystemRequest) (*DeleteRoleSystemResponse, error)
 	ListRoleSystems(context.Context, *ListRoleSystemsRequest) (*ListRoleSystemsResponse, error)
 	mustEmbedUnimplementedRoleServiceServer()
@@ -118,13 +118,13 @@ type RoleServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRoleServiceServer struct{}
 
-func (UnimplementedRoleServiceServer) CreateRoleSystem(context.Context, *CreateRoleSystemRequest) (*CreateRoleSystemResponse, error) {
+func (UnimplementedRoleServiceServer) CreateRoleSystem(context.Context, *CreateRoleSystemRequest) (*RoleSystemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRoleSystem not implemented")
 }
-func (UnimplementedRoleServiceServer) GetRoleSystem(context.Context, *GetRoleSystemRequest) (*GetRoleSystemResponse, error) {
+func (UnimplementedRoleServiceServer) GetRoleSystem(context.Context, *GetRoleSystemRequest) (*RoleSystemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRoleSystem not implemented")
 }
-func (UnimplementedRoleServiceServer) UpdateRoleSystem(context.Context, *UpdateRoleSystemRequest) (*UpdateRoleSystemResponse, error) {
+func (UnimplementedRoleServiceServer) UpdateRoleSystem(context.Context, *UpdateRoleSystemRequest) (*RoleSystemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoleSystem not implemented")
 }
 func (UnimplementedRoleServiceServer) DeleteRoleSystem(context.Context, *DeleteRoleSystemRequest) (*DeleteRoleSystemResponse, error) {

@@ -189,7 +189,7 @@ func (x *RoleSystem) GetUpdatedBy() string {
 	return ""
 }
 
-type CreateRoleSystemRequest struct {
+type RoleSystemAction struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	TeacherCode   string                 `protobuf:"bytes,2,opt,name=teacher_code,json=teacherCode,proto3" json:"teacher_code,omitempty"`
@@ -197,24 +197,25 @@ type CreateRoleSystemRequest struct {
 	SemesterCode  string                 `protobuf:"bytes,4,opt,name=semester_code,json=semesterCode,proto3" json:"semester_code,omitempty"`
 	Activate      bool                   `protobuf:"varint,5,opt,name=activate,proto3" json:"activate,omitempty"`
 	CreatedBy     string                 `protobuf:"bytes,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateRoleSystemRequest) Reset() {
-	*x = CreateRoleSystemRequest{}
+func (x *RoleSystemAction) Reset() {
+	*x = RoleSystemAction{}
 	mi := &file_proto_role_role_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateRoleSystemRequest) String() string {
+func (x *RoleSystemAction) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateRoleSystemRequest) ProtoMessage() {}
+func (*RoleSystemAction) ProtoMessage() {}
 
-func (x *CreateRoleSystemRequest) ProtoReflect() protoreflect.Message {
+func (x *RoleSystemAction) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_role_role_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -226,107 +227,71 @@ func (x *CreateRoleSystemRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateRoleSystemRequest.ProtoReflect.Descriptor instead.
-func (*CreateRoleSystemRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use RoleSystemAction.ProtoReflect.Descriptor instead.
+func (*RoleSystemAction) Descriptor() ([]byte, []int) {
 	return file_proto_role_role_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateRoleSystemRequest) GetTitle() string {
+func (x *RoleSystemAction) GetTitle() string {
 	if x != nil {
 		return x.Title
 	}
 	return ""
 }
 
-func (x *CreateRoleSystemRequest) GetTeacherCode() string {
+func (x *RoleSystemAction) GetTeacherCode() string {
 	if x != nil {
 		return x.TeacherCode
 	}
 	return ""
 }
 
-func (x *CreateRoleSystemRequest) GetRole() RoleType {
+func (x *RoleSystemAction) GetRole() RoleType {
 	if x != nil {
 		return x.Role
 	}
 	return RoleType_ACADEMIC_AFFAIRS_STAFF
 }
 
-func (x *CreateRoleSystemRequest) GetSemesterCode() string {
+func (x *RoleSystemAction) GetSemesterCode() string {
 	if x != nil {
 		return x.SemesterCode
 	}
 	return ""
 }
 
-func (x *CreateRoleSystemRequest) GetActivate() bool {
+func (x *RoleSystemAction) GetActivate() bool {
 	if x != nil {
 		return x.Activate
 	}
 	return false
 }
 
-func (x *CreateRoleSystemRequest) GetCreatedBy() string {
+func (x *RoleSystemAction) GetCreatedBy() string {
 	if x != nil {
 		return x.CreatedBy
 	}
 	return ""
 }
 
-type CreateRoleSystemResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	RoleSystem    *RoleSystem            `protobuf:"bytes,1,opt,name=role_system,json=roleSystem,proto3" json:"role_system,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateRoleSystemResponse) Reset() {
-	*x = CreateRoleSystemResponse{}
-	mi := &file_proto_role_role_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateRoleSystemResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateRoleSystemResponse) ProtoMessage() {}
-
-func (x *CreateRoleSystemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[2]
+func (x *RoleSystemAction) GetUpdatedBy() string {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+		return x.UpdatedBy
 	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateRoleSystemResponse.ProtoReflect.Descriptor instead.
-func (*CreateRoleSystemResponse) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *CreateRoleSystemResponse) GetRoleSystem() *RoleSystem {
-	if x != nil {
-		return x.RoleSystem
-	}
-	return nil
+	return ""
 }
 
 type GetRoleSystemRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Id            string                   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Filter        []*common.FilterCriteria `protobuf:"bytes,2,rep,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetRoleSystemRequest) Reset() {
 	*x = GetRoleSystemRequest{}
-	mi := &file_proto_role_role_proto_msgTypes[3]
+	mi := &file_proto_role_role_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -338,7 +303,7 @@ func (x *GetRoleSystemRequest) String() string {
 func (*GetRoleSystemRequest) ProtoMessage() {}
 
 func (x *GetRoleSystemRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[3]
+	mi := &file_proto_role_role_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -351,7 +316,7 @@ func (x *GetRoleSystemRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRoleSystemRequest.ProtoReflect.Descriptor instead.
 func (*GetRoleSystemRequest) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{3}
+	return file_proto_role_role_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetRoleSystemRequest) GetId() string {
@@ -361,28 +326,35 @@ func (x *GetRoleSystemRequest) GetId() string {
 	return ""
 }
 
-type GetRoleSystemResponse struct {
+func (x *GetRoleSystemRequest) GetFilter() []*common.FilterCriteria {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+type CreateRoleSystemRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RoleSystem    *RoleSystem            `protobuf:"bytes,1,opt,name=role_system,json=roleSystem,proto3" json:"role_system,omitempty"`
+	RoleSystem    *RoleSystemAction      `protobuf:"bytes,1,opt,name=role_system,json=roleSystem,proto3" json:"role_system,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetRoleSystemResponse) Reset() {
-	*x = GetRoleSystemResponse{}
-	mi := &file_proto_role_role_proto_msgTypes[4]
+func (x *CreateRoleSystemRequest) Reset() {
+	*x = CreateRoleSystemRequest{}
+	mi := &file_proto_role_role_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetRoleSystemResponse) String() string {
+func (x *CreateRoleSystemRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetRoleSystemResponse) ProtoMessage() {}
+func (*CreateRoleSystemRequest) ProtoMessage() {}
 
-func (x *GetRoleSystemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[4]
+func (x *CreateRoleSystemRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_role_role_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -393,12 +365,12 @@ func (x *GetRoleSystemResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetRoleSystemResponse.ProtoReflect.Descriptor instead.
-func (*GetRoleSystemResponse) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{4}
+// Deprecated: Use CreateRoleSystemRequest.ProtoReflect.Descriptor instead.
+func (*CreateRoleSystemRequest) Descriptor() ([]byte, []int) {
+	return file_proto_role_role_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetRoleSystemResponse) GetRoleSystem() *RoleSystem {
+func (x *CreateRoleSystemRequest) GetRoleSystem() *RoleSystemAction {
 	if x != nil {
 		return x.RoleSystem
 	}
@@ -406,21 +378,17 @@ func (x *GetRoleSystemResponse) GetRoleSystem() *RoleSystem {
 }
 
 type UpdateRoleSystemRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
-	TeacherCode   *string                `protobuf:"bytes,3,opt,name=teacher_code,json=teacherCode,proto3,oneof" json:"teacher_code,omitempty"`
-	Role          *RoleType              `protobuf:"varint,4,opt,name=role,proto3,enum=role.RoleType,oneof" json:"role,omitempty"`
-	SemesterCode  *string                `protobuf:"bytes,5,opt,name=semester_code,json=semesterCode,proto3,oneof" json:"semester_code,omitempty"`
-	Activate      *bool                  `protobuf:"varint,6,opt,name=activate,proto3,oneof" json:"activate,omitempty"`
-	UpdatedBy     string                 `protobuf:"bytes,7,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Id            string                   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Filter        []*common.FilterCriteria `protobuf:"bytes,2,rep,name=filter,proto3" json:"filter,omitempty"`
+	RoleSystem    *RoleSystemAction        `protobuf:"bytes,3,opt,name=role_system,json=roleSystem,proto3" json:"role_system,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateRoleSystemRequest) Reset() {
 	*x = UpdateRoleSystemRequest{}
-	mi := &file_proto_role_role_proto_msgTypes[5]
+	mi := &file_proto_role_role_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +400,7 @@ func (x *UpdateRoleSystemRequest) String() string {
 func (*UpdateRoleSystemRequest) ProtoMessage() {}
 
 func (x *UpdateRoleSystemRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[5]
+	mi := &file_proto_role_role_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +413,7 @@ func (x *UpdateRoleSystemRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRoleSystemRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRoleSystemRequest) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{5}
+	return file_proto_role_role_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UpdateRoleSystemRequest) GetId() string {
@@ -455,86 +423,14 @@ func (x *UpdateRoleSystemRequest) GetId() string {
 	return ""
 }
 
-func (x *UpdateRoleSystemRequest) GetTitle() string {
-	if x != nil && x.Title != nil {
-		return *x.Title
-	}
-	return ""
-}
-
-func (x *UpdateRoleSystemRequest) GetTeacherCode() string {
-	if x != nil && x.TeacherCode != nil {
-		return *x.TeacherCode
-	}
-	return ""
-}
-
-func (x *UpdateRoleSystemRequest) GetRole() RoleType {
-	if x != nil && x.Role != nil {
-		return *x.Role
-	}
-	return RoleType_ACADEMIC_AFFAIRS_STAFF
-}
-
-func (x *UpdateRoleSystemRequest) GetSemesterCode() string {
-	if x != nil && x.SemesterCode != nil {
-		return *x.SemesterCode
-	}
-	return ""
-}
-
-func (x *UpdateRoleSystemRequest) GetActivate() bool {
-	if x != nil && x.Activate != nil {
-		return *x.Activate
-	}
-	return false
-}
-
-func (x *UpdateRoleSystemRequest) GetUpdatedBy() string {
+func (x *UpdateRoleSystemRequest) GetFilter() []*common.FilterCriteria {
 	if x != nil {
-		return x.UpdatedBy
+		return x.Filter
 	}
-	return ""
+	return nil
 }
 
-type UpdateRoleSystemResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	RoleSystem    *RoleSystem            `protobuf:"bytes,1,opt,name=role_system,json=roleSystem,proto3" json:"role_system,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateRoleSystemResponse) Reset() {
-	*x = UpdateRoleSystemResponse{}
-	mi := &file_proto_role_role_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateRoleSystemResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateRoleSystemResponse) ProtoMessage() {}
-
-func (x *UpdateRoleSystemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateRoleSystemResponse.ProtoReflect.Descriptor instead.
-func (*UpdateRoleSystemResponse) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *UpdateRoleSystemResponse) GetRoleSystem() *RoleSystem {
+func (x *UpdateRoleSystemRequest) GetRoleSystem() *RoleSystemAction {
 	if x != nil {
 		return x.RoleSystem
 	}
@@ -542,15 +438,16 @@ func (x *UpdateRoleSystemResponse) GetRoleSystem() *RoleSystem {
 }
 
 type DeleteRoleSystemRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Id            string                   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Filter        []*common.FilterCriteria `protobuf:"bytes,2,rep,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteRoleSystemRequest) Reset() {
 	*x = DeleteRoleSystemRequest{}
-	mi := &file_proto_role_role_proto_msgTypes[7]
+	mi := &file_proto_role_role_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -562,7 +459,7 @@ func (x *DeleteRoleSystemRequest) String() string {
 func (*DeleteRoleSystemRequest) ProtoMessage() {}
 
 func (x *DeleteRoleSystemRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[7]
+	mi := &file_proto_role_role_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -575,7 +472,7 @@ func (x *DeleteRoleSystemRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoleSystemRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRoleSystemRequest) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{7}
+	return file_proto_role_role_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeleteRoleSystemRequest) GetId() string {
@@ -583,6 +480,57 @@ func (x *DeleteRoleSystemRequest) GetId() string {
 		return x.Id
 	}
 	return ""
+}
+
+func (x *DeleteRoleSystemRequest) GetFilter() []*common.FilterCriteria {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+type RoleSystemResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RoleSystem    *RoleSystem            `protobuf:"bytes,1,opt,name=role_system,json=roleSystem,proto3" json:"role_system,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RoleSystemResponse) Reset() {
+	*x = RoleSystemResponse{}
+	mi := &file_proto_role_role_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoleSystemResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoleSystemResponse) ProtoMessage() {}
+
+func (x *RoleSystemResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_role_role_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoleSystemResponse.ProtoReflect.Descriptor instead.
+func (*RoleSystemResponse) Descriptor() ([]byte, []int) {
+	return file_proto_role_role_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RoleSystemResponse) GetRoleSystem() *RoleSystem {
+	if x != nil {
+		return x.RoleSystem
+	}
+	return nil
 }
 
 type DeleteRoleSystemResponse struct {
@@ -594,7 +542,7 @@ type DeleteRoleSystemResponse struct {
 
 func (x *DeleteRoleSystemResponse) Reset() {
 	*x = DeleteRoleSystemResponse{}
-	mi := &file_proto_role_role_proto_msgTypes[8]
+	mi := &file_proto_role_role_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -606,7 +554,7 @@ func (x *DeleteRoleSystemResponse) String() string {
 func (*DeleteRoleSystemResponse) ProtoMessage() {}
 
 func (x *DeleteRoleSystemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[8]
+	mi := &file_proto_role_role_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -619,7 +567,7 @@ func (x *DeleteRoleSystemResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoleSystemResponse.ProtoReflect.Descriptor instead.
 func (*DeleteRoleSystemResponse) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{8}
+	return file_proto_role_role_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteRoleSystemResponse) GetSuccess() bool {
@@ -638,7 +586,7 @@ type ListRoleSystemsRequest struct {
 
 func (x *ListRoleSystemsRequest) Reset() {
 	*x = ListRoleSystemsRequest{}
-	mi := &file_proto_role_role_proto_msgTypes[9]
+	mi := &file_proto_role_role_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -650,7 +598,7 @@ func (x *ListRoleSystemsRequest) String() string {
 func (*ListRoleSystemsRequest) ProtoMessage() {}
 
 func (x *ListRoleSystemsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[9]
+	mi := &file_proto_role_role_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -663,7 +611,7 @@ func (x *ListRoleSystemsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRoleSystemsRequest.ProtoReflect.Descriptor instead.
 func (*ListRoleSystemsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{9}
+	return file_proto_role_role_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListRoleSystemsRequest) GetSearch() *common.SearchRequest {
@@ -685,7 +633,7 @@ type ListRoleSystemsResponse struct {
 
 func (x *ListRoleSystemsResponse) Reset() {
 	*x = ListRoleSystemsResponse{}
-	mi := &file_proto_role_role_proto_msgTypes[10]
+	mi := &file_proto_role_role_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -697,7 +645,7 @@ func (x *ListRoleSystemsResponse) String() string {
 func (*ListRoleSystemsResponse) ProtoMessage() {}
 
 func (x *ListRoleSystemsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_role_role_proto_msgTypes[10]
+	mi := &file_proto_role_role_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -710,7 +658,7 @@ func (x *ListRoleSystemsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRoleSystemsResponse.ProtoReflect.Descriptor instead.
 func (*ListRoleSystemsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_role_role_proto_rawDescGZIP(), []int{10}
+	return file_proto_role_role_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListRoleSystemsResponse) GetRoleSystems() []*RoleSystem {
@@ -762,42 +710,34 @@ const file_proto_role_role_proto_rawDesc = "" +
 	"created_by\x18\t \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
 	"updated_by\x18\n" +
-	" \x01(\tR\tupdatedBy\"\xd6\x01\n" +
-	"\x17CreateRoleSystemRequest\x12\x14\n" +
+	" \x01(\tR\tupdatedBy\"\xee\x01\n" +
+	"\x10RoleSystemAction\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12!\n" +
 	"\fteacher_code\x18\x02 \x01(\tR\vteacherCode\x12\"\n" +
 	"\x04role\x18\x03 \x01(\x0e2\x0e.role.RoleTypeR\x04role\x12#\n" +
 	"\rsemester_code\x18\x04 \x01(\tR\fsemesterCode\x12\x1a\n" +
 	"\bactivate\x18\x05 \x01(\bR\bactivate\x12\x1d\n" +
 	"\n" +
-	"created_by\x18\x06 \x01(\tR\tcreatedBy\"M\n" +
-	"\x18CreateRoleSystemResponse\x121\n" +
-	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
-	"roleSystem\"&\n" +
-	"\x14GetRoleSystemRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"J\n" +
-	"\x15GetRoleSystemResponse\x121\n" +
-	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
-	"roleSystem\"\xc2\x02\n" +
-	"\x17UpdateRoleSystemRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12&\n" +
-	"\fteacher_code\x18\x03 \x01(\tH\x01R\vteacherCode\x88\x01\x01\x12'\n" +
-	"\x04role\x18\x04 \x01(\x0e2\x0e.role.RoleTypeH\x02R\x04role\x88\x01\x01\x12(\n" +
-	"\rsemester_code\x18\x05 \x01(\tH\x03R\fsemesterCode\x88\x01\x01\x12\x1f\n" +
-	"\bactivate\x18\x06 \x01(\bH\x04R\bactivate\x88\x01\x01\x12\x1d\n" +
+	"created_by\x18\x06 \x01(\tR\tcreatedBy\x12\x1d\n" +
 	"\n" +
-	"updated_by\x18\a \x01(\tR\tupdatedByB\b\n" +
-	"\x06_titleB\x0f\n" +
-	"\r_teacher_codeB\a\n" +
-	"\x05_roleB\x10\n" +
-	"\x0e_semester_codeB\v\n" +
-	"\t_activate\"M\n" +
-	"\x18UpdateRoleSystemResponse\x121\n" +
-	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
-	"roleSystem\")\n" +
+	"updated_by\x18\a \x01(\tR\tupdatedBy\"V\n" +
+	"\x14GetRoleSystemRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x06filter\x18\x02 \x03(\v2\x16.common.FilterCriteriaR\x06filter\"R\n" +
+	"\x17CreateRoleSystemRequest\x127\n" +
+	"\vrole_system\x18\x01 \x01(\v2\x16.role.RoleSystemActionR\n" +
+	"roleSystem\"\x92\x01\n" +
+	"\x17UpdateRoleSystemRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x06filter\x18\x02 \x03(\v2\x16.common.FilterCriteriaR\x06filter\x127\n" +
+	"\vrole_system\x18\x03 \x01(\v2\x16.role.RoleSystemActionR\n" +
+	"roleSystem\"Y\n" +
 	"\x17DeleteRoleSystemRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x06filter\x18\x02 \x03(\v2\x16.common.FilterCriteriaR\x06filter\"G\n" +
+	"\x12RoleSystemResponse\x121\n" +
+	"\vrole_system\x18\x01 \x01(\v2\x10.role.RoleSystemR\n" +
+	"roleSystem\"4\n" +
 	"\x18DeleteRoleSystemResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"G\n" +
 	"\x16ListRoleSystemsRequest\x12-\n" +
@@ -810,11 +750,11 @@ const file_proto_role_role_proto_rawDesc = "" +
 	"\bRoleType\x12\x1a\n" +
 	"\x16ACADEMIC_AFFAIRS_STAFF\x10\x00\x12\x17\n" +
 	"\x13DEPARTMENT_LECTURER\x10\x01\x12\v\n" +
-	"\aTEACHER\x10\x022\xa0\x03\n" +
-	"\vRoleService\x12Q\n" +
-	"\x10CreateRoleSystem\x12\x1d.role.CreateRoleSystemRequest\x1a\x1e.role.CreateRoleSystemResponse\x12H\n" +
-	"\rGetRoleSystem\x12\x1a.role.GetRoleSystemRequest\x1a\x1b.role.GetRoleSystemResponse\x12Q\n" +
-	"\x10UpdateRoleSystem\x12\x1d.role.UpdateRoleSystemRequest\x1a\x1e.role.UpdateRoleSystemResponse\x12Q\n" +
+	"\aTEACHER\x10\x022\x91\x03\n" +
+	"\vRoleService\x12K\n" +
+	"\x10CreateRoleSystem\x12\x1d.role.CreateRoleSystemRequest\x1a\x18.role.RoleSystemResponse\x12E\n" +
+	"\rGetRoleSystem\x12\x1a.role.GetRoleSystemRequest\x1a\x18.role.RoleSystemResponse\x12K\n" +
+	"\x10UpdateRoleSystem\x12\x1d.role.UpdateRoleSystemRequest\x1a\x18.role.RoleSystemResponse\x12Q\n" +
 	"\x10DeleteRoleSystem\x12\x1d.role.DeleteRoleSystemRequest\x1a\x1e.role.DeleteRoleSystemResponse\x12N\n" +
 	"\x0fListRoleSystems\x12\x1c.role.ListRoleSystemsRequest\x1a\x1d.role.ListRoleSystemsResponseB\bZ\x06./roleb\x06proto3"
 
@@ -831,49 +771,51 @@ func file_proto_role_role_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_role_role_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_role_role_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_proto_role_role_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_proto_role_role_proto_goTypes = []any{
 	(RoleType)(0),                    // 0: role.RoleType
 	(*RoleSystem)(nil),               // 1: role.RoleSystem
-	(*CreateRoleSystemRequest)(nil),  // 2: role.CreateRoleSystemRequest
-	(*CreateRoleSystemResponse)(nil), // 3: role.CreateRoleSystemResponse
-	(*GetRoleSystemRequest)(nil),     // 4: role.GetRoleSystemRequest
-	(*GetRoleSystemResponse)(nil),    // 5: role.GetRoleSystemResponse
-	(*UpdateRoleSystemRequest)(nil),  // 6: role.UpdateRoleSystemRequest
-	(*UpdateRoleSystemResponse)(nil), // 7: role.UpdateRoleSystemResponse
-	(*DeleteRoleSystemRequest)(nil),  // 8: role.DeleteRoleSystemRequest
-	(*DeleteRoleSystemResponse)(nil), // 9: role.DeleteRoleSystemResponse
-	(*ListRoleSystemsRequest)(nil),   // 10: role.ListRoleSystemsRequest
-	(*ListRoleSystemsResponse)(nil),  // 11: role.ListRoleSystemsResponse
-	(*timestamppb.Timestamp)(nil),    // 12: google.protobuf.Timestamp
+	(*RoleSystemAction)(nil),         // 2: role.RoleSystemAction
+	(*GetRoleSystemRequest)(nil),     // 3: role.GetRoleSystemRequest
+	(*CreateRoleSystemRequest)(nil),  // 4: role.CreateRoleSystemRequest
+	(*UpdateRoleSystemRequest)(nil),  // 5: role.UpdateRoleSystemRequest
+	(*DeleteRoleSystemRequest)(nil),  // 6: role.DeleteRoleSystemRequest
+	(*RoleSystemResponse)(nil),       // 7: role.RoleSystemResponse
+	(*DeleteRoleSystemResponse)(nil), // 8: role.DeleteRoleSystemResponse
+	(*ListRoleSystemsRequest)(nil),   // 9: role.ListRoleSystemsRequest
+	(*ListRoleSystemsResponse)(nil),  // 10: role.ListRoleSystemsResponse
+	(*timestamppb.Timestamp)(nil),    // 11: google.protobuf.Timestamp
+	(*common.FilterCriteria)(nil),    // 12: common.FilterCriteria
 	(*common.SearchRequest)(nil),     // 13: common.SearchRequest
 }
 var file_proto_role_role_proto_depIdxs = []int32{
 	0,  // 0: role.RoleSystem.role:type_name -> role.RoleType
-	12, // 1: role.RoleSystem.created_at:type_name -> google.protobuf.Timestamp
-	12, // 2: role.RoleSystem.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 3: role.CreateRoleSystemRequest.role:type_name -> role.RoleType
-	1,  // 4: role.CreateRoleSystemResponse.role_system:type_name -> role.RoleSystem
-	1,  // 5: role.GetRoleSystemResponse.role_system:type_name -> role.RoleSystem
-	0,  // 6: role.UpdateRoleSystemRequest.role:type_name -> role.RoleType
-	1,  // 7: role.UpdateRoleSystemResponse.role_system:type_name -> role.RoleSystem
-	13, // 8: role.ListRoleSystemsRequest.search:type_name -> common.SearchRequest
-	1,  // 9: role.ListRoleSystemsResponse.role_systems:type_name -> role.RoleSystem
-	2,  // 10: role.RoleService.CreateRoleSystem:input_type -> role.CreateRoleSystemRequest
-	4,  // 11: role.RoleService.GetRoleSystem:input_type -> role.GetRoleSystemRequest
-	6,  // 12: role.RoleService.UpdateRoleSystem:input_type -> role.UpdateRoleSystemRequest
-	8,  // 13: role.RoleService.DeleteRoleSystem:input_type -> role.DeleteRoleSystemRequest
-	10, // 14: role.RoleService.ListRoleSystems:input_type -> role.ListRoleSystemsRequest
-	3,  // 15: role.RoleService.CreateRoleSystem:output_type -> role.CreateRoleSystemResponse
-	5,  // 16: role.RoleService.GetRoleSystem:output_type -> role.GetRoleSystemResponse
-	7,  // 17: role.RoleService.UpdateRoleSystem:output_type -> role.UpdateRoleSystemResponse
-	9,  // 18: role.RoleService.DeleteRoleSystem:output_type -> role.DeleteRoleSystemResponse
-	11, // 19: role.RoleService.ListRoleSystems:output_type -> role.ListRoleSystemsResponse
-	15, // [15:20] is the sub-list for method output_type
-	10, // [10:15] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	11, // 1: role.RoleSystem.created_at:type_name -> google.protobuf.Timestamp
+	11, // 2: role.RoleSystem.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 3: role.RoleSystemAction.role:type_name -> role.RoleType
+	12, // 4: role.GetRoleSystemRequest.filter:type_name -> common.FilterCriteria
+	2,  // 5: role.CreateRoleSystemRequest.role_system:type_name -> role.RoleSystemAction
+	12, // 6: role.UpdateRoleSystemRequest.filter:type_name -> common.FilterCriteria
+	2,  // 7: role.UpdateRoleSystemRequest.role_system:type_name -> role.RoleSystemAction
+	12, // 8: role.DeleteRoleSystemRequest.filter:type_name -> common.FilterCriteria
+	1,  // 9: role.RoleSystemResponse.role_system:type_name -> role.RoleSystem
+	13, // 10: role.ListRoleSystemsRequest.search:type_name -> common.SearchRequest
+	1,  // 11: role.ListRoleSystemsResponse.role_systems:type_name -> role.RoleSystem
+	4,  // 12: role.RoleService.CreateRoleSystem:input_type -> role.CreateRoleSystemRequest
+	3,  // 13: role.RoleService.GetRoleSystem:input_type -> role.GetRoleSystemRequest
+	5,  // 14: role.RoleService.UpdateRoleSystem:input_type -> role.UpdateRoleSystemRequest
+	6,  // 15: role.RoleService.DeleteRoleSystem:input_type -> role.DeleteRoleSystemRequest
+	9,  // 16: role.RoleService.ListRoleSystems:input_type -> role.ListRoleSystemsRequest
+	7,  // 17: role.RoleService.CreateRoleSystem:output_type -> role.RoleSystemResponse
+	7,  // 18: role.RoleService.GetRoleSystem:output_type -> role.RoleSystemResponse
+	7,  // 19: role.RoleService.UpdateRoleSystem:output_type -> role.RoleSystemResponse
+	8,  // 20: role.RoleService.DeleteRoleSystem:output_type -> role.DeleteRoleSystemResponse
+	10, // 21: role.RoleService.ListRoleSystems:output_type -> role.ListRoleSystemsResponse
+	17, // [17:22] is the sub-list for method output_type
+	12, // [12:17] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_proto_role_role_proto_init() }
@@ -881,14 +823,13 @@ func file_proto_role_role_proto_init() {
 	if File_proto_role_role_proto != nil {
 		return
 	}
-	file_proto_role_role_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_role_role_proto_rawDesc), len(file_proto_role_role_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   11,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

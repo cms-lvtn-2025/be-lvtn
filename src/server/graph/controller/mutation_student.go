@@ -31,13 +31,15 @@ func (c *Controller) UploadMidtermFile(ctx context.Context, input model.UploadFi
 	}
 
 	resp, err := c.file.CreateFile(ctx, &pbFile.CreateFileRequest{
-		Title:     input.Title,
-		File:      input.File,
-		Status:    pbFile.FileStatus_FILE_PENDING,
-		Table:     pbFile.TableType_MIDTERM,
-		TableId:   input.TableID,
-		Option:    option,
-		CreatedBy: *myId,
+		File: &pbFile.FileAction{
+			Title:     input.Title,
+			File:      input.File,
+			Status:    pbFile.FileStatus_FILE_PENDING,
+			Table:     pbFile.TableType_MIDTERM,
+			TableId:   input.TableID,
+			Option:    option,
+			CreatedBy: *myId,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -67,13 +69,15 @@ func (c *Controller) UploadFinalFile(ctx context.Context, input model.UploadFile
 	}
 
 	resp, err := c.file.CreateFile(ctx, &pbFile.CreateFileRequest{
-		Title:     input.Title,
-		File:      input.File,
-		Status:    pbFile.FileStatus_FILE_PENDING,
-		Table:     pbFile.TableType_FINAL,
-		TableId:   input.TableID,
-		Option:    option,
-		CreatedBy: *myId,
+		File: &pbFile.FileAction{
+			Title:     input.Title,
+			File:      input.File,
+			Status:    pbFile.FileStatus_FILE_PENDING,
+			Table:     pbFile.TableType_FINAL,
+			TableId:   input.TableID,
+			Option:    option,
+			CreatedBy: *myId,
+		},
 	})
 	if err != nil {
 		return nil, err

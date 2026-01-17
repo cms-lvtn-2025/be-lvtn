@@ -16,41 +16,20 @@ import (
 )
 
 // CreateFinal creates a new Final record
-func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (*pb.CreateFinalResponse, error) {
+func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (*pb.FinalResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetFinal().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
 
 	// Generate UUID
 	id := uuid.New().String()
 
-	// Prepare fields
-	SupervisorGrade := int32(0)
-	if req.SupervisorGrade != nil {
-		SupervisorGrade = *req.SupervisorGrade
-	}
-	DepartmentGrade := int32(0)
-	if req.DepartmentGrade != nil {
-		DepartmentGrade = *req.DepartmentGrade
-	}
-	FinalGrade := int32(0)
-	if req.FinalGrade != nil {
-		FinalGrade = *req.FinalGrade
-	}
-	Notes := ""
-	if req.Notes != nil {
-		Notes = *req.Notes
-	}
-
 	// Convert Status enum to string
-	StatusValue := pb.FinalStatus_PENDING
-
-	StatusValue = req.Status
 	StatusStr := "pending"
-	switch StatusValue {
+	switch req.GetFinal().GetStatus() {
 	case pb.FinalStatus_PENDING:
 		StatusStr = "pending"
 	case pb.FinalStatus_PASSED:
@@ -61,22 +40,31 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 		StatusStr = "completed"
 	}
 
+	// Handle completion_date
+	var completionDate interface{}
+	if req.GetFinal().GetCompletionDate() != nil {
+		completionDate = req.GetFinal().GetCompletionDate().AsTime()
+	} else {
+		completionDate = nil
+	}
+
 	// Insert into database
 	query := `
-		INSERT INTO Final (id, title, supervisor_grade, department_grade, final_grade, status, notes, created_by, updated_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Final (id, title,enrollment_code, supervisor_grade, final_grade, status, notes, completion_date, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		SupervisorGrade,
-		DepartmentGrade,
-		FinalGrade,
+		req.GetFinal().GetTitle(),
+		req.GetFinal().GetEnrollmentCode(),
+		req.GetFinal().GetSupervisorGrade(),
+		req.GetFinal().GetFinalGrade(),
 		StatusStr,
-		Notes,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetFinal().GetNotes(),
+		completionDate,
+		req.GetFinal().GetCreatedBy(),
+		req.GetFinal().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -86,42 +74,61 @@ func (h *Handler) CreateFinal(ctx context.Context, req *pb.CreateFinalRequest) (
 		return nil, status.Errorf(codes.Internal, "failed to create final: %v", err)
 	}
 
-	result, err := h.GetFinal(ctx, &pb.GetFinalRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get final")
-	}
-	return &pb.CreateFinalResponse{
-		Final: result.GetFinal(),
-	}, nil
+	return h.GetFinal(ctx, &pb.GetFinalRequest{Id: id})
 }
 
 // GetFinal retrieves a Final by ID
-func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.GetFinalResponse, error) {
+func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.FinalResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
-		SELECT id, title, supervisor_grade, department_grade, final_grade, status, notes, created_at, updated_at, created_by, updated_by
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":               true,
+		"title":            true,
+		"supervisor_grade": true,
+		"enrollment_code":  true,
+		"final_grade":      true,
+		"status":           true,
+		"notes":            true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
+		SELECT id, title, supervisor_grade, enrollment_code, final_grade, status, notes, completion_date, created_at, updated_at, created_by, updated_by
 		FROM Final
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Final
-	var createdAt, updatedAt sql.NullTime
+	var createdAt, updatedAt, completionDate sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.SupervisorGrade,
-		&entity.DepartmentGrade,
+		&entity.EnrollmentCode,
 		&entity.FinalGrade,
 		&StatusStr,
 		&entity.Notes,
+		&completionDate,
 		&createdAt,
 		&updatedAt,
 		&entity.CreatedBy,
@@ -149,6 +156,9 @@ func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.Ge
 		entity.Status = pb.FinalStatus_PENDING
 	}
 
+	if completionDate.Valid {
+		entity.CompletionDate = timestamppb.New(completionDate.Time)
+	}
 	if createdAt.Valid {
 		entity.CreatedAt = timestamppb.New(createdAt.Time)
 	}
@@ -159,13 +169,13 @@ func (h *Handler) GetFinal(ctx context.Context, req *pb.GetFinalRequest) (*pb.Ge
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetFinalResponse{
+	return &pb.FinalResponse{
 		Final: &entity,
 	}, nil
 }
 
 // UpdateFinal updates an existing Final
-func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (*pb.UpdateFinalResponse, error) {
+func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (*pb.FinalResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -176,46 +186,44 @@ func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetFinal().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetFinal().GetTitle())
 	}
-	if req.SupervisorGrade != nil {
+	if req.GetFinal().GetSupervisorGrade() != 0 {
 		updateFields = append(updateFields, "supervisor_grade = ?")
-		args = append(args, *req.SupervisorGrade)
-
+		args = append(args, req.GetFinal().GetSupervisorGrade())
 	}
-	if req.DepartmentGrade != nil {
-		updateFields = append(updateFields, "department_grade = ?")
-		args = append(args, *req.DepartmentGrade)
-
+	if req.GetFinal().GetEnrollmentCode() != "" {
+		updateFields = append(updateFields, "enrollment_code = ?")
+		args = append(args, req.GetFinal().GetEnrollmentCode())
 	}
-	if req.FinalGrade != nil {
+	if req.GetFinal().GetFinalGrade() != 0 {
 		updateFields = append(updateFields, "final_grade = ?")
-		args = append(args, *req.FinalGrade)
-
+		args = append(args, req.GetFinal().GetFinalGrade())
 	}
-	if req.Status != nil {
-		updateFields = append(updateFields, "status = ?")
-		StatusStr := "pending"
-		switch *req.Status {
-		case pb.FinalStatus_PENDING:
-			StatusStr = "pending"
-		case pb.FinalStatus_PASSED:
-			StatusStr = "passed"
-		case pb.FinalStatus_FAILED:
-			StatusStr = "failed"
-		case pb.FinalStatus_COMPLETED:
-			StatusStr = "completed"
-		}
-		args = append(args, StatusStr)
-
+	// Status enum - always include
+	updateFields = append(updateFields, "status = ?")
+	StatusStr := "pending"
+	switch req.GetFinal().GetStatus() {
+	case pb.FinalStatus_PENDING:
+		StatusStr = "pending"
+	case pb.FinalStatus_PASSED:
+		StatusStr = "passed"
+	case pb.FinalStatus_FAILED:
+		StatusStr = "failed"
+	case pb.FinalStatus_COMPLETED:
+		StatusStr = "completed"
 	}
-	if req.Notes != nil {
+	args = append(args, StatusStr)
+
+	if req.GetFinal().GetNotes() != "" {
 		updateFields = append(updateFields, "notes = ?")
-		args = append(args, *req.Notes)
-
+		args = append(args, req.GetFinal().GetNotes())
+	}
+	if req.GetFinal().GetCompletionDate() != nil {
+		updateFields = append(updateFields, "completion_date = ?")
+		args = append(args, req.GetFinal().GetCompletionDate().AsTime())
 	}
 
 	if len(updateFields) == 0 {
@@ -224,30 +232,44 @@ func (h *Handler) UpdateFinal(ctx context.Context, req *pb.UpdateFinalRequest) (
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetFinal().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"id":               true,
+		"title":            true,
+		"supervisor_grade": true,
+		"enrollment_code":  true,
+		"final_grade":      true,
+		"status":           true,
+		"notes":            true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE Final
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update final: %v", err)
 	}
 
-	result, err := h.GetFinal(ctx, &pb.GetFinalRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get final")
-	}
-	return &pb.UpdateFinalResponse{
-		Final: result.GetFinal(),
-	}, nil
+	return h.GetFinal(ctx, &pb.GetFinalRequest{Id: req.Id})
 }
 
 // DeleteFinal deletes a Final by ID
@@ -258,9 +280,33 @@ func (h *Handler) DeleteFinal(ctx context.Context, req *pb.DeleteFinalRequest) (
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Final WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":               true,
+		"title":            true,
+		"supervisor_grade": true,
+		"enrollment_code":  true,
+		"final_grade":      true,
+		"status":           true,
+		"notes":            true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM Final %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete final: %v", err)
 	}
@@ -308,17 +354,16 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":               true,
 		"title":            true,
 		"supervisor_grade": true,
-		"department_grade": true,
+		"enrollment_code":  true,
 		"final_grade":      true,
 		"status":           true,
 		"notes":            true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause
@@ -338,7 +383,7 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
 	query := fmt.Sprintf(`
-		SELECT id, title, supervisor_grade, department_grade, final_grade, status, notes, created_at, updated_at, created_by, updated_by
+		SELECT id, title, supervisor_grade, enrollment_code, final_grade, status, notes, completion_date, created_at, updated_at, created_by, updated_by
 		FROM Final
 		%s
 		ORDER BY %s %s
@@ -354,7 +399,7 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 	entities := []*pb.Final{}
 	for rows.Next() {
 		var entity pb.Final
-		var createdAt, updatedAt sql.NullTime
+		var createdAt, updatedAt, completionDate sql.NullTime
 		var updatedBy sql.NullString
 		var StatusStr string
 
@@ -362,10 +407,11 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 			&entity.Id,
 			&entity.Title,
 			&entity.SupervisorGrade,
-			&entity.DepartmentGrade,
+			&entity.EnrollmentCode,
 			&entity.FinalGrade,
 			&StatusStr,
 			&entity.Notes,
+			&completionDate,
 			&createdAt,
 			&updatedAt,
 			&entity.CreatedBy,
@@ -389,6 +435,9 @@ func (h *Handler) ListFinals(ctx context.Context, req *pb.ListFinalsRequest) (*p
 			entity.Status = pb.FinalStatus_PENDING
 		}
 
+		if completionDate.Valid {
+			entity.CompletionDate = timestamppb.New(completionDate.Time)
+		}
 		if createdAt.Valid {
 			entity.CreatedAt = timestamppb.New(createdAt.Time)
 		}

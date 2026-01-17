@@ -17,35 +17,34 @@ message Semester {
   string updated_by = 6;
 }
 
-message CreateSemesterRequest {
+message SemesterAction {
   string title = 1;
   string created_by = 2;
-}
-
-message CreateSemesterResponse {
-  Semester semester = 1;
+  string updated_by = 3;
 }
 
 message GetSemesterRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
-message GetSemesterResponse {
-  Semester semester = 1;
+message CreateSemesterRequest {
+  SemesterAction semester = 1;
 }
 
 message UpdateSemesterRequest {
   string id = 1;
-  optional string title = 2;
-  string updated_by = 3;
-}
-
-message UpdateSemesterResponse {
-  Semester semester = 1;
+  repeated common.FilterCriteria filter = 2;
+  SemesterAction semester = 3;
 }
 
 message DeleteSemesterRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
+}
+
+message SemesterResponse {
+  Semester semester = 1;
 }
 
 message DeleteSemesterResponse {
@@ -74,38 +73,36 @@ message Faculty {
   string ms = 7;
 }
 
-message CreateFacultyRequest {
-  string id = 7;
-  string title = 1;
-  string created_by = 5;
-  string ms = 6;
-}
-
-message CreateFacultyResponse {
-  Faculty faculty = 1;
+message FacultyAction {
+  string id = 1;
+  string title = 2;
+  string created_by = 3;
+  string updated_by = 4;
+  string ms = 5;
 }
 
 message GetFacultyRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
-message GetFacultyResponse {
-  Faculty faculty = 1;
+message CreateFacultyRequest {
+  FacultyAction faculty = 1;
 }
 
 message UpdateFacultyRequest {
   string id = 1;
-  optional string title = 2;
-  string updated_by = 3;
-  optional string ms = 4;
-}
-
-message UpdateFacultyResponse {
-  Faculty faculty = 1;
+  repeated common.FilterCriteria filter = 2;
+  FacultyAction faculty = 3;
 }
 
 message DeleteFacultyRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
+}
+
+message FacultyResponse {
+  Faculty faculty = 1;
 }
 
 message DeleteFacultyResponse {
@@ -136,40 +133,37 @@ message Major {
   string ms = 8;
 }
 
-message CreateMajorRequest {
-  string id = 5;
-  string title = 1;
-  string faculty_code = 2;
-  string created_by = 3;
-  string ms = 4;
-}
-
-message CreateMajorResponse {
-  Major major = 1;
+message MajorAction {
+  string id = 1;
+  string title = 2;
+  string faculty_code = 3;
+  string created_by = 4;
+  string updated_by = 5;
+  string ms = 6;
 }
 
 message GetMajorRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
-message GetMajorResponse {
-  Major major = 1;
+message CreateMajorRequest {
+  MajorAction major = 1;
 }
 
 message UpdateMajorRequest {
   string id = 1;
-  optional string title = 2;
-  optional string faculty_code = 3;
-  string updated_by = 4;
-  optional string ms = 5;
-}
-
-message UpdateMajorResponse {
-  Major major = 1;
+  repeated common.FilterCriteria filter = 2;
+  MajorAction major = 3;
 }
 
 message DeleteMajorRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
+}
+
+message MajorResponse {
+  Major major = 1;
 }
 
 message DeleteMajorResponse {
@@ -191,23 +185,23 @@ message ListMajorsResponse {
 // ============= Service =============
 service AcademicService {
   // Semester
-  rpc CreateSemester(CreateSemesterRequest) returns (CreateSemesterResponse);
-  rpc GetSemester(GetSemesterRequest) returns (GetSemesterResponse);
-  rpc UpdateSemester(UpdateSemesterRequest) returns (UpdateSemesterResponse);
+  rpc CreateSemester(CreateSemesterRequest) returns (SemesterResponse);
+  rpc GetSemester(GetSemesterRequest) returns (SemesterResponse);
+  rpc UpdateSemester(UpdateSemesterRequest) returns (SemesterResponse);
   rpc DeleteSemester(DeleteSemesterRequest) returns (DeleteSemesterResponse);
   rpc ListSemesters(ListSemestersRequest) returns (ListSemestersResponse);
 
   // Faculty
-  rpc CreateFaculty(CreateFacultyRequest) returns (CreateFacultyResponse);
-  rpc GetFaculty(GetFacultyRequest) returns (GetFacultyResponse);
-  rpc UpdateFaculty(UpdateFacultyRequest) returns (UpdateFacultyResponse);
+  rpc CreateFaculty(CreateFacultyRequest) returns (FacultyResponse);
+  rpc GetFaculty(GetFacultyRequest) returns (FacultyResponse);
+  rpc UpdateFaculty(UpdateFacultyRequest) returns (FacultyResponse);
   rpc DeleteFaculty(DeleteFacultyRequest) returns (DeleteFacultyResponse);
   rpc ListFaculties(ListFacultiesRequest) returns (ListFacultiesResponse);
 
   // Major
-  rpc CreateMajor(CreateMajorRequest) returns (CreateMajorResponse);
-  rpc GetMajor(GetMajorRequest) returns (GetMajorResponse);
-  rpc UpdateMajor(UpdateMajorRequest) returns (UpdateMajorResponse);
+  rpc CreateMajor(CreateMajorRequest) returns (MajorResponse);
+  rpc GetMajor(GetMajorRequest) returns (MajorResponse);
+  rpc UpdateMajor(UpdateMajorRequest) returns (MajorResponse);
   rpc DeleteMajor(DeleteMajorRequest) returns (DeleteMajorResponse);
   rpc ListMajors(ListMajorsRequest) returns (ListMajorsResponse);
 }

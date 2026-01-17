@@ -16,33 +16,20 @@ import (
 )
 
 // CreateMidterm creates a new Midterm record
-func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermRequest) (*pb.CreateMidtermResponse, error) {
+func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermRequest) (*pb.MidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetMidterm().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
 
 	// Generate UUID
 	id := uuid.New().String()
 
-	// Prepare fields
-	Grade := int32(0)
-	if req.Grade != nil {
-		Grade = *req.Grade
-	}
-	Feedback := ""
-	if req.Feedback != nil {
-		Feedback = *req.Feedback
-	}
-
 	// Convert Status enum to string
-	StatusValue := pb.MidtermStatus_NOT_SUBMITTED
-
-	StatusValue = req.Status
 	StatusStr := "not_submitted"
-	switch StatusValue {
+	switch req.GetMidterm().GetStatus() {
 	case pb.MidtermStatus_NOT_SUBMITTED:
 		StatusStr = "not_submitted"
 	case pb.MidtermStatus_SUBMITTED:
@@ -55,18 +42,19 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 
 	// Insert into database
 	query := `
-		INSERT INTO Midterm (id, title, grade, status, feedback, created_by, updated_by, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+		INSERT INTO Midterm (id, enrollment_code, title, grade, status, feedback, created_by, updated_by, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		Grade,
+		req.GetMidterm().GetEnrollmentCode(),
+		req.GetMidterm().GetTitle(),
+		req.GetMidterm().GetGrade(),
 		StatusStr,
-		Feedback,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetMidterm().GetFeedback(),
+		req.GetMidterm().GetCreatedBy(),
+		req.GetMidterm().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -76,36 +64,54 @@ func (h *Handler) CreateMidterm(ctx context.Context, req *pb.CreateMidtermReques
 		return nil, status.Errorf(codes.Internal, "failed to create midterm: %v", err)
 	}
 
-	result, err := h.GetMidterm(ctx, &pb.GetMidtermRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get midterm")
-	}
-	return &pb.CreateMidtermResponse{
-		Midterm: result.GetMidterm(),
-	}, nil
+	return h.GetMidterm(ctx, &pb.GetMidtermRequest{Id: id})
 }
 
 // GetMidterm retrieves a Midterm by ID
-func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*pb.GetMidtermResponse, error) {
+func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*pb.MidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
-		SELECT id, title, grade, status, feedback, created_at, updated_at, created_by, updated_by
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":              true,
+		"enrollment_code": true,
+		"title":           true,
+		"grade":           true,
+		"status":          true,
+		"feedback":        true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
+		SELECT id, enrollment_code, title, grade, status, feedback, created_at, updated_at, created_by, updated_by
 		FROM Midterm
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Midterm
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
+		&entity.EnrollmentCode,
 		&entity.Title,
 		&entity.Grade,
 		&StatusStr,
@@ -147,13 +153,13 @@ func (h *Handler) GetMidterm(ctx context.Context, req *pb.GetMidtermRequest) (*p
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetMidtermResponse{
+	return &pb.MidtermResponse{
 		Midterm: &entity,
 	}, nil
 }
 
 // UpdateMidterm updates an existing Midterm
-func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermRequest) (*pb.UpdateMidtermResponse, error) {
+func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermRequest) (*pb.MidtermResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -164,36 +170,36 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetMidterm().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetMidterm().GetTitle())
 	}
-	if req.Grade != nil {
+	if req.GetMidterm().GetGrade() != 0 {
 		updateFields = append(updateFields, "grade = ?")
-		args = append(args, *req.Grade)
-
+		args = append(args, req.GetMidterm().GetGrade())
 	}
-	if req.Status != nil {
-		updateFields = append(updateFields, "status = ?")
-		StatusStr := "not_submitted"
-		switch *req.Status {
-		case pb.MidtermStatus_NOT_SUBMITTED:
-			StatusStr = "not_submitted"
-		case pb.MidtermStatus_SUBMITTED:
-			StatusStr = "submitted"
-		case pb.MidtermStatus_PASS:
-			StatusStr = "pass"
-		case pb.MidtermStatus_FAIL:
-			StatusStr = "fail"
-		}
-		args = append(args, StatusStr)
-
+	if req.GetMidterm().GetEnrollmentCode() != "" {
+		updateFields = append(updateFields, "enrollment_code = ?")
+		args = append(args, req.GetMidterm().GetEnrollmentCode())
 	}
-	if req.Feedback != nil {
+	// Status enum - always include
+	updateFields = append(updateFields, "status = ?")
+	StatusStr := "not_submitted"
+	switch req.GetMidterm().GetStatus() {
+	case pb.MidtermStatus_NOT_SUBMITTED:
+		StatusStr = "not_submitted"
+	case pb.MidtermStatus_SUBMITTED:
+		StatusStr = "submitted"
+	case pb.MidtermStatus_PASS:
+		StatusStr = "pass"
+	case pb.MidtermStatus_FAIL:
+		StatusStr = "fail"
+	}
+	args = append(args, StatusStr)
+
+	if req.GetMidterm().GetFeedback() != "" {
 		updateFields = append(updateFields, "feedback = ?")
-		args = append(args, *req.Feedback)
-
+		args = append(args, req.GetMidterm().GetFeedback())
 	}
 
 	if len(updateFields) == 0 {
@@ -202,30 +208,43 @@ func (h *Handler) UpdateMidterm(ctx context.Context, req *pb.UpdateMidtermReques
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetMidterm().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"id":              true,
+		"enrollment_code": true,
+		"title":           true,
+		"grade":           true,
+		"status":          true,
+		"feedback":        true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE Midterm
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update midterm: %v", err)
 	}
 
-	result, err := h.GetMidterm(ctx, &pb.GetMidtermRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get midterm")
-	}
-	return &pb.UpdateMidtermResponse{
-		Midterm: result.GetMidterm(),
-	}, nil
+	return h.GetMidterm(ctx, &pb.GetMidtermRequest{Id: req.Id})
 }
 
 // DeleteMidterm deletes a Midterm by ID
@@ -236,9 +255,32 @@ func (h *Handler) DeleteMidterm(ctx context.Context, req *pb.DeleteMidtermReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Midterm WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":              true,
+		"enrollment_code": true,
+		"title":           true,
+		"grade":           true,
+		"status":          true,
+		"feedback":        true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM Midterm %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete midterm: %v", err)
 	}
@@ -260,7 +302,7 @@ func (h *Handler) DeleteMidterm(ctx context.Context, req *pb.DeleteMidtermReques
 // ListMidterms lists Midterms with pagination and filtering
 func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest) (*pb.ListMidtermsResponse, error) {
 	defer logger.TraceFunction(ctx)()
-	fmt.Print("xxxxxxxx", req.Search)
+
 	// Default pagination
 	page := int32(1)
 	pageSize := int32(10)
@@ -286,15 +328,15 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-
-		"id":       true, // Required for DataLoader batch fetching
-		"title":    true,
-		"grade":    true,
-		"status":   true,
-		"feedback": true,
+		"id":              true,
+		"enrollment_code": true,
+		"title":           true,
+		"grade":           true,
+		"status":          true,
+		"feedback":        true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause
@@ -305,31 +347,21 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 
 	// Get total count
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM Midterm %s", whereClause)
-	fmt.Printf("\n[COUNT Query] %s\n", countQuery)
-	fmt.Printf("[COUNT Args] Count: %d, Values: %v\n", len(args), args)
-
 	var total int32
 	err := h.queryRow(ctx, countQuery, args...).Scan(&total)
-	fmt.Printf("[COUNT Result] Total: %d\n\n", total)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to count midterms: %v", err)
 	}
 
 	// Get entities with pagination
 	args = append(args, pageSize, offset)
-	fmt.Print("cccccccccccccccccc", whereClause)
-
 	query := fmt.Sprintf(`
-		SELECT id, title, grade, status, feedback, created_at, updated_at, created_by, updated_by
+		SELECT id, enrollment_code, title, grade, status, feedback, created_at, updated_at, created_by, updated_by
 		FROM Midterm
 		%s
 		ORDER BY %s %s
 		LIMIT ? OFFSET ?
 	`, whereClause, sortBy, sortDirection)
-
-	// Log full query with parameters
-	fmt.Printf("\n[SQL Query] %s\n", query)
-	fmt.Printf("[SQL Args] Count: %d, Values: %v\n\n", len(args), args)
 
 	rows, err := h.query(ctx, query, args...)
 	if err != nil {
@@ -346,6 +378,7 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 
 		err := rows.Scan(
 			&entity.Id,
+			&entity.EnrollmentCode,
 			&entity.Title,
 			&entity.Grade,
 			&StatusStr,
@@ -389,8 +422,6 @@ func (h *Handler) ListMidterms(ctx context.Context, req *pb.ListMidtermsRequest)
 	if err := rows.Err(); err != nil {
 		return nil, status.Errorf(codes.Internal, "error iterating midterms: %v", err)
 	}
-
-	fmt.Printf("[RESULT] Fetched %d/%d midterms (Page: %d, PageSize: %d)\n\n", len(entities), total, page, pageSize)
 
 	return &pb.ListMidtermsResponse{
 		Midterms: entities,

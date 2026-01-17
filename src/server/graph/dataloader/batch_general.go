@@ -2,6 +2,7 @@ package dataloader
 
 import (
 	"context"
+	"fmt"
 	"thaily/proto/common"
 	"thaily/src/server/client"
 	"thaily/src/server/graph/convert"
@@ -15,15 +16,34 @@ import (
 
 // createStudentByIdBatchFunc creates a batch function for loading students by ID
 func createStudentByIdBatchFunc(client *client.GRPCUser) BatchFunc[string, *model.Student] {
-	return func(ctx context.Context, ids []string) (map[string]*model.Student, error) {
-		result := make(map[string]*model.Student)
+	return func(ctx context.Context, ids []string, filters []*model.FilterCriteriaInput) (map[string]*model.Student, error) {
 
-		for _, id := range ids {
-			student, err := client.GetUserById(ctx, id)
-			if err != nil {
-				continue // Skip errors to avoid breaking the entire batch
-			}
-			result[id] = convert.PbStudentToModel(student.GetStudent())
+		if len(ids) == 0 {
+			return make(map[string]*model.Student), nil
+		}
+
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "id",
+				Operator: model.FilterOperatorIn,
+				Values:   ids,
+			},
+		})
+		page := int32(1)
+		pageSize := int32(len(ids) * 10)
+		result := make(map[string]*model.Student)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		students, _ := client.GetStudentsBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, student := range students.GetStudents() {
+			result[student.GetId()] = convert.PbStudentToModel(student)
 		}
 
 		return result, nil
@@ -32,15 +52,36 @@ func createStudentByIdBatchFunc(client *client.GRPCUser) BatchFunc[string, *mode
 
 // createSemesterByIdBatchFunc creates a batch function for loading semesters by ID
 func createSemesterByIdBatchFunc(client *client.GRPCAcadamicClient) BatchFunc[string, *model.Semester] {
-	return func(ctx context.Context, ids []string) (map[string]*model.Semester, error) {
+	return func(ctx context.Context, ids []string, filters []*model.FilterCriteriaInput) (map[string]*model.Semester, error) {
 		result := make(map[string]*model.Semester)
 
-		for _, id := range ids {
-			semester, err := client.GetSemesterById(ctx, id)
-			if err != nil {
-				continue
-			}
-			result[id] = convert.PbSemesterToModel(semester.GetSemester())
+		if len(ids) == 0 {
+			return result, nil
+		}
+
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "id",
+				Operator: model.FilterOperatorIn,
+				Values:   ids,
+			},
+		})
+
+		page := int32(1)
+		pageSize := int32(len(ids) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		semesters, _ := client.GetSemestersBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, semester := range semesters.GetSemesters() {
+			result[semester.GetId()] = convert.PbSemesterToModel(semester)
 		}
 
 		return result, nil
@@ -49,32 +90,69 @@ func createSemesterByIdBatchFunc(client *client.GRPCAcadamicClient) BatchFunc[st
 
 // createEnrollmentByIdBatchFunc creates a batch function for loading enrollments by ID
 func createEnrollmentByIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.Enrollment] {
-	return func(ctx context.Context, ids []string) (map[string]*model.Enrollment, error) {
+	return func(ctx context.Context, ids []string, filters []*model.FilterCriteriaInput) (map[string]*model.Enrollment, error) {
 		result := make(map[string]*model.Enrollment)
 
-		for _, id := range ids {
-			enrollment, err := client.GetEnrollmentById(ctx, id)
-			if err != nil {
-				continue
-			}
-			result[id] = convert2.PbEnrollmentToModel(enrollment.GetEnrollment())
+		if len(ids) == 0 {
+			return result, nil
 		}
 
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "id",
+				Operator: model.FilterOperatorIn,
+				Values:   ids,
+			},
+		})
+
+		page := int32(1)
+		pageSize := int32(len(ids) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		enrollments, _ := client.GetEnrollmentBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+		for _, enrollment := range enrollments.GetEnrollments() {
+			result[enrollment.GetId()] = convert2.PbEnrollmentToModel(enrollment)
+		}
 		return result, nil
 	}
 }
 
 // createTopicCouncilByIdBatchFunc creates a batch function for loading topic councils by ID
 func createTopicCouncilByIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, *model.TopicCouncil] {
-	return func(ctx context.Context, ids []string) (map[string]*model.TopicCouncil, error) {
+	return func(ctx context.Context, ids []string, filters []*model.FilterCriteriaInput) (map[string]*model.TopicCouncil, error) {
 		result := make(map[string]*model.TopicCouncil)
 
-		for _, id := range ids {
-			topicCouncil, err := client.GetTopicCouncilById(ctx, id)
-			if err != nil {
-				continue
-			}
-			result[id] = convert2.PbTopicCouncilToModel(topicCouncil.GetTopicCouncil())
+		if len(ids) == 0 {
+			return result, nil
+		}
+
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "id",
+				Operator: model.FilterOperatorIn,
+				Values:   ids,
+			},
+		})
+		page := int32(1)
+		pageSize := int32(len(ids) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		topicCouncils, _ := client.GetTopicCouncilBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+		for _, topicCouncil := range topicCouncils.GetTopicCouncils() {
+			result[topicCouncil.GetId()] = convert2.PbTopicCouncilToModel(topicCouncil)
 		}
 
 		return result, nil
@@ -83,32 +161,71 @@ func createTopicCouncilByIdBatchFunc(client *client.GRPCthesis) BatchFunc[string
 
 // createDefenceByIdBatchFunc creates a batch function for loading defences by ID
 func createDefenceByIdBatchFunc(client *client.GRPCCouncil) BatchFunc[string, *model.Defence] {
-	return func(ctx context.Context, ids []string) (map[string]*model.Defence, error) {
+	return func(ctx context.Context, ids []string, filters []*model.FilterCriteriaInput) (map[string]*model.Defence, error) {
 		result := make(map[string]*model.Defence)
 
-		for _, id := range ids {
-			defence, err := client.GetDefenceById(ctx, id)
-			if err != nil {
-				continue
-			}
-			result[id] = convert.PbDefenceToModel(defence.GetDefence())
+		if len(ids) == 0 {
+			return result, nil
+		}
+
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "id",
+				Operator: model.FilterOperatorIn,
+				Values:   ids,
+			},
+		})
+
+		page := int32(1)
+		pageSize := int32(len(ids) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		defences, _ := client.GetDefencesBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+		for _, defence := range defences.GetDefences() {
+			result[defence.GetId()] = convert.PbDefenceToModel(defence)
 		}
 
 		return result, nil
+
 	}
 }
 
 // createCouncilByIdBatchFunc creates a batch function for loading councils by ID
 func createCouncilByIdBatchFunc(client *client.GRPCCouncil) BatchFunc[string, *model.Council] {
-	return func(ctx context.Context, ids []string) (map[string]*model.Council, error) {
+	return func(ctx context.Context, ids []string, filters []*model.FilterCriteriaInput) (map[string]*model.Council, error) {
 		result := make(map[string]*model.Council)
 
-		for _, id := range ids {
-			council, err := client.GetCouncilById(ctx, id)
-			if err != nil {
-				continue
-			}
-			result[id] = convert.PbCouncilToModel(council.GetCouncil())
+		if len(ids) == 0 {
+			return result, nil
+		}
+
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "id",
+				Operator: model.FilterOperatorIn,
+				Values:   ids,
+			},
+		})
+		page := int32(1)
+		pageSize := int32(len(ids) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+		councils, _ := client.GetCouncilBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, council := range councils.GetCouncils() {
+			result[council.GetId()] = convert.PbCouncilToModel(council)
 		}
 
 		return result, nil
@@ -121,35 +238,36 @@ func createCouncilByIdBatchFunc(client *client.GRPCCouncil) BatchFunc[string, *m
 
 // createEnrollmentsByStudentIdBatchFunc creates a batch function for loading enrollments by student ID
 func createEnrollmentsByStudentIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.Enrollment] {
-	return func(ctx context.Context, studentIds []string) (map[string][]*model.Enrollment, error) {
+	return func(ctx context.Context, studentIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Enrollment, error) {
 		result := make(map[string][]*model.Enrollment)
+		if len(studentIds) == 0 {
+			return result, nil
+		}
 
-		for _, studentId := range studentIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "student_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{studentId},
-							},
-						},
-					},
-				},
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "student_code",
+				Operator: model.FilterOperatorIn,
+				Values:   studentIds,
+			},
+		})
 
-			enrollments, err := client.GetEnrollmentBySearch(ctx, searchRequest)
-			if err != nil {
-				result[studentId] = []*model.Enrollment{}
-				continue
-			}
+		page := int32(1)
+		pageSize := int32(len(studentIds) * 10)
 
-			result[studentId] = convert2.PbEnrollmentsToModel(enrollments.GetEnrollments())
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		enrollments, _ := client.GetEnrollmentBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+
+		for _, enrollment := range enrollments.GetEnrollments() {
+			studentId := enrollment.GetStudentCode()
+			result[studentId] = append(result[studentId], convert2.PbEnrollmentToModel(enrollment))
 		}
 
 		return result, nil
@@ -158,17 +276,38 @@ func createEnrollmentsByStudentIdBatchFunc(client *client.GRPCthesis) BatchFunc[
 
 // createRolesByTeacherIdBatchFunc creates a batch function for loading roles by teacher ID
 func createRolesByTeacherIdBatchFunc(client *client.GRPCRole) BatchFunc[string, []*model.RoleSystem] {
-	return func(ctx context.Context, teacherIds []string) (map[string][]*model.RoleSystem, error) {
+	return func(ctx context.Context, teacherIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.RoleSystem, error) {
 		result := make(map[string][]*model.RoleSystem)
 
-		for _, teacherId := range teacherIds {
-			roles, err := client.GetAllRoleByTeacherId(ctx, teacherId)
-			if err != nil {
-				result[teacherId] = []*model.RoleSystem{}
-				continue
-			}
+		if len(teacherIds) == 0 {
+			return result, nil
+		}
 
-			result[teacherId] = convert2.PbRoleSystemsToModel(roles.GetRoleSystems())
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "teacher_code",
+				Operator: model.FilterOperatorIn,
+				Values:   teacherIds,
+			},
+		})
+
+		page := int32(1)
+		pageSize := int32(len(teacherIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		roles, _ := client.GetRoleBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		fmt.Println(roles)
+
+		for _, role := range roles.GetRoleSystems() {
+			teacherId := role.GetTeacherCode()
+			result[teacherId] = append(result[teacherId], convert2.PbRoleSystemToModel(role))
 		}
 
 		return result, nil
@@ -177,35 +316,35 @@ func createRolesByTeacherIdBatchFunc(client *client.GRPCRole) BatchFunc[string, 
 
 // createMajorsByFacultyIdBatchFunc creates a batch function for loading majors by faculty ID
 func createMajorsByFacultyIdBatchFunc(client *client.GRPCAcadamicClient) BatchFunc[string, []*model.Major] {
-	return func(ctx context.Context, facultyIds []string) (map[string][]*model.Major, error) {
+	return func(ctx context.Context, facultyIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Major, error) {
 		result := make(map[string][]*model.Major)
 
-		for _, facultyId := range facultyIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "faculty_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{facultyId},
-							},
-						},
-					},
-				},
-			}
+		if len(facultyIds) == 0 {
+			return result, nil
+		}
 
-			majors, err := client.GetMajorsBySearch(ctx, searchRequest)
-			if err != nil {
-				result[facultyId] = []*model.Major{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "faculty_code",
+				Operator: model.FilterOperatorIn,
+				Values:   facultyIds,
+			},
+		})
 
-			result[facultyId] = convert.PbMajorsToModel(majors.GetMajors())
+		page := int32(1)
+		pageSize := int32(len(facultyIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		majors, _ := client.GetMajorsBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+		for _, major := range majors.GetMajors() {
+			facultyId := major.GetFacultyCode()
+			result[facultyId] = append(result[facultyId], convert.PbMajorToModel(major))
 		}
 
 		return result, nil
@@ -214,35 +353,34 @@ func createMajorsByFacultyIdBatchFunc(client *client.GRPCAcadamicClient) BatchFu
 
 // createTopicsByMajorIdBatchFunc creates a batch function for loading topics by major ID
 func createTopicsByMajorIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.Topic] {
-	return func(ctx context.Context, majorIds []string) (map[string][]*model.Topic, error) {
+	return func(ctx context.Context, majorIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Topic, error) {
 		result := make(map[string][]*model.Topic)
 
-		for _, majorId := range majorIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "major_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{majorId},
-							},
-						},
-					},
-				},
-			}
+		if len(majorIds) == 0 {
+			return result, nil
+		}
 
-			topics, err := client.GetTopicBySearch(ctx, searchRequest)
-			if err != nil {
-				result[majorId] = []*model.Topic{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "major_code",
+				Operator: model.FilterOperatorIn,
+				Values:   majorIds,
+			},
+		})
 
-			result[majorId] = convert2.PbTopicsToModel(topics.GetTopics())
+		page := int32(1)
+		pageSize := int32(len(majorIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+		topics, _ := client.GetTopicBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+		for _, topic := range topics.GetTopics() {
+			majorId := topic.GetMajorCode()
+			result[majorId] = append(result[majorId], convert2.PbTopicToModel(topic))
 		}
 
 		return result, nil
@@ -251,109 +389,107 @@ func createTopicsByMajorIdBatchFunc(client *client.GRPCthesis) BatchFunc[string,
 
 // createStudentsBySemesterIdBatchFunc creates a batch function for loading students by semester ID
 func createStudentsBySemesterIdBatchFunc(client *client.GRPCUser) BatchFunc[string, []*model.Student] {
-	return func(ctx context.Context, semesterIds []string) (map[string][]*model.Student, error) {
+	return func(ctx context.Context, semesterIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Student, error) {
 		result := make(map[string][]*model.Student)
 
-		for _, semesterId := range semesterIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "semester_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{semesterId},
-							},
-						},
-					},
-				},
-			}
-
-			students, err := client.GetStudentsBySearch(ctx, searchRequest)
-			if err != nil {
-				result[semesterId] = []*model.Student{}
-				continue
-			}
-
-			result[semesterId] = convert.PbStudentsToModel(students.GetStudents())
+		if len(semesterIds) == 0 {
+			return result, nil
 		}
 
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "semester_code",
+				Operator: model.FilterOperatorIn,
+				Values:   semesterIds,
+			},
+		})
+		page := int32(1)
+		pageSize := int32(len(semesterIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		students, _ := client.GetStudentsBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, student := range students.GetStudents() {
+			semesterId := student.GetSemesterCode()
+			result[semesterId] = append(result[semesterId], convert.PbStudentToModel(student))
+		}
 		return result, nil
 	}
 }
 
 // createTeachersBySemesterIdBatchFunc creates a batch function for loading teachers by semester ID
 func createTeachersBySemesterIdBatchFunc(client *client.GRPCUser) BatchFunc[string, []*model.Teacher] {
-	return func(ctx context.Context, semesterIds []string) (map[string][]*model.Teacher, error) {
+	return func(ctx context.Context, semesterIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Teacher, error) {
 		result := make(map[string][]*model.Teacher)
 
-		for _, semesterId := range semesterIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "semester_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{semesterId},
-							},
-						},
-					},
-				},
-			}
-
-			teachers, err := client.GetTeachersBySearch(ctx, searchRequest)
-			if err != nil {
-				result[semesterId] = []*model.Teacher{}
-				continue
-			}
-
-			result[semesterId] = convert.PbTeachersToModel(teachers.GetTeachers())
+		if len(semesterIds) == 0 {
+			return result, nil
 		}
 
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "semester_code",
+				Operator: model.FilterOperatorIn,
+				Values:   semesterIds,
+			},
+		})
+
+		page := int32(1)
+		pageSize := int32(len(semesterIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		teachers, _ := client.GetTeachersBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+		for _, teacher := range teachers.GetTeachers() {
+			semesterId := teacher.GetSemesterCode()
+			result[semesterId] = append(result[semesterId], convert.PbTeacherToModel(teacher))
+		}
 		return result, nil
 	}
 }
 
 // createTopicsBySemesterIdBatchFunc creates a batch function for loading topics by semester ID
 func createTopicsBySemesterIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.Topic] {
-	return func(ctx context.Context, semesterIds []string) (map[string][]*model.Topic, error) {
+	return func(ctx context.Context, semesterIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Topic, error) {
 		result := make(map[string][]*model.Topic)
 
-		for _, semesterId := range semesterIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "semester_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{semesterId},
-							},
-						},
-					},
-				},
-			}
+		if len(semesterIds) == 0 {
+			return result, nil
+		}
 
-			topics, err := client.GetTopicBySearch(ctx, searchRequest)
-			if err != nil {
-				result[semesterId] = []*model.Topic{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "semester_code",
+				Operator: model.FilterOperatorIn,
+				Values:   semesterIds,
+			},
+		})
 
-			result[semesterId] = convert2.PbTopicsToModel(topics.GetTopics())
+		page := int32(1)
+		pageSize := int32(len(semesterIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+		topics, _ := client.GetTopicBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+
+		for _, topic := range topics.GetTopics() {
+			semesterId := topic.GetSemesterCode()
+			result[semesterId] = append(result[semesterId], convert2.PbTopicToModel(topic))
 		}
 
 		return result, nil
@@ -362,35 +498,36 @@ func createTopicsBySemesterIdBatchFunc(client *client.GRPCthesis) BatchFunc[stri
 
 // createFilesByTopicIdBatchFunc creates a batch function for loading files by topic ID
 func createFilesByTopicIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []*model.File] {
-	return func(ctx context.Context, topicIds []string) (map[string][]*model.File, error) {
+	return func(ctx context.Context, topicIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.File, error) {
 		result := make(map[string][]*model.File)
 
-		for _, topicId := range topicIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "table_id",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{topicId},
-							},
-						},
-					},
-				},
-			}
+		if len(topicIds) == 0 {
+			return result, nil
+		}
 
-			files, err := client.GetFileBySearch(ctx, searchRequest)
-			if err != nil {
-				result[topicId] = []*model.File{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "table_id",
+				Operator: model.FilterOperatorIn,
+				Values:   topicIds,
+			},
+		})
 
-			result[topicId] = convert.PbFilesToModel(files.GetFiles())
+		page := int32(1)
+		pageSize := int32(len(topicIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		files, _ := client.GetFileBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, file := range files.GetFiles() {
+			topicId := file.GetTableId()
+			result[topicId] = append(result[topicId], convert.PbFileToModel(file))
 		}
 
 		return result, nil
@@ -399,35 +536,36 @@ func createFilesByTopicIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []
 
 // createFilesByTopicIdBatchFunc creates a batch function for loading files by topic ID
 func createFilesByMidtermIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []*model.File] {
-	return func(ctx context.Context, midtermIds []string) (map[string][]*model.File, error) {
+	return func(ctx context.Context, midtermIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.File, error) {
 		result := make(map[string][]*model.File)
 
-		for _, midtermId := range midtermIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "table_id",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{midtermId},
-							},
-						},
-					},
-				},
-			}
+		if len(midtermIds) == 0 {
+			return result, nil
+		}
 
-			files, err := client.GetFileBySearch(ctx, searchRequest)
-			if err != nil {
-				result[midtermId] = []*model.File{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "table_id",
+				Operator: model.FilterOperatorIn,
+				Values:   midtermIds,
+			},
+		})
 
-			result[midtermId] = convert.PbFilesToModel(files.GetFiles())
+		page := int32(1)
+		pageSize := int32(len(midtermIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		files, _ := client.GetFileBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, file := range files.GetFiles() {
+			midtermId := file.GetTableId()
+			result[midtermId] = append(result[midtermId], convert.PbFileToModel(file))
 		}
 
 		return result, nil
@@ -435,35 +573,36 @@ func createFilesByMidtermIdBatchFunc(client *client.GRPCfile) BatchFunc[string, 
 }
 
 func createFilesByFinalIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []*model.File] {
-	return func(ctx context.Context, finalIds []string) (map[string][]*model.File, error) {
+	return func(ctx context.Context, finalIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.File, error) {
 		result := make(map[string][]*model.File)
 
-		for _, finalId := range finalIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "table_id",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{finalId},
-							},
-						},
-					},
-				},
-			}
+		if len(finalIds) == 0 {
+			return result, nil
+		}
 
-			files, err := client.GetFileBySearch(ctx, searchRequest)
-			if err != nil {
-				result[finalId] = []*model.File{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "table_id",
+				Operator: model.FilterOperatorIn,
+				Values:   finalIds,
+			},
+		})
 
-			result[finalId] = convert.PbFilesToModel(files.GetFiles())
+		page := int32(1)
+		pageSize := int32(len(finalIds) * 10)
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		files, _ := client.GetFileBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, file := range files.GetFiles() {
+			finalId := file.GetTableId()
+			result[finalId] = append(result[finalId], convert.PbFileToModel(file))
 		}
 
 		return result, nil
@@ -472,35 +611,39 @@ func createFilesByFinalIdBatchFunc(client *client.GRPCfile) BatchFunc[string, []
 
 // createTopicCouncilsByTopicIdBatchFunc creates a batch function for loading topic councils by topic ID
 func createTopicCouncilsByTopicIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.TopicCouncil] {
-	return func(ctx context.Context, topicIds []string) (map[string][]*model.TopicCouncil, error) {
+	return func(ctx context.Context, topicIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.TopicCouncil, error) {
 		result := make(map[string][]*model.TopicCouncil)
 
-		for _, topicId := range topicIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "topic_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{topicId},
-							},
-						},
-					},
-				},
-			}
+		if len(topicIds) == 0 {
+			return result, nil
+		}
 
-			topicCouncils, err := client.GetTopicCouncilBySearch(ctx, searchRequest)
-			if err != nil {
-				result[topicId] = []*model.TopicCouncil{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "topic_code",
+				Operator: model.FilterOperatorIn,
+				Values:   topicIds,
+			},
+		})
 
-			result[topicId] = convert2.PbTopicCouncilsToModel(topicCouncils.GetTopicCouncils())
+		page := int32(1)
+
+		pageSize := int32(len(topicIds) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		topics, _ := client.GetTopicCouncilBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+
+		fmt.Print("cccc", topics)
+		for _, topicCouncil := range topics.GetTopicCouncils() {
+			topicId := topicCouncil.GetTopicCode()
+			result[topicId] = append(result[topicId], convert2.PbTopicCouncilToModel(topicCouncil))
 		}
 
 		return result, nil
@@ -509,44 +652,46 @@ func createTopicCouncilsByTopicIdBatchFunc(client *client.GRPCthesis) BatchFunc[
 
 // createEnrollmentsByTopicCouncilIdBatchFunc creates a batch function for loading enrollments by topic council ID
 func createEnrollmentsByTopicCouncilIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.Enrollment] {
-	return func(ctx context.Context, topicCouncilIds []string) (map[string][]*model.Enrollment, error) {
+	return func(ctx context.Context, topicCouncilIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Enrollment, error) {
 		result := make(map[string][]*model.Enrollment)
 
-		for _, topicCouncilId := range topicCouncilIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "topic_council_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{topicCouncilId},
-							},
-						},
-					},
-				},
-			}
+		if len(topicCouncilIds) == 0 {
+			return result, nil
+		}
 
-			enrollments, err := client.GetEnrollmentBySearch(ctx, searchRequest)
-			if err != nil {
-				result[topicCouncilId] = []*model.Enrollment{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "topic_council_code",
+				Operator: model.FilterOperatorIn,
+				Values:   topicCouncilIds,
+			},
+		})
 
-			result[topicCouncilId] = convert2.PbEnrollmentsToModel(enrollments.GetEnrollments())
+		page := int32(1)
+		pageSize := int32(len(topicCouncilIds) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		enrollments, _ := client.GetEnrollmentBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+		for _, enrollment := range enrollments.GetEnrollments() {
+			topicCouncilId := enrollment.GetTopicCouncilCode()
+			result[topicCouncilId] = append(result[topicCouncilId], convert2.PbEnrollmentToModel(enrollment))
 		}
 
 		return result, nil
+
 	}
 }
 
 // createSupervisorsByTopicCouncilIdBatchFunc creates a batch function for loading supervisors by topic council ID
 func createSupervisorsByTopicCouncilIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.TopicCouncilSupervisor] {
-	return func(ctx context.Context, topicCouncilIds []string) (map[string][]*model.TopicCouncilSupervisor, error) {
+	return func(ctx context.Context, topicCouncilIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.TopicCouncilSupervisor, error) {
 		result := make(map[string][]*model.TopicCouncilSupervisor)
 
 		for _, topicCouncilId := range topicCouncilIds {
@@ -583,35 +728,37 @@ func createSupervisorsByTopicCouncilIdBatchFunc(client *client.GRPCthesis) Batch
 
 // createDefencesByCouncilIdBatchFunc creates a batch function for loading defences by council ID
 func createDefencesByCouncilIdBatchFunc(client *client.GRPCCouncil) BatchFunc[string, []*model.Defence] {
-	return func(ctx context.Context, councilIds []string) (map[string][]*model.Defence, error) {
+	return func(ctx context.Context, councilIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.Defence, error) {
 		result := make(map[string][]*model.Defence)
 
-		for _, councilId := range councilIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "council_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{councilId},
-							},
-						},
-					},
-				},
-			}
+		if len(councilIds) == 0 {
+			return result, nil
+		}
 
-			defences, err := client.GetDefencesBySearch(ctx, searchRequest)
-			if err != nil {
-				result[councilId] = []*model.Defence{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "council_code",
+				Operator: model.FilterOperatorIn,
+				Values:   councilIds,
+			},
+		})
 
-			result[councilId] = convert.PbDefencesToModel(defences.GetDefences())
+		page := int32(1)
+		pageSize := int32(len(councilIds) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		defences, _ := client.GetDefencesBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, defence := range defences.GetDefences() {
+			councilId := defence.GetCouncilCode()
+			result[councilId] = append(result[councilId], convert.PbDefenceToModel(defence))
 		}
 
 		return result, nil
@@ -620,35 +767,37 @@ func createDefencesByCouncilIdBatchFunc(client *client.GRPCCouncil) BatchFunc[st
 
 // createTopicCouncilsByCouncilIdBatchFunc creates a batch function for loading topic councils by council ID
 func createTopicCouncilsByCouncilIdBatchFunc(client *client.GRPCthesis) BatchFunc[string, []*model.TopicCouncil] {
-	return func(ctx context.Context, councilIds []string) (map[string][]*model.TopicCouncil, error) {
+	return func(ctx context.Context, councilIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.TopicCouncil, error) {
 		result := make(map[string][]*model.TopicCouncil)
 
-		for _, councilId := range councilIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "council_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{councilId},
-							},
-						},
-					},
-				},
-			}
+		if len(councilIds) == 0 {
+			return result, nil
+		}
 
-			topicCouncils, err := client.GetTopicCouncilBySearch(ctx, searchRequest)
-			if err != nil {
-				result[councilId] = []*model.TopicCouncil{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "council_code",
+				Operator: model.FilterOperatorIn,
+				Values:   councilIds,
+			},
+		})
 
-			result[councilId] = convert2.PbTopicCouncilsToModel(topicCouncils.GetTopicCouncils())
+		page := int32(1)
+		pageSize := int32(len(councilIds) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		topics, _ := client.GetTopicCouncilBySearch(ctx, convert2.ConvertSearchRequestToPB(*newSearch))
+
+		for _, topicCouncil := range topics.GetTopicCouncils() {
+			councilId := topicCouncil.GetCouncilCode()
+			result[councilId] = append(result[councilId], convert2.PbTopicCouncilToModel(topicCouncil))
 		}
 
 		return result, nil
@@ -657,35 +806,37 @@ func createTopicCouncilsByCouncilIdBatchFunc(client *client.GRPCthesis) BatchFun
 
 // createGradeDefencesByEnrollmentIdBatchFunc creates a batch function for loading grade defences by enrollment ID
 func createGradeDefencesByEnrollmentIdBatchFunc(client *client.GRPCCouncil) BatchFunc[string, []*model.GradeDefence] {
-	return func(ctx context.Context, enrollmentIds []string) (map[string][]*model.GradeDefence, error) {
+	return func(ctx context.Context, enrollmentIds []string, filters []*model.FilterCriteriaInput) (map[string][]*model.GradeDefence, error) {
 		result := make(map[string][]*model.GradeDefence)
 
-		for _, enrollmentId := range enrollmentIds {
-			searchRequest := &common.SearchRequest{
-				Pagination: &common.Pagination{
-					Page:     1,
-					PageSize: 100,
-				},
-				Filters: []*common.FilterCriteria{
-					{
-						Criteria: &common.FilterCriteria_Condition{
-							Condition: &common.FilterCondition{
-								Field:    "enrollment_code",
-								Operator: common.FilterOperator_EQUAL,
-								Values:   []string{enrollmentId},
-							},
-						},
-					},
-				},
-			}
+		if len(enrollmentIds) == 0 {
+			return result, nil
+		}
 
-			gradeDefences, err := client.GetGradeDefenceBySearch(ctx, searchRequest)
-			if err != nil {
-				result[enrollmentId] = []*model.GradeDefence{}
-				continue
-			}
+		filters = append(filters, &model.FilterCriteriaInput{
+			Condition: &model.FilterConditionInput{
+				Field:    "enrollment_code",
+				Operator: model.FilterOperatorIn,
+				Values:   enrollmentIds,
+			},
+		})
 
-			result[enrollmentId] = convert.PbGradeDefencesToModel(gradeDefences.GetGradeDefences())
+		page := int32(1)
+		pageSize := int32(len(enrollmentIds) * 10)
+
+		newSearch := &model.SearchRequestInput{
+			Pagination: &model.PaginationInput{
+				Page:     &page,
+				PageSize: &pageSize,
+			},
+			Filters: filters,
+		}
+
+		gradeDefences, _ := client.GetGradeDefenceBySearch(ctx, convert.ConvertSearchRequestToPB(*newSearch))
+
+		for _, gradeDefence := range gradeDefences.GetGradeDefences() {
+			enrollmentId := gradeDefence.GetEnrollmentCode()
+			result[enrollmentId] = append(result[enrollmentId], convert.PbGradeDefenceToModel(gradeDefence))
 		}
 
 		return result, nil

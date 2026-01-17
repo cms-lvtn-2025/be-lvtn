@@ -73,7 +73,7 @@ func (g *GRPCAcadamicClient) GetMajorsBySearch(ctx context.Context, search *pbCo
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) GetMajorById(ctx context.Context, id string) (*pb.GetMajorResponse, error) {
+func (g *GRPCAcadamicClient) GetMajorById(ctx context.Context, id string) (*pb.MajorResponse, error) {
 
 	resp, err := g.client.GetMajor(ctx, &pb.GetMajorRequest{Id: id})
 	if err != nil {
@@ -83,7 +83,7 @@ func (g *GRPCAcadamicClient) GetMajorById(ctx context.Context, id string) (*pb.G
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (*pb.CreateMajorResponse, error) {
+func (g *GRPCAcadamicClient) CreateMajor(ctx context.Context, req *pb.CreateMajorRequest) (*pb.MajorResponse, error) {
 	resp, err := g.client.CreateMajor(ctx, req)
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func (g *GRPCAcadamicClient) CreateMajor(ctx context.Context, req *pb.CreateMajo
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (*pb.UpdateMajorResponse, error) {
+func (g *GRPCAcadamicClient) UpdateMajor(ctx context.Context, req *pb.UpdateMajorRequest) (*pb.MajorResponse, error) {
 	resp, err := g.client.UpdateMajor(ctx, req)
 	if err != nil {
 		return nil, err
@@ -137,7 +137,7 @@ func (g *GRPCAcadamicClient) GetMajorsByIds(ctx context.Context, ids []string) (
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", majorCachePrefix, id)
-		var cached pb.GetMajorResponse
+		var cached pb.MajorResponse
 
 		if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
 			if cached.Major != nil {
@@ -186,7 +186,7 @@ func (g *GRPCAcadamicClient) GetMajorsByIds(ctx context.Context, ids []string) (
 			for _, major := range resp.Majors {
 				if major != nil {
 					cacheKey := fmt.Sprintf("%s%s", majorCachePrefix, major.Id)
-					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.GetMajorResponse{Major: major}, majorCacheTTL)
+					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.MajorResponse{Major: major}, majorCacheTTL)
 					result.Majors = append(result.Majors, major)
 				}
 			}
@@ -218,9 +218,9 @@ func (g *GRPCAcadamicClient) GetSemestersBySearch(ctx context.Context, search *p
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) GetSemesterById(ctx context.Context, id string) (*pb.GetSemesterResponse, error) {
+func (g *GRPCAcadamicClient) GetSemesterById(ctx context.Context, id string) (*pb.SemesterResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", semesterCachePrefix, id)
-	var cached pb.GetSemesterResponse
+	var cached pb.SemesterResponse
 	if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for semester: %s", id)
 		return &cached, nil
@@ -236,7 +236,7 @@ func (g *GRPCAcadamicClient) GetSemesterById(ctx context.Context, id string) (*p
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequest) (*pb.CreateSemesterResponse, error) {
+func (g *GRPCAcadamicClient) CreateSemester(ctx context.Context, req *pb.CreateSemesterRequest) (*pb.SemesterResponse, error) {
 	resp, err := g.client.CreateSemester(ctx, req)
 	if err != nil {
 		return nil, err
@@ -248,7 +248,7 @@ func (g *GRPCAcadamicClient) CreateSemester(ctx context.Context, req *pb.CreateS
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequest) (*pb.UpdateSemesterResponse, error) {
+func (g *GRPCAcadamicClient) UpdateSemester(ctx context.Context, req *pb.UpdateSemesterRequest) (*pb.SemesterResponse, error) {
 	resp, err := g.client.UpdateSemester(ctx, req)
 	if err != nil {
 		return nil, err
@@ -290,7 +290,7 @@ func (g *GRPCAcadamicClient) GetSemestersByIds(ctx context.Context, ids []string
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", semesterCachePrefix, id)
-		var cached pb.GetSemesterResponse
+		var cached pb.SemesterResponse
 
 		if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
 			if cached.Semester != nil {
@@ -339,7 +339,7 @@ func (g *GRPCAcadamicClient) GetSemestersByIds(ctx context.Context, ids []string
 			for _, semester := range resp.Semesters {
 				if semester != nil {
 					cacheKey := fmt.Sprintf("%s%s", semesterCachePrefix, semester.Id)
-					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.GetSemesterResponse{Semester: semester}, semesterCacheTTL)
+					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.SemesterResponse{Semester: semester}, semesterCacheTTL)
 					result.Semesters = append(result.Semesters, semester)
 				}
 			}
@@ -354,26 +354,26 @@ func (g *GRPCAcadamicClient) GetSemestersByIds(ctx context.Context, ids []string
 // ============================================
 
 func (g *GRPCAcadamicClient) GetFacultiesBySearch(ctx context.Context, search *pbCommon.SearchRequest) (*pb.ListFacultiesResponse, error) {
-	cacheKey := GenerateCacheKey(majorCachePrefix, search)
+	cacheKey := GenerateCacheKey(facultyCachePrefix, search)
 	var cached pb.ListFacultiesResponse
 	if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
-		log.Printf("Cache HIT for major search")
+		log.Printf("Cache HIT for faculty search")
 		return &cached, nil
 	}
 
-	log.Printf("Cache MISS for major search")
+	log.Printf("Cache MISS for faculty search")
 	resp, err := g.client.ListFaculties(ctx, &pb.ListFacultiesRequest{Search: search})
 	if err != nil {
 		return nil, err
 	}
 
-	SetCachedProto(ctx, g.redisClient, cacheKey, resp, majorCacheTTL)
+	SetCachedProto(ctx, g.redisClient, cacheKey, resp, facultyCacheTTL)
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) GetFacultyById(ctx context.Context, id string) (*pb.GetFacultyResponse, error) {
+func (g *GRPCAcadamicClient) GetFacultyById(ctx context.Context, id string) (*pb.FacultyResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", facultyCachePrefix, id)
-	var cached pb.GetFacultyResponse
+	var cached pb.FacultyResponse
 	if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for Faculty: %s", id)
 		return &cached, nil
@@ -389,7 +389,7 @@ func (g *GRPCAcadamicClient) GetFacultyById(ctx context.Context, id string) (*pb
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) CreateFaculty(ctx context.Context, req *pb.CreateFacultyRequest) (*pb.CreateFacultyResponse, error) {
+func (g *GRPCAcadamicClient) CreateFaculty(ctx context.Context, req *pb.CreateFacultyRequest) (*pb.FacultyResponse, error) {
 	resp, err := g.client.CreateFaculty(ctx, req)
 	if err != nil {
 		return nil, err
@@ -401,7 +401,7 @@ func (g *GRPCAcadamicClient) CreateFaculty(ctx context.Context, req *pb.CreateFa
 	return resp, nil
 }
 
-func (g *GRPCAcadamicClient) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyRequest) (*pb.UpdateFacultyResponse, error) {
+func (g *GRPCAcadamicClient) UpdateFaculty(ctx context.Context, req *pb.UpdateFacultyRequest) (*pb.FacultyResponse, error) {
 	resp, err := g.client.UpdateFaculty(ctx, req)
 	if err != nil {
 		return nil, err
@@ -442,8 +442,8 @@ func (g *GRPCAcadamicClient) GetFacultiesByIds(ctx context.Context, ids []string
 
 	// Check Redis cache for each ID
 	for _, id := range ids {
-		cacheKey := fmt.Sprintf("%s%s", majorCachePrefix, id)
-		var cached pb.GetFacultyResponse
+		cacheKey := fmt.Sprintf("%s%s", facultyCachePrefix, id)
+		var cached pb.FacultyResponse
 
 		if hit, _ := GetCachedProto(ctx, g.redisClient, cacheKey, &cached); hit {
 			if cached.Faculty != nil {
@@ -492,7 +492,7 @@ func (g *GRPCAcadamicClient) GetFacultiesByIds(ctx context.Context, ids []string
 			for _, faculty := range resp.Faculties {
 				if faculty != nil {
 					cacheKey := fmt.Sprintf("%s%s", facultyCachePrefix, faculty.Id)
-					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.GetFacultyResponse{Faculty: faculty}, facultyCacheTTL)
+					SetCachedProto(ctx, g.redisClient, cacheKey, &pb.FacultyResponse{Faculty: faculty}, facultyCacheTTL)
 					result.Faculties = append(result.Faculties, faculty)
 				}
 			}

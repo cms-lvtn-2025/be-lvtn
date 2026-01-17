@@ -16,17 +16,17 @@ import (
 )
 
 // CreateRoleSystem creates a new RoleSystem record
-func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystemRequest) (*pb.CreateRoleSystemResponse, error) {
+func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystemRequest) (*pb.RoleSystemResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetRoleSystem().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	if req.TeacherCode == "" {
+	if req.GetRoleSystem().GetTeacherCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "teacher_code is required")
 	}
-	if req.SemesterCode == "" {
+	if req.GetRoleSystem().GetSemesterCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
@@ -38,7 +38,7 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 	// Convert Role enum to string
 	RoleValue := pb.RoleType_ACADEMIC_AFFAIRS_STAFF
 
-	RoleValue = req.Role
+	RoleValue = req.GetRoleSystem().GetRole()
 	RoleStr := "Academic_affairs_staff"
 	switch RoleValue {
 	case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
@@ -57,13 +57,13 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.TeacherCode,
+		req.GetRoleSystem().GetTitle(),
+		req.GetRoleSystem().GetTeacherCode(),
 		RoleStr,
-		req.SemesterCode,
-		req.Activate,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetRoleSystem().GetSemesterCode(),
+		req.GetRoleSystem().GetActivate(),
+		req.GetRoleSystem().GetCreatedBy(),
+		req.GetRoleSystem().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -77,31 +77,52 @@ func (h *Handler) CreateRoleSystem(ctx context.Context, req *pb.CreateRoleSystem
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get rolesystem")
 	}
-	return &pb.CreateRoleSystemResponse{
-		RoleSystem: result.GetRoleSystem(),
-	}, nil
+	return result, nil
 }
 
 // GetRoleSystem retrieves a RoleSystem by ID
-func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemRequest) (*pb.GetRoleSystemResponse, error) {
+func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemRequest) (*pb.RoleSystemResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"title":         true,
+		"teacher_code":  true,
+		"role":          true,
+		"semester_code": true,
+		"activate":      true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, title, teacher_code, role, semester_code, activate, created_at, updated_at, created_by, updated_by
 		FROM RoleSystem
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.RoleSystem
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var RoleStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.TeacherCode,
@@ -143,13 +164,13 @@ func (h *Handler) GetRoleSystem(ctx context.Context, req *pb.GetRoleSystemReques
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetRoleSystemResponse{
+	return &pb.RoleSystemResponse{
 		RoleSystem: &entity,
 	}, nil
 }
 
 // UpdateRoleSystem updates an existing RoleSystem
-func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystemRequest) (*pb.UpdateRoleSystemResponse, error) {
+func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystemRequest) (*pb.RoleSystemResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -160,39 +181,33 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetRoleSystem().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetRoleSystem().GetTitle())
 	}
-	if req.TeacherCode != nil {
+	if req.GetRoleSystem().GetTeacherCode() != "" {
 		updateFields = append(updateFields, "teacher_code = ?")
-		args = append(args, *req.TeacherCode)
-
+		args = append(args, req.GetRoleSystem().GetTeacherCode())
 	}
-	if req.Role != nil {
-		updateFields = append(updateFields, "role = ?")
-		RoleStr := "Academic_affairs_staff"
-		switch *req.Role {
-		case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
-			RoleStr = "Academic_affairs_staff"
-		case pb.RoleType_DEPARTMENT_LECTURER:
-			RoleStr = "Department_lecturer"
-		case pb.RoleType_TEACHER:
-			RoleStr = "Teacher"
-		}
-		args = append(args, RoleStr)
-
+	// Note: RoleType enum starts at 0 (ACADEMIC_AFFAIRS_STAFF), so we always include it if set
+	updateFields = append(updateFields, "role = ?")
+	RoleStr := "Academic_affairs_staff"
+	switch req.GetRoleSystem().GetRole() {
+	case pb.RoleType_ACADEMIC_AFFAIRS_STAFF:
+		RoleStr = "Academic_affairs_staff"
+	case pb.RoleType_DEPARTMENT_LECTURER:
+		RoleStr = "Department_lecturer"
+	case pb.RoleType_TEACHER:
+		RoleStr = "Teacher"
 	}
-	if req.SemesterCode != nil {
+	args = append(args, RoleStr)
+	if req.GetRoleSystem().GetSemesterCode() != "" {
 		updateFields = append(updateFields, "semester_code = ?")
-		args = append(args, *req.SemesterCode)
-
+		args = append(args, req.GetRoleSystem().GetSemesterCode())
 	}
-	if req.Activate != nil {
+	if req.GetRoleSystem().GetActivate() {
 		updateFields = append(updateFields, "activate = ?")
-		args = append(args, *req.Activate)
-
+		args = append(args, req.GetRoleSystem().GetActivate())
 	}
 
 	if len(updateFields) == 0 {
@@ -201,17 +216,36 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetRoleSystem().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"id":            true,
+		"title":         true,
+		"teacher_code":  true,
+		"role":          true,
+		"semester_code": true,
+		"activate":      true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE RoleSystem
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
@@ -222,9 +256,7 @@ func (h *Handler) UpdateRoleSystem(ctx context.Context, req *pb.UpdateRoleSystem
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get rolesystem")
 	}
-	return &pb.UpdateRoleSystemResponse{
-		RoleSystem: result.GetRoleSystem(),
-	}, nil
+	return result, nil
 }
 
 // DeleteRoleSystem deletes a RoleSystem by ID
@@ -235,9 +267,32 @@ func (h *Handler) DeleteRoleSystem(ctx context.Context, req *pb.DeleteRoleSystem
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM RoleSystem WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"title":         true,
+		"teacher_code":  true,
+		"role":          true,
+		"semester_code": true,
+		"activate":      true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM RoleSystem %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete rolesystem: %v", err)
 	}
@@ -285,8 +340,7 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":            true,
 		"title":         true,
 		"teacher_code":  true,
 		"role":          true,
@@ -294,7 +348,7 @@ func (h *Handler) ListRoleSystems(ctx context.Context, req *pb.ListRoleSystemsRe
 		"activate":      true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

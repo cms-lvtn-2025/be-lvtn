@@ -75,9 +75,9 @@ func (c *GRPCCouncil) GetCouncilBySearch(ctx context.Context, search *pbCommon.S
 	return resp, nil
 }
 
-func (c *GRPCCouncil) GetCouncilById(ctx context.Context, id string) (*pb.GetCouncilResponse, error) {
+func (c *GRPCCouncil) GetCouncilById(ctx context.Context, id string) (*pb.CouncilResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", councilCachePrefix, id)
-	var cached pb.GetCouncilResponse
+	var cached pb.CouncilResponse
 	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for council: %s", id)
 		return &cached, nil
@@ -93,7 +93,7 @@ func (c *GRPCCouncil) GetCouncilById(ctx context.Context, id string) (*pb.GetCou
 	return resp, nil
 }
 
-func (c *GRPCCouncil) CreateCouncil(ctx context.Context, req *pb.CreateCouncilRequest) (*pb.CreateCouncilResponse, error) {
+func (c *GRPCCouncil) CreateCouncil(ctx context.Context, req *pb.CreateCouncilRequest) (*pb.CouncilResponse, error) {
 	resp, err := c.client.CreateCouncil(ctx, req)
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func (c *GRPCCouncil) CreateCouncil(ctx context.Context, req *pb.CreateCouncilRe
 	return resp, nil
 }
 
-func (c *GRPCCouncil) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilRequest) (*pb.UpdateCouncilResponse, error) {
+func (c *GRPCCouncil) UpdateCouncil(ctx context.Context, req *pb.UpdateCouncilRequest) (*pb.CouncilResponse, error) {
 	resp, err := c.client.UpdateCouncil(ctx, req)
 	if err != nil {
 		return nil, err
@@ -147,7 +147,7 @@ func (c *GRPCCouncil) GetCouncilsByIds(ctx context.Context, ids []string) (*pb.L
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", councilCachePrefix, id)
-		var cached pb.GetCouncilResponse
+		var cached pb.CouncilResponse
 
 		if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 			if cached.Council != nil {
@@ -196,7 +196,7 @@ func (c *GRPCCouncil) GetCouncilsByIds(ctx context.Context, ids []string) (*pb.L
 			for _, council := range resp.Councils {
 				if council != nil {
 					cacheKey := fmt.Sprintf("%s%s", councilCachePrefix, council.Id)
-					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GetCouncilResponse{Council: council}, councilCacheTTL)
+					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.CouncilResponse{Council: council}, councilCacheTTL)
 					result.Councils = append(result.Councils, council)
 				}
 			}
@@ -229,9 +229,9 @@ func (c *GRPCCouncil) GetDefencesBySearch(ctx context.Context, search *pbCommon.
 	return resp, nil
 }
 
-func (c *GRPCCouncil) GetDefenceById(ctx context.Context, id string) (*pb.GetDefenceResponse, error) {
+func (c *GRPCCouncil) GetDefenceById(ctx context.Context, id string) (*pb.DefenceResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", defenceCachePrefix, id)
-	var cached pb.GetDefenceResponse
+	var cached pb.DefenceResponse
 	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for defence: %s", id)
 		return &cached, nil
@@ -247,7 +247,7 @@ func (c *GRPCCouncil) GetDefenceById(ctx context.Context, id string) (*pb.GetDef
 	return resp, nil
 }
 
-func (c *GRPCCouncil) CreateDefence(ctx context.Context, req *pb.CreateDefenceRequest) (*pb.CreateDefenceResponse, error) {
+func (c *GRPCCouncil) CreateDefence(ctx context.Context, req *pb.CreateDefenceRequest) (*pb.DefenceResponse, error) {
 	resp, err := c.client.CreateDefence(ctx, req)
 	if err != nil {
 		return nil, err
@@ -259,7 +259,7 @@ func (c *GRPCCouncil) CreateDefence(ctx context.Context, req *pb.CreateDefenceRe
 	return resp, nil
 }
 
-func (c *GRPCCouncil) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceRequest) (*pb.UpdateDefenceResponse, error) {
+func (c *GRPCCouncil) UpdateDefence(ctx context.Context, req *pb.UpdateDefenceRequest) (*pb.DefenceResponse, error) {
 	resp, err := c.client.UpdateDefence(ctx, req)
 	if err != nil {
 		return nil, err
@@ -301,7 +301,7 @@ func (c *GRPCCouncil) GetDefencesByIds(ctx context.Context, ids []string) (*pb.L
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", defenceCachePrefix, id)
-		var cached pb.GetDefenceResponse
+		var cached pb.DefenceResponse
 
 		if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 			if cached.Defence != nil {
@@ -350,7 +350,7 @@ func (c *GRPCCouncil) GetDefencesByIds(ctx context.Context, ids []string) (*pb.L
 			for _, defence := range resp.Defences {
 				if defence != nil {
 					cacheKey := fmt.Sprintf("%s%s", defenceCachePrefix, defence.Id)
-					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GetDefenceResponse{Defence: defence}, defenceCacheTTL)
+					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.DefenceResponse{Defence: defence}, defenceCacheTTL)
 					result.Defences = append(result.Defences, defence)
 				}
 			}
@@ -421,9 +421,9 @@ func (c *GRPCCouncil) GetGradeDefenceBySearch(ctx context.Context, search *pbCom
 	return resp, nil
 }
 
-func (c *GRPCCouncil) GetGradeById(ctx context.Context, id string) (*pb.GetGradeDefenceResponse, error) {
+func (c *GRPCCouncil) GetGradeById(ctx context.Context, id string) (*pb.GradeDefenceResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", gradeDefenceCachePrefix, id)
-	var cached pb.GetGradeDefenceResponse
+	var cached pb.GradeDefenceResponse
 	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for grade defence: %s", id)
 		return &cached, nil
@@ -439,7 +439,7 @@ func (c *GRPCCouncil) GetGradeById(ctx context.Context, id string) (*pb.GetGrade
 	return resp, nil
 }
 
-func (c *GRPCCouncil) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDefenceRequest) (*pb.CreateGradeDefenceResponse, error) {
+func (c *GRPCCouncil) CreateGradeDefence(ctx context.Context, req *pb.CreateGradeDefenceRequest) (*pb.GradeDefenceResponse, error) {
 	resp, err := c.client.CreateGradeDefence(ctx, req)
 	if err != nil {
 		return nil, err
@@ -450,7 +450,7 @@ func (c *GRPCCouncil) CreateGradeDefence(ctx context.Context, req *pb.CreateGrad
 	return resp, nil
 }
 
-func (c *GRPCCouncil) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDefenceRequest) (*pb.UpdateGradeDefenceResponse, error) {
+func (c *GRPCCouncil) UpdateGradeDefence(ctx context.Context, req *pb.UpdateGradeDefenceRequest) (*pb.GradeDefenceResponse, error) {
 	resp, err := c.client.UpdateGradeDefence(ctx, req)
 	if err != nil {
 		return nil, err
@@ -492,7 +492,7 @@ func (c *GRPCCouncil) GetGradeDefencesByIds(ctx context.Context, ids []string) (
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", gradeDefenceCachePrefix, id)
-		var cached pb.GetGradeDefenceResponse
+		var cached pb.GradeDefenceResponse
 
 		if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 			if cached.GradeDefence != nil {
@@ -541,7 +541,7 @@ func (c *GRPCCouncil) GetGradeDefencesByIds(ctx context.Context, ids []string) (
 			for _, gradeDefence := range resp.GradeDefences {
 				if gradeDefence != nil {
 					cacheKey := fmt.Sprintf("%s%s", gradeDefenceCachePrefix, gradeDefence.Id)
-					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GetGradeDefenceResponse{GradeDefence: gradeDefence}, gradeDefenceCacheTTL)
+					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GradeDefenceResponse{GradeDefence: gradeDefence}, gradeDefenceCacheTTL)
 					result.GradeDefences = append(result.GradeDefences, gradeDefence)
 				}
 			}
@@ -573,9 +573,9 @@ func (c *GRPCCouncil) GetGradeDefenceCriteriaBySearch(ctx context.Context, searc
 	return resp, nil
 }
 
-func (c *GRPCCouncil) GetGradeCriterionById(ctx context.Context, id string) (*pb.GetGradeDefenceCriterionResponse, error) {
+func (c *GRPCCouncil) GetGradeCriterionById(ctx context.Context, id string) (*pb.GradeDefenceCriterionResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, id)
-	var cached pb.GetGradeDefenceCriterionResponse
+	var cached pb.GradeDefenceCriterionResponse
 	if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for grade defence: %s", id)
 		return &cached, nil
@@ -591,7 +591,7 @@ func (c *GRPCCouncil) GetGradeCriterionById(ctx context.Context, id string) (*pb
 	return resp, nil
 }
 
-func (c *GRPCCouncil) CreateGradeDefenceCriterion(ctx context.Context, req *pb.CreateGradeDefenceCriterionRequest) (*pb.CreateGradeDefenceCriterionResponse, error) {
+func (c *GRPCCouncil) CreateGradeDefenceCriterion(ctx context.Context, req *pb.CreateGradeDefenceCriterionRequest) (*pb.GradeDefenceCriterionResponse, error) {
 	resp, err := c.client.CreateGradeDefenceCriterion(ctx, req)
 	if err != nil {
 		return nil, err
@@ -602,7 +602,7 @@ func (c *GRPCCouncil) CreateGradeDefenceCriterion(ctx context.Context, req *pb.C
 	return resp, nil
 }
 
-func (c *GRPCCouncil) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.UpdateGradeDefenceCriterionRequest) (*pb.UpdateGradeDefenceCriterionResponse, error) {
+func (c *GRPCCouncil) UpdateGradeDefenceCriterion(ctx context.Context, req *pb.UpdateGradeDefenceCriterionRequest) (*pb.GradeDefenceCriterionResponse, error) {
 	resp, err := c.client.UpdateGradeDefenceCriterion(ctx, req)
 	if err != nil {
 		return nil, err
@@ -644,7 +644,7 @@ func (c *GRPCCouncil) GetGradeDefenceCriteriaByIds(ctx context.Context, ids []st
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, id)
-		var cached pb.GetGradeDefenceCriterionResponse
+		var cached pb.GradeDefenceCriterionResponse
 
 		if hit, _ := GetCachedProto(ctx, c.redisClient, cacheKey, &cached); hit {
 			if cached.GradeDefenceCriterion != nil {
@@ -658,7 +658,7 @@ func (c *GRPCCouncil) GetGradeDefenceCriteriaByIds(ctx context.Context, ids []st
 		}
 	}
 
-	log.Printf("[GetGradeDefencesByIds] Total: %d, Cache hits: %d, Database queries needed: %d", len(ids), cacheHits, len(missingIds))
+	log.Printf("[GetGradeDefencesCriteriaByIds] Total: %d, Cache hits: %d, Database queries needed: %d", len(ids), cacheHits, len(missingIds))
 
 	// Fetch missing IDs from database
 	if len(missingIds) > 0 {
@@ -693,7 +693,7 @@ func (c *GRPCCouncil) GetGradeDefenceCriteriaByIds(ctx context.Context, ids []st
 			for _, gradeDefenceCriteria := range resp.GetGradeDefenceCriteria() {
 				if gradeDefenceCriteria != nil {
 					cacheKey := fmt.Sprintf("%s%s", gradeDefenceCriterionCachePrefix, gradeDefenceCriteria.Id)
-					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GetGradeDefenceCriterionResponse{GradeDefenceCriterion: gradeDefenceCriteria}, gradeDefenceCacheTTL)
+					SetCachedProto(ctx, c.redisClient, cacheKey, &pb.GradeDefenceCriterionResponse{GradeDefenceCriterion: gradeDefenceCriteria}, gradeDefenceCriterion)
 					result.GradeDefenceCriteria = append(result.GradeDefenceCriteria, gradeDefenceCriteria)
 				}
 			}

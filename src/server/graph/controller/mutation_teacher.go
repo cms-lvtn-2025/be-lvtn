@@ -30,16 +30,20 @@ func (c *Controller) UpdateMyTeacherProfile(ctx context.Context, input model.Upd
 		return nil, fmt.Errorf("not authorized")
 	}
 
-	req := &pbUser.UpdateTeacherRequest{
-		Id:        *myId,
+	teacherAction := &pbUser.TeacherAction{
 		UpdatedBy: *myId,
 	}
 
 	if input.Email != nil {
-		req.Email = input.Email
+		teacherAction.Email = *input.Email
 	}
 	if input.Username != nil {
-		req.Username = input.Username
+		teacherAction.Username = *input.Username
+	}
+
+	req := &pbUser.UpdateTeacherRequest{
+		Id:      *myId,
+		Teacher: teacherAction,
 	}
 
 	resp, err := c.user.UpdateTeacher(ctx, req)
@@ -99,15 +103,19 @@ func (c *Controller) GradeMidterm(ctx context.Context, enrollmentID string, inpu
 	}
 
 	grade := int32(input.Grade)
-	req := &pbThesis.UpdateMidtermRequest{
-		Id:        midterm.GetMidterm().GetId(),
-		Grade:     &grade,
-		Status:    &status,
+	midtermAction := &pbThesis.MidtermAction{
+		Grade:     grade,
+		Status:    status,
 		UpdatedBy: *myId,
 	}
 
 	if input.Feedback != nil {
-		req.Feedback = input.Feedback
+		midtermAction.Feedback = *input.Feedback
+	}
+
+	req := &pbThesis.UpdateMidtermRequest{
+		Id:      midterm.GetMidterm().GetId(),
+		Midterm: midtermAction,
 	}
 
 	resp, err := c.thesis.UpdateMidterm(ctx, req)
@@ -147,9 +155,11 @@ func (c *Controller) FeedbackMidterm(ctx context.Context, midtermID string, feed
 	}
 
 	req := &pbThesis.UpdateMidtermRequest{
-		Id:        midterm.GetMidterm().GetId(),
-		Feedback:  &feedback,
-		UpdatedBy: *myId,
+		Id: midterm.GetMidterm().GetId(),
+		Midterm: &pbThesis.MidtermAction{
+			Feedback:  feedback,
+			UpdatedBy: *myId,
+		},
 	}
 
 	resp, err := c.thesis.UpdateMidterm(ctx, req)
@@ -210,15 +220,19 @@ func (c *Controller) GradeFinal(ctx context.Context, enrollmentID string, input 
 	}
 
 	supervisorGrade := int32(input.SupervisorGrade)
-	req := &pbThesis.UpdateFinalRequest{
-		Id:              finalCode,
-		SupervisorGrade: &supervisorGrade,
-		Status:          &status,
+	finalAction := &pbThesis.FinalAction{
+		SupervisorGrade: supervisorGrade,
+		Status:          status,
 		UpdatedBy:       *myId,
 	}
 
 	if input.Notes != nil {
-		req.Notes = input.Notes
+		finalAction.Notes = *input.Notes
+	}
+
+	req := &pbThesis.UpdateFinalRequest{
+		Id:    finalCode,
+		Final: finalAction,
 	}
 
 	resp, err := c.thesis.UpdateFinal(ctx, req)
@@ -257,9 +271,11 @@ func (c *Controller) FeedbackFinal(ctx context.Context, finalID string, notes st
 	}
 
 	req := &pbThesis.UpdateFinalRequest{
-		Id:        final.GetFinal().GetId(),
-		Notes:     &notes,
-		UpdatedBy: *myId,
+		Id: final.GetFinal().GetId(),
+		Final: &pbThesis.FinalAction{
+			Notes:     notes,
+			UpdatedBy: *myId,
+		},
 	}
 
 	resp, err := c.thesis.UpdateFinal(ctx, req)
@@ -291,9 +307,11 @@ func (c *Controller) ApproveMidtermFile(ctx context.Context, fileID string) (*mo
 
 	status := pbFile.FileStatus_APPROVED
 	req := &pbFile.UpdateFileRequest{
-		Id:        fileID,
-		Status:    &status,
-		UpdatedBy: *myId,
+		Id: fileID,
+		File: &pbFile.FileAction{
+			Status:    status,
+			UpdatedBy: *myId,
+		},
 	}
 
 	resp, err := c.file.UpdateFile(ctx, req)
@@ -319,9 +337,11 @@ func (c *Controller) RejectMidtermFile(ctx context.Context, fileID string, reaso
 
 	status := pbFile.FileStatus_REJECTED
 	req := &pbFile.UpdateFileRequest{
-		Id:        fileID,
-		Status:    &status,
-		UpdatedBy: *myId,
+		Id: fileID,
+		File: &pbFile.FileAction{
+			Status:    status,
+			UpdatedBy: *myId,
+		},
 	}
 
 	resp, err := c.file.UpdateFile(ctx, req)
@@ -344,9 +364,11 @@ func (c *Controller) ApproveFinalFile(ctx context.Context, fileID string) (*mode
 
 	status := pbFile.FileStatus_APPROVED
 	req := &pbFile.UpdateFileRequest{
-		Id:        fileID,
-		Status:    &status,
-		UpdatedBy: *myId,
+		Id: fileID,
+		File: &pbFile.FileAction{
+			Status:    status,
+			UpdatedBy: *myId,
+		},
 	}
 
 	resp, err := c.file.UpdateFile(ctx, req)
@@ -369,9 +391,11 @@ func (c *Controller) RejectFinalFile(ctx context.Context, fileID string, reason 
 
 	status := pbFile.FileStatus_REJECTED
 	req := &pbFile.UpdateFileRequest{
-		Id:        fileID,
-		Status:    &status,
-		UpdatedBy: *myId,
+		Id: fileID,
+		File: &pbFile.FileAction{
+			Status:    status,
+			UpdatedBy: *myId,
+		},
 	}
 
 	resp, err := c.file.UpdateFile(ctx, req)
@@ -447,14 +471,16 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 
 	// Create topic
 	topicResp, err := c.thesis.CreateTopic(ctx, &pbThesis.CreateTopicRequest{
-		Title:        input.Title,
-		TitleEn:      input.TitleEn,
-		Description:  input.Description,
-		Curriculum:   *input.Curriculum,
-		MajorCode:    teacher.GetTeacher().GetMajorCode(),
-		SemesterCode: teacher.GetTeacher().GetSemesterCode(),
-		Status:       pbThesis.TopicStatus_SUBMIT,
-		CreatedBy:    *myId,
+		Topic: &pbThesis.TopicAction{
+			Title:        input.Title,
+			TitleEn:      input.TitleEn,
+			Description:  input.Description,
+			Curriculum:   *input.Curriculum,
+			MajorCode:    teacher.GetTeacher().GetMajorCode(),
+			SemesterCode: teacher.GetTeacher().GetSemesterCode(),
+			Status:       pbThesis.TopicStatus_SUBMIT,
+			CreatedBy:    *myId,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -468,12 +494,14 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 	}
 
 	topicCouncilResp, err := c.thesis.CreateTopicCouncil(ctx, &pbThesis.CreateTopicCouncilRequest{
-		Title:     fmt.Sprintf("Topic Council for %s", input.Title),
-		TopicCode: resources.topicId,
-		Stage:     stage,
-		TimeStart: timestamppb.New(input.TimeStart),
-		TimeEnd:   timestamppb.New(input.TimeEnd),
-		CreatedBy: *myId,
+		TopicCouncil: &pbThesis.TopicCouncilAction{
+			Title:     fmt.Sprintf("Topic Council for %s", input.Title),
+			TopicCode: resources.topicId,
+			Stage:     stage,
+			TimeStart: timestamppb.New(input.TimeStart),
+			TimeEnd:   timestamppb.New(input.TimeEnd),
+			CreatedBy: *myId,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -482,9 +510,11 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 
 	// Create supervisor
 	supervisorResp, err := c.thesis.CreateTopicCouncilSupervisor(ctx, &pbThesis.CreateTopicCouncilSupervisorRequest{
-		TopicCouncilCode:      resources.topicCouncilId,
-		TeacherSupervisorCode: *myId,
-		CreatedBy:             *myId,
+		TopicCouncilSupervisor: &pbThesis.TopicCouncilSupervisorAction{
+			TopicCouncilCode:      resources.topicCouncilId,
+			TeacherSupervisorCode: *myId,
+			CreatedBy:             *myId,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -495,35 +525,45 @@ func (c *Controller) CreateTopicForSuperVisor(ctx context.Context, input model.C
 	for _, student := range input.Students {
 		idStudent := fmt.Sprint(student, "_", teacher.GetTeacher().GetSemesterCode())
 
-		midtermResp, err := c.thesis.CreateMidterm(ctx, &pbThesis.CreateMidtermRequest{
-			Title:     fmt.Sprintf("Midterm for %s", student),
-			Status:    pbThesis.MidtermStatus_NOT_SUBMITTED,
-			CreatedBy: *myId,
-		})
-		if err != nil {
-			return nil, err
-		}
-		finalResp, err := c.thesis.CreateFinal(ctx, &pbThesis.CreateFinalRequest{
-			Title:     fmt.Sprintf("Final for %s", student),
-			Status:    pbThesis.FinalStatus_PENDING,
-			CreatedBy: *myId,
-		})
-		if err != nil {
-			return nil, err
-		}
-		fmt.Print("this is bug", idStudent)
+		// Create enrollment first to get the enrollment ID
 		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, &pbThesis.CreateEnrollmentRequest{
-			TopicCouncilCode: resources.topicCouncilId,
-			StudentCode:      idStudent,
-			CreatedBy:        *myId,
-			Title:            fmt.Sprintf("Enrollment for %s", student),
-			MidtermCode:      &midtermResp.Midterm.Id,
-			FinalCode:        &finalResp.Final.Id,
+			Enrollment: &pbThesis.EnrollmentAction{
+				TopicCouncilCode: resources.topicCouncilId,
+				StudentCode:      idStudent,
+				CreatedBy:        *myId,
+				Title:            fmt.Sprintf("Enrollment for %s", student),
+			},
 		})
 		if err != nil {
 			return nil, err
 		}
 		resources.enrollmentIds = append(resources.enrollmentIds, enrollmentResp.GetEnrollment().GetId())
+
+		// Create midterm with enrollment_code
+		_, err = c.thesis.CreateMidterm(ctx, &pbThesis.CreateMidtermRequest{
+			Midterm: &pbThesis.MidtermAction{
+				Title:          fmt.Sprintf("Midterm for %s", student),
+				Status:         pbThesis.MidtermStatus_NOT_SUBMITTED,
+				CreatedBy:      *myId,
+				EnrollmentCode: enrollmentResp.GetEnrollment().GetId(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		// Create final with enrollment_code
+		_, err = c.thesis.CreateFinal(ctx, &pbThesis.CreateFinalRequest{
+			Final: &pbThesis.FinalAction{
+				Title:          fmt.Sprintf("Final for %s", student),
+				Status:         pbThesis.FinalStatus_PENDING,
+				CreatedBy:      *myId,
+				EnrollmentCode: enrollmentResp.GetEnrollment().GetId(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	shouldRollback = false
@@ -592,12 +632,14 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 	stage := pbThesis.TopicStage_STAGE_LVTN
 
 	topicCouncilResp, err := c.thesis.CreateTopicCouncil(ctx, &pbThesis.CreateTopicCouncilRequest{
-		Title:     fmt.Sprintf("Topic Council for %s", input.TopicCode),
-		TopicCode: input.TopicCode,
-		Stage:     stage,
-		TimeStart: timestamppb.New(input.TimeStart),
-		TimeEnd:   timestamppb.New(input.TimeEnd),
-		CreatedBy: *myId,
+		TopicCouncil: &pbThesis.TopicCouncilAction{
+			Title:     fmt.Sprintf("Topic Council for %s", input.TopicCode),
+			TopicCode: input.TopicCode,
+			Stage:     stage,
+			TimeStart: timestamppb.New(input.TimeStart),
+			TimeEnd:   timestamppb.New(input.TimeEnd),
+			CreatedBy: *myId,
+		},
 	})
 	if err != nil {
 		erros = append(erros, fmt.Errorf("failed to create topic council: %v", err))
@@ -606,12 +648,14 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 
 	// Add supervisor
 	supervisorResp, err := c.thesis.CreateTopicCouncilSupervisor(ctx, &pbThesis.CreateTopicCouncilSupervisorRequest{
-		TopicCouncilCode:      resources.topicCouncilId,
-		TeacherSupervisorCode: *myId,
-		CreatedBy:             *myId,
+		TopicCouncilSupervisor: &pbThesis.TopicCouncilSupervisorAction{
+			TopicCouncilCode:      resources.topicCouncilId,
+			TeacherSupervisorCode: *myId,
+			CreatedBy:             *myId,
+		},
 	})
 	if err != nil {
-		erros = append(erros, fmt.Errorf("failed to create topic council: %v", err))
+		erros = append(erros, fmt.Errorf("failed to create topic council supervisor: %v", err))
 	}
 	resources.supervisorId = supervisorResp.GetTopicCouncilSupervisor().GetId()
 
@@ -619,45 +663,52 @@ func (c *Controller) CreateTopicCouncilForSuperVisor(ctx context.Context, input 
 	for _, student := range input.Students {
 		idStudent := fmt.Sprint(student, "_", teacher.GetTeacher().GetSemesterCode())
 
-		// Create midterm
+		// Create enrollment first to get the enrollment ID
+		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, &pbThesis.CreateEnrollmentRequest{
+			Enrollment: &pbThesis.EnrollmentAction{
+				TopicCouncilCode: resources.topicCouncilId,
+				StudentCode:      idStudent,
+				CreatedBy:        *myId,
+				Title:            fmt.Sprintf("Enrollment for %s", student),
+			},
+		})
+		if err != nil {
+			erros = append(erros, fmt.Errorf("failed to create enrollment: %v", err))
+			continue
+		}
+		resources.enrollmentIds = append(resources.enrollmentIds, enrollmentResp.GetEnrollment().GetId())
+
+		// Create midterm with enrollment_code
 		midtermResp, err := c.thesis.CreateMidterm(ctx, &pbThesis.CreateMidtermRequest{
-			Title:     fmt.Sprintf("Midterm for %s", student),
-			Status:    pbThesis.MidtermStatus_NOT_SUBMITTED,
-			CreatedBy: *myId,
+			Midterm: &pbThesis.MidtermAction{
+				Title:          fmt.Sprintf("Midterm for %s", student),
+				Status:         pbThesis.MidtermStatus_NOT_SUBMITTED,
+				CreatedBy:      *myId,
+				EnrollmentCode: enrollmentResp.GetEnrollment().GetId(),
+			},
 		})
 		if err != nil {
 			erros = append(erros, fmt.Errorf("failed to create Midterm: %v", err))
 		}
 		resources.midtermIds = append(resources.midtermIds, midtermResp.GetMidterm().GetId())
 
-		// Create final
+		// Create final with enrollment_code
 		finalResp, err := c.thesis.CreateFinal(ctx, &pbThesis.CreateFinalRequest{
-			Title:     fmt.Sprintf("Final for %s", student),
-			Status:    pbThesis.FinalStatus_PENDING,
-			CreatedBy: *myId,
+			Final: &pbThesis.FinalAction{
+				Title:          fmt.Sprintf("Final for %s", student),
+				Status:         pbThesis.FinalStatus_PENDING,
+				CreatedBy:      *myId,
+				EnrollmentCode: enrollmentResp.GetEnrollment().GetId(),
+			},
 		})
 		if err != nil {
 			erros = append(erros, fmt.Errorf("failed to create final: %v", err))
 		}
 		resources.finalIds = append(resources.finalIds, finalResp.GetFinal().GetId())
-
-		// Create enrollment with midterm and final codes
-		enrollmentResp, err := c.thesis.CreateEnrollment(ctx, &pbThesis.CreateEnrollmentRequest{
-			TopicCouncilCode: resources.topicCouncilId,
-			StudentCode:      idStudent,
-			CreatedBy:        *myId,
-			Title:            fmt.Sprintf("Enrollment for %s", student),
-			MidtermCode:      &midtermResp.Midterm.Id,
-			FinalCode:        &finalResp.Final.Id,
-		})
-		if err != nil {
-			erros = append(erros, fmt.Errorf("failed to create enrollment: %v", err))
-		}
-		resources.enrollmentIds = append(resources.enrollmentIds, enrollmentResp.GetEnrollment().GetId())
 	}
 	var errNew string
-	for err = range erros {
-		errNew += err.Error()
+	for _, e := range erros {
+		errNew += e.Error()
 	}
 
 	shouldRollback = false
@@ -702,17 +753,21 @@ func (c *Controller) CreateGradeDefence(ctx context.Context, input model.CreateG
 		return nil, fmt.Errorf("defence is not of this topic council")
 	}
 
-	req := &pbCouncil.CreateGradeDefenceRequest{
+	gradeDefenceAction := &pbCouncil.GradeDefenceAction{
 		DefenceCode:    input.DefenceCode,
 		EnrollmentCode: input.EnrollmentCode,
 		CreatedBy:      *myId,
 	}
 
 	if input.Note != nil {
-		req.Note = input.Note
+		gradeDefenceAction.Note = *input.Note
 	}
 	if input.TotalScore != nil {
-		req.TotalScore = input.TotalScore
+		gradeDefenceAction.TotalScore = *input.TotalScore
+	}
+
+	req := &pbCouncil.CreateGradeDefenceRequest{
+		GradeDefence: gradeDefenceAction,
 	}
 
 	resp, err := c.council.CreateGradeDefence(ctx, req)
@@ -746,16 +801,20 @@ func (c *Controller) UpdateGradeDefence(ctx context.Context, id string, input mo
 		return nil, fmt.Errorf("you are not a member of this defence")
 	}
 
-	req := &pbCouncil.UpdateGradeDefenceRequest{
-		Id:        id,
+	gradeDefenceAction := &pbCouncil.GradeDefenceAction{
 		UpdatedBy: *myId,
 	}
 
 	if input.Note != nil {
-		req.Note = input.Note
+		gradeDefenceAction.Note = *input.Note
 	}
 	if input.TotalScore != nil {
-		req.TotalScore = input.TotalScore
+		gradeDefenceAction.TotalScore = *input.TotalScore
+	}
+
+	req := &pbCouncil.UpdateGradeDefenceRequest{
+		Id:           id,
+		GradeDefence: gradeDefenceAction,
 	}
 
 	resp, err := c.council.UpdateGradeDefence(ctx, req)
@@ -793,11 +852,13 @@ func (c *Controller) AddGradeDefenceCriterion(ctx context.Context, input model.C
 	}
 
 	resp, err := c.council.CreateGradeDefenceCriterion(ctx, &pbCouncil.CreateGradeDefenceCriterionRequest{
-		GradeDefenceCode: input.GradeDefenceCode,
-		Name:             &input.Name,
-		Score:            &input.Score,
-		MaxScore:         &input.MaxScore,
-		CreatedBy:        &*myId,
+		GradeDefenceCriterion: &pbCouncil.GradeDefenceCriterionAction{
+			GradeDefenceCode: input.GradeDefenceCode,
+			Name:             input.Name,
+			Score:            input.Score,
+			MaxScore:         input.MaxScore,
+			CreatedBy:        *myId,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -830,19 +891,23 @@ func (c *Controller) UpdateGradeDefenceCriterion(ctx context.Context, id string,
 	}
 
 	updatedBy := *myId
-	req := &pbCouncil.UpdateGradeDefenceCriterionRequest{
-		Id:        id,
-		UpdatedBy: &updatedBy,
+	criterionAction := &pbCouncil.GradeDefenceCriterionAction{
+		UpdatedBy: updatedBy,
 	}
 
 	if input.Name != nil {
-		req.Name = input.Name
+		criterionAction.Name = *input.Name
 	}
 	if input.Score != nil {
-		req.Score = input.Score
+		criterionAction.Score = *input.Score
 	}
 	if input.MaxScore != nil {
-		req.MaxScore = input.MaxScore
+		criterionAction.MaxScore = *input.MaxScore
+	}
+
+	req := &pbCouncil.UpdateGradeDefenceCriterionRequest{
+		Id:                    id,
+		GradeDefenceCriterion: criterionAction,
 	}
 
 	resp, err := c.council.UpdateGradeDefenceCriterion(ctx, req)

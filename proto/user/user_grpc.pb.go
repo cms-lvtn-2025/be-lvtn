@@ -38,15 +38,15 @@ const (
 // ============= Service =============
 type UserServiceClient interface {
 	// Student
-	CreateStudent(ctx context.Context, in *CreateStudentRequest, opts ...grpc.CallOption) (*CreateStudentResponse, error)
-	GetStudent(ctx context.Context, in *GetStudentRequest, opts ...grpc.CallOption) (*GetStudentResponse, error)
-	UpdateStudent(ctx context.Context, in *UpdateStudentRequest, opts ...grpc.CallOption) (*UpdateStudentResponse, error)
+	CreateStudent(ctx context.Context, in *CreateStudentRequest, opts ...grpc.CallOption) (*StudentResponse, error)
+	GetStudent(ctx context.Context, in *GetStudentRequest, opts ...grpc.CallOption) (*StudentResponse, error)
+	UpdateStudent(ctx context.Context, in *UpdateStudentRequest, opts ...grpc.CallOption) (*StudentResponse, error)
 	DeleteStudent(ctx context.Context, in *DeleteStudentRequest, opts ...grpc.CallOption) (*DeleteStudentResponse, error)
 	ListStudents(ctx context.Context, in *ListStudentsRequest, opts ...grpc.CallOption) (*ListStudentsResponse, error)
 	// Teacher
-	CreateTeacher(ctx context.Context, in *CreateTeacherRequest, opts ...grpc.CallOption) (*CreateTeacherResponse, error)
-	GetTeacher(ctx context.Context, in *GetTeacherRequest, opts ...grpc.CallOption) (*GetTeacherResponse, error)
-	UpdateTeacher(ctx context.Context, in *UpdateTeacherRequest, opts ...grpc.CallOption) (*UpdateTeacherResponse, error)
+	CreateTeacher(ctx context.Context, in *CreateTeacherRequest, opts ...grpc.CallOption) (*TeacherResponse, error)
+	GetTeacher(ctx context.Context, in *GetTeacherRequest, opts ...grpc.CallOption) (*TeacherResponse, error)
+	UpdateTeacher(ctx context.Context, in *UpdateTeacherRequest, opts ...grpc.CallOption) (*TeacherResponse, error)
 	DeleteTeacher(ctx context.Context, in *DeleteTeacherRequest, opts ...grpc.CallOption) (*DeleteTeacherResponse, error)
 	ListTeachers(ctx context.Context, in *ListTeachersRequest, opts ...grpc.CallOption) (*ListTeachersResponse, error)
 }
@@ -59,9 +59,9 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) CreateStudent(ctx context.Context, in *CreateStudentRequest, opts ...grpc.CallOption) (*CreateStudentResponse, error) {
+func (c *userServiceClient) CreateStudent(ctx context.Context, in *CreateStudentRequest, opts ...grpc.CallOption) (*StudentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateStudentResponse)
+	out := new(StudentResponse)
 	err := c.cc.Invoke(ctx, UserService_CreateStudent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -69,9 +69,9 @@ func (c *userServiceClient) CreateStudent(ctx context.Context, in *CreateStudent
 	return out, nil
 }
 
-func (c *userServiceClient) GetStudent(ctx context.Context, in *GetStudentRequest, opts ...grpc.CallOption) (*GetStudentResponse, error) {
+func (c *userServiceClient) GetStudent(ctx context.Context, in *GetStudentRequest, opts ...grpc.CallOption) (*StudentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetStudentResponse)
+	out := new(StudentResponse)
 	err := c.cc.Invoke(ctx, UserService_GetStudent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -79,9 +79,9 @@ func (c *userServiceClient) GetStudent(ctx context.Context, in *GetStudentReques
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateStudent(ctx context.Context, in *UpdateStudentRequest, opts ...grpc.CallOption) (*UpdateStudentResponse, error) {
+func (c *userServiceClient) UpdateStudent(ctx context.Context, in *UpdateStudentRequest, opts ...grpc.CallOption) (*StudentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateStudentResponse)
+	out := new(StudentResponse)
 	err := c.cc.Invoke(ctx, UserService_UpdateStudent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -109,9 +109,9 @@ func (c *userServiceClient) ListStudents(ctx context.Context, in *ListStudentsRe
 	return out, nil
 }
 
-func (c *userServiceClient) CreateTeacher(ctx context.Context, in *CreateTeacherRequest, opts ...grpc.CallOption) (*CreateTeacherResponse, error) {
+func (c *userServiceClient) CreateTeacher(ctx context.Context, in *CreateTeacherRequest, opts ...grpc.CallOption) (*TeacherResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateTeacherResponse)
+	out := new(TeacherResponse)
 	err := c.cc.Invoke(ctx, UserService_CreateTeacher_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -119,9 +119,9 @@ func (c *userServiceClient) CreateTeacher(ctx context.Context, in *CreateTeacher
 	return out, nil
 }
 
-func (c *userServiceClient) GetTeacher(ctx context.Context, in *GetTeacherRequest, opts ...grpc.CallOption) (*GetTeacherResponse, error) {
+func (c *userServiceClient) GetTeacher(ctx context.Context, in *GetTeacherRequest, opts ...grpc.CallOption) (*TeacherResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetTeacherResponse)
+	out := new(TeacherResponse)
 	err := c.cc.Invoke(ctx, UserService_GetTeacher_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -129,9 +129,9 @@ func (c *userServiceClient) GetTeacher(ctx context.Context, in *GetTeacherReques
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateTeacher(ctx context.Context, in *UpdateTeacherRequest, opts ...grpc.CallOption) (*UpdateTeacherResponse, error) {
+func (c *userServiceClient) UpdateTeacher(ctx context.Context, in *UpdateTeacherRequest, opts ...grpc.CallOption) (*TeacherResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateTeacherResponse)
+	out := new(TeacherResponse)
 	err := c.cc.Invoke(ctx, UserService_UpdateTeacher_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -166,15 +166,15 @@ func (c *userServiceClient) ListTeachers(ctx context.Context, in *ListTeachersRe
 // ============= Service =============
 type UserServiceServer interface {
 	// Student
-	CreateStudent(context.Context, *CreateStudentRequest) (*CreateStudentResponse, error)
-	GetStudent(context.Context, *GetStudentRequest) (*GetStudentResponse, error)
-	UpdateStudent(context.Context, *UpdateStudentRequest) (*UpdateStudentResponse, error)
+	CreateStudent(context.Context, *CreateStudentRequest) (*StudentResponse, error)
+	GetStudent(context.Context, *GetStudentRequest) (*StudentResponse, error)
+	UpdateStudent(context.Context, *UpdateStudentRequest) (*StudentResponse, error)
 	DeleteStudent(context.Context, *DeleteStudentRequest) (*DeleteStudentResponse, error)
 	ListStudents(context.Context, *ListStudentsRequest) (*ListStudentsResponse, error)
 	// Teacher
-	CreateTeacher(context.Context, *CreateTeacherRequest) (*CreateTeacherResponse, error)
-	GetTeacher(context.Context, *GetTeacherRequest) (*GetTeacherResponse, error)
-	UpdateTeacher(context.Context, *UpdateTeacherRequest) (*UpdateTeacherResponse, error)
+	CreateTeacher(context.Context, *CreateTeacherRequest) (*TeacherResponse, error)
+	GetTeacher(context.Context, *GetTeacherRequest) (*TeacherResponse, error)
+	UpdateTeacher(context.Context, *UpdateTeacherRequest) (*TeacherResponse, error)
 	DeleteTeacher(context.Context, *DeleteTeacherRequest) (*DeleteTeacherResponse, error)
 	ListTeachers(context.Context, *ListTeachersRequest) (*ListTeachersResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -187,13 +187,13 @@ type UserServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServiceServer struct{}
 
-func (UnimplementedUserServiceServer) CreateStudent(context.Context, *CreateStudentRequest) (*CreateStudentResponse, error) {
+func (UnimplementedUserServiceServer) CreateStudent(context.Context, *CreateStudentRequest) (*StudentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStudent not implemented")
 }
-func (UnimplementedUserServiceServer) GetStudent(context.Context, *GetStudentRequest) (*GetStudentResponse, error) {
+func (UnimplementedUserServiceServer) GetStudent(context.Context, *GetStudentRequest) (*StudentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStudent not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateStudent(context.Context, *UpdateStudentRequest) (*UpdateStudentResponse, error) {
+func (UnimplementedUserServiceServer) UpdateStudent(context.Context, *UpdateStudentRequest) (*StudentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStudent not implemented")
 }
 func (UnimplementedUserServiceServer) DeleteStudent(context.Context, *DeleteStudentRequest) (*DeleteStudentResponse, error) {
@@ -202,13 +202,13 @@ func (UnimplementedUserServiceServer) DeleteStudent(context.Context, *DeleteStud
 func (UnimplementedUserServiceServer) ListStudents(context.Context, *ListStudentsRequest) (*ListStudentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListStudents not implemented")
 }
-func (UnimplementedUserServiceServer) CreateTeacher(context.Context, *CreateTeacherRequest) (*CreateTeacherResponse, error) {
+func (UnimplementedUserServiceServer) CreateTeacher(context.Context, *CreateTeacherRequest) (*TeacherResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTeacher not implemented")
 }
-func (UnimplementedUserServiceServer) GetTeacher(context.Context, *GetTeacherRequest) (*GetTeacherResponse, error) {
+func (UnimplementedUserServiceServer) GetTeacher(context.Context, *GetTeacherRequest) (*TeacherResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTeacher not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateTeacher(context.Context, *UpdateTeacherRequest) (*UpdateTeacherResponse, error) {
+func (UnimplementedUserServiceServer) UpdateTeacher(context.Context, *UpdateTeacherRequest) (*TeacherResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTeacher not implemented")
 }
 func (UnimplementedUserServiceServer) DeleteTeacher(context.Context, *DeleteTeacherRequest) (*DeleteTeacherResponse, error) {

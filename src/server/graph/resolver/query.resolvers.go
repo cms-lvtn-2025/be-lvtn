@@ -7,6 +7,7 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"thaily/src/server/graph/generated"
 	"thaily/src/server/graph/model"
 )
@@ -16,19 +17,9 @@ func (r *affairQueryResolver) Teachers(ctx context.Context, obj *model.AffairQue
 	return r.Ctrl.GetListTeachers(ctx, search)
 }
 
-// TeacherDetail is the resolver for the teacherDetail field.
-func (r *affairQueryResolver) TeacherDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Teacher, error) {
-	return r.Ctrl.GetTeacherById(ctx, id)
-}
-
 // Students is the resolver for the students field.
 func (r *affairQueryResolver) Students(ctx context.Context, obj *model.AffairQuery, search model.SearchRequestInput) (*model.StudentListResponse, error) {
 	return r.Ctrl.GetListStudents(ctx, search)
-}
-
-// StudentDetail is the resolver for the studentDetail field.
-func (r *affairQueryResolver) StudentDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Student, error) {
-	return r.Ctrl.GetStudentById(ctx, id)
 }
 
 // Semesters is the resolver for the semesters field.
@@ -36,19 +27,9 @@ func (r *affairQueryResolver) Semesters(ctx context.Context, obj *model.AffairQu
 	return r.Ctrl.GetAllSemesters(ctx, search)
 }
 
-// SemesterDetail is the resolver for the semesterDetail field.
-func (r *affairQueryResolver) SemesterDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Semester, error) {
-	return r.Ctrl.GetSemesterById(ctx, id)
-}
-
 // Majors is the resolver for the majors field.
 func (r *affairQueryResolver) Majors(ctx context.Context, obj *model.AffairQuery, search model.SearchRequestInput) (*model.MajorListResponse, error) {
 	return r.Ctrl.GetAllMajors(ctx, search)
-}
-
-// MajorDetail is the resolver for the majorDetail field.
-func (r *affairQueryResolver) MajorDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Major, error) {
-	return r.Ctrl.GetMajorById(ctx, id)
 }
 
 // Faculties is the resolver for the faculties field.
@@ -56,19 +37,9 @@ func (r *affairQueryResolver) Faculties(ctx context.Context, obj *model.AffairQu
 	return r.Ctrl.GetAllFaculties(ctx, search)
 }
 
-// FacultyDetail is the resolver for the facultyDetail field.
-func (r *affairQueryResolver) FacultyDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Faculty, error) {
-	return r.Ctrl.GetFacultyById(ctx, id)
-}
-
 // Topics is the resolver for the topics field.
 func (r *affairQueryResolver) Topics(ctx context.Context, obj *model.AffairQuery, search model.SearchRequestInput) (*model.TopicListResponse, error) {
 	return r.Ctrl.GetAllTopics(ctx, search)
-}
-
-// TopicDetail is the resolver for the topicDetail field.
-func (r *affairQueryResolver) TopicDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Topic, error) {
-	return r.Ctrl.GetTopicById(ctx, id)
 }
 
 // Enrollments is the resolver for the enrollments field.
@@ -76,19 +47,9 @@ func (r *affairQueryResolver) Enrollments(ctx context.Context, obj *model.Affair
 	return r.Ctrl.GetAllEnrollments(ctx, search)
 }
 
-// EnrollmentDetail is the resolver for the enrollmentDetail field.
-func (r *affairQueryResolver) EnrollmentDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Enrollment, error) {
-	return r.Ctrl.GetEnrollmentById(ctx, id)
-}
-
 // Councils is the resolver for the councils field.
 func (r *affairQueryResolver) Councils(ctx context.Context, obj *model.AffairQuery, search model.SearchRequestInput) (*model.CouncilListResponse, error) {
 	return r.Ctrl.GetAllCouncils(ctx, search)
-}
-
-// CouncilDetail is the resolver for the councilDetail field.
-func (r *affairQueryResolver) CouncilDetail(ctx context.Context, obj *model.AffairQuery, id string) (*model.Council, error) {
-	return r.Ctrl.GetCouncilById(ctx, id)
 }
 
 // DefencesByCouncil is the resolver for the defencesByCouncil field.
@@ -192,6 +153,7 @@ func (r *studentQueryResolver) Semesters(ctx context.Context, obj *model.Student
 
 // TopicCouncils is the resolver for the topicCouncils field.
 func (r *supervisorQueryResolver) TopicCouncils(ctx context.Context, obj *model.SupervisorQuery, search *model.SearchRequestInput) (*model.TopicCouncilListResponse, error) {
+	fmt.Print("llll")
 	return r.Ctrl.GetSupervisedTopicCouncils(ctx, search)
 }
 

@@ -55,14 +55,16 @@ func (c *Controller) CreateTeacher(ctx context.Context, input model.CreateTeache
 
 	// Create teacher via gRPC
 	resp, err := c.user.CreateTeacher(ctx, &pbUser.CreateTeacherRequest{
-		Id:           input.ID,
-		Email:        input.Email,
-		Username:     input.Username,
-		Gender:       gender,
-		MajorCode:    input.MajorCode,
-		SemesterCode: input.SemesterCode,
-		Msgv:         input.Msgv,
-		CreatedBy:    createdBy,
+		Teacher: &pbUser.TeacherAction{
+			Id:           input.ID,
+			Email:        input.Email,
+			Username:     input.Username,
+			Gender:       gender,
+			MajorCode:    input.MajorCode,
+			SemesterCode: input.SemesterCode,
+			Msgv:         input.Msgv,
+			CreatedBy:    createdBy,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -78,11 +80,13 @@ func (c *Controller) CreateTeacher(ctx context.Context, input model.CreateTeache
 		}
 
 		roleReq := &pbRole.CreateRoleSystemRequest{
-			Title:        input.Username,
-			TeacherCode:  input.Msgv,
-			SemesterCode: input.SemesterCode,
-			Activate:     true,
-			CreatedBy:    createdBy,
+			RoleSystem: &pbRole.RoleSystemAction{
+				Title:        input.Username,
+				TeacherCode:  input.Msgv,
+				SemesterCode: input.SemesterCode,
+				Activate:     true,
+				CreatedBy:    createdBy,
+			},
 		}
 
 		_, err = c.role.CreateRoles(ctx, roleReq, pbRoles)
@@ -115,16 +119,15 @@ func (c *Controller) UpdateTeacher(ctx context.Context, id string, input model.U
 		updatedBy = *userInfo
 	}
 
-	req := &pbUser.UpdateTeacherRequest{
-		Id:        id,
+	teacherAction := &pbUser.TeacherAction{
 		UpdatedBy: updatedBy,
 	}
 
 	if input.Email != nil {
-		req.Email = input.Email
+		teacherAction.Email = *input.Email
 	}
 	if input.Username != nil {
-		req.Username = input.Username
+		teacherAction.Username = *input.Username
 	}
 	if input.Gender != nil {
 		var gender pbUser.Gender
@@ -134,16 +137,21 @@ func (c *Controller) UpdateTeacher(ctx context.Context, id string, input model.U
 		case model.GenderFemale:
 			gender = pbUser.Gender_FEMALE
 		}
-		req.Gender = &gender
+		teacherAction.Gender = gender
 	}
 	if input.MajorCode != nil {
-		req.MajorCode = input.MajorCode
+		teacherAction.MajorCode = *input.MajorCode
 	}
 	if input.SemesterCode != nil {
-		req.SemesterCode = input.SemesterCode
+		teacherAction.SemesterCode = *input.SemesterCode
 	}
 	if input.Msgv != nil {
-		req.Msgv = input.Msgv
+		teacherAction.Msgv = *input.Msgv
+	}
+
+	req := &pbUser.UpdateTeacherRequest{
+		Id:      id,
+		Teacher: teacherAction,
 	}
 
 	resp, err := c.user.UpdateTeacher(ctx, req)
@@ -207,11 +215,13 @@ func (c *Controller) UpdateTeacher(ctx context.Context, id string, input model.U
 		// Create new roles
 		if len(rolesToCreate) > 0 {
 			roleReq := &pbRole.CreateRoleSystemRequest{
-				Title:        teacher.Username,
-				TeacherCode:  teacherCode,
-				SemesterCode: semesterCode,
-				Activate:     true,
-				CreatedBy:    updatedBy,
+				RoleSystem: &pbRole.RoleSystemAction{
+					Title:        teacher.Username,
+					TeacherCode:  teacherCode,
+					SemesterCode: semesterCode,
+					Activate:     true,
+					CreatedBy:    updatedBy,
+				},
 			}
 
 			_, err = c.role.CreateRoles(ctx, roleReq, rolesToCreate)
@@ -295,11 +305,11 @@ func (c *Controller) CreateStudent(ctx context.Context, input model.CreateStuden
 		gender = pbUser.Gender_MALE
 	}
 
-	req := &pbUser.CreateStudentRequest{
+	studentAction := &pbUser.StudentAction{
 		Id:           input.ID,
 		Email:        input.Email,
 		Username:     input.Username,
-		Gender:       &gender,
+		Gender:       gender,
 		MajorCode:    input.MajorCode,
 		SemesterCode: input.SemesterCode,
 		Mssv:         input.Mssv,
@@ -307,10 +317,14 @@ func (c *Controller) CreateStudent(ctx context.Context, input model.CreateStuden
 	}
 
 	if input.Phone != "" {
-		req.Phone = &input.Phone
+		studentAction.Phone = input.Phone
 	}
 	if input.ClassCode != nil && *input.ClassCode != "" {
-		req.ClassCode = *input.ClassCode
+		studentAction.ClassCode = *input.ClassCode
+	}
+
+	req := &pbUser.CreateStudentRequest{
+		Student: studentAction,
 	}
 
 	resp, err := c.user.CreateStudent(ctx, req)
@@ -341,19 +355,18 @@ func (c *Controller) UpdateStudent(ctx context.Context, id string, input model.U
 		updatedBy = *userInfo
 	}
 
-	req := &pbUser.UpdateStudentRequest{
-		Id:        id,
+	studentAction := &pbUser.StudentAction{
 		UpdatedBy: updatedBy,
 	}
 
 	if input.Email != nil {
-		req.Email = input.Email
+		studentAction.Email = *input.Email
 	}
 	if input.Phone != nil {
-		req.Phone = input.Phone
+		studentAction.Phone = *input.Phone
 	}
 	if input.Username != nil {
-		req.Username = input.Username
+		studentAction.Username = *input.Username
 	}
 	if input.Gender != nil {
 		var gender pbUser.Gender
@@ -363,19 +376,24 @@ func (c *Controller) UpdateStudent(ctx context.Context, id string, input model.U
 		case model.GenderFemale:
 			gender = pbUser.Gender_FEMALE
 		}
-		req.Gender = &gender
+		studentAction.Gender = gender
 	}
 	if input.MajorCode != nil {
-		req.MajorCode = input.MajorCode
+		studentAction.MajorCode = *input.MajorCode
 	}
 	if input.ClassCode != nil {
-		req.ClassCode = input.ClassCode
+		studentAction.ClassCode = *input.ClassCode
 	}
 	if input.SemesterCode != nil {
-		req.SemesterCode = input.SemesterCode
+		studentAction.SemesterCode = *input.SemesterCode
 	}
 	if input.Mssv != nil {
-		req.Mssv = input.Mssv
+		studentAction.Mssv = *input.Mssv
+	}
+
+	req := &pbUser.UpdateStudentRequest{
+		Id:      id,
+		Student: studentAction,
 	}
 
 	resp, err := c.user.UpdateStudent(ctx, req)
@@ -443,8 +461,10 @@ func (c *Controller) CreateSemester(ctx context.Context, input model.CreateSemes
 	}
 
 	resp, err := c.academic.CreateSemester(ctx, &pbAcademic.CreateSemesterRequest{
-		Title:     input.Title,
-		CreatedBy: createdBy,
+		Semester: &pbAcademic.SemesterAction{
+			Title:     input.Title,
+			CreatedBy: createdBy,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -470,13 +490,17 @@ func (c *Controller) UpdateSemester(ctx context.Context, id string, input model.
 		updatedBy = *userInfo
 	}
 
-	req := &pbAcademic.UpdateSemesterRequest{
-		Id:        id,
+	semesterAction := &pbAcademic.SemesterAction{
 		UpdatedBy: updatedBy,
 	}
 
 	if input.Title != nil {
-		req.Title = input.Title
+		semesterAction.Title = *input.Title
+	}
+
+	req := &pbAcademic.UpdateSemesterRequest{
+		Id:       id,
+		Semester: semesterAction,
 	}
 
 	resp, err := c.academic.UpdateSemester(ctx, req)
@@ -531,11 +555,13 @@ func (c *Controller) CreateMajor(ctx context.Context, input model.CreateMajorInp
 	}
 
 	resp, err := c.academic.CreateMajor(ctx, &pbAcademic.CreateMajorRequest{
-		Id:          input.ID,
-		Title:       input.Title,
-		FacultyCode: input.FacultyCode,
-		Ms:          input.Ms,
-		CreatedBy:   createdBy,
+		Major: &pbAcademic.MajorAction{
+			Id:          input.ID,
+			Title:       input.Title,
+			FacultyCode: input.FacultyCode,
+			Ms:          input.Ms,
+			CreatedBy:   createdBy,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -564,19 +590,23 @@ func (c *Controller) UpdateMajor(ctx context.Context, id string, input model.Upd
 		updatedBy = *userInfo
 	}
 
-	req := &pbAcademic.UpdateMajorRequest{
-		Id:        id,
+	majorAction := &pbAcademic.MajorAction{
 		UpdatedBy: updatedBy,
 	}
 
 	if input.Title != nil {
-		req.Title = input.Title
+		majorAction.Title = *input.Title
 	}
 	if input.FacultyCode != nil {
-		req.FacultyCode = input.FacultyCode
+		majorAction.FacultyCode = *input.FacultyCode
 	}
 	if input.Ms != nil {
-		req.Ms = input.Ms
+		majorAction.Ms = *input.Ms
+	}
+
+	req := &pbAcademic.UpdateMajorRequest{
+		Id:    id,
+		Major: majorAction,
 	}
 
 	resp, err := c.academic.UpdateMajor(ctx, req)
@@ -640,10 +670,12 @@ func (c *Controller) CreateFaculty(ctx context.Context, input model.CreateFacult
 	}
 
 	resp, err := c.academic.CreateFaculty(ctx, &pbAcademic.CreateFacultyRequest{
-		Id:        input.ID,
-		Title:     input.Title,
-		Ms:        input.Ms,
-		CreatedBy: createdBy,
+		Faculty: &pbAcademic.FacultyAction{
+			Id:        input.ID,
+			Title:     input.Title,
+			Ms:        input.Ms,
+			CreatedBy: createdBy,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -667,16 +699,20 @@ func (c *Controller) UpdateFaculty(ctx context.Context, id string, input model.U
 		updatedBy = *userInfo
 	}
 
-	req := &pbAcademic.UpdateFacultyRequest{
-		Id:        id,
+	facultyAction := &pbAcademic.FacultyAction{
 		UpdatedBy: updatedBy,
 	}
 
 	if input.Title != nil {
-		req.Title = input.Title
+		facultyAction.Title = *input.Title
 	}
 	if input.Ms != nil {
-		req.Ms = input.Ms
+		facultyAction.Ms = *input.Ms
+	}
+
+	req := &pbAcademic.UpdateFacultyRequest{
+		Id:      id,
+		Faculty: facultyAction,
 	}
 
 	resp, err := c.academic.UpdateFaculty(ctx, req)
@@ -726,9 +762,11 @@ func (c *Controller) ApproveCouncil(ctx context.Context, id string, timeStart ti
 
 	ts := timestamppb.New(timeStart)
 	req := &pbCouncil.UpdateCouncilRequest{
-		Id:        id,
-		TimeStart: ts,
-		UpdatedBy: updatedBy,
+		Id: id,
+		Council: &pbCouncil.CouncilAction{
+			TimeStart: ts,
+			UpdatedBy: updatedBy,
+		},
 	}
 
 	resp, err := c.council.UpdateCouncil(ctx, req)
@@ -759,17 +797,21 @@ func (c *Controller) UpdateCouncil(ctx context.Context, id string, input model.U
 		updatedBy = *userInfo
 	}
 
-	req := &pbCouncil.UpdateCouncilRequest{
-		Id:        id,
+	councilAction := &pbCouncil.CouncilAction{
 		UpdatedBy: updatedBy,
 	}
 
 	if input.Title != nil {
-		req.Title = input.Title
+		councilAction.Title = *input.Title
 	}
 	if input.TimeStart != nil {
 		ts := timestamppb.New(*input.TimeStart)
-		req.TimeStart = ts
+		councilAction.TimeStart = ts
+	}
+
+	req := &pbCouncil.UpdateCouncilRequest{
+		Id:      id,
+		Council: councilAction,
 	}
 
 	resp, err := c.council.UpdateCouncil(ctx, req)
@@ -829,9 +871,11 @@ func (c *Controller) ApproveTopic(ctx context.Context, id string) (*model.Topic,
 
 	status := pbThesis.TopicStatus_APPROVED_2
 	req := &pbThesis.UpdateTopicRequest{
-		Id:        id,
-		Status:    &status,
-		UpdatedBy: updatedBy,
+		Id: id,
+		Topic: &pbThesis.TopicAction{
+			Status:    status,
+			UpdatedBy: updatedBy,
+		},
 	}
 
 	resp, err := c.thesis.UpdateTopic(ctx, req)
@@ -865,9 +909,11 @@ func (c *Controller) RejectTopic(ctx context.Context, id string, reason *string)
 
 	status := pbThesis.TopicStatus_REJECTED
 	req := &pbThesis.UpdateTopicRequest{
-		Id:        id,
-		Status:    &status,
-		UpdatedBy: updatedBy,
+		Id: id,
+		Topic: &pbThesis.TopicAction{
+			Status:    status,
+			UpdatedBy: updatedBy,
+		},
 	}
 
 	resp, err := c.thesis.UpdateTopic(ctx, req)
@@ -899,13 +945,12 @@ func (c *Controller) UpdateTopic(ctx context.Context, id string, input model.Upd
 		updatedBy = *userInfo
 	}
 
-	req := &pbThesis.UpdateTopicRequest{
-		Id:        id,
+	topicAction := &pbThesis.TopicAction{
 		UpdatedBy: updatedBy,
 	}
 
 	if input.Title != nil {
-		req.Title = input.Title
+		topicAction.Title = *input.Title
 	}
 	if input.Status != nil {
 		var status pbThesis.TopicStatus
@@ -917,15 +962,18 @@ func (c *Controller) UpdateTopic(ctx context.Context, id string, input model.Upd
 		case model.TopicStatusRejected:
 			status = pbThesis.TopicStatus_REJECTED
 		}
-		req.Status = &status
+		topicAction.Status = status
 	}
 	if input.PercentStage1 != nil {
-		percentStage1 := int32(*input.PercentStage1)
-		req.PercentStage_1 = &percentStage1
+		topicAction.PercentStage_1 = int32(*input.PercentStage1)
 	}
 	if input.PercentStage2 != nil {
-		percentStage2 := int32(*input.PercentStage2)
-		req.PercentStage_2 = &percentStage2
+		topicAction.PercentStage_2 = int32(*input.PercentStage2)
+	}
+
+	req := &pbThesis.UpdateTopicRequest{
+		Id:    id,
+		Topic: topicAction,
 	}
 
 	resp, err := c.thesis.UpdateTopic(ctx, req)

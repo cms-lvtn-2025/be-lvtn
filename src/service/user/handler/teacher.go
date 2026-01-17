@@ -15,37 +15,32 @@ import (
 )
 
 // CreateTeacher creates a new Teacher record
-func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherRequest) (*pb.CreateTeacherResponse, error) {
+func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherRequest) (*pb.TeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Email == "" {
+	if req.GetTeacher().GetEmail() == "" {
 		return nil, status.Error(codes.InvalidArgument, "email is required")
 	}
-	if req.Username == "" {
+	if req.GetTeacher().GetUsername() == "" {
 		return nil, status.Error(codes.InvalidArgument, "username is required")
 	}
-	if req.MajorCode == "" {
+	if req.GetTeacher().GetMajorCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "major_code is required")
 	}
-	if req.SemesterCode == "" {
+	if req.GetTeacher().GetSemesterCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
 	// Use provided ID
-	id := req.Id
+	id := req.GetTeacher().GetId()
 	if id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	// Prepare fields
-
 	// Convert Gender enum to string
-	GenderValue := pb.Gender_MALE
-
-	GenderValue = req.Gender
 	GenderStr := "male"
-	switch GenderValue {
+	switch req.GetTeacher().GetGender() {
 	case pb.Gender_MALE:
 		GenderStr = "male"
 	case pb.Gender_FEMALE:
@@ -62,14 +57,14 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Email,
-		req.Username,
+		req.GetTeacher().GetEmail(),
+		req.GetTeacher().GetUsername(),
 		GenderStr,
-		req.MajorCode,
-		req.SemesterCode,
-		req.Msgv,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetTeacher().GetMajorCode(),
+		req.GetTeacher().GetSemesterCode(),
+		req.GetTeacher().GetMsgv(),
+		req.GetTeacher().GetCreatedBy(),
+		req.GetTeacher().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -78,36 +73,55 @@ func (h *Handler) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReques
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create teacher: %v", err)
 	}
-	id = fmt.Sprint(req.Msgv, "_", req.SemesterCode)
-	result, err := h.GetTeacher(ctx, &pb.GetTeacherRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get teacher")
-	}
-	return &pb.CreateTeacherResponse{
-		Teacher: result.GetTeacher(),
-	}, nil
+
+	id = fmt.Sprint(req.GetTeacher().GetMsgv(), "_", req.GetTeacher().GetSemesterCode())
+	return h.GetTeacher(ctx, &pb.GetTeacherRequest{Id: id})
 }
 
 // GetTeacher retrieves a Teacher by ID
-func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*pb.GetTeacherResponse, error) {
+func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*pb.TeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"email":         true,
+		"username":      true,
+		"gender":        true,
+		"major_code":    true,
+		"semester_code": true,
+		"msgv":          true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, email, username, gender, major_code, semester_code, msgv, created_at, updated_at, created_by, updated_by
 		FROM Teacher
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Teacher
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var GenderStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Email,
 		&entity.Username,
@@ -150,13 +164,13 @@ func (h *Handler) GetTeacher(ctx context.Context, req *pb.GetTeacherRequest) (*p
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetTeacherResponse{
+	return &pb.TeacherResponse{
 		Teacher: &entity,
 	}, nil
 }
 
 // UpdateTeacher updates an existing Teacher
-func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherRequest) (*pb.UpdateTeacherResponse, error) {
+func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherRequest) (*pb.TeacherResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -167,44 +181,39 @@ func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherReques
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Email != nil {
+	if req.GetTeacher().GetEmail() != "" {
 		updateFields = append(updateFields, "email = ?")
-		args = append(args, *req.Email)
-
+		args = append(args, req.GetTeacher().GetEmail())
 	}
-	if req.Username != nil {
+	if req.GetTeacher().GetUsername() != "" {
 		updateFields = append(updateFields, "username = ?")
-		args = append(args, *req.Username)
-
+		args = append(args, req.GetTeacher().GetUsername())
 	}
-	if req.Gender != nil {
-		updateFields = append(updateFields, "gender = ?")
-		GenderStr := "male"
-		switch *req.Gender {
-		case pb.Gender_MALE:
-			GenderStr = "male"
-		case pb.Gender_FEMALE:
-			GenderStr = "female"
-		case pb.Gender_OTHER:
-			GenderStr = "other"
-		}
-		args = append(args, GenderStr)
 
+	// Gender enum - always include
+	updateFields = append(updateFields, "gender = ?")
+	GenderStr := "male"
+	switch req.GetTeacher().GetGender() {
+	case pb.Gender_MALE:
+		GenderStr = "male"
+	case pb.Gender_FEMALE:
+		GenderStr = "female"
+	case pb.Gender_OTHER:
+		GenderStr = "other"
 	}
-	if req.MajorCode != nil {
+	args = append(args, GenderStr)
+
+	if req.GetTeacher().GetMajorCode() != "" {
 		updateFields = append(updateFields, "major_code = ?")
-		args = append(args, *req.MajorCode)
-
+		args = append(args, req.GetTeacher().GetMajorCode())
 	}
-	if req.SemesterCode != nil {
+	if req.GetTeacher().GetSemesterCode() != "" {
 		updateFields = append(updateFields, "semester_code = ?")
-		args = append(args, *req.SemesterCode)
-
+		args = append(args, req.GetTeacher().GetSemesterCode())
 	}
-	if req.Msgv != nil {
+	if req.GetTeacher().GetMsgv() != "" {
 		updateFields = append(updateFields, "msgv = ?")
-		args = append(args, *req.Msgv)
-
+		args = append(args, req.GetTeacher().GetMsgv())
 	}
 
 	if len(updateFields) == 0 {
@@ -213,30 +222,44 @@ func (h *Handler) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherReques
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetTeacher().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"id":            true,
+		"email":         true,
+		"username":      true,
+		"gender":        true,
+		"major_code":    true,
+		"semester_code": true,
+		"msgv":          true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE Teacher
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update teacher: %v", err)
 	}
 
-	result, err := h.GetTeacher(ctx, &pb.GetTeacherRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get teacher")
-	}
-	return &pb.UpdateTeacherResponse{
-		Teacher: result.GetTeacher(),
-	}, nil
+	return h.GetTeacher(ctx, &pb.GetTeacherRequest{Id: req.Id})
 }
 
 // DeleteTeacher deletes a Teacher by ID
@@ -247,9 +270,33 @@ func (h *Handler) DeleteTeacher(ctx context.Context, req *pb.DeleteTeacherReques
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Teacher WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"id":            true,
+		"email":         true,
+		"username":      true,
+		"gender":        true,
+		"major_code":    true,
+		"semester_code": true,
+		"msgv":          true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM Teacher %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete teacher: %v", err)
 	}
@@ -297,16 +344,16 @@ func (h *Handler) ListTeachers(ctx context.Context, req *pb.ListTeachersRequest)
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":            true,
 		"email":         true,
 		"username":      true,
 		"gender":        true,
 		"major_code":    true,
 		"semester_code": true,
+		"msgv":          true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

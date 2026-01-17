@@ -1,4 +1,4 @@
-syntax = "proto3";
+  syntax = "proto3";
 
 package file;
 
@@ -35,7 +35,7 @@ message File {
   string updated_by = 11;
 }
 
-message CreateFileRequest {
+message FileAction {
   string title = 1;
   string file = 2;
   FileStatus status = 3;
@@ -43,37 +43,31 @@ message CreateFileRequest {
   string option = 5;
   string table_id = 6;
   string created_by = 7;
+  string updated_by = 8;
 }
 
-message CreateFileResponse {
+message FileResponse {
   File file = 1;
+}
+
+message CreateFileRequest {
+  FileAction file = 1;
 }
 
 message GetFileRequest {
   string id = 1;
-}
-
-message GetFileResponse {
-  File file = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message UpdateFileRequest {
   string id = 1;
-  optional string title = 2;
-  optional string file = 3;
-  optional FileStatus status = 4;
-  optional TableType table = 5;
-  optional string option = 6;
-  optional string table_id = 7;
-  string updated_by = 8;
-}
-
-message UpdateFileResponse {
-  File file = 1;
+  FileAction file = 2;
+  repeated common.FilterCriteria filter = 3;
 }
 
 message DeleteFileRequest {
   string id = 1;
+  repeated common.FilterCriteria filter = 2;
 }
 
 message DeleteFileResponse {
@@ -93,9 +87,9 @@ message ListFilesResponse {
 
 // ============= Service =============
 service FileService {
-  rpc CreateFile(CreateFileRequest) returns (CreateFileResponse);
-  rpc GetFile(GetFileRequest) returns (GetFileResponse);
-  rpc UpdateFile(UpdateFileRequest) returns (UpdateFileResponse);
+  rpc CreateFile(CreateFileRequest) returns (FileResponse);
+  rpc GetFile(GetFileRequest) returns (FileResponse);
+  rpc UpdateFile(UpdateFileRequest) returns (FileResponse);
   rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
   rpc ListFiles(ListFilesRequest) returns (ListFilesResponse);
 }

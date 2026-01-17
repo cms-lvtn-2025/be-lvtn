@@ -16,48 +16,35 @@ import (
 )
 
 // CreateTopic creates a new Topic record
-func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (*pb.CreateTopicResponse, error) {
+func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (*pb.TopicResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	// Validate required fields (only string types)
-	if req.Title == "" {
+	if req.GetTopic().GetTitle() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
-	if req.TitleEn == "" {
+	if req.GetTopic().GetTitleEn() == "" {
 		return nil, status.Error(codes.InvalidArgument, "title_en is required")
 	}
-	if req.Description == "" {
+	if req.GetTopic().GetDescription() == "" {
 		return nil, status.Error(codes.InvalidArgument, "description is required")
 	}
-	if req.Curriculum == "" {
+	if req.GetTopic().GetCurriculum() == "" {
 		return nil, status.Error(codes.InvalidArgument, "curriculum is required")
 	}
-	if req.MajorCode == "" {
+	if req.GetTopic().GetMajorCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "major_code is required")
 	}
-	if req.SemesterCode == "" {
+	if req.GetTopic().GetSemesterCode() == "" {
 		return nil, status.Error(codes.InvalidArgument, "semester_code is required")
 	}
 
 	// Generate UUID
 	id := uuid.New().String()
 
-	// Prepare fields
-	PercentStage_1 := int32(0)
-	if req.PercentStage_1 != nil {
-		PercentStage_1 = *req.PercentStage_1
-	}
-	PercentStage_2 := int32(0)
-	if req.PercentStage_2 != nil {
-		PercentStage_2 = *req.PercentStage_2
-	}
-
 	// Convert Status enum to string
-	StatusValue := pb.TopicStatus_SUBMIT
-
-	StatusValue = req.Status
 	StatusStr := "submit"
-	switch StatusValue {
+	switch req.GetTopic().GetStatus() {
 	case pb.TopicStatus_SUBMIT:
 		StatusStr = "submit"
 	case pb.TopicStatus_TOPIC_PENDING:
@@ -82,17 +69,17 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 
 	_, err := h.execQuery(ctx, query,
 		id,
-		req.Title,
-		req.TitleEn,
-		req.Description,
-		req.Curriculum,
-		req.MajorCode,
-		req.SemesterCode,
+		req.GetTopic().GetTitle(),
+		req.GetTopic().GetTitleEn(),
+		req.GetTopic().GetDescription(),
+		req.GetTopic().GetCurriculum(),
+		req.GetTopic().GetMajorCode(),
+		req.GetTopic().GetSemesterCode(),
 		StatusStr,
-		PercentStage_1,
-		PercentStage_2,
-		req.CreatedBy,
-		req.CreatedBy,
+		req.GetTopic().GetPercentStage_1(),
+		req.GetTopic().GetPercentStage_2(),
+		req.GetTopic().GetCreatedBy(),
+		req.GetTopic().GetCreatedBy(),
 	)
 
 	if err != nil {
@@ -102,35 +89,55 @@ func (h *Handler) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (
 		return nil, status.Errorf(codes.Internal, "failed to create topic: %v", err)
 	}
 
-	result, err := h.GetTopic(ctx, &pb.GetTopicRequest{Id: id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get topic")
-	}
-	return &pb.CreateTopicResponse{
-		Topic: result.GetTopic(),
-	}, nil
+	return h.GetTopic(ctx, &pb.GetTopicRequest{Id: id})
 }
 
 // GetTopic retrieves a Topic by ID
-func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.GetTopicResponse, error) {
+func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.TopicResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"title":           true,
+		"title_en":        true,
+		"description":     true,
+		"curriculum":      true,
+		"major_code":      true,
+		"semester_code":   true,
+		"status":          true,
+		"percent_stage_1": true,
+		"percent_stage_2": true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`
 		SELECT id, title, title_en, description, curriculum, major_code, semester_code, status, percent_stage_1, percent_stage_2, created_at, updated_at, created_by, updated_by
 		FROM Topic
-		WHERE id = ?
-	`
+		%s
+	`, whereClause)
 
 	var entity pb.Topic
 	var createdAt, updatedAt sql.NullTime
 	var updatedBy sql.NullString
 	var StatusStr string
 
-	err := h.queryRow(ctx, query, req.Id).Scan(
+	err := h.queryRow(ctx, query, args...).Scan(
 		&entity.Id,
 		&entity.Title,
 		&entity.TitleEn,
@@ -184,13 +191,13 @@ func (h *Handler) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Ge
 		entity.UpdatedBy = updatedBy.String
 	}
 
-	return &pb.GetTopicResponse{
+	return &pb.TopicResponse{
 		Topic: &entity,
 	}, nil
 }
 
 // UpdateTopic updates an existing Topic
-func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (*pb.UpdateTopicResponse, error) {
+func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (*pb.TopicResponse, error) {
 	defer logger.TraceFunction(ctx)()
 
 	if req.Id == "" {
@@ -201,52 +208,58 @@ func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (
 	updateFields := []string{}
 	args := []interface{}{}
 
-	if req.Title != nil {
+	if req.GetTopic().GetTitle() != "" {
 		updateFields = append(updateFields, "title = ?")
-		args = append(args, *req.Title)
-
+		args = append(args, req.GetTopic().GetTitle())
 	}
-	if req.MajorCode != nil {
+	if req.GetTopic().GetTitleEn() != "" {
+		updateFields = append(updateFields, "title_en = ?")
+		args = append(args, req.GetTopic().GetTitleEn())
+	}
+	if req.GetTopic().GetDescription() != "" {
+		updateFields = append(updateFields, "description = ?")
+		args = append(args, req.GetTopic().GetDescription())
+	}
+	if req.GetTopic().GetCurriculum() != "" {
+		updateFields = append(updateFields, "curriculum = ?")
+		args = append(args, req.GetTopic().GetCurriculum())
+	}
+	if req.GetTopic().GetMajorCode() != "" {
 		updateFields = append(updateFields, "major_code = ?")
-		args = append(args, *req.MajorCode)
-
+		args = append(args, req.GetTopic().GetMajorCode())
 	}
-	if req.SemesterCode != nil {
+	if req.GetTopic().GetSemesterCode() != "" {
 		updateFields = append(updateFields, "semester_code = ?")
-		args = append(args, *req.SemesterCode)
-
+		args = append(args, req.GetTopic().GetSemesterCode())
 	}
-	if req.Status != nil {
-		updateFields = append(updateFields, "status = ?")
-		StatusStr := "submit"
-		switch *req.Status {
-		case pb.TopicStatus_SUBMIT:
-			StatusStr = "submit"
-		case pb.TopicStatus_TOPIC_PENDING:
-			StatusStr = "topic_pending"
-		case pb.TopicStatus_APPROVED_1:
-			StatusStr = "approved_1"
-		case pb.TopicStatus_APPROVED_2:
-			StatusStr = "approved_2"
-		case pb.TopicStatus_IN_PROGRESS:
-			StatusStr = "in_progress"
-		case pb.TopicStatus_TOPIC_COMPLETED:
-			StatusStr = "topic_completed"
-		case pb.TopicStatus_REJECTED:
-			StatusStr = "rejected"
-		}
-		args = append(args, StatusStr)
-
+	// Status enum - always include
+	updateFields = append(updateFields, "status = ?")
+	StatusStr := "submit"
+	switch req.GetTopic().GetStatus() {
+	case pb.TopicStatus_SUBMIT:
+		StatusStr = "submit"
+	case pb.TopicStatus_TOPIC_PENDING:
+		StatusStr = "topic_pending"
+	case pb.TopicStatus_APPROVED_1:
+		StatusStr = "approved_1"
+	case pb.TopicStatus_APPROVED_2:
+		StatusStr = "approved_2"
+	case pb.TopicStatus_IN_PROGRESS:
+		StatusStr = "in_progress"
+	case pb.TopicStatus_TOPIC_COMPLETED:
+		StatusStr = "topic_completed"
+	case pb.TopicStatus_REJECTED:
+		StatusStr = "rejected"
 	}
-	if req.PercentStage_1 != nil {
+	args = append(args, StatusStr)
+
+	if req.GetTopic().GetPercentStage_1() != 0 {
 		updateFields = append(updateFields, "percent_stage_1 = ?")
-		args = append(args, *req.PercentStage_1)
-
+		args = append(args, req.GetTopic().GetPercentStage_1())
 	}
-	if req.PercentStage_2 != nil {
+	if req.GetTopic().GetPercentStage_2() != 0 {
 		updateFields = append(updateFields, "percent_stage_2 = ?")
-		args = append(args, *req.PercentStage_2)
-
+		args = append(args, req.GetTopic().GetPercentStage_2())
 	}
 
 	if len(updateFields) == 0 {
@@ -255,30 +268,46 @@ func (h *Handler) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (
 
 	// Add updated_by and updated_at
 	updateFields = append(updateFields, "updated_by = ?")
-	args = append(args, req.UpdatedBy)
+	args = append(args, req.GetTopic().GetUpdatedBy())
 	updateFields = append(updateFields, "updated_at = NOW()")
 
-	// Add id as last parameter
+	// Build WHERE clause from filter
+	whiteMap := map[string]bool{
+		"title":           true,
+		"title_en":        true,
+		"description":     true,
+		"curriculum":      true,
+		"major_code":      true,
+		"semester_code":   true,
+		"status":          true,
+		"percent_stage_1": true,
+		"percent_stage_2": true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
+
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
 	args = append(args, req.Id)
 
 	query := fmt.Sprintf(`
 		UPDATE Topic
 		SET %s
-		WHERE id = ?
-	`, strings.Join(updateFields, ", "))
+		%s
+	`, strings.Join(updateFields, ", "), whereClause)
 
 	_, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update topic: %v", err)
 	}
 
-	result, err := h.GetTopic(ctx, &pb.GetTopicRequest{Id: req.Id})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get topic")
-	}
-	return &pb.UpdateTopicResponse{
-		Topic: result.GetTopic(),
-	}, nil
+	return h.GetTopic(ctx, &pb.GetTopicRequest{Id: req.Id})
 }
 
 // DeleteTopic deletes a Topic by ID
@@ -289,9 +318,35 @@ func (h *Handler) DeleteTopic(ctx context.Context, req *pb.DeleteTopicRequest) (
 		return nil, status.Error(codes.InvalidArgument, "id is required")
 	}
 
-	query := `DELETE FROM Topic WHERE id = ?`
+	// Build WHERE clause from filter
+	args := []interface{}{}
+	whiteMap := map[string]bool{
+		"title":           true,
+		"title_en":        true,
+		"description":     true,
+		"curriculum":      true,
+		"major_code":      true,
+		"semester_code":   true,
+		"status":          true,
+		"percent_stage_1": true,
+		"percent_stage_2": true,
+	}
+	filterClause := ""
+	if len(req.Filter) > 0 {
+		filterClause = helper.BuildWhereClause(req.Filter, &args, whiteMap, false)
+	}
 
-	result, err := h.execQuery(ctx, query, req.Id)
+	var whereClause string
+	if filterClause != "" {
+		whereClause = fmt.Sprintf("WHERE %s AND id = ?", filterClause)
+	} else {
+		whereClause = "WHERE id = ?"
+	}
+	args = append(args, req.Id)
+
+	query := fmt.Sprintf(`DELETE FROM Topic %s`, whereClause)
+
+	result, err := h.execQuery(ctx, query, args...)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete topic: %v", err)
 	}
@@ -339,9 +394,11 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 	whereClause := ""
 	args := []interface{}{}
 	whiteMap := map[string]bool{
-		"id": true,
-
+		"id":              true,
 		"title":           true,
+		"title_en":        true,
+		"description":     true,
+		"curriculum":      true,
 		"major_code":      true,
 		"semester_code":   true,
 		"status":          true,
@@ -349,7 +406,7 @@ func (h *Handler) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*p
 		"percent_stage_2": true,
 	}
 	if req.Search != nil && len(req.Search.Filters) > 0 {
-		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap)
+		whereClause = helper.BuildWhereClause(req.Search.Filters, &args, whiteMap, true)
 	}
 
 	// Build ORDER BY clause

@@ -72,9 +72,9 @@ func (u *GRPCUser) GetStudentsBySearch(ctx context.Context, search *pbCommon.Sea
 	return resp, nil
 }
 
-func (u *GRPCUser) GetUserById(ctx context.Context, id string) (*pb.GetStudentResponse, error) {
+func (u *GRPCUser) GetUserById(ctx context.Context, id string) (*pb.StudentResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", studentCachePrefix, id)
-	var cached pb.GetStudentResponse
+	var cached pb.StudentResponse
 	if hit, _ := GetCachedProto(ctx, u.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for student: %s", id)
 		return &cached, nil
@@ -90,7 +90,7 @@ func (u *GRPCUser) GetUserById(ctx context.Context, id string) (*pb.GetStudentRe
 	return resp, nil
 }
 
-func (u *GRPCUser) CreateStudent(ctx context.Context, req *pb.CreateStudentRequest) (*pb.CreateStudentResponse, error) {
+func (u *GRPCUser) CreateStudent(ctx context.Context, req *pb.CreateStudentRequest) (*pb.StudentResponse, error) {
 	resp, err := u.client.CreateStudent(ctx, req)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (u *GRPCUser) CreateStudent(ctx context.Context, req *pb.CreateStudentReque
 	return resp, nil
 }
 
-func (u *GRPCUser) UpdateStudent(ctx context.Context, req *pb.UpdateStudentRequest) (*pb.UpdateStudentResponse, error) {
+func (u *GRPCUser) UpdateStudent(ctx context.Context, req *pb.UpdateStudentRequest) (*pb.StudentResponse, error) {
 	resp, err := u.client.UpdateStudent(ctx, req)
 	if err != nil {
 		return nil, err
@@ -144,7 +144,7 @@ func (u *GRPCUser) GetStudentsByIds(ctx context.Context, ids []string) (*pb.List
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", studentCachePrefix, id)
-		var cached pb.GetStudentResponse
+		var cached pb.StudentResponse
 
 		if hit, _ := GetCachedProto(ctx, u.redisClient, cacheKey, &cached); hit {
 			if cached.Student != nil {
@@ -193,7 +193,7 @@ func (u *GRPCUser) GetStudentsByIds(ctx context.Context, ids []string) (*pb.List
 			for _, student := range resp.Students {
 				if student != nil {
 					cacheKey := fmt.Sprintf("%s%s", studentCachePrefix, student.Id)
-					SetCachedProto(ctx, u.redisClient, cacheKey, &pb.GetStudentResponse{Student: student}, studentCacheTTL)
+					SetCachedProto(ctx, u.redisClient, cacheKey, &pb.StudentResponse{Student: student}, studentCacheTTL)
 					result.Students = append(result.Students, student)
 				}
 			}
@@ -396,9 +396,9 @@ func (u *GRPCUser) GetTeachersBySearch(ctx context.Context, search *pbCommon.Sea
 	return resp, nil
 }
 
-func (u *GRPCUser) GetTeacherById(ctx context.Context, id string) (*pb.GetTeacherResponse, error) {
+func (u *GRPCUser) GetTeacherById(ctx context.Context, id string) (*pb.TeacherResponse, error) {
 	cacheKey := fmt.Sprintf("%s%s", teacherCachePrefix, id)
-	var cached pb.GetTeacherResponse
+	var cached pb.TeacherResponse
 	if hit, _ := GetCachedProto(ctx, u.redisClient, cacheKey, &cached); hit {
 		log.Printf("Cache HIT for teacher: %s", id)
 		return &cached, nil
@@ -414,7 +414,7 @@ func (u *GRPCUser) GetTeacherById(ctx context.Context, id string) (*pb.GetTeache
 	return resp, nil
 }
 
-func (u *GRPCUser) CreateTeacher(ctx context.Context, req *pb.CreateTeacherRequest) (*pb.CreateTeacherResponse, error) {
+func (u *GRPCUser) CreateTeacher(ctx context.Context, req *pb.CreateTeacherRequest) (*pb.TeacherResponse, error) {
 	resp, err := u.client.CreateTeacher(ctx, req)
 	if err != nil {
 		return nil, err
@@ -426,7 +426,7 @@ func (u *GRPCUser) CreateTeacher(ctx context.Context, req *pb.CreateTeacherReque
 	return resp, nil
 }
 
-func (u *GRPCUser) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherRequest) (*pb.UpdateTeacherResponse, error) {
+func (u *GRPCUser) UpdateTeacher(ctx context.Context, req *pb.UpdateTeacherRequest) (*pb.TeacherResponse, error) {
 	resp, err := u.client.UpdateTeacher(ctx, req)
 	if err != nil {
 		return nil, err
@@ -468,7 +468,7 @@ func (u *GRPCUser) GetTeachersByIds(ctx context.Context, ids []string) (*pb.List
 	// Check Redis cache for each ID
 	for _, id := range ids {
 		cacheKey := fmt.Sprintf("%s%s", teacherCachePrefix, id)
-		var cached pb.GetTeacherResponse
+		var cached pb.TeacherResponse
 
 		if hit, _ := GetCachedProto(ctx, u.redisClient, cacheKey, &cached); hit {
 			if cached.Teacher != nil {
@@ -517,7 +517,7 @@ func (u *GRPCUser) GetTeachersByIds(ctx context.Context, ids []string) (*pb.List
 			for _, teacher := range resp.Teachers {
 				if teacher != nil {
 					cacheKey := fmt.Sprintf("%s%s", teacherCachePrefix, teacher.Id)
-					SetCachedProto(ctx, u.redisClient, cacheKey, &pb.GetTeacherResponse{Teacher: teacher}, teacherCacheTTL)
+					SetCachedProto(ctx, u.redisClient, cacheKey, &pb.TeacherResponse{Teacher: teacher}, teacherCacheTTL)
 					result.Teachers = append(result.Teachers, teacher)
 				}
 			}

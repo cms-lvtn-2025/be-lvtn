@@ -50,7 +50,7 @@ func (c *Controller) GetDepartmentMajorCodes(ctx context.Context) ([]string, *st
 		},
 	}
 
-	majors, err := c.academic.GetMajorsBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	majors, err := c.academic.GetMajorsBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -91,7 +91,7 @@ func (c *Controller) GetDepartmentTeachers(ctx context.Context, search model.Sea
 		}, search.Filters...),
 	}
 
-	teachers, err := c.user.GetTeachersBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	teachers, err := c.user.GetTeachersBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.Sea
 		}, search.Filters...),
 	}
 
-	students, err := c.user.GetStudentsBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	students, err := c.user.GetStudentsBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (c *Controller) GetDepartmentStudents(ctx context.Context, search model.Sea
 
 // GetDepartmentSemesters returns semesters (all - no department scope needed)
 func (c *Controller) GetDepartmentSemesters(ctx context.Context, search model.SearchRequestInput) (*model.SemesterListResponse, error) {
-	// semesters, err := c.academic.GetSemestersBySearch(ctx, c.ConvertSearchRequestToPB(search))
+	// semesters, err := c.academic.GetSemestersBySearch(ctx, convert.ConvertSearchRequestToPB(search))
 	// if err != nil {
 	// 	return nil, err
 	// }
@@ -178,7 +178,7 @@ func (c *Controller) GetDepartmentMajors(ctx context.Context, search model.Searc
 		}, search.Filters...),
 	}
 
-	majors, err := c.academic.GetMajorsBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	majors, err := c.academic.GetMajorsBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +223,7 @@ func (c *Controller) GetDepartmentFaculties(ctx context.Context, search model.Se
 		}, search.Filters...),
 	}
 
-	faculties, err := c.academic.GetFacultiesBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	faculties, err := c.academic.GetFacultiesBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +265,7 @@ func (c *Controller) GetDepartmentTopics(ctx context.Context, search model.Searc
 		}, search.Filters...),
 	}
 
-	topics, err := c.thesis.GetTopicBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	topics, err := c.thesis.GetTopicBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +303,7 @@ func (c *Controller) GetDepartmentEnrollments(ctx context.Context, search model.
 		}, search.Filters...),
 	}
 
-	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	enrollments, err := c.thesis.GetEnrollmentBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func (c *Controller) GetDepartmentCouncils(ctx context.Context, search model.Sea
 		}, search.Filters...),
 	}
 
-	councils, err := c.council.GetCouncilBySearch(ctx, c.ConvertSearchRequestToPB(newSearch))
+	councils, err := c.council.GetCouncilBySearch(ctx, convert.ConvertSearchRequestToPB(newSearch))
 	if err != nil {
 		return nil, err
 	}
